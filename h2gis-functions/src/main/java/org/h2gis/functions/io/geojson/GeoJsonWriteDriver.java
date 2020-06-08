@@ -36,6 +36,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipOutputStream;
+
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
 
@@ -82,6 +85,19 @@ public class GeoJsonWriteDriver {
      * @throws SQLException
      * @throws IOException
      */
+    public void write(ProgressVisitor progress, ResultSet resultSet, File file, String encoding) throws SQLException, IOException {
+        write(progress, resultSet, file, encoding, false);
+    }
+
+    /**
+     * Write a resulset to a geojson file
+     *
+     * @param progress
+     * @param resultSet
+     * @param file
+     * @throws SQLException
+     * @throws IOException
+     */
     public void write(ProgressVisitor progress, ResultSet resultSet, File file) throws SQLException, IOException {
         write(progress, resultSet, file, null, false);
     }
@@ -100,70 +116,196 @@ public class GeoJsonWriteDriver {
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
-            if(deleteFile){
+            if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             }
-            FileOutputStream fos = null;
-            JsonEncoding jsonEncoding = JsonEncoding.UTF8;
-            if (encoding != null && !encoding.isEmpty()) {
-                try {
-                    jsonEncoding = JsonEncoding.valueOf(encoding);
-                } catch (IllegalArgumentException ex) {
-                    throw new SQLException("Only UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE encoding is supported");
-                }
+            geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
+        }else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+            if (deleteFile) {
+                Files.deleteIfExists(fileName.toPath());
             }
-            try {                
-                fos = new FileOutputStream(fileName);
-                int rowCount = 0;
-                int type = rs.getType();
-                if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
-                    rs.last();
-                    rowCount = rs.getRow();
-                    rs.beforeFirst();
-                }
-                ProgressVisitor copyProgress = progress.subProcess(rowCount);                
-                Tuple<String, Integer> geometryInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs.getMetaData());
-                JsonFactory jsonFactory = new JsonFactory();
-                JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
-
-                // header of the GeoJSON file
-                jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("type", "FeatureCollection");
-                jsonGenerator.writeArrayFieldStart("features");
-                try {
-                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                    cacheMetadata(resultSetMetaData);
-                    while (rs.next()) {
-                        writeFeature(jsonGenerator, rs, geometryInfo.second());
-                        copyProgress.endStep();
-                    }
-                    copyProgress.endOfProgress();
-                    // footer
-                    jsonGenerator.writeEndArray();
-                    jsonGenerator.writeEndObject();
-                    jsonGenerator.flush();
-                    jsonGenerator.close();
-                } finally {
-                    rs.close();
-                }
-
-            } catch (FileNotFoundException ex) {
-                throw new SQLException(ex);
-
+            GZIPOutputStream gzos = null;
+            try{
+                FileOutputStream fos = new FileOutputStream(fileName);
+                gzos =  new GZIPOutputStream(fos) ;
+                geojsonWriter(progress, rs, gzos, encoding);
             } finally {
                 try {
-                    if (fos != null) {
-                        fos.close();
+                    if (gzos != null) {
+                        gzos.close();
                     }
                 } catch (IOException ex) {
                     throw new SQLException(ex);
                 }
             }
-        } else {
-            throw new SQLException("Only .geojson extension is supported");
+        } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+            if (deleteFile) {
+                Files.deleteIfExists(fileName.toPath());
+            }
+            ZipOutputStream zip = null;
+            try{
+                FileOutputStream fos = new FileOutputStream(fileName);
+                zip =  new ZipOutputStream(fos) ;
+                geojsonWriter(progress, rs, zip, encoding);
+            } finally {
+                try {
+                    if (zip != null) {
+                        zip.close();
+                    }
+                } catch (IOException ex) {
+                    throw new SQLException(ex);
+                }
+            }
+        }else {
+            throw new SQLException("Only .geojson , .gz or .zip extensions are supported");
         }
     }
-    
+
+    /**
+     * Method to write a resulset  to a geojson file
+     * @param progress
+     * @param rs
+     * @param fos
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException
+     */
+    private void geojsonWriter(ProgressVisitor progress, ResultSet rs, OutputStream fos , String encoding) throws SQLException, IOException {
+        JsonEncoding jsonEncoding = JsonEncoding.UTF8;
+        if (encoding != null && !encoding.isEmpty()) {
+            try {
+                jsonEncoding = JsonEncoding.valueOf(encoding);
+            } catch (IllegalArgumentException ex) {
+                throw new SQLException("Only UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE encoding is supported");
+            }
+        }
+        try {
+            int rowCount = 0;
+            int type = rs.getType();
+            if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
+                rs.last();
+                rowCount = rs.getRow();
+                rs.beforeFirst();
+            }
+            ProgressVisitor copyProgress = progress.subProcess(rowCount);
+            Tuple<String, Integer> geometryInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs.getMetaData());
+            JsonFactory jsonFactory = new JsonFactory();
+            JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
+
+            // header of the GeoJSON file
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("type", "FeatureCollection");
+            jsonGenerator.writeArrayFieldStart("features");
+            try {
+                ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                cacheMetadata(resultSetMetaData);
+                while (rs.next()) {
+                    writeFeature(jsonGenerator, rs, geometryInfo.second());
+                    copyProgress.endStep();
+                }
+                copyProgress.endOfProgress();
+                // footer
+                jsonGenerator.writeEndArray();
+                jsonGenerator.writeEndObject();
+                jsonGenerator.flush();
+                jsonGenerator.close();
+            } finally {
+                rs.close();
+            }
+
+        } catch (FileNotFoundException ex) {
+            throw new SQLException(ex);
+
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException ex) {
+                throw new SQLException(ex);
+            }
+        }
+    }
+
+    /**
+     * Method to write a table  to a geojson file
+     *
+     * @param progress
+     * @param tableName
+     * @param fos
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException
+     */
+    private void geojsonWriter(ProgressVisitor progress, String tableName, OutputStream fos , String encoding) throws SQLException, IOException {
+        JsonEncoding jsonEncoding =  JsonEncoding.UTF8;
+        if (encoding != null) {
+            try {
+                jsonEncoding = JsonEncoding.valueOf(encoding);
+            } catch (IllegalArgumentException ex) {
+                throw new SQLException("Only UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE encoding is supported");
+            }
+        }
+        try {
+            final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+            int recordCount = JDBCUtilities.getRowCount(connection, parse);
+            if (recordCount > 0) {
+                ProgressVisitor copyProgress = progress.subProcess(recordCount);
+                // Read Geometry Index and type
+                Tuple<String, Integer> geometryTableInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, parse);
+
+                try ( // Read table content
+                      Statement st = connection.createStatement()) {
+                    JsonFactory jsonFactory = new JsonFactory();
+                    JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
+
+                    // header of the GeoJSON file
+                    jsonGenerator.writeStartObject();
+                    jsonGenerator.writeStringField("type", "FeatureCollection");
+                    writeCRS(jsonGenerator, GeometryTableUtilities.getAuthorityAndSRID(connection, parse, geometryTableInfo.first()));
+                    jsonGenerator.writeArrayFieldStart("features");
+
+                    ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
+
+                    try {
+                        ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                        cacheMetadata(resultSetMetaData);
+                        while (rs.next()) {
+                            writeFeature(jsonGenerator, rs, geometryTableInfo.second());
+                            copyProgress.endStep();
+                        }
+                        copyProgress.endOfProgress();
+                        // footer
+                        jsonGenerator.writeEndArray();
+                        jsonGenerator.writeEndObject();
+                        jsonGenerator.flush();
+                        jsonGenerator.close();
+
+                    } finally {
+                        rs.close();
+                    }
+                }
+            }
+        }  finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException ex) {
+                throw new SQLException(ex);
+            }
+        }
+    }
+    public void write(ProgressVisitor progress, String tableName, File fileName, String encoding) throws SQLException, IOException {
+        write( progress,  tableName,  fileName,  encoding, false);
+    }
+
+
+
+
+    public void write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFile) throws SQLException, IOException {
+        write( progress,  tableName,  fileName,  null, deleteFile);
+    }
 
     /**
      * Write the spatial table to GeoJSON format.
@@ -189,75 +331,50 @@ public class GeoJsonWriteDriver {
             }
         } else {
             if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
-                if(deleteFile){
+                if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
                 }
-                JsonEncoding jsonEncoding =  JsonEncoding.UTF8;
-                if (encoding != null) {
-                    try {
-                        jsonEncoding = JsonEncoding.valueOf(encoding);
-                    } catch (IllegalArgumentException ex) {
-                        throw new SQLException("Only UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE encoding is supported");
-                    }
-                }
-                
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(fileName);
-                    final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
-                    int recordCount = JDBCUtilities.getRowCount(connection, parse);
-                    if (recordCount > 0) {
-                        ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                        // Read Geometry Index and type
-                        Tuple<String, Integer> geometryTableInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, parse);
-                        
-                        try ( // Read table content
-                            Statement st = connection.createStatement()) {
-                            JsonFactory jsonFactory = new JsonFactory();
-                            JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
-
-                            // header of the GeoJSON file
-                            jsonGenerator.writeStartObject();
-                            jsonGenerator.writeStringField("type", "FeatureCollection");
-                            writeCRS(jsonGenerator, GeometryTableUtilities.getAuthorityAndSRID(connection, parse, geometryTableInfo.first()));
-                            jsonGenerator.writeArrayFieldStart("features");
-
-                            ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
-
-                            try {
-                                ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                                cacheMetadata(resultSetMetaData);
-                                while (rs.next()) {
-                                    writeFeature(jsonGenerator, rs, geometryTableInfo.second());
-                                    copyProgress.endStep();
-                                }
-                                copyProgress.endOfProgress();
-                                // footer
-                                jsonGenerator.writeEndArray();
-                                jsonGenerator.writeEndObject();
-                                jsonGenerator.flush();
-                                jsonGenerator.close();
-
-                            } finally {
-                                rs.close();
-                            }
-                        }
-                    }
-                } catch (FileNotFoundException ex) {
-                    throw new SQLException(ex);
-
-                } finally {
-                    try {
-                        if (fos != null) {
-                            fos.close();
-                        }
-                    } catch (IOException ex) {
-                        throw new SQLException(ex);
-                    }
-                }
-            } else {
-                throw new SQLException("Only .geojson extension is supported");
+                geojsonWriter(progress, tableName, new FileOutputStream(fileName), encoding);
             }
+            else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+                    if (deleteFile) {
+                        Files.deleteIfExists(fileName.toPath());
+                    }
+                    GZIPOutputStream gzos = null;
+                    try{
+                        FileOutputStream fos = new FileOutputStream(fileName);
+                        gzos =  new GZIPOutputStream(fos) ;
+                        geojsonWriter(progress, tableName, gzos, encoding);
+                    } finally {
+                        try {
+                            if (gzos != null) {
+                                gzos.close();
+                            }
+                        } catch (IOException ex) {
+                            throw new SQLException(ex);
+                        }
+                    }
+                } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+                    if (deleteFile) {
+                        Files.deleteIfExists(fileName.toPath());
+                    }
+                    ZipOutputStream zip = null;
+                    try{
+                        FileOutputStream fos = new FileOutputStream(fileName);
+                        zip =  new ZipOutputStream(fos) ;
+                        geojsonWriter(progress, tableName, zip, encoding);
+                    } finally {
+                        try {
+                            if (zip != null) {
+                                zip.close();
+                            }
+                        } catch (IOException ex) {
+                            throw new SQLException(ex);
+                        }
+                    }
+                }else {
+                    throw new SQLException("Only .geojson , .gz or .zip extensions are supported");
+                }
         }
     }
 
@@ -279,8 +396,8 @@ public class GeoJsonWriteDriver {
      * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
      * 0.5]}, "properties": {"prop0": "value0"} }
      *
-     * @param writer
-     * @param resultSetMetaData
+     * @param jsonGenerator
+     * @param rs
      * @param geoFieldIndex
      */
     private void writeFeature(JsonGenerator jsonGenerator, ResultSet rs, int geoFieldIndex) throws IOException, SQLException {
@@ -320,8 +437,8 @@ public class GeoJsonWriteDriver {
      *
      * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}
      *
-     * @param jsonGenerator
-     * @param geometry
+     * @param geom
+     * @param gen
      */
     private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {       
         if (geom != null) {

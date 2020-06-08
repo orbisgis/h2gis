@@ -21,6 +21,10 @@
 
 package org.h2gis.functions.io.tsv;
 
+import org.h2.value.Value;
+import org.h2.value.ValueBoolean;
+import org.h2.value.ValueNull;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
@@ -40,29 +44,56 @@ import java.sql.SQLException;
 public class TSVRead  extends AbstractFunction implements ScalarFunction{
 
     public TSVRead() {
-        addProperty(PROP_REMARKS, "Read a Tab-separated values file.");
+        addProperty(PROP_REMARKS, "Read a Tab-separated values file." +
+                "\n TSVRead(..."+
+                "\n Supported arguments :" +
+                "\n path of the file" +
+                "\n path of the file, table name"+
+                "\n path of the file, true for delete the table with the same file name"+
+                "\n path of the file, table name, true to delete the table name"+
+                "\n path of the file, table name, true to delete the table name"+
+                "\n path of the file, table name, encoding chartset"+
+                "\n path of the file, table name, encoding chartset, true to delete the table name");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "readTSV";
+        return "importTable";
     }
 
     /**
      * Copy data from TSV File into a new table in specified connection.
      * @param connection
      * @param fileName
-     * @param tableReference
+     * @param option  table name or true to delete it
      * @throws SQLException
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    public static void readTSV(Connection connection, String fileName, String tableReference) throws SQLException, FileNotFoundException, IOException {
-        readTSV( connection,  fileName,  tableReference,null,  false);
+    public static void importTable(Connection connection, String fileName, Value option) throws SQLException, FileNotFoundException, IOException {
+        String tableReference =null;
+        boolean deleteTable =  false;
+        if(option instanceof ValueBoolean){
+            deleteTable = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            tableReference = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
+        }
+        importTable( connection,  fileName,  tableReference,null,  deleteTable);
     }
 
-    public static void readTSV(Connection connection, String fileName, String tableReference, String encoding) throws SQLException, FileNotFoundException, IOException {
-        readTSV( connection,  fileName,  tableReference,encoding,  false);
+    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws SQLException, FileNotFoundException, IOException {
+        String encoding =null;
+        boolean deleteTable =  false;
+        if(option instanceof ValueBoolean){
+            deleteTable = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            encoding = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
+        }
+        importTable(connection,  fileName,  tableReference,encoding,  deleteTable);
     }
     /**
      *
@@ -75,7 +106,7 @@ public class TSVRead  extends AbstractFunction implements ScalarFunction{
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void readTSV(Connection connection, String fileName, String tableReference, String encoding, boolean deleteTable) throws SQLException, FileNotFoundException, IOException {
+    public static void importTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteTable) throws SQLException, FileNotFoundException, IOException {
         TSVDriverFunction tsvDriver = new TSVDriverFunction();
         tsvDriver.importFile(connection, tableReference, URIUtilities.fileFromString(fileName),encoding,deleteTable, new EmptyProgressVisitor());
     }
@@ -87,29 +118,11 @@ public class TSVRead  extends AbstractFunction implements ScalarFunction{
      * @throws IOException
      * @throws SQLException 
      */
-    public static void readTSV(Connection connection, String fileName) throws IOException, SQLException {
+    public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readTSV(connection, fileName, tableName, null, false);
-        } else {
-            throw new SQLException("The file name contains unsupported characters");
-        }
-    }
-
-    /**
-     *
-     * @param connection
-     * @param fileName
-     * @param deleteTable
-     * @throws IOException
-     * @throws SQLException
-     */
-    public static void readTSV(Connection connection, String fileName, boolean deleteTable) throws IOException, SQLException {
-        final String name = URIUtilities.fileFromString(fileName).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readTSV(connection, fileName, tableName, null, deleteTable);
+            importTable(connection, fileName, tableName, null, false);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }

@@ -216,19 +216,17 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (!FileUtil.isFileImportable(fileName, "dbf")) {
+        if (FileUtil.isFileImportable(fileName, "dbf")) {
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             if (deleteTables) {
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-                String table = requestedTable.getTable();
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + table);
+                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(isH2));
                 stmt.close();
             }
             DBFDriver dbfDriver = new DBFDriver();
             dbfDriver.initDriverFromFile(fileName, options);
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
+            String parsedTable = requestedTable.toString(isH2);
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             ProgressVisitor copyProgress = progress.subProcess((int) (dbfDriver.getRowCount() / BATCH_MAX_SIZE));
             if (dbfHeader.getNumFields() == 0) {

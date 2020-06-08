@@ -20,6 +20,10 @@
 
 package org.h2gis.functions.io.geojson;
 
+import org.h2.value.Value;
+import org.h2.value.ValueBoolean;
+import org.h2.value.ValueNull;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
@@ -33,17 +37,26 @@ import java.sql.SQLException;
  * SQL function to read a GeoJSON file an creates the corresponding spatial
  * table.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS, 2020
  */
 public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
 
     public GeoJsonRead() {
-        addProperty(PROP_REMARKS, "Import a GeoJSON 1.0 file.");
+        addProperty(PROP_REMARKS, "Import a GeoJSON 1.0 file."+
+                "\n GeoJsonRead(..."+
+                "\n Supported arguments :" +
+                "\n path of the file" +
+                "\n path of the file, table name"+
+                "\n path of the file, true for delete the table with the same file name"+
+                "\n path of the file, table name, true to delete the table name"+
+                "\n path of the file, table name, true to delete the table name"+
+                "\n path of the file, table name, encoding chartset"+
+                "\n path of the file, table name, encoding chartset, true to delete the table name");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "readGeoJson";
+        return "importTable";
     }
     
     /**
@@ -53,28 +66,11 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
      * @throws IOException
      * @throws SQLException 
      */
-    public static void readGeoJson(Connection connection, String fileName) throws IOException, SQLException {
+    public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readGeoJson(connection, fileName, tableName,null, false);
-        } else {
-            throw new SQLException("The file name contains unsupported characters");
-        }
-    }
-
-    /**
-     *
-     * @param connection
-     * @param fileName
-     * @throws IOException
-     * @throws SQLException
-     */
-    public static void readGeoJson(Connection connection, String fileName, boolean deleteTable) throws IOException, SQLException {
-        final String name = URIUtilities.fileFromString(fileName).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readGeoJson(connection, fileName, tableName,null, deleteTable);
+            importTable(connection, fileName, tableName,null, false);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }
@@ -85,19 +81,37 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
      * 
      * @param connection
      * @param fileName
-     * @param tableReference
+     * @param option
      * @throws IOException
      * @throws SQLException 
      */
-    public static void readGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        readGeoJson(connection,fileName, tableReference, null, false);
+    public static void importTable(Connection connection, String fileName, Value option) throws IOException, SQLException {
+        String tableReference =null;
+        boolean deleteTable =  false;
+        if(option instanceof ValueBoolean){
+            deleteTable = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            tableReference = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
+        }
+        importTable(connection,fileName, tableReference, null, deleteTable);
     }
 
-    public static void readGeoJson(Connection connection, String fileName, String tableReference,String encoding) throws IOException, SQLException {
-        readGeoJson(connection,fileName, tableReference, encoding, false);
+    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
+        String encoding =null;
+        boolean deleteTable =  false;
+        if(option instanceof ValueBoolean){
+            deleteTable = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            encoding = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
+        }
+        importTable(connection,fileName, tableReference, encoding, deleteTable);
     }
 
-    public static void readGeoJson(Connection connection, String fileName, String tableReference,String encoding, boolean deleteTable ) throws IOException, SQLException {
+    public static void importTable(Connection connection, String fileName, String tableReference,String encoding, boolean deleteTable ) throws IOException, SQLException {
         GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
         gjdf.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteTable, new EmptyProgressVisitor());
     }

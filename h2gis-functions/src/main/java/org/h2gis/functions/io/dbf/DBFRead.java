@@ -20,6 +20,10 @@
 
 package org.h2gis.functions.io.dbf;
 
+import org.h2.value.Value;
+import org.h2.value.ValueBoolean;
+import org.h2.value.ValueNull;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
@@ -31,47 +35,66 @@ import java.sql.SQLException;
 
 /**
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS, 2020
  */
 public class DBFRead  extends AbstractFunction implements ScalarFunction {
     public DBFRead() {
-        addProperty(PROP_REMARKS, "Read a DBase III file and copy the content into a new table in the database");
+        addProperty(PROP_REMARKS, "Read a DBase III file and copy the content into a new table in the database"+
+                "\n DBFRead(..."+
+                        "\n Supported arguments :" +
+                        "\n path of the file" +
+                        "\n path of the file, table name"+
+                        "\n path of the file, true for delete the table with the same file name"+
+                        "\n path of the file, table name, true to delete the table name"+
+                        "\n path of the file, table name, true to delete the table name"+
+                        "\n path of the file, table name, encoding chartset"+
+                        "\n path of the file, table name, encoding chartset, true to delete the table name");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "read";
+        return "importTable";
     }
     
-    public static void read(Connection connection, String fileName) throws IOException, SQLException {
+    public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            read(connection, fileName, tableName);
-        } else {
-            throw new SQLException("The file name contains unsupported characters");
-        }
-    }
-    public static void read(Connection connection, String fileName, boolean deleteTable) throws IOException, SQLException {
-        final String name = URIUtilities.fileFromString(fileName).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            read(connection, fileName, tableName, null, deleteTable);
+            importTable(connection, fileName, tableName, null, false);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }
     }
 
-    public static void read(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+    public static void importTable(Connection connection, String fileName, Value option) throws IOException, SQLException {
+        String tableReference =null;
+        boolean deleteTable =  false;
+        if(option instanceof ValueBoolean){
+            deleteTable = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            tableReference = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
+        }
         DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
-        dbfDriverFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+        dbfDriverFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName),null, deleteTable, new EmptyProgressVisitor());
     }
 
-    public static void read(Connection connection, String fileName, String tableReference, String fileEncoding) throws IOException, SQLException {
+    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
+        String encoding =null;
+        boolean deleteTable =  false;
+        if(option instanceof ValueBoolean){
+            deleteTable = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            encoding = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
+        }
         DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
-        dbfDriverFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName),  fileEncoding, new EmptyProgressVisitor());
+        dbfDriverFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName),  encoding,deleteTable, new EmptyProgressVisitor());
     }
 
-    public static void read(Connection connection, String fileName, String tableReference, String fileEncoding, boolean deleteTable) throws IOException, SQLException {
+    public static void importTable(Connection connection, String fileName, String tableReference, String fileEncoding, boolean deleteTable) throws IOException, SQLException {
         DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
         dbfDriverFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName),  fileEncoding,deleteTable, new EmptyProgressVisitor());
     }

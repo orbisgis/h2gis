@@ -26,13 +26,17 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.zip.GZIPInputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -80,11 +84,30 @@ public class JsonImportExportTest {
              stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
              ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
-             JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection);
+             JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection, true );
              jsonWriteDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.json"));
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
              assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
+    }
+
+    @Test
+    public void testWriteResultSetJsonGZ() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+            stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
+            stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
+            JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection, true );
+            jsonWriteDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.gz"));
+            File outpuFile = new File("target/result.gz");
+            assertTrue(outpuFile.exists());
+            GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outpuFile));
+            InputStreamReader reader = new InputStreamReader(gzis);
+            BufferedReader in = new BufferedReader(reader);
+            assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",in.readLine());
+            gzis.close();
+        }
     }
     
     @Test

@@ -71,22 +71,22 @@ public class AscDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
-        // Import only driver
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName,  String encoding,ProgressVisitor progress) throws SQLException, IOException{
-        // Import only driver
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -106,9 +106,8 @@ public class AscDriverFunction implements DriverFunction {
         if(prjFile.exists()) {
             srid = PRJUtil.getSRID(prjFile);
         }
-        try(FileInputStream fos = new FileInputStream(fileName)) {
-            ascReaderDriver.read(connection, fos, progress, tableReference, srid);
-        }
+        ascReaderDriver.read(connection, fileName, progress, tableReference, srid);
+
     }
 
     @Override
@@ -120,7 +119,6 @@ public class AscDriverFunction implements DriverFunction {
     @Override
     public void importFile(Connection connection, String tableReference, File fileName,  boolean deleteTables, ProgressVisitor progress
                           ) throws SQLException, IOException {
-
         if(deleteTables) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
@@ -128,12 +126,14 @@ public class AscDriverFunction implements DriverFunction {
             stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
             stmt.close();
         }
-
         importFile(connection, tableReference, fileName, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-
+    public void importFile(Connection connection, String tableReference, File fileName, String encoding, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        AscReaderDriver ascReaderDriver = new AscReaderDriver();
+        ascReaderDriver.setDeleteTable(deleteTables);
+        ascReaderDriver.setEncoding(encoding);
+        importFile(connection, tableReference, fileName, progress, ascReaderDriver);
     }
 }

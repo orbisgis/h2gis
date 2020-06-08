@@ -166,18 +166,17 @@ public class CSVDriverFunction implements DriverFunction{
     @Override
     public void importFile(Connection connection, String tableReference, File fileName,
                            boolean deleteTables,ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, false,progress);
+        importFile(connection, tableReference, fileName, null, deleteTables,progress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (!FileUtil.isFileImportable(fileName, "csv")) {
+        if (FileUtil.isFileImportable(fileName, "csv")) {
             if(deleteTables) {
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-                String table = requestedTable.getTable();
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + table);
+                stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
                 stmt.close();
             }
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);

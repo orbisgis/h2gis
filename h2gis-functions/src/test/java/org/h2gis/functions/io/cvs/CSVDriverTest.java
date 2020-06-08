@@ -97,9 +97,9 @@ public class CSVDriverTest {
         // Export in target with special chars
         File csvFile = new File("target/csv_options.csv");
         CSVDriverFunction exp = new CSVDriverFunction();
-        exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
+        exp.exportTable(connection, "AREA", csvFile, "fieldSeparator=| fieldDelimiter=,",new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mycsv");
-        exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
+        exp.importFile(connection, "MYCSV", csvFile,  "fieldSeparator=| fieldDelimiter=,",new EmptyProgressVisitor());
         try (ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv")) {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);
@@ -118,7 +118,7 @@ public class CSVDriverTest {
         File csvFile = new File("target/area éxport.csv");
         DriverFunction exp = new CSVDriverFunction();
         exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor());
-        exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor(), true);
+        exp.importFile(connection, "MYCSV", csvFile,  true,new EmptyProgressVisitor());
         ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
         try {
             assertTrue(rs.next());
@@ -138,9 +138,9 @@ public class CSVDriverTest {
         // Export in target with special chars
         File csvFile = new File("target/csv_options.csv");
         CSVDriverFunction exp = new CSVDriverFunction();
-        exp.exportTable(connection, "(SELECT * FROM AREA)", csvFile,new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
+        exp.exportTable(connection, "(SELECT * FROM AREA)", csvFile, "fieldSeparator=| fieldDelimiter=,",new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mycsv");
-        exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
+        exp.importFile(connection, "MYCSV", csvFile,  "fieldSeparator=| fieldDelimiter=,",new EmptyProgressVisitor());
         try (ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv")) {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);

@@ -136,8 +136,20 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                            String options) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+
+        throw new SQLFeatureNotSupportedException("Work in progress..");
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+
+        throw new SQLFeatureNotSupportedException("Work in progress..");
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress
+                            ) throws SQLException, IOException {
         throw new SQLFeatureNotSupportedException("Work in progress..");
     }
 
@@ -167,14 +179,19 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String options) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,  String options, ProgressVisitor progress
+                          ) throws SQLException, IOException {
         openFile(connection, fileName.getAbsolutePath(), tableReference);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,boolean deleteTables, ProgressVisitor progress
+                           ) throws SQLException, IOException {
+        openFile(connection, fileName.getAbsolutePath(), tableReference);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         openFile(connection, fileName.getAbsolutePath(), tableReference);
     }
 }

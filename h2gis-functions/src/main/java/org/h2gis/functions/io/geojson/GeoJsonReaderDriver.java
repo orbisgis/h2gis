@@ -34,8 +34,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.file.FileSystems;
 import java.sql.*;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 
 /**
  * Driver to import a GeoJSON file into a spatial table.
@@ -60,12 +63,9 @@ public class GeoJsonReaderDriver {
     private final boolean deleteTable;
     private PreparedStatement preparedStatement = null;
     private JsonFactory jsFactory;
+    private int nbFeature = 1;
     private int featureCounter = 1;
     private ProgressVisitor progress = new EmptyProgressVisitor();
-    private FileChannel fc;
-    private long fileSize = 0;
-    private long readFileSizeEachNode = 1;
-    private long nodeCountProgress = 0;
     // For progression information return
     private static final int AVERAGE_NODE_SIZE = 500;
     boolean hasGeometryField = false;
@@ -112,7 +112,10 @@ public class GeoJsonReaderDriver {
      * @throws java.io.IOException
      */
     public void read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
-        if (FileUtil.isFileImportable(fileName, "geojson")) {
+        if (fileName!=null && fileName.getName().toLowerCase().endsWith(".geojson")) {
+            if(!fileName.exists()){
+                throw new SQLException("The file " + tableLocation + " doesn't exist ");
+            }
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.tableLocation = TableLocation.parse(tableReference, isH2);
             if(deleteTable){
@@ -125,6 +128,38 @@ public class GeoJsonReaderDriver {
             } else {
                 JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
             }
+        }
+        else if(fileName!=null && fileName.getName().toLowerCase().endsWith(".gz")){
+            if(!fileName.exists()){
+                throw new SQLException("The file " + tableLocation + " doesn't exist ");
+            }
+            this.isH2 = JDBCUtilities.isH2DataBase(connection);
+            this.tableLocation = TableLocation.parse(tableReference, isH2);
+            if(deleteTable){
+                Statement stmt = connection.createStatement();
+                stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
+                stmt.close();
+            }
+
+            if (fileName.length() > 0) {
+                this.progress = progress.subProcess(100);
+                init();
+                FileInputStream fis = new FileInputStream(fileName);
+                if (parseMetadata(new GZIPInputStream(fis))) {
+                    connection.setAutoCommit(false);
+                    GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
+                    fis = new FileInputStream(fileName);
+                    parseData(new GZIPInputStream(fis));
+                    setGeometryTypeConstraints();
+                    connection.setAutoCommit(true);
+                } else {
+                    throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
+                }
+            } else {
+                JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
+            }
+        }else {
+            throw new SQLException("The geojson read driver supports only geojson or gz extensions");
         }
     }
 
@@ -155,11 +190,11 @@ public class GeoJsonReaderDriver {
      */
     private void parseGeoJson(ProgressVisitor progress) throws SQLException, IOException {
         this.progress = progress.subProcess(100);
-        init();
-        if (parseMetadata()) {
+        init();  ;
+        if (parseMetadata(new FileInputStream(fileName))) {
             connection.setAutoCommit(false);
             GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
-            parseData();
+            parseData(new FileInputStream(fileName));
             setGeometryTypeConstraints();
             connection.setAutoCommit(true);
 
@@ -174,20 +209,11 @@ public class GeoJsonReaderDriver {
      * @throws SQLException
      * @throws IOException
      */
-    private boolean parseMetadata() throws SQLException, IOException {
-        FileInputStream fis = null;
+    private boolean parseMetadata(InputStream is) throws SQLException, IOException {
         try {
-            fis = new FileInputStream(fileName);
-            this.fc = fis.getChannel();
-            this.fileSize = fc.size();
-
-            // Given the file size and an average node file size.
-            // Skip how many nodes in order to update progression at a step of 1%
-            readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
-            nodeCountProgress = 0;
             cachedColumnNames = new LinkedHashMap<>();
             finalGeometryTypes = new HashSet<String>();
-            try (JsonParser jp = jsFactory.createParser( new InputStreamReader(fis, jsonEncoding.getJavaName()))) {
+            try (JsonParser jp = jsFactory.createParser( new InputStreamReader(is, jsonEncoding.getJavaName()))) {
                 jp.nextToken();//START_OBJECT
                 jp.nextToken(); // field_name (type)
                 jp.nextToken(); // value_string (FeatureCollection)
@@ -205,8 +231,8 @@ public class GeoJsonReaderDriver {
 
         } finally {
             try {
-                if (fis != null) {
-                    fis.close();
+                if (is != null) {
+                    is.close();
                 }
             } catch (IOException ex) {
                 throw new IOException(ex);
@@ -281,16 +307,7 @@ public class GeoJsonReaderDriver {
                     }
                     parseFeatureMetadata(jp);
                     token = jp.nextToken(); //START_OBJECT new feature                   
-                    featureCounter++;
-
-                    if (nodeCountProgress++ % readFileSizeEachNode == 0) {
-                        // Update Progress
-                        try {
-                            progress.setStep((int) (((double) fc.position() / fileSize) * 100));
-                        } catch (IOException ex) {
-                            // Ignore
-                        }
-                    }
+                    nbFeature++;
                 } else {
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
                 }
@@ -954,14 +971,7 @@ public class GeoJsonReaderDriver {
 
                     token = jp.nextToken(); //START_OBJECT new feature                    
                     featureCounter++;
-                    if (nodeCountProgress++ % readFileSizeEachNode == 0) {
-                        // Update Progress
-                        try {
-                            progress.setStep((int) (((double) fc.position() / fileSize) * 100));
-                        } catch (IOException ex) {
-                            // Ignore
-                        }
-                    }
+                    progress.setStep((int) ((featureCounter / nbFeature) * 100));
                     if (batchSize > 0) {
                         preparedStatement.executeBatch();
                         connection.commit();
@@ -1273,11 +1283,9 @@ public class GeoJsonReaderDriver {
      * @throws IOException
      * @throws SQLException
      */
-    private void parseData() throws IOException, SQLException {
-        FileInputStream fis = null;
+    private void parseData(InputStream is) throws IOException, SQLException {
         try {
-            fis = new FileInputStream(fileName);
-            try (JsonParser jp = jsFactory.createParser(new InputStreamReader(fis, jsonEncoding.getJavaName()))) {
+            try (JsonParser jp = jsFactory.createParser(new InputStreamReader(is, jsonEncoding.getJavaName()))) {
                 jp.nextToken();//START_OBJECT
                 jp.nextToken(); // field_name (type)
                 jp.nextToken(); // value_string (FeatureCollection)
@@ -1293,8 +1301,8 @@ public class GeoJsonReaderDriver {
 
         } finally {
             try {
-                if (fis != null) {
-                    fis.close();
+                if (is != null) {
+                    is.close();
                 }
             } catch (IOException ex) {
                 throw new SQLException(ex);
