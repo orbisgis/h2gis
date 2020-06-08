@@ -3,21 +3,20 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
+ * This code is part of the H2GIS project. H2GIS is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation; version 3.0 of
+ * the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details <http://www.gnu.org/licenses/>.
  *
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
 package org.h2gis.functions.io.geojson;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -61,7 +60,6 @@ import org.h2gis.utilities.Tuple;
  */
 public class GeoJsonWriteDriver {
 
-    
     private final Connection connection;
     private Map<String, Integer> cachedColumnNames;
     private int columnCountProperties = -1;
@@ -73,12 +71,11 @@ public class GeoJsonWriteDriver {
      */
     public GeoJsonWriteDriver(Connection connection) {
         this.connection = connection;
-    }    
-    
-    
+    }
+
     /**
      * Write a resulset to a geojson file
-     * 
+     *
      * @param progress
      * @param resultSet
      * @param file
@@ -102,7 +99,6 @@ public class GeoJsonWriteDriver {
         write(progress, resultSet, file, null, false);
     }
 
-    
     /**
      * Write a resulset to a geojson file
      *
@@ -120,14 +116,14 @@ public class GeoJsonWriteDriver {
                 Files.deleteIfExists(fileName.toPath());
             }
             geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
-        }else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+        } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             }
             GZIPOutputStream gzos = null;
-            try{
+            try {
                 FileOutputStream fos = new FileOutputStream(fileName);
-                gzos =  new GZIPOutputStream(fos) ;
+                gzos = new GZIPOutputStream(fos);
                 geojsonWriter(progress, rs, gzos, encoding);
             } finally {
                 try {
@@ -143,9 +139,9 @@ public class GeoJsonWriteDriver {
                 Files.deleteIfExists(fileName.toPath());
             }
             ZipOutputStream zip = null;
-            try{
+            try {
                 FileOutputStream fos = new FileOutputStream(fileName);
-                zip =  new ZipOutputStream(fos) ;
+                zip = new ZipOutputStream(fos);
                 geojsonWriter(progress, rs, zip, encoding);
             } finally {
                 try {
@@ -156,13 +152,14 @@ public class GeoJsonWriteDriver {
                     throw new SQLException(ex);
                 }
             }
-        }else {
+        } else {
             throw new SQLException("Only .geojson , .gz or .zip extensions are supported");
         }
     }
 
     /**
-     * Method to write a resulset  to a geojson file
+     * Method to write a resulset to a geojson file
+     *
      * @param progress
      * @param rs
      * @param fos
@@ -170,7 +167,7 @@ public class GeoJsonWriteDriver {
      * @throws SQLException
      * @throws IOException
      */
-    private void geojsonWriter(ProgressVisitor progress, ResultSet rs, OutputStream fos , String encoding) throws SQLException, IOException {
+    private void geojsonWriter(ProgressVisitor progress, ResultSet rs, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding = JsonEncoding.UTF8;
         if (encoding != null && !encoding.isEmpty()) {
             try {
@@ -228,7 +225,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Method to write a table  to a geojson file
+     * Method to write a table to a geojson file
      *
      * @param progress
      * @param tableName
@@ -237,8 +234,8 @@ public class GeoJsonWriteDriver {
      * @throws SQLException
      * @throws IOException
      */
-    private void geojsonWriter(ProgressVisitor progress, String tableName, OutputStream fos , String encoding) throws SQLException, IOException {
-        JsonEncoding jsonEncoding =  JsonEncoding.UTF8;
+    private void geojsonWriter(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
+        JsonEncoding jsonEncoding = JsonEncoding.UTF8;
         if (encoding != null) {
             try {
                 jsonEncoding = JsonEncoding.valueOf(encoding);
@@ -255,7 +252,7 @@ public class GeoJsonWriteDriver {
                 Tuple<String, Integer> geometryTableInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, parse);
 
                 try ( // Read table content
-                      Statement st = connection.createStatement()) {
+                        Statement st = connection.createStatement()) {
                     JsonFactory jsonFactory = new JsonFactory();
                     JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
 
@@ -286,7 +283,7 @@ public class GeoJsonWriteDriver {
                     }
                 }
             }
-        }  finally {
+        } finally {
             try {
                 if (fos != null) {
                     fos.close();
@@ -296,15 +293,13 @@ public class GeoJsonWriteDriver {
             }
         }
     }
+
     public void write(ProgressVisitor progress, String tableName, File fileName, String encoding) throws SQLException, IOException {
-        write( progress,  tableName,  fileName,  encoding, false);
+        write(progress, tableName, fileName, encoding, false);
     }
 
-
-
-
     public void write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFile) throws SQLException, IOException {
-        write( progress,  tableName,  fileName,  null, deleteFile);
+        write(progress, tableName, fileName, null, deleteFile);
     }
 
     /**
@@ -335,46 +330,45 @@ public class GeoJsonWriteDriver {
                     Files.deleteIfExists(fileName.toPath());
                 }
                 geojsonWriter(progress, tableName, new FileOutputStream(fileName), encoding);
-            }
-            else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
-                    if (deleteFile) {
-                        Files.deleteIfExists(fileName.toPath());
-                    }
-                    GZIPOutputStream gzos = null;
-                    try{
-                        FileOutputStream fos = new FileOutputStream(fileName);
-                        gzos =  new GZIPOutputStream(fos) ;
-                        geojsonWriter(progress, tableName, gzos, encoding);
-                    } finally {
-                        try {
-                            if (gzos != null) {
-                                gzos.close();
-                            }
-                        } catch (IOException ex) {
-                            throw new SQLException(ex);
-                        }
-                    }
-                } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
-                    if (deleteFile) {
-                        Files.deleteIfExists(fileName.toPath());
-                    }
-                    ZipOutputStream zip = null;
-                    try{
-                        FileOutputStream fos = new FileOutputStream(fileName);
-                        zip =  new ZipOutputStream(fos) ;
-                        geojsonWriter(progress, tableName, zip, encoding);
-                    } finally {
-                        try {
-                            if (zip != null) {
-                                zip.close();
-                            }
-                        } catch (IOException ex) {
-                            throw new SQLException(ex);
-                        }
-                    }
-                }else {
-                    throw new SQLException("Only .geojson , .gz or .zip extensions are supported");
+            } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+                if (deleteFile) {
+                    Files.deleteIfExists(fileName.toPath());
                 }
+                GZIPOutputStream gzos = null;
+                try {
+                    FileOutputStream fos = new FileOutputStream(fileName);
+                    gzos = new GZIPOutputStream(fos);
+                    geojsonWriter(progress, tableName, gzos, encoding);
+                } finally {
+                    try {
+                        if (gzos != null) {
+                            gzos.close();
+                        }
+                    } catch (IOException ex) {
+                        throw new SQLException(ex);
+                    }
+                }
+            } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+                if (deleteFile) {
+                    Files.deleteIfExists(fileName.toPath());
+                }
+                ZipOutputStream zip = null;
+                try {
+                    FileOutputStream fos = new FileOutputStream(fileName);
+                    zip = new ZipOutputStream(fos);
+                    geojsonWriter(progress, tableName, zip, encoding);
+                } finally {
+                    try {
+                        if (zip != null) {
+                            zip.close();
+                        }
+                    } catch (IOException ex) {
+                        throw new SQLException(ex);
+                    }
+                }
+            } else {
+                throw new SQLException("Only .geojson , .gz or .zip extensions are supported");
+            }
         }
     }
 
@@ -432,7 +426,7 @@ public class GeoJsonWriteDriver {
 
     /**
      * Write a JTS geometry to its GeoJSON geometry representation.
-     * 
+     *
      * Syntax:
      *
      * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}
@@ -440,7 +434,7 @@ public class GeoJsonWriteDriver {
      * @param geom
      * @param gen
      */
-    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {       
+    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {
         if (geom != null) {
             gen.writeObjectFieldStart("geometry");
             if (geom instanceof Point) {
@@ -464,7 +458,7 @@ public class GeoJsonWriteDriver {
         } else {
             gen.writeNullField("geometry");
         }
-        
+
     }
 
     /**
@@ -571,7 +565,7 @@ public class GeoJsonWriteDriver {
             } else {
                 throw new RuntimeException("Unsupported Geomery type");
             }
-             gen.writeEndObject();
+            gen.writeEndObject();
         }
         gen.writeEndArray();
     }
@@ -688,7 +682,7 @@ public class GeoJsonWriteDriver {
                     jsonGenerator.writeArrayFieldStart(string);
                     writeArray(jsonGenerator, array, true);
                     jsonGenerator.writeEndArray();
-                } else if (rs.getObject(fieldId) != null && rs.getObject(fieldId).equals("{}")){
+                } else if (rs.getObject(fieldId) != null && rs.getObject(fieldId).equals("{}")) {
                     jsonGenerator.writeObjectFieldStart(string);
                     jsonGenerator.writeEndObject();
                 } else if (rs.getObject(fieldId) == "null") {
@@ -725,9 +719,9 @@ public class GeoJsonWriteDriver {
             case Types.ARRAY:
             case Types.OTHER:
             case Types.DECIMAL:
-            case Types.REAL:  
-            case Types.TINYINT: 
-            case Types.NUMERIC: 
+            case Types.REAL:
+            case Types.TINYINT:
+            case Types.NUMERIC:
             case Types.NULL:
                 return true;
             default:
@@ -763,10 +757,10 @@ public class GeoJsonWriteDriver {
      * @throw IOException
      */
     private void writeArray(JsonGenerator jsonGenerator, Object[] array, boolean firstInHierarchy) throws IOException, SQLException {
-        if(!firstInHierarchy) {
+        if (!firstInHierarchy) {
             jsonGenerator.writeStartArray();
         }
-        for(int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             if (array[i] instanceof Integer) {
                 jsonGenerator.writeNumber((int) array[i]);
             } else if (array[i] instanceof String) {
@@ -784,7 +778,7 @@ public class GeoJsonWriteDriver {
                 writeArray(jsonGenerator, (Object[]) array[i], false);
             }
         }
-        if(!firstInHierarchy) {
+        if (!firstInHierarchy) {
             jsonGenerator.writeEndArray();
         }
     }

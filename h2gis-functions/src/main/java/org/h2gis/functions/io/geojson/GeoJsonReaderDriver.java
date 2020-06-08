@@ -25,7 +25,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
@@ -33,12 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.channels.FileChannel;
-import java.nio.file.FileSystems;
 import java.sql.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
 
 /**
  * Driver to import a GeoJSON file into a spatial table.
@@ -99,8 +95,8 @@ public class GeoJsonReaderDriver {
     public GeoJsonReaderDriver(Connection connection, File fileName, String encoding, boolean deleteTable) {
         this.connection = connection;
         this.fileName = fileName;
-        this.encoding=encoding;
-        this.deleteTable=deleteTable;
+        this.encoding = encoding;
+        this.deleteTable = deleteTable;
     }
 
     /**
@@ -112,13 +108,13 @@ public class GeoJsonReaderDriver {
      * @throws java.io.IOException
      */
     public void read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
-        if (fileName!=null && fileName.getName().toLowerCase().endsWith(".geojson")) {
-            if(!fileName.exists()){
+        if (fileName != null && fileName.getName().toLowerCase().endsWith(".geojson")) {
+            if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.tableLocation = TableLocation.parse(tableReference, isH2);
-            if(deleteTable){
+            if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
                 stmt.close();
@@ -128,14 +124,13 @@ public class GeoJsonReaderDriver {
             } else {
                 JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
             }
-        }
-        else if(fileName!=null && fileName.getName().toLowerCase().endsWith(".gz")){
-            if(!fileName.exists()){
+        } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
+            if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.tableLocation = TableLocation.parse(tableReference, isH2);
-            if(deleteTable){
+            if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
                 stmt.close();
@@ -158,7 +153,7 @@ public class GeoJsonReaderDriver {
             } else {
                 JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
             }
-        }else {
+        } else {
             throw new SQLException("The geojson read driver supports only geojson or gz extensions");
         }
     }
@@ -190,7 +185,7 @@ public class GeoJsonReaderDriver {
      */
     private void parseGeoJson(ProgressVisitor progress) throws SQLException, IOException {
         this.progress = progress.subProcess(100);
-        init();  ;
+        init();;
         if (parseMetadata(new FileInputStream(fileName))) {
             connection.setAutoCommit(false);
             GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
@@ -213,7 +208,7 @@ public class GeoJsonReaderDriver {
         try {
             cachedColumnNames = new LinkedHashMap<>();
             finalGeometryTypes = new HashSet<String>();
-            try (JsonParser jp = jsFactory.createParser( new InputStreamReader(is, jsonEncoding.getJavaName()))) {
+            try (JsonParser jp = jsFactory.createParser(new InputStreamReader(is, jsonEncoding.getJavaName()))) {
                 jp.nextToken();//START_OBJECT
                 jp.nextToken(); // field_name (type)
                 jp.nextToken(); // value_string (FeatureCollection)
@@ -706,9 +701,9 @@ public class GeoJsonReaderDriver {
                         break;
                     case VALUE_TRUE:
                     case VALUE_FALSE:
-                        if (!hasField|| dataType == Types.NULL) {
+                        if (!hasField || dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.BOOLEAN);
-                        }  else if (hasField && dataType != Types.BOOLEAN) {
+                        } else if (hasField && dataType != Types.BOOLEAN) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         break;
@@ -724,14 +719,14 @@ public class GeoJsonReaderDriver {
                         }
                         break;
                     case VALUE_NUMBER_INT:
-                        if (!hasField|| dataType == Types.NULL) {
+                        if (!hasField || dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.BIGINT);
                         } else if (hasField && dataType != Types.BIGINT) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         break;
                     case START_ARRAY:
-                        if (!hasField|| dataType == Types.NULL) {
+                        if (!hasField || dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.ARRAY);
                         } else if (hasField && dataType != Types.ARRAY) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
