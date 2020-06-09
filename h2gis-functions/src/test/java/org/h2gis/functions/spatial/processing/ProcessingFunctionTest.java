@@ -626,7 +626,7 @@ public class ProcessingFunctionTest {
         Geometry pols = (Geometry) rs.getObject(1);
         for (int i = 0; i < pols.getNumGeometries(); i++) {
             Geometry pol = pols.getGeometryN(i);
-            assertTrue(ST_CoordDim.getCoordinateDimension(ValueGeometry.getFromGeometry(pol).getBytesNoCopy()) == 2);
+            assertTrue(ST_CoordDim.getCoordinateDimension(pol) == 2);
         }
         rs.close();
     }
@@ -638,8 +638,7 @@ public class ProcessingFunctionTest {
         Geometry pols = (Geometry) rs.getObject(1);
         for (int i = 0; i < pols.getNumGeometries(); i++) {
             Geometry pol = pols.getGeometryN(i);
-            assertTrue(ST_CoordDim.getCoordinateDimension(
-                    ValueGeometry.getFromGeometry(pol).getBytesNoCopy()) == 2);
+            assertTrue(ST_CoordDim.getCoordinateDimension(pol) == 2);
         }
         rs.close();
     }

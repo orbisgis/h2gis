@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.properties;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
+import org.locationtech.jts.geom.Geometry;
 
 import java.io.IOException;
 
@@ -46,7 +47,7 @@ public class ST_GeometryTypeCode extends DeterministicScalarFunction {
      * @return Returns the OGC SFS {@link org.h2gis.utilities.GeometryTypeCodes} of a Geometry. This function does not take account of Z nor M.
      * @throws IOException WKB is not valid.
      */
-    public static Integer getTypeCode(byte[] geometry) throws IOException {
+    public static Integer getTypeCode(Geometry geometry) throws IOException {
         if(geometry == null) {
             return null;
         }

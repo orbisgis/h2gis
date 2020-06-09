@@ -19,10 +19,15 @@
  */
 package org.h2gis.utilities;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.h2.value.ValueGeometry;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ByteArrayInStream;
+import org.locationtech.jts.io.ByteOrderDataInStream;
+import org.locationtech.jts.io.ByteOrderValues;
+import org.locationtech.jts.io.WKBConstants;
 
 /**
  * Extract Geometry MetaData from various geometry signatures
@@ -62,6 +67,21 @@ public class GeometryMetaData {
      * EPSG code
      */
     public int SRID = 0;
+
+    /**
+     * Geometry type mask that indicates presence of dimension Z.
+     */
+    public static final int EWKB_Z = 0x8000_0000;
+
+    /**
+     * Geometry type mask that indicates presence of dimension M.
+     */
+    public static final int EWKB_M = 0x4000_0000;
+
+    /**
+     * Geometry type mask that indicates presence of SRID.
+     */
+    public static final int EWKB_SRID = 0x2000_0000;
 
     /**
      * 0-based type names of geometries, subtract 1 from type code to get index
@@ -144,10 +164,13 @@ public class GeometryMetaData {
             sfs_geometryType = geometryType;
             if (hasM && hasZ) {
                 geometryType += "ZM";
+                dimension = 4;
             } else if (hasZ) {
                 geometryType += "Z";
+                dimension = 3;
             } else if (hasM) {
                 geometryType += "M";
+                dimension = 3;
             }
         }
     }
@@ -210,35 +233,74 @@ public class GeometryMetaData {
         return hasZ;
     }
 
+    /**
+     * Set SFS type code
+     * @param sfs_geometryTypeCode
+     */
+    public void setSfs_geometryTypeCode(int sfs_geometryTypeCode) {
+        this.sfs_geometryTypeCode = sfs_geometryTypeCode;
+    }
+
+    /**
+     * Get SFS type code
+     * @return
+     */
     public String getSfs_geometryType() {
         return sfs_geometryType;
     }
 
+    /**
+     * Set the dimension of the geometry
+     * @param dimension
+     */
     public void setDimension(int dimension) {
         this.dimension = dimension;
     }
 
+    /**
+     * Set full geometry type with +1000
+     * @param geometryTypeCode
+     */
     public void setGeometryTypeCode(int geometryTypeCode) {
         this.geometryTypeCode = geometryTypeCode;
         this.sfs_geometryTypeCode = geometryTypeCode % 1_000;
     }
 
+    /**
+     * Set the geometry type name
+     * @param geometryType
+     */
     public void setGeometryType(String geometryType) {
         this.geometryType = geometryType;
     }
 
+    /**
+     * Set the SRID
+     * @param SRID
+     */
     public void setSRID(int SRID) {
         this.SRID = SRID;
     }
 
+    /**
+     * Set the SFS geometry type name
+     * @param sfs_geometryType
+     */
     public void setSfs_geometryType(String sfs_geometryType) {
         this.sfs_geometryType = sfs_geometryType;
     }
 
+    /**
+     * True is geometry has M
+     * @param hasM
+     */
     public void setHasM(boolean hasM) {
         this.hasM = hasM;
     }
-
+    /**
+     * True is geometry has Z
+     * @param hasZ
+     */
     public void setHasZ(boolean hasZ) {
         this.hasZ = hasZ;
     }
@@ -262,13 +324,38 @@ public class GeometryMetaData {
 
     /**
      * Read the first bytes of Geometry WKB.
-     *
+     * Note this method read the SRID from the EWKB mask
+     * It's better to use getMetaData(geometry) to get all metadata
      * @param bytes WKB Bytes
      * @return Geometry MetaData
+     * @throws IOException If WKB meta is invalid (do not check the Geometry)
      */
-    public static GeometryMetaData getMetaData(byte[] bytes) {
-        ValueGeometry valueGeometry = ValueGeometry.get(bytes);
-        return new GeometryMetaData(valueGeometry);
+    public static GeometryMetaData getMetaData(byte[] bytes)  {
+        try {
+            ByteOrderDataInStream dis = new ByteOrderDataInStream();
+            dis.setInStream(new ByteArrayInStream(bytes));
+            // determine byte order
+            byte byteOrderWKB = dis.readByte();
+            // always set byte order, since it may change from geometry to geometry
+            int byteOrder = byteOrderWKB == WKBConstants.wkbNDR ? ByteOrderValues.LITTLE_ENDIAN : ByteOrderValues.BIG_ENDIAN;
+            dis.setOrder(byteOrder);
+            int typeInt = dis.readInt();
+            int geometryType = typeInt & 0xff;
+            //From H2
+            boolean hasZ = (typeInt & EWKB_Z) != 0;
+            boolean hasM = (typeInt & EWKB_M) != 0;
+            int srid = (typeInt & EWKB_SRID) != 0 ? dis.readInt() : 0;
+            GeometryMetaData geomMet = new GeometryMetaData();
+            geomMet.setHasM(hasM);
+            geomMet.setHasZ(hasZ);
+            geomMet.setSRID(srid);
+            geomMet.setSfs_geometryTypeCode(geometryType);
+            geomMet.initGeometryType();
+
+            return geomMet;
+        }catch (IOException ex) {
+            throw new RuntimeException("Cannot read the geometry metadata");
+        }
     }
 
     /**
@@ -324,7 +411,6 @@ public class GeometryMetaData {
      * as defined in SQL/MM specification. SQL-MM 3: 5.1.4 and OGC SFS 1.2
      *
      * @param type : geometry type
-     * @param srid : srid value
      * @return GeometryMetaData
      */
     private static GeometryMetaData createMetadataFromGeometryType(String type) {
