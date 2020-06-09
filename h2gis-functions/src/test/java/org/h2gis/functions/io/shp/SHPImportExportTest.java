@@ -837,10 +837,10 @@ public class SHPImportExportTest {
     @Disabled
     @Test
     public void testSelectWriteReadPostGIS() throws Exception {
-        String url = "jdbc:postgresql://149.202.221.161:5432/?";
+        String url = "jdbc:postgresql://?/?";
         Properties props = new Properties();
-        props.setProperty("user", "erwan");
-        props.setProperty("password", "th@l@ss@56");
+        props.setProperty("user", "");
+        props.setProperty("password","" );
         props.setProperty("url", url);
         DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         DataSource ds = dataSourceFactory.createDataSource(props);
