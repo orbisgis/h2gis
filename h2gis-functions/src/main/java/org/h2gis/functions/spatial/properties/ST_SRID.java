@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.properties;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
+import org.locationtech.jts.geom.Geometry;
 
 import java.io.IOException;
 
@@ -48,7 +49,7 @@ public class ST_SRID extends DeterministicScalarFunction {
      * @return SRID value or 0 if input geometry does not have one.
      * @throws IOException
      */
-    public static Integer getSRID(byte[] geometry) throws IOException {
+    public static Integer getSRID(Geometry geometry) throws IOException {
         if(geometry==null) {
             return 0;
         }

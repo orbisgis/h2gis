@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.properties;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
+import org.locationtech.jts.geom.Geometry;
 
 import java.io.IOException;
 
@@ -49,7 +50,7 @@ public class ST_CoordDim extends DeterministicScalarFunction {
      * @return The dimension of the coordinates of the given geometry
      * @throws IOException
      */
-    public static Integer getCoordinateDimension(byte[] geom) throws IOException {
+    public static Integer getCoordinateDimension(Geometry geom) throws IOException {
         if (geom == null) {
             return null;
         }

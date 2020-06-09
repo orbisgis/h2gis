@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.properties;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
+import org.locationtech.jts.geom.Geometry;
 
 import java.io.IOException;
 
@@ -50,7 +51,7 @@ public class ST_Is3D extends DeterministicScalarFunction{
      * @return
      * @throws IOException 
      */
-    public static int is3D(byte[] geom) throws IOException {
+    public static int is3D(Geometry geom) throws IOException {
          if (geom == null) {
             return 0;
         }

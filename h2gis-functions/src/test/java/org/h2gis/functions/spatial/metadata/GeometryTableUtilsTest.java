@@ -722,5 +722,33 @@ public class GeometryTableUtilsTest {
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
     }
 
+    @Test
+    public void testGetMetadataFromGeometry() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS POINT3D");
+        st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY(POINTZ, 4326))");
+        st.execute("insert into POINT3D VALUES(1, 'SRID=4326;POINTZ(0 0 0)')");
+        ResultSet resultSet = st.executeQuery("SELECT THE_GEOM FROM POINT3D");
+        resultSet.next();
+        GeometryMetaData geomMet = GeometryMetaData.getMetaData((Geometry) resultSet.getObject(1));
+        assertEquals(4326, geomMet.SRID);
+        assertEquals(3, geomMet.dimension);
+        assertFalse(geomMet.hasM);
+        assertTrue(geomMet.hasZ);
+        assertEquals("POINTZ", geomMet.geometryType);
+        assertEquals(GeometryTypeCodes.POINTZ, geomMet.geometryTypeCode);
+        st.execute("DROP TABLE IF EXISTS POINT3D");
+        st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
+        st.execute("insert into POINT3D VALUES(1, 'SRID=4326;POINTM(0 0 0)')");
+        resultSet = st.executeQuery("SELECT THE_GEOM FROM POINT3D");
+        resultSet.next();
+        geomMet = GeometryMetaData.getMetaData((Geometry) resultSet.getObject(1));
+        assertEquals(4326, geomMet.SRID);
+        assertEquals(3, geomMet.dimension);
+        assertTrue(geomMet.hasM);
+        assertFalse(geomMet.hasZ);
+        assertEquals("POINTM", geomMet.geometryType);
+        assertEquals(GeometryTypeCodes.POINTM, geomMet.geometryTypeCode);
+    }
+
 
 }

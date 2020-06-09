@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.properties;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Return the type of geometry : ST_POINT, ST_LINESTRING, ST_POLYGON...
@@ -47,7 +48,7 @@ public class ST_GeometryType extends DeterministicScalarFunction {
      * @param geometry Geometry instance
      * @return Geometry type for a user-defined type defined in SQL/MM specification. SQL-MM 3: 5.1.4
      */
-    public static String getGeometryType(byte[] geometry) {
+    public static String getGeometryType(Geometry geometry) {
         if(geometry==null) {
             return null;
         }

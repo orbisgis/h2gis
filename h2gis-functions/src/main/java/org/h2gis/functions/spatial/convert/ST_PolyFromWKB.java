@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2.value.ValueGeometry;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.GeometryMetaData;
@@ -68,16 +69,15 @@ public class ST_PolyFromWKB extends DeterministicScalarFunction {
         if(bytes==null) {
             return null;
         }
-        WKBReader wkbReader = new WKBReader();
-        try {
-            if(GeometryMetaData.getMetaData(bytes).geometryTypeCode != GeometryTypeCodes.POLYGON) {
-                throw new SQLException("Provided WKB is not a Polygon.");
-            }
-            Geometry geometry = wkbReader.read(bytes);
-            geometry.setSRID(srid);
-            return geometry;
-        } catch (ParseException ex) {
-            throw new SQLException("ParseException while evaluating ST_PolyFromWKB",ex);
+        if (bytes == null) {
+            return null;
         }
+        ValueGeometry valueGeometry = ValueGeometry.get(bytes);
+        if (valueGeometry.getTypeAndDimensionSystem() != GeometryTypeCodes.POLYGON) {
+            throw new SQLException("Provided WKB is not a POINT.");
+        }
+        Geometry geometry = valueGeometry.getGeometry();
+        geometry.setSRID(srid);
+        return geometry;
     }
 }
