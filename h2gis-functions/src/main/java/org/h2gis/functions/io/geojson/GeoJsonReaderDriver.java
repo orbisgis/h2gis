@@ -23,15 +23,19 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKBWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
@@ -51,7 +55,6 @@ import java.util.zip.GZIPInputStream;
  */
 public class GeoJsonReaderDriver {
 
-    private final static ArrayList<String> geomTypes;
     private final File fileName;
     private final Connection connection;
     private static GeometryFactory GF;
@@ -73,18 +76,9 @@ public class GeoJsonReaderDriver {
     private LinkedHashMap<String, Integer> cachedColumnIndex;
     private static final int BATCH_MAX_SIZE = 100;
 
-    static {
-        geomTypes = new ArrayList<String>();
-        geomTypes.add(GeoJsonField.POINT);
-        geomTypes.add(GeoJsonField.MULTIPOINT);
-        geomTypes.add(GeoJsonField.LINESTRING);
-        geomTypes.add(GeoJsonField.MULTILINESTRING);
-        geomTypes.add(GeoJsonField.POLYGON);
-        geomTypes.add(GeoJsonField.MULTIPOLYGON);
-
-    }
     private Set finalGeometryTypes;
     private JsonEncoding jsonEncoding;
+    private boolean hasZ =false;
 
     /**
      * Driver to import a GeoJSON file into a spatial table.
@@ -132,7 +126,7 @@ public class GeoJsonReaderDriver {
             this.tableLocation = TableLocation.parse(tableReference, isH2);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
+                stmt.execute("DROP TABLE IF EXISTS " + tableLocation.toString(isH2));
                 stmt.close();
             }
 
@@ -145,13 +139,12 @@ public class GeoJsonReaderDriver {
                     GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
                     fis = new FileInputStream(fileName);
                     parseData(new GZIPInputStream(fis));
-                    setGeometryTypeConstraints();
                     connection.setAutoCommit(true);
                 } else {
                     throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
                 }
             } else {
-                JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
+                JDBCUtilities.createEmptyTable(connection, tableLocation.toString(isH2));
             }
         } else {
             throw new SQLException("The geojson read driver supports only geojson or gz extensions");
@@ -185,12 +178,11 @@ public class GeoJsonReaderDriver {
      */
     private void parseGeoJson(ProgressVisitor progress) throws SQLException, IOException {
         this.progress = progress.subProcess(100);
-        init();;
+        init();
         if (parseMetadata(new FileInputStream(fileName))) {
             connection.setAutoCommit(false);
             GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
             parseData(new FileInputStream(fileName));
-            setGeometryTypeConstraints();
             connection.setAutoCommit(true);
 
         } else {
@@ -237,15 +229,20 @@ public class GeoJsonReaderDriver {
         if (hasGeometryField) {
             StringBuilder createTable = new StringBuilder();
             createTable.append("CREATE TABLE ");
-            createTable.append(tableLocation);
+            createTable.append(tableLocation.toString(isH2));
             createTable.append(" (");
-
             //Add the geometry column
-            createTable.append("THE_GEOM GEOMETRY(geometry,").append(parsedSRID).append(")");
-
+            String finalGeometryType = GeoJsonField.GEOMETRY;
+            if (finalGeometryTypes.size() == 1) {
+                finalGeometryType = (String) finalGeometryTypes.iterator().next();
+                createTable.append("THE_GEOM GEOMETRY(").append(hasZ?finalGeometryType+"Z":finalGeometryType).append(",").append(parsedSRID).append(")");
+            }
+            else{
+                createTable.append("THE_GEOM GEOMETRY(GEOMETRY,").append(parsedSRID).append(")");
+            }
             cachedColumnIndex = new LinkedHashMap<>();
             StringBuilder insertTable = new StringBuilder("INSERT INTO ");
-            insertTable.append(tableLocation).append(" VALUES(?");
+            insertTable.append(tableLocation.toString(isH2)).append(" VALUES(ST_GeomFromWKB(?, ").append(parsedSRID).append(")");
             int i = 1;
             for (Map.Entry<String, Integer> columns : cachedColumnNames.entrySet()) {
                 String columnName = columns.getKey();
@@ -655,6 +652,7 @@ public class GeoJsonReaderDriver {
         jp.nextToken();
         if (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             jp.nextToken(); // exit array
+            hasZ=true;
         }
         jp.nextToken();
     }
@@ -842,7 +840,8 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // FIELD_NAME type     
             jp.nextToken(); //VALUE_STRING Point
             String geometryType = jp.getText();
-            values[0] = parseGeometry(jp, geometryType);
+            Geometry geom = parseGeometry(jp, geometryType);
+            values[0] = ValueGeometry.getFromGeometry(geom).getBytesNoCopy();
         }
     }
 
@@ -900,7 +899,8 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
                 values[cachedColumnIndex.get(fieldName)] = jp.getValueAsDouble();
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getBigIntegerValue();
+                BigDecimal bigDecId = new BigDecimal(jp.getBigIntegerValue());
+                values[cachedColumnIndex.get(fieldName)] = bigDecId;
             } else if (value == JsonToken.START_ARRAY) {
                 ArrayList<Object> arrayList = parseArray(jp);
                 values[cachedColumnIndex.get(fieldName)] = arrayList.toArray();
@@ -954,7 +954,6 @@ public class GeoJsonReaderDriver {
                     for (int i = 0; i < values.length; i++) {
                         preparedStatement.setObject(i + 1, values[i]);
                     }
-
                     preparedStatement.addBatch();
                     batchSize++;
                     if (batchSize >= BATCH_MAX_SIZE) {
@@ -968,16 +967,20 @@ public class GeoJsonReaderDriver {
                     featureCounter++;
                     progress.setStep((int) ((featureCounter / nbFeature) * 100));
                     if (batchSize > 0) {
-                        preparedStatement.executeBatch();
-                        connection.commit();
-                        preparedStatement.clearBatch();
+                        try {
+                            preparedStatement.executeBatch();
+                            connection.commit();
+                            preparedStatement.clearBatch();
+                        }catch (SQLException ex){
+                            System.out.println(ex.getNextException());
+                        }
                     }
                 } else {
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
                 }
             }
             //LOOP END_ARRAY ]
-            log.info(featureCounter + " geojson features have been imported.");
+            log.info(featureCounter-1 + " geojson features have been imported.");
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'features', found '" + firstParam + "'");
         }
@@ -1262,7 +1265,11 @@ public class GeoJsonReaderDriver {
         //We look for a z value
         jp.nextToken();
         if (jp.getCurrentToken() == JsonToken.END_ARRAY) {
-            coord = new Coordinate(x, y);
+            if(hasZ) {
+                coord = new Coordinate(x, y, 0);
+            }else {
+                coord = new Coordinate(x, y);
+            }
         } else {
             double z = jp.getDoubleValue();
             jp.nextToken(); // exit array
@@ -1373,21 +1380,6 @@ public class GeoJsonReaderDriver {
         return jp.getText();
     }
 
-    /**
-     * Adds the geometry type constraint and the SRID
-     */
-    private void setGeometryTypeConstraints() throws SQLException {
-        String finalGeometryType = GeoJsonField.GEOMETRY;
-        if (finalGeometryTypes.size() == 1) {
-            finalGeometryType = (String) finalGeometryTypes.iterator().next();
-        }
-        if (isH2) {
-            finalGeometryType = GeoJsonField.GEOMETRY;//workaround for H2
-            connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom %s", tableLocation.toString(), finalGeometryType));
-        } else {
-            connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom SET DATA TYPE geometry(%s,%d)", tableLocation.toString(), finalGeometryType, parsedSRID));
-        }
-    }
 
     /**
      * Parses Json Array. Syntax: Json Array: {"member1": value1}, value2,

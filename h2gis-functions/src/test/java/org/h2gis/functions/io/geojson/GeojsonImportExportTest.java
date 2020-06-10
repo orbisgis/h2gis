@@ -25,16 +25,24 @@ import org.h2.util.StringUtils;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.junit.jupiter.api.*;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.*;
+import java.util.Properties;
+
 import org.h2gis.unitTest.GeometryAsserts;
+import org.osgi.service.jdbc.DataSourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,6 +56,7 @@ public class GeojsonImportExportTest {
     private static Connection connection;
     private static final String DB_NAME = "GeojsonExportTest";
     private static final WKTReader WKTREADER = new WKTReader();
+    private static final Logger log = LoggerFactory.getLogger(GeojsonImportExportTest.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -74,6 +83,19 @@ public class GeojsonImportExportTest {
             ResultSet res = stat.executeQuery("SELECT ST_AsGeoJSON(the_geom) from TABLE_POINT;");
             res.next();
             assertEquals("{\"type\":\"Point\",\"coordinates\":[1.0,2.0]}", res.getString(1));
+            res.close();
+        }
+    }
+
+    @Test
+    public void testGeojsonPointZ() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+            stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINTZ))");
+            stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2 3)')");
+            ResultSet res = stat.executeQuery("SELECT ST_AsGeoJSON(the_geom) from TABLE_POINT;");
+            res.next();
+            assertEquals("{\"type\":\"Point\",\"coordinates\":[1.0,2.0,3.0]}", res.getString(1));
             res.close();
         }
     }
@@ -209,6 +231,26 @@ public class GeojsonImportExportTest {
             assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
             res.next();
             assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        }
+    }
+
+    @Test
+    public void testWriteReadGeojsonPointZ() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+            stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINTZ))");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(1 2 3)')");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(10 200 2000)')");
+            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS');");
+            stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
+            res.next();
+            assertEquals(3,((Geometry) res.getObject(1)).getCoordinate().getZ());
+            res.next();
+            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());;
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
@@ -1012,6 +1054,61 @@ public class GeojsonImportExportTest {
         assertEquals("java.lang.String", metaData.getColumnClassName(10));
         assertEquals("java.lang.Long", metaData.getColumnClassName(11));
         assertEquals("java.lang.Double", metaData.getColumnClassName(12));
+    }
+
+
+    @Test
+    public void exportImportPointPostGIS(TestInfo testInfo) throws IOException, SQLException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con= null;
+        try {
+            DataSource ds  = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test "+ testInfo.getDisplayName());
+        }
+        if(con!=null){
+            Statement stat = con.createStatement();
+            File ouputFile = new File("target/punctual_export_postgis.geojson");
+            Files.deleteIfExists(ouputFile.toPath());
+            stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
+            stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINTZ, 4326))");
+            stat.execute("insert into punctual values(1, ST_GEOMFROMTEXT('POINT(-10 109 5)',4326))");
+            // Create a shape file using table area
+            GeoJsonDriverFunction driver = new GeoJsonDriverFunction();
+            driver.exportTable(con,"punctual", ouputFile,new EmptyProgressVisitor());
+            // Read this shape file to check values
+            assertTrue(ouputFile.exists());
+            stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
+            driver.importFile(con,  "IMPORT_PUNCTUAL", ouputFile, true, new EmptyProgressVisitor());
+            ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;");
+            res.next();
+            Geometry geom = (Geometry) res.getObject(1);
+            assertEquals(4326, geom.getSRID());
+            Coordinate coord = geom.getCoordinate();
+            assertEquals(coord.z, 5, 10E-1);
+            stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
+            res.close();
+        }
+    }
+
+    @Test
+    public void testSelectWrite() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();
+            GeometryAsserts.assertGeometryEquals("LINESTRING(1 10, 20 15)", res.getString("THE_GEOM"));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
     }
 }
 

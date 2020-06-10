@@ -22,22 +22,30 @@ package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
+
 import org.h2gis.unitTest.GeometryAsserts;
 import org.h2gis.utilities.JDBCUtilities;
+import org.osgi.service.jdbc.DataSourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,6 +53,9 @@ public class AscReaderDriverTest {
 
     private Connection connection;
     private static final String DB_NAME = "ASCRead_db";
+
+    private static final Logger log = LoggerFactory.getLogger(AscReaderDriverTest.class);
+
     @BeforeEach
     public void tearUp() throws Exception {
         connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase("/tmp/dbgis;AUTO_SERVER=TRUE", true, ""));
@@ -211,17 +222,13 @@ public class AscReaderDriverTest {
         reader.setExtractEnvelope(new Envelope(-178.242, -174.775, -89.707, -85.205));
         reader.setDeleteTable(true);
         reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
-
-
         // Check database content
-
         // Check number of extracted cells
         Statement st = connection.createStatement();
         try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
             assertTrue(rs.next());
             assertEquals(90, rs.getInt("CPT"));
         }
-
     }
 
     @Test
@@ -230,8 +237,6 @@ public class AscReaderDriverTest {
         reader.setDownScale(5);
         reader.setDeleteTable(true);
         reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
-
-
         // Check database content
 
         // Check number of extracted cells
@@ -270,9 +275,6 @@ public class AscReaderDriverTest {
             assertTrue(rs.next());
             assertEquals(90, rs.getInt("CPT"));
         }
-
-
-
         st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
         st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', NULL, 5, TRUE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
 
@@ -291,6 +293,37 @@ public class AscReaderDriverTest {
         try(ResultSet rs = st.executeQuery("SELECT the_geom  FROM PRECIP30MIN limit 1")) {
             assertTrue(rs.next());
             GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+        }
+    }
+
+    @Test
+    public void testReadPrecipEnvelopePOSTGIS(TestInfo testInfo) throws IOException, SQLException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            AscReaderDriver reader = new AscReaderDriver();
+            reader.setExtractEnvelope(new Envelope(-178.242, -174.775, -89.707, -85.205));
+            reader.setDeleteTable(true);
+            reader.read(con, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
+            // Check database content
+            // Check number of extracted cells
+            Statement st = con.createStatement();
+            try (ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
+                assertTrue(rs.next());
+                assertEquals(90, rs.getInt("CPT"));
+            }
         }
     }
 }

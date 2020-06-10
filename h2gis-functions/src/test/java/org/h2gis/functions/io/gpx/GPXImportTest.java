@@ -22,15 +22,24 @@ package org.h2gis.functions.io.gpx;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
+import org.osgi.service.jdbc.DataSourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,6 +52,7 @@ public class GPXImportTest {
     private static Connection connection;
     private static final String DB_NAME = "GPXImportTest";
     private Statement st;
+    private static final Logger log = LoggerFactory.getLogger(GPXImportTest.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -244,5 +254,42 @@ public class GPXImportTest {
         assertEquals("SRID=4326;POINT (-71.119277 42.438878)", rs.getString("the_geom"));
         assertEquals(4326, ((Geometry)rs.getObject("the_geom")).getSRID());
         rs.close();
+    }
+
+    @Test
+    public void importGPXWaypointsPOSTGIS(TestInfo testInfo) throws IOException, SQLException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con= null;
+        try {
+            DataSource ds  = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test "+ testInfo.getDisplayName());
+        }
+        if(con!=null) {
+            Statement statement = con.createStatement();
+            GPXDriverFunction gpxDriverFunction = new GPXDriverFunction();
+            gpxDriverFunction.importFile(con, "gpxdata", new File(GPXImportTest.class.getResource("waypoint.gpx").getPath()), true, new EmptyProgressVisitor());
+            ResultSet rs = statement.executeQuery("SELECT * FROM gpxdata_waypoint limit 1");
+            assertTrue(rs.next());
+            rs.close();
+            // Check number
+            rs = statement.executeQuery("SELECT count(id) FROM gpxdata_waypoint");
+            rs.next();
+            assertTrue(rs.getInt(1) == 3);
+            rs.close();
+            // Check content
+            rs = statement.executeQuery("SELECT * FROM gpxdata_waypoint");
+            assertTrue(rs.next());
+            assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
+            assertEquals(4326, ((Geometry) rs.getObject("the_geom")).getSRID());
+            rs.close();
+        }
     }
 }

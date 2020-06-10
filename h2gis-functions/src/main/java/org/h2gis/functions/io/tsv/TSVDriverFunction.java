@@ -141,7 +141,7 @@ public class TSVDriverFunction implements DriverFunction {
                             new ZipOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, new EmptyProgressVisitor());
+                            exportFromResultSet(connection, st.executeQuery(location.toString(isH2)), bw, encoding, new EmptyProgressVisitor());
                         }
                     }
                 } else {
@@ -161,7 +161,7 @@ public class TSVDriverFunction implements DriverFunction {
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, new EmptyProgressVisitor());
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, new EmptyProgressVisitor());
                     }
                 }
             } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
@@ -174,7 +174,7 @@ public class TSVDriverFunction implements DriverFunction {
                         new GZIPOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, new EmptyProgressVisitor());
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, new EmptyProgressVisitor());
                     }
                 }
             } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
@@ -187,7 +187,7 @@ public class TSVDriverFunction implements DriverFunction {
                         new ZipOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, new EmptyProgressVisitor());
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, new EmptyProgressVisitor());
                     }
                 }
             } else {

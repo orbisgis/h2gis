@@ -29,22 +29,31 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.SHPEngineTest;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.osgi.service.jdbc.DataSourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS, 2020
  */
 public class DBFImportExportTest {
     private static Connection connection;
     private static final String DB_NAME = "DBFImportExportTest";
+    private static final Logger log = LoggerFactory.getLogger(DBFImportExportTest.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -252,5 +261,44 @@ public class DBFImportExportTest {
         assertTrue(rsmd.getColumnCount()==0);
         assertTrue(!res.next());
         stat.close();
+    }
+
+    @Test
+    public void testWriteReadEmptyTablePOSTGIS(TestInfo testInfo) throws SQLException, IOException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            Statement stat = con.createStatement();
+            stat.execute("DROP TABLE IF EXISTS dbf_postgis");
+            stat.execute("create table dbf_postgis(idarea int primary key, val DOUBLE PRECISION, descr CHAR(50))");
+            stat.execute("insert into dbf_postgis values(1, 4.9406564584124654, 'main area')");
+            stat.execute("insert into dbf_postgis values(2, 2.2250738585072009, 'second area')");
+            // Create a dbf file using table area
+            DBFDriverFunction dbfDriverFunction =  new DBFDriverFunction();
+            dbfDriverFunction.exportTable(con, "dbf_postgis", new File("target/area_export.dbf"), true, new EmptyProgressVisitor());
+            dbfDriverFunction.importFile(con, "dbf_postgis_imported", new File("target/area_export.dbf"), true, new EmptyProgressVisitor());
+
+            ResultSet res = stat.executeQuery("SELECT * FROM dbf_postgis_imported");
+            assertTrue(res.next());
+            assertEquals(1, res.getInt("idarea"));
+            assertEquals(4.9406564584124654, res.getDouble("val"), 0.001);
+            assertEquals("main area", res.getString("descr"));
+            assertTrue(res.next());
+            assertEquals(2, res.getInt("idarea"));
+            assertEquals(2.2250738585072009, res.getDouble("val"), 0.001);
+            assertEquals("second area", res.getString("descr"));
+        }
     }
 }

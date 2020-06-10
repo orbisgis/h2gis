@@ -278,8 +278,8 @@ public class SHPDriverFunction implements DriverFunction {
                 final TableLocation parse;
                 int srid;
                 try (
-                        // Build CREATE TABLE sql request
-                        Statement st = connection.createStatement()) {
+                    // Build CREATE TABLE sql request
+                    Statement st = connection.createStatement()) {
                     String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2);
                     if (!types.isEmpty()) {
                         types = ", " + types;

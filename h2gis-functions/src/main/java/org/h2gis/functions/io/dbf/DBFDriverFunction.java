@@ -211,7 +211,7 @@ public class DBFDriverFunction implements DriverFunction {
     @Override
     public void importFile(Connection connection, String tableReference, File fileName,
                            boolean deleteTables,ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName,null, false, progress);
+        importFile(connection, tableReference, fileName,null, deleteTables, progress);
     }
 
     @Override

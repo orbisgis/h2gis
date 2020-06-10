@@ -27,7 +27,6 @@ import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 
