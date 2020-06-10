@@ -972,7 +972,7 @@ public class GeoJsonReaderDriver {
                             connection.commit();
                             preparedStatement.clearBatch();
                         }catch (SQLException ex){
-                            throw new SQLException(ex.getNextException()));
+                            throw new SQLException(ex.getNextException());
                         }
                     }
                 } else {
