@@ -32,10 +32,7 @@ import org.h2gis.functions.io.dbf.DBFWrite;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.internal.SHPDriver;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
@@ -51,6 +48,8 @@ import java.util.Properties;
 
 import org.h2gis.unitTest.GeometryAsserts;
 import org.osgi.service.jdbc.DataSourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
@@ -63,6 +62,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SHPImportExportTest {
     private static Connection connection;
     private static final String DB_NAME = "SHPImportTest";
+
+    private static final Logger log = LoggerFactory.getLogger(SHPImportExportTest.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -800,65 +801,79 @@ public class SHPImportExportTest {
         }
     }
 
-    @Disabled
     @Test
-    public void exportImportPointPostGIS() throws SQLException, IOException {
-        String url = "jdbc:postgresql://host:port/dbname";
+    public void exportImportPointPostGIS(TestInfo testInfo) throws SQLException, IOException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
         Properties props = new Properties();
-        props.setProperty("user", "");
-        props.setProperty("password", "");
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
         DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
-        DataSource ds = dataSourceFactory.createDataSource(props);
-        Connection con = ds.getConnection();
-        Statement stat = con.createStatement();
-        File shpFile = new File("target/punctual_export_postgis.shp");
-        Files.deleteIfExists(shpFile.toPath());
-        stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
-        stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINTZ, 4326))");
-        stat.execute("insert into punctual values(1, ST_GEOMFROMTEXT('POINT(-10 109 5)',4326))");
-        // Create a shape file using table area
-        SHPDriverFunction driver = new SHPDriverFunction();
-        driver.exportTable(con,"punctual", shpFile,new EmptyProgressVisitor());
-        // Read this shape file to check values
-        assertTrue(shpFile.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
-        driver.importFile(con,  "IMPORT_PUNCTUAL", shpFile, true, new EmptyProgressVisitor());
-        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;");
-        res.next();
-        Geometry geom = (Geometry) res.getObject(1);
-        assertEquals(4326, geom.getSRID());
-        Coordinate coord = geom.getCoordinate();
-        assertEquals(coord.z, 5, 10E-1);
-        stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
-        res.close();
+        Connection con= null;
+        try {
+            DataSource ds  = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test "+ testInfo.getDisplayName());
+        }
+        if(con!=null) {
+            Statement stat = con.createStatement();
+            File shpFile = new File("target/punctual_export_postgis.shp");
+            Files.deleteIfExists(shpFile.toPath());
+            stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
+            stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINTZ, 4326))");
+            stat.execute("insert into punctual values(1, ST_GEOMFROMTEXT('POINT(-10 109 5)',4326))");
+            // Create a shape file using table area
+            SHPDriverFunction driver = new SHPDriverFunction();
+            driver.exportTable(con, "punctual", shpFile, new EmptyProgressVisitor());
+            // Read this shape file to check values
+            assertTrue(shpFile.exists());
+            stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
+            driver.importFile(con, "IMPORT_PUNCTUAL", shpFile, true, new EmptyProgressVisitor());
+            ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;");
+            res.next();
+            Geometry geom = (Geometry) res.getObject(1);
+            assertEquals(4326, geom.getSRID());
+            Coordinate coord = geom.getCoordinate();
+            assertEquals(coord.z, 5, 10E-1);
+            stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
+            res.close();
+        }
     }
 
-    @Disabled
     @Test
-    public void testSelectWriteReadPostGIS() throws Exception {
-        String url = "jdbc:postgresql://?/?";
+    public void testSelectWriteReadPostGIS(TestInfo testInfo) throws Exception {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
         Properties props = new Properties();
-        props.setProperty("user", "");
-        props.setProperty("password","" );
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
         DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
-        DataSource ds = dataSourceFactory.createDataSource(props);
-        Connection con = ds.getConnection();
-        try (Statement stat = con.createStatement()) {
-            stat.execute(" DROP TABLE IF EXISTS orbisgis;"+
-                    "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));"+
-                    "INSERT INTO orbisgis VALUES (1, ST_GEOMFROMTEXT('POINT(10 10)',4326)), (2, ST_GEOMFROMTEXT('POINT(1 1)',4326)); ");
-            SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-            shpDriverFunction.exportTable(con,"(SELECT st_buffer(the_geom, 10) as the_geom from orbisgis)", new File("target/points.shp"), null, true , new EmptyProgressVisitor());
-            shpDriverFunction.importFile(con,"TABLE_POINTS_READ", new File("target/points.shp"), null, true , new EmptyProgressVisitor());
-            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
-            res.next();
-            Geometry geom = (Geometry) res.getObject("THE_GEOM");
-            assertEquals(4326, geom.getSRID());
-            GeometryAsserts.assertGeometryEquals("SRID=4326;MULTIPOLYGON (((0 9.999999999999968, 0.1921471959676886 11.950903220161248, 0.761204674887118 13.826834323650864, 1.685303876974526 15.55570233019599, 2.928932188134495 17.071067811865447, 4.444297669803942 18.314696123025428, 6.173165676349064 19.238795325112854, 8.049096779838678 19.807852804032297, 9.999999999999963 20, 11.950903220161248 19.80785280403231, 13.826834323650868 19.238795325112882, 15.555702330195995 18.31469612302547, 17.071067811865454 17.071067811865497, 18.31469612302544 15.555702330196045, 19.23879532511286 13.826834323650921, 19.8078528040323 11.950903220161305, 20 10, 19.807852804032308 8.049096779838719, 19.238795325112868 6.173165676349106, 18.314696123025456 4.444297669803983, 17.071067811865483 2.9289321881345307, 15.55570233019603 1.6853038769745528, 13.826834323650909 0.7612046748871375, 11.950903220161296 0.19214719596769747, 10.000000000000016 0, 8.049096779838735 0.19214719596769214, 6.173165676349122 0.7612046748871251, 4.444297669803995 1.6853038769745368, 2.9289321881345405 2.9289321881345085, 1.6853038769745616 4.444297669803957, 0.7612046748871428 6.173165676349077, 0.19214719596770102 8.049096779838688, 0 9.999999999999968)))",geom);
-            res.close();
-            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        Connection con= null;
+        try {
+            DataSource ds  = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test "+ testInfo.getDisplayName());
+        }
+        if(con!=null) {
+            try (Statement stat = con.createStatement()) {
+                stat.execute(" DROP TABLE IF EXISTS orbisgis;" +
+                        "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
+                        "INSERT INTO orbisgis VALUES (1, ST_GEOMFROMTEXT('POINT(10 10)',4326)), (2, ST_GEOMFROMTEXT('POINT(1 1)',4326)); ");
+                SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
+                shpDriverFunction.exportTable(con, "(SELECT st_buffer(the_geom, 10) as the_geom from orbisgis)", new File("target/points.shp"), null, true, new EmptyProgressVisitor());
+                shpDriverFunction.importFile(con, "TABLE_POINTS_READ", new File("target/points.shp"), null, true, new EmptyProgressVisitor());
+                ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
+                res.next();
+                Geometry geom = (Geometry) res.getObject("THE_GEOM");
+                assertEquals(4326, geom.getSRID());
+                GeometryAsserts.assertGeometryEquals("SRID=4326;MULTIPOLYGON (((0 9.999999999999968, 0.1921471959676886 11.950903220161248, 0.761204674887118 13.826834323650864, 1.685303876974526 15.55570233019599, 2.928932188134495 17.071067811865447, 4.444297669803942 18.314696123025428, 6.173165676349064 19.238795325112854, 8.049096779838678 19.807852804032297, 9.999999999999963 20, 11.950903220161248 19.80785280403231, 13.826834323650868 19.238795325112882, 15.555702330195995 18.31469612302547, 17.071067811865454 17.071067811865497, 18.31469612302544 15.555702330196045, 19.23879532511286 13.826834323650921, 19.8078528040323 11.950903220161305, 20 10, 19.807852804032308 8.049096779838719, 19.238795325112868 6.173165676349106, 18.314696123025456 4.444297669803983, 17.071067811865483 2.9289321881345307, 15.55570233019603 1.6853038769745528, 13.826834323650909 0.7612046748871375, 11.950903220161296 0.19214719596769747, 10.000000000000016 0, 8.049096779838735 0.19214719596769214, 6.173165676349122 0.7612046748871251, 4.444297669803995 1.6853038769745368, 2.9289321881345405 2.9289321881345085, 1.6853038769745616 4.444297669803957, 0.7612046748871428 6.173165676349077, 0.19214719596770102 8.049096779838688, 0 9.999999999999968)))", geom);
+                res.close();
+                stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+            }
         }
     }
     

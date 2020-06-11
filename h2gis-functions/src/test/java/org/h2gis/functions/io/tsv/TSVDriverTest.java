@@ -25,17 +25,22 @@ import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.*;
+import java.util.Properties;
+
 import org.h2gis.unitTest.GeometryAsserts;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.locationtech.jts.geom.Geometry;
+import org.osgi.service.jdbc.DataSourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
 
 /**
  *
@@ -46,6 +51,8 @@ public class TSVDriverTest {
     private static Connection connection;
     private static final String DB_NAME = "TSVImportExportTest";
     private Statement st;
+
+    private static final Logger log = LoggerFactory.getLogger(TSVDriverTest.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -190,7 +197,7 @@ public class TSVDriverTest {
 
     }
     
-     @Test
+    @Test
     public void testSelectWriteReadTSVLinestring() throws Exception {
         try (Statement stat = connection.createStatement()) {
              stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS, TABLE_LINESTRINGS_READ");
@@ -206,18 +213,40 @@ public class TSVDriverTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }
-    
+
     @Test
-    public void testSelectWrite() throws Exception {
-        try (Statement stat = connection.createStatement()) {
-            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
-            stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
-            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
-            res.next();
-            GeometryAsserts.assertGeometryEquals("LINESTRING(1 10, 20 15)", res.getString("THE_GEOM"));
-            res.close();
-            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+    public void testSelectWriteReadTSVLinestringPOSTGIS(TestInfo testInfo) throws Exception {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con= null;
+        try {
+            DataSource ds  = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test "+ testInfo.getDisplayName());
+        }
+        if(con!=null) {
+            try (Statement stat = con.createStatement()) {
+                stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS, TABLE_LINESTRINGS_READ");
+                stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
+                stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
+                TSVDriverFunction tsvDriverFunction = new TSVDriverFunction();
+                tsvDriverFunction.exportTable(con, "table_linestrings", new File("target/lines_postgis.tsv"),true, new EmptyProgressVisitor());
+                tsvDriverFunction.importFile(con, "table_linestrings_read", new File("target/lines_postgis.tsv"), true, new EmptyProgressVisitor());
+                ResultSet res = stat.executeQuery("SELECT * FROM table_linestrings_read;");
+                res.next();
+                GeometryAsserts.assertGeometryEquals("LINESTRING(1 10, 20 15)", res.getString("THE_GEOM"));
+                res.close();
+                stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+            }
         }
     }
+    
+
     
 }
