@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -22,9 +22,13 @@ package org.h2gis.functions.io.json;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -32,491 +36,292 @@ import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
  * JSON class to write a table or a resultset to a file
  * 
  * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS, Chaire GEOTERA, 2020)
  */
 public class JsonWriteDriver {
-    
-    private final Connection connection;
-    private final boolean deleteFile;
 
-    /**
-     * A JSON driver to write a  table to a JSON file.
-     *
-     * @param connection
-     */
-    public JsonWriteDriver(Connection connection, boolean deleteFile) {
-        this.connection = connection;
-        this.deleteFile=deleteFile;
-    }
+    /** Logger. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonWriteDriver.class);
     
     /**
      * Write a resulset to a json file
      * 
-     * @param progress
-     * @param resultSet
-     * @param file
-     * @throws SQLException
-     * @throws IOException
+     * @param progress    ProgressVisitor following the writing.
+     * @param rs          ResultSet containing the data to write.
+     * @param file        Destination file.
+     * @param deleteFile True if the destination files should be deleted, false otherwise.
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
      */
-    public void write(ProgressVisitor progress, ResultSet resultSet, File file) throws SQLException, IOException {
-        write(progress, resultSet, file, null);
+    public void write(ProgressVisitor progress, ResultSet rs, File file, boolean deleteFile) throws SQLException, IOException {
+        write(progress != null ? progress : new EmptyProgressVisitor(), rs, file, deleteFile, null);
     }
     /**
      * Write a resulset to a json file
      *
-     * @param progress
-     * @param rs input resulset
-     * @param fileName the output file
-     * @param encoding
-     * @throws SQLException
-     * @throws java.io.IOException
+     * @param progress   ProgressVisitor following the writing.
+     * @param rs         ResultSet containing the data to write.
+     * @param file       Destination file.
+     * @param deleteFile True if the destination files should be deleted, false otherwise.
+     * @param encoding   Encoding of the destination file.
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
      */
-    public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding) throws SQLException, IOException {
-        if (FileUtil.isExtensionWellFormated(fileName, "json")) {
-            jsonWrite(progress,  rs, new FileOutputStream(fileName),  encoding);
-        } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
-            if (deleteFile) {
-                Files.deleteIfExists(fileName.toPath());
+    public void write(ProgressVisitor progress, ResultSet rs, File file, boolean deleteFile, String encoding) throws SQLException, IOException {
+        if (deleteFile) {
+            if(!Files.deleteIfExists(file.toPath())){
+                LOGGER.warn("Unable to delete file '" + file.getAbsolutePath() + "'");
             }
-            GZIPOutputStream gzos = null;
-            try{
-                FileOutputStream fos = new FileOutputStream(fileName);
-                gzos =  new GZIPOutputStream(fos) ;
+        }
+        if (rs == null) {
+            throw new SQLException("The ResultSet to save is null or empty : no data to write.");
+        }
+        if (FileUtil.isExtensionWellFormated(file, "json")) {
+            try(FileOutputStream fos = new FileOutputStream(file)) {
+                jsonWrite(progress, rs, fos, encoding);
+            }
+        } else if (FileUtil.isExtensionWellFormated(file, "gz")) {
+            try(FileOutputStream fos = new FileOutputStream(file);
+                GZIPOutputStream gzos = new GZIPOutputStream(fos)){
                 jsonWrite(progress, rs, gzos, encoding);
-            } finally {
-                try {
-                    if (gzos != null) {
-                        gzos.close();
-                    }
-                } catch (IOException ex) {
-                    throw new SQLException(ex);
-                }
             }
-        } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
-            if (deleteFile) {
-                Files.deleteIfExists(fileName.toPath());
-            }
-            ZipOutputStream zip = null;
-            try {
-                FileOutputStream fos = new FileOutputStream(fileName);
-                zip = new ZipOutputStream(fos);
+        } else if (FileUtil.isExtensionWellFormated(file, "zip")) {
+            try (FileOutputStream fos = new FileOutputStream(file);
+                 ZipOutputStream zip = new ZipOutputStream(fos)) {
+                zip.putNextEntry(new ZipEntry(file.getName().substring(0, file.getName().length()-4)));
                 jsonWrite(progress, rs, zip, encoding);
-            } finally {
-                try {
-                    if (zip != null) {
-                        zip.close();
-                    }
-                } catch (IOException ex) {
-                    throw new SQLException(ex);
-                }
             }
         }else {
-            throw new SQLException("Only .json extension is supported");
+            throw new SQLException("Only .json, .gz, .zip extension is supported");
         }
     }    
     
     /**
      * Write the table to JSON format.
      *
-     * @param progress
-     * @param tableName
-     * @param fileName
-     * @throws SQLException
-     * @throws java.io.IOException
+     * @param progress    ProgressVisitor following the writing.
+     * @param nameOrQuery Name of the table to write or SQL query used to gather data to write.
+     * @param file        Destination file.
+     * @param deleteFile  True if the destination files should be deleted, false otherwise.
+     * @param encoding    Encoding of the destination file.
+     * @param connection  Connection to the database.
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
      */
-    public void write(ProgressVisitor progress,String tableName, File fileName, String encoding) throws SQLException, IOException {
+    public void write(ProgressVisitor progress, String nameOrQuery, File file, boolean deleteFile, String encoding,
+                      Connection connection) throws SQLException, IOException {
+        if(nameOrQuery == null) {
+            throw new SQLException("The select query or the table name must not be null.");
+        }
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(tableName);
+        Matcher matcher = pattern.matcher(nameOrQuery);
         if (matcher.find()) {
-            if (tableName.startsWith("(") && tableName.endsWith(")")) {
-                PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            if (nameOrQuery.startsWith("(") && nameOrQuery.endsWith(")")) {
+                PreparedStatement ps = connection.prepareStatement(
+                        nameOrQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = ps.executeQuery();
-                write(progress, resultSet, fileName, encoding);
+                write(progress, resultSet, file, deleteFile, encoding);
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }        
         } else {
-        if (FileUtil.isExtensionWellFormated(fileName, "json")) {
-            if(deleteFile){
-                Files.deleteIfExists(fileName.toPath());
+            TableLocation location = TableLocation.parse(nameOrQuery, JDBCUtilities.isH2DataBase(connection));
+            int recordCount = JDBCUtilities.getRowCount(connection, location);
+            if (recordCount > 0) {
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(String.format("SELECT * FROM %s", location.getTable()));
+                write(progress, rs, file, deleteFile, encoding);
             }
-            jsonWrite(progress, tableName, new FileOutputStream(fileName),encoding);
-
-        } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
-            if (deleteFile) {
-                Files.deleteIfExists(fileName.toPath());
-            }
-            GZIPOutputStream gzos = null;
-            try{
-                FileOutputStream fos = new FileOutputStream(fileName);
-                gzos =  new GZIPOutputStream(fos) ;
-                jsonWrite(progress, tableName, gzos, encoding);
-            } finally {
-                try {
-                    if (gzos != null) {
-                        gzos.close();
-                    }
-                } catch (IOException ex) {
-                    throw new SQLException(ex);
-                }
-            }
-        } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
-            if (deleteFile) {
-                Files.deleteIfExists(fileName.toPath());
-            }
-            ZipOutputStream zip = null;
-            try{
-                FileOutputStream fos = new FileOutputStream(fileName);
-                zip =  new ZipOutputStream(fos) ;
-                jsonWrite(progress, tableName, zip, encoding);
-            } finally {
-                try {
-                    if (zip != null) {
-                        zip.close();
-                    }
-                } catch (IOException ex) {
-                    throw new SQLException(ex);
-                }
-            }
-        }else {
-            throw new SQLException("Only .json, .gz and .zip extensions are supported");
         }
-    }
     }
 
     /**
      * Write a json resulset
-     * @param progress
-     * @param rs
-     * @param fos
-     * @param encoding
-     * @throws SQLException
-     * @throws IOException
+     *
+     * @param progress ProgressVisitor following the writing.
+     * @param os       OutputStream used for writing data.
+     * @param encoding Encoding of the destination file.
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
      */
-    private void jsonWrite(ProgressVisitor progress, ResultSet rs, OutputStream fos , String encoding) throws SQLException, IOException {
-        JsonEncoding jsonEncoding = JsonEncoding.UTF8;
-        if (encoding != null) {
-            try {
-                jsonEncoding = JsonEncoding.valueOf(encoding);
-            } catch (IllegalArgumentException ex) {
-                throw new SQLException("Only UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE encoding is supported");
-            }
+    private void jsonWrite(ProgressVisitor progress, ResultSet rs, OutputStream os, String encoding)
+            throws SQLException, IOException {
+        ProgressVisitor p = progress != null ? progress : new EmptyProgressVisitor();
+        JsonEncoding jsonEncoding = getEncoding(encoding);
+        int rowCount = 0;
+        int type = rs.getType();
+        if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
+            rs.last();
+            rowCount = rs.getRow();
+            rs.beforeFirst();
         }
-        try {
-            int rowCount = 0;
-            int type = rs.getType();
-            if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
-                rs.last();
-                rowCount = rs.getRow();
-                rs.beforeFirst();
-            }
-            ProgressVisitor copyProgress = progress.subProcess(rowCount);
-            try ( // Read table content
-                  Statement st = connection.createStatement()) {
-                JsonFactory jsonFactory = new JsonFactory();
-                JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
-                try {
-                    ResultSetMetaData rsmd = rs.getMetaData();
-                    int numColumns = rsmd.getColumnCount();
-                    while (rs.next()) {
-                        jsonGenerator.writeStartObject();
-                        for (int i = 1; i < numColumns + 1; i++) {
-                            String column_name = rsmd.getColumnName(i);
-                            switch (rsmd.getColumnType(i)) {
-                                case java.sql.Types.ARRAY:
-                                    Object[] values = (Object[]) rs.getArray(i).getArray();
-                                    if(values !=null){
-                                        jsonGenerator.writeArrayFieldStart(column_name);
-                                        for (Object value : values) {
-                                            jsonGenerator.writeObject(value);
-                                        }
-                                        jsonGenerator.writeEndArray();
-                                    }
-                                    break;
-                                case java.sql.Types.BIGINT:
-                                    jsonGenerator.writeObjectField(column_name, rs.getLong(i));
-                                    break;
-                                case java.sql.Types.REAL:
-                                    jsonGenerator.writeObjectField(column_name, rs.getFloat(i));
-                                    break;
-                                case java.sql.Types.BOOLEAN:
-                                    jsonGenerator.writeObjectField(column_name, rs.getBoolean(i));
-                                    break;
-                                case java.sql.Types.BLOB:
-                                    jsonGenerator.writeObjectField(column_name, rs.getBlob(i));
-                                    break;
-                                case java.sql.Types.DOUBLE:
-                                    jsonGenerator.writeObjectField(column_name, rs.getDouble(i));
-                                    break;
-                                case java.sql.Types.FLOAT:
-                                    jsonGenerator.writeObjectField(column_name, rs.getDouble(i));
-                                    break;
-                                case java.sql.Types.INTEGER:
-                                    jsonGenerator.writeObjectField(column_name, rs.getInt(i));
-                                    break;
-                                case java.sql.Types.NVARCHAR:
-                                    jsonGenerator.writeObjectField(column_name, rs.getNString(i));
-                                    break;
-                                case java.sql.Types.VARCHAR:
-                                    jsonGenerator.writeObjectField(column_name, rs.getString(i));
-                                    break;
-                                case java.sql.Types.CHAR:
-                                    jsonGenerator.writeObjectField(column_name, rs.getString(i));
-                                    break;
-                                case java.sql.Types.NCHAR:
-                                    jsonGenerator.writeObjectField(column_name, rs.getNString(i));
-                                    break;
-                                case java.sql.Types.LONGNVARCHAR:
-                                    jsonGenerator.writeObjectField(column_name, rs.getNString(i));
-                                    break;
-                                case java.sql.Types.LONGVARCHAR:
-                                    jsonGenerator.writeObjectField(column_name, rs.getString(i));
-                                    break;
-                                case java.sql.Types.TINYINT:
-                                    jsonGenerator.writeObjectField(column_name, rs.getByte(i));
-                                    break;
-                                case java.sql.Types.SMALLINT:
-                                    jsonGenerator.writeObjectField(column_name, rs.getShort(i));
-                                    break;
-                                case java.sql.Types.DATE:
-                                    jsonGenerator.writeObjectField(column_name, rs.getDate(i));
-                                    break;
-                                case java.sql.Types.TIME:
-                                    jsonGenerator.writeObjectField(column_name, rs.getTime(i));
-                                    break;
-                                case java.sql.Types.TIMESTAMP:
-                                    jsonGenerator.writeObjectField(column_name, rs.getTimestamp(i));
-                                    break;
-                                case java.sql.Types.BINARY:
-                                    jsonGenerator.writeObjectField(column_name, rs.getBytes(i));
-                                    break;
-                                case java.sql.Types.VARBINARY:
-                                    jsonGenerator.writeObjectField(column_name, rs.getBytes(i));
-                                    break;
-                                case java.sql.Types.LONGVARBINARY:
-                                    jsonGenerator.writeObjectField(column_name, rs.getBinaryStream(i));
-                                    break;
-                                case java.sql.Types.BIT:
-                                    jsonGenerator.writeObjectField(column_name, rs.getBoolean(i));
-                                    break;
-                                case java.sql.Types.CLOB:
-                                    jsonGenerator.writeObjectField(column_name, rs.getClob(i));
-                                    break;
-                                case java.sql.Types.NUMERIC:
-                                    jsonGenerator.writeObjectField(column_name, rs.getBigDecimal(i));
-                                    break;
-                                case java.sql.Types.DECIMAL:
-                                    jsonGenerator.writeObjectField(column_name, rs.getBigDecimal(i));
-                                    break;
-                                case java.sql.Types.DATALINK:
-                                    jsonGenerator.writeObjectField(column_name, rs.getURL(i));
-                                    break;
-                                case java.sql.Types.REF:
-                                    jsonGenerator.writeObjectField(column_name, rs.getRef(i));
-                                    break;
-                                case java.sql.Types.STRUCT:
-                                    jsonGenerator.writeObjectField(column_name, rs.getObject(i));
-                                    break;
-                                case java.sql.Types.DISTINCT:
-                                    jsonGenerator.writeObjectField(column_name, rs.getObject(i));
-                                    break;
-                                case java.sql.Types.JAVA_OBJECT:
-                                    jsonGenerator.writeObjectField(column_name, rs.getObject(i));
-                                    break;
-                                default:
-                                    jsonGenerator.writeObjectField(column_name, rs.getString(i));
-                                    break;
-                            }
-                        }
-                        jsonGenerator.writeEndObject();
+        ProgressVisitor copyProgress = p.subProcess(rowCount);
+        JsonFactory jsonFactory = new JsonFactory();
+        JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(os), jsonEncoding);
 
-                        copyProgress.endStep();
-                    }
-                    copyProgress.endOfProgress();
-                    jsonGenerator.flush();
-                    jsonGenerator.close();
-                } finally {
-                    rs.close();
-                }
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int numColumns = rsmd.getColumnCount();
+        while (rs.next()) {
+            jsonGenerator.writeStartObject();
+            for (int i = 1; i < numColumns + 1; i++) {
+                String columnName = rsmd.getColumnName(i);
+                int t = rsmd.getColumnType(i);
+                writeObject(t, rs, i, jsonGenerator, columnName);
             }
+            jsonGenerator.writeEndObject();
+            copyProgress.endStep();
+        }
+        copyProgress.endOfProgress();
+        jsonGenerator.flush();
+        jsonGenerator.close();
+    }
 
-        }  finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException ex) {
-                throw new SQLException(ex);
-            }
+    /**
+     * Detect the JsonEncoding from the given String encoding.
+     *
+     * @param encoding Encoding to decode.
+     * @return JsonEncoding.
+     */
+    private JsonEncoding getEncoding(String encoding) {
+        if(encoding == null) {
+            return JsonEncoding.UTF8;
+        }
+        switch(encoding.toUpperCase()){
+            default:
+                LOGGER.warn("Encoding '" + encoding + "' is not detected, use UTF-8 instead.");
+            case "UTF8":
+            case "UTF-8":
+                return JsonEncoding.UTF8;
+            case "UTF16":
+            case "UTF-16":
+            case "UTF16LE":
+            case "UTF-16LE":
+                return JsonEncoding.UTF16_LE;
+            case "UTF16BE":
+            case "UTF-16BE":
+                return JsonEncoding.UTF16_BE;
+            case "UTF32":
+            case "UTF-32":
+            case "UTF32LE":
+            case "UTF-32LE":
+                return JsonEncoding.UTF32_LE;
+            case "UTF32BE":
+            case "UTF-32BE":
+                return JsonEncoding.UTF32_BE;
         }
     }
 
-
-        /**
-         * Write a json table
-         * @param progress
-         * @param tableName
-         * @param fos
-         * @param encoding
-         * @throws SQLException
-         * @throws IOException
-         */
-    private void jsonWrite(ProgressVisitor progress, String tableName, OutputStream fos , String encoding) throws SQLException, IOException {
-        JsonEncoding jsonEncoding =  JsonEncoding.UTF8;
-        if (encoding != null) {
-            try {
-                jsonEncoding = JsonEncoding.valueOf(encoding);
-            } catch (IllegalArgumentException ex) {
-                throw new SQLException("Only UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE encoding is supported");
-            }
-        }
-            int recordCount = JDBCUtilities.getRowCount(connection, tableName);
-            if (recordCount > 0) {
-                try ( // Read table content
-                      Statement st = connection.createStatement()) {
-                    JsonFactory jsonFactory = new JsonFactory();
-                    JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
-                    ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
-                    try {
-                        ResultSetMetaData rsmd = rs.getMetaData();
-                        int numColumns = rsmd.getColumnCount();
-                        ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                        while (rs.next()) {
-                            jsonGenerator.writeStartObject();
-                            for (int i = 1; i < numColumns + 1; i++) {
-                                String column_name = rsmd.getColumnName(i);
-                                switch (rsmd.getColumnType(i)) {
-                                    case java.sql.Types.ARRAY:
-                                        Object[] values = (Object[]) rs.getArray(i).getArray();
-                                        if (values != null) {
-                                            jsonGenerator.writeArrayFieldStart(column_name);
-                                            for (Object value : values) {
-                                                jsonGenerator.writeObject(value);
-                                            }
-                                            jsonGenerator.writeEndArray();
-                                        }
-                                        break;
-                                    case java.sql.Types.BIGINT:
-                                        jsonGenerator.writeObjectField(column_name, rs.getLong(i));
-                                        break;
-                                    case java.sql.Types.REAL:
-                                        jsonGenerator.writeObjectField(column_name, rs.getFloat(i));
-                                        break;
-                                    case java.sql.Types.BOOLEAN:
-                                        jsonGenerator.writeObjectField(column_name, rs.getBoolean(i));
-                                        break;
-                                    case java.sql.Types.BLOB:
-                                        jsonGenerator.writeObjectField(column_name, rs.getBlob(i));
-                                        break;
-                                    case java.sql.Types.DOUBLE:
-                                        jsonGenerator.writeObjectField(column_name, rs.getDouble(i));
-                                        break;
-                                    case java.sql.Types.FLOAT:
-                                        jsonGenerator.writeObjectField(column_name, rs.getDouble(i));
-                                        break;
-                                    case java.sql.Types.INTEGER:
-                                        jsonGenerator.writeObjectField(column_name, rs.getInt(i));
-                                        break;
-                                    case java.sql.Types.NVARCHAR:
-                                        jsonGenerator.writeObjectField(column_name, rs.getNString(i));
-                                        break;
-                                    case java.sql.Types.VARCHAR:
-                                        jsonGenerator.writeObjectField(column_name, rs.getString(i));
-                                        break;
-                                    case java.sql.Types.CHAR:
-                                        jsonGenerator.writeObjectField(column_name, rs.getString(i));
-                                        break;
-                                    case java.sql.Types.NCHAR:
-                                        jsonGenerator.writeObjectField(column_name, rs.getNString(i));
-                                        break;
-                                    case java.sql.Types.LONGNVARCHAR:
-                                        jsonGenerator.writeObjectField(column_name, rs.getNString(i));
-                                        break;
-                                    case java.sql.Types.LONGVARCHAR:
-                                        jsonGenerator.writeObjectField(column_name, rs.getString(i));
-                                        break;
-                                    case java.sql.Types.TINYINT:
-                                        jsonGenerator.writeObjectField(column_name, rs.getByte(i));
-                                        break;
-                                    case java.sql.Types.SMALLINT:
-                                        jsonGenerator.writeObjectField(column_name, rs.getShort(i));
-                                        break;
-                                    case java.sql.Types.DATE:
-                                        jsonGenerator.writeObjectField(column_name, rs.getDate(i));
-                                        break;
-                                    case java.sql.Types.TIME:
-                                        jsonGenerator.writeObjectField(column_name, rs.getTime(i));
-                                        break;
-                                    case java.sql.Types.TIMESTAMP:
-                                        jsonGenerator.writeObjectField(column_name, rs.getTimestamp(i));
-                                        break;
-                                    case java.sql.Types.BINARY:
-                                        jsonGenerator.writeObjectField(column_name, rs.getBytes(i));
-                                        break;
-                                    case java.sql.Types.VARBINARY:
-                                        jsonGenerator.writeObjectField(column_name, rs.getBytes(i));
-                                        break;
-                                    case java.sql.Types.LONGVARBINARY:
-                                        jsonGenerator.writeObjectField(column_name, rs.getBinaryStream(i));
-                                        break;
-                                    case java.sql.Types.BIT:
-                                        jsonGenerator.writeObjectField(column_name, rs.getBoolean(i));
-                                        break;
-                                    case java.sql.Types.CLOB:
-                                        jsonGenerator.writeObjectField(column_name, rs.getClob(i));
-                                        break;
-                                    case java.sql.Types.NUMERIC:
-                                        jsonGenerator.writeObjectField(column_name, rs.getBigDecimal(i));
-                                        break;
-                                    case java.sql.Types.DECIMAL:
-                                        jsonGenerator.writeObjectField(column_name, rs.getBigDecimal(i));
-                                        break;
-                                    case java.sql.Types.DATALINK:
-                                        jsonGenerator.writeObjectField(column_name, rs.getURL(i));
-                                        break;
-                                    case java.sql.Types.REF:
-                                        jsonGenerator.writeObjectField(column_name, rs.getRef(i));
-                                        break;
-                                    case java.sql.Types.STRUCT:
-                                        jsonGenerator.writeObjectField(column_name, rs.getObject(i));
-                                        break;
-                                    case java.sql.Types.DISTINCT:
-                                        jsonGenerator.writeObjectField(column_name, rs.getObject(i));
-                                        break;
-                                    case java.sql.Types.JAVA_OBJECT:
-                                        jsonGenerator.writeObjectField(column_name, rs.getObject(i));
-                                        break;
-                                    default:
-                                        jsonGenerator.writeObjectField(column_name, rs.getString(i));
-                                        break;
-                                }
-                            }
-                            jsonGenerator.writeEndObject();
-
-                            copyProgress.endStep();
-                        }
-                        copyProgress.endOfProgress();
-                        jsonGenerator.flush();
-                        jsonGenerator.close();
-                    } finally {
-                        rs.close();
+    /**
+     * Write the object of the given ResultSet at the given index in the given column with the given type.
+     *
+     * @param type          Type of the data to write.
+     * @param rs            ResultSet containing the data to write.
+     * @param index         Index of the data to save.
+     * @param jsonGenerator JsonGenerator used to write data.
+     * @param columnName    Name of the column to write.
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
+     */
+    private void writeObject(int type, ResultSet rs, int index, JsonGenerator jsonGenerator, String columnName)
+            throws IOException, SQLException {
+        switch (type) {
+            case java.sql.Types.ARRAY:
+                Object[] values = (Object[]) rs.getArray(index).getArray();
+                if(values !=null){
+                    jsonGenerator.writeArrayFieldStart(columnName);
+                    for (Object value : values) {
+                        jsonGenerator.writeObject(value);
                     }
-
-                } finally {
-                    try {
-                        if (fos != null) {
-                            fos.close();
-                        }
-                    } catch (IOException ex) {
-                        throw new SQLException(ex);
-                    }
+                    jsonGenerator.writeEndArray();
                 }
-            }
+                break;
+            case java.sql.Types.BIGINT:
+                jsonGenerator.writeObjectField(columnName, rs.getLong(index));
+                break;
+            case java.sql.Types.REAL:
+                jsonGenerator.writeObjectField(columnName, rs.getFloat(index));
+                break;
+            case java.sql.Types.BOOLEAN:
+            case java.sql.Types.BIT:
+                jsonGenerator.writeObjectField(columnName, rs.getBoolean(index));
+                break;
+            case java.sql.Types.BLOB:
+                jsonGenerator.writeObjectField(columnName, rs.getBlob(index));
+                break;
+            case java.sql.Types.DOUBLE:
+            case java.sql.Types.FLOAT:
+                jsonGenerator.writeObjectField(columnName, rs.getDouble(index));
+                break;
+            case java.sql.Types.INTEGER:
+                jsonGenerator.writeObjectField(columnName, rs.getInt(index));
+                break;
+            case java.sql.Types.NVARCHAR:
+            case java.sql.Types.LONGNVARCHAR:
+            case java.sql.Types.NCHAR:
+                jsonGenerator.writeObjectField(columnName, rs.getNString(index));
+                break;
+            case java.sql.Types.TINYINT:
+                jsonGenerator.writeObjectField(columnName, rs.getByte(index));
+                break;
+            case java.sql.Types.SMALLINT:
+                jsonGenerator.writeObjectField(columnName, rs.getShort(index));
+                break;
+            case java.sql.Types.DATE:
+                jsonGenerator.writeObjectField(columnName, rs.getDate(index));
+                break;
+            case java.sql.Types.TIME:
+                jsonGenerator.writeObjectField(columnName, rs.getTime(index));
+                break;
+            case java.sql.Types.TIMESTAMP:
+                jsonGenerator.writeObjectField(columnName, rs.getTimestamp(index));
+                break;
+            case java.sql.Types.BINARY:
+                jsonGenerator.writeObjectField(columnName, rs.getBytes(index));
+                break;
+            case java.sql.Types.VARBINARY:
+                jsonGenerator.writeObjectField(columnName, rs.getBytes(index));
+                break;
+            case java.sql.Types.LONGVARBINARY:
+                jsonGenerator.writeObjectField(columnName, rs.getBinaryStream(index));
+                break;
+            case java.sql.Types.CLOB:
+                jsonGenerator.writeObjectField(columnName, rs.getClob(index));
+                break;
+            case java.sql.Types.NUMERIC:
+                jsonGenerator.writeObjectField(columnName, rs.getBigDecimal(index));
+                break;
+            case java.sql.Types.DECIMAL:
+                jsonGenerator.writeObjectField(columnName, rs.getBigDecimal(index));
+                break;
+            case java.sql.Types.DATALINK:
+                jsonGenerator.writeObjectField(columnName, rs.getURL(index));
+                break;
+            case java.sql.Types.REF:
+                jsonGenerator.writeObjectField(columnName, rs.getRef(index));
+                break;
+            case java.sql.Types.STRUCT:
+                jsonGenerator.writeObjectField(columnName, rs.getObject(index));
+                break;
+            case java.sql.Types.DISTINCT:
+                jsonGenerator.writeObjectField(columnName, rs.getObject(index));
+                break;
+            case java.sql.Types.JAVA_OBJECT:
+                jsonGenerator.writeObjectField(columnName, rs.getObject(index));
+                break;
+            case java.sql.Types.LONGVARCHAR:
+            case java.sql.Types.CHAR:
+            case java.sql.Types.VARCHAR:
+            default:
+                jsonGenerator.writeObjectField(columnName, rs.getString(index));
+                break;
+        }
     }
 }

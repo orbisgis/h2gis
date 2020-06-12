@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -30,7 +30,7 @@ import java.sql.SQLException;
 /**
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2019, Lab-STICC UBS, Chaire GEOTERA, 2020)
  */
 public class  JsonDriverFunction implements DriverFunction{
 
@@ -64,34 +64,27 @@ public class  JsonDriverFunction implements DriverFunction{
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName,  null, false,progress);
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName, null, false, progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName,  null, deleteFiles,progress);
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles,
+                            ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName, null, deleteFiles, progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        JsonWriteDriver jsonDriver = new JsonWriteDriver(connection, deleteFiles);
-        jsonDriver.write(progress,tableReference, fileName, options);
+    public void exportTable(Connection connection, String tableReference, File file, String options,
+                            boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        new JsonWriteDriver().write(progress, tableReference, file, deleteFiles, options, connection);
     }
 
-    /**
-     * Save a table or a query to JSON file
-     * @param connection
-     * @param tableReference
-     * @param fileName
-     * @param progress
-     * @param encoding
-     * @throws SQLException
-     * @throws IOException 
-     */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String encoding,ProgressVisitor progress) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName,  encoding, false,progress);
+    public void exportTable(Connection connection, String tableReference, File file, String encoding,
+                            ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection, tableReference, file, encoding,false, progress);
     }
 
     @Override
@@ -101,19 +94,20 @@ public class  JsonDriverFunction implements DriverFunction{
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options,ProgressVisitor progress
-                           ) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, String options,
+                           ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,  boolean deleteTables,ProgressVisitor progress
-                          ) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,  boolean deleteTables,
+                           ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, String options,
+                           boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -36,74 +36,79 @@ import java.sql.SQLException;
  * SQL function to write a table to a JSON file.
  * 
  * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS, Chaire GEOTERA, 2020)
  */
-public class JsonWrite extends AbstractFunction implements ScalarFunction{
+public class JsonWrite extends AbstractFunction implements ScalarFunction {
 
-    public JsonWrite(){
-         addProperty(PROP_REMARKS, "Export a table to a JSON file." +
-                 "\nJsonWrite(..."+
-                 "\n Supported arguments :" +
-                 "\n path of the file, table name"+
-                 "\n path of the file, table name, true to delete the file if exists"+
-                 "\n path of the file, table name, encoding chartset"+
-                 "\n path of the file, table name, encoding chartset, true to delete the file if exists");
+    public JsonWrite() {
+        addProperty(PROP_REMARKS, "Export a table to a JSON file." +
+                "\nJsonWrite(..." +
+                "\n Supported arguments :" +
+                "\n path of the file, table name" +
+                "\n path of the file, table name, true to delete the file if exists" +
+                "\n path of the file, table name, encoding chartset" +
+                "\n path of the file, table name, encoding chartset, true to delete the file if exists");
     }
-    
+
     @Override
     public String getJavaStaticMethod() {
         return "exportTable";
     }
-    
 
     /**
-     *
-     * @param connection
-     * @param fileName
-     * @param tableReference
-     * @param encoding
-     * @param deleteFile
-     * @throws IOException
-     * @throws SQLException
+     * @param connection     Connection to the database.
+     * @param fileName       Name of the destination file.
+     * @param tableReference Name of the table to export or select query.
+     *                       Note : The select query must be enclosed in parenthesis
+     * @param encoding       Encoding of the destination file.
+     * @param deleteFile     True if the destination files should be deleted, false otherwise.
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
      */
-    public static void exportTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFile) throws IOException, SQLException {
+    public static void exportTable(Connection connection, String fileName, String tableReference, String encoding,
+                                   boolean deleteFile) throws IOException, SQLException {
         JsonDriverFunction jsonDriver = new JsonDriverFunction();
-        jsonDriver.exportTable(connection,tableReference, URIUtilities.fileFromString(fileName),encoding, deleteFile, new EmptyProgressVisitor());
+        jsonDriver.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteFile,
+                new EmptyProgressVisitor());
     }
-    
-     /**
+
+    /**
      * Write the JSON file.
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
-     * @throws IOException
-     * @throws SQLException
+     * @param connection     Connection to the database.
+     * @param fileName       Name of the destination file.
+     * @param tableReference Name of the table to export or select query.
+     *                       Note : The select query must be enclosed in parenthesis
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
      */
-    public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        exportTable( connection,  fileName,  tableReference,  null, false);
+    public static void exportTable(Connection connection, String fileName, String tableReference)
+            throws SQLException, IOException {
+        exportTable(connection, fileName, tableReference, null, false);
     }
 
     /**
      * Read a table and write it into a json file.
-     * @param connection Active connection
-     * @param fileName Shape file name or URI
-     * @param tableReference Table name or select query
-     * Note : The select query must be enclosed in parenthesis
-     * @param option Could be string file encoding charset or boolean value to delete the existing file
-     * @throws IOException
-     * @throws SQLException
+     *
+     * @param connection     Connection to the database.
+     * @param fileName       Name of the destination file.
+     * @param tableReference Name of the table to export or select query.
+     *                       Note : The select query must be enclosed in parenthesis
+     * @param option         String file encoding charset or boolean value to delete the existing file.
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
      */
-    public static void exportTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
+    public static void exportTable(Connection connection, String fileName, String tableReference, Value option)
+            throws SQLException, IOException {
         String encoding = null;
         boolean deleteFiles = false;
-        if(option instanceof ValueBoolean){
+        if (option instanceof ValueBoolean) {
             deleteFiles = option.getBoolean();
-        }else if (option instanceof ValueVarchar){
+        } else if (option instanceof ValueVarchar) {
             encoding = option.getString();
-        }else if (!(option instanceof ValueNull)){
+        } else if (!(option instanceof ValueNull)) {
             throw new SQLException("Supported optional parameter is boolean or varchar");
         }
-        exportTable( connection,  fileName,  tableReference,  encoding,  deleteFiles);
+        exportTable(connection, fileName, tableReference, encoding, deleteFiles);
     }
-    
 }
