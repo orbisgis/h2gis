@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -41,7 +41,6 @@ import java.util.zip.GZIPInputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.locationtech.jts.geom.Geometry;
 
 /**
  *
@@ -84,8 +83,7 @@ public class JsonImportExportTest {
              stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
              ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
-             JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection, true );
-             jsonWriteDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.json"));
+             new JsonWriteDriver().write(new EmptyProgressVisitor(), rs, new File("target/result.json"), true);
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
              assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
@@ -98,8 +96,7 @@ public class JsonImportExportTest {
             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
             stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
-            JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection, true );
-            jsonWriteDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.gz"));
+            new JsonWriteDriver().write(new EmptyProgressVisitor(), rs, new File("target/result.gz"), true);
             File outpuFile = new File("target/result.gz");
             assertTrue(outpuFile.exists());
             GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outpuFile));
