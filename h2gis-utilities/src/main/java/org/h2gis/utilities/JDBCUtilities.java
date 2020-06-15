@@ -88,9 +88,10 @@ public class JDBCUtilities {
      */
     public static boolean hasField(Connection connection, String tableName, String fieldName) throws SQLException {
         final Statement statement = connection.createStatement();
+        boolean isH2 = isH2DataBase(connection);       
         try {
             final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
+                    "SELECT * FROM " + TableLocation.parse(tableName).toString(isH2) + " LIMIT 0;");
             try {
                 return hasField(resultSet.getMetaData(), fieldName);
             } finally {
@@ -149,10 +150,11 @@ public class JDBCUtilities {
      * @throws SQLException If jdbc throws an error
      */
     public static String getColumnName(Connection connection, TableLocation tableLocation, int columnIndex) throws SQLException {
+        boolean isH2 = isH2DataBase(connection);    
         final Statement statement = connection.createStatement();
         try {
             final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + tableLocation + " LIMIT 0;");
+                    "SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
             try {
                 return getColumnName(resultSet.getMetaData(), columnIndex);
             } finally {
@@ -173,10 +175,11 @@ public class JDBCUtilities {
      */
     public static List<String> getColumnNames(Connection connection, TableLocation tableLocation) throws SQLException {
         List<String> fieldNameList = new ArrayList<>();
+        boolean isH2 = isH2DataBase(connection);    
         final Statement statement = connection.createStatement();
         try {
             final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + tableLocation + " LIMIT 0;");
+                    "SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
                 for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
@@ -202,9 +205,10 @@ public class JDBCUtilities {
     public static List<Tuple<String, Integer>> getColumnNamesAndIndexes(Connection connection, TableLocation tableLocation) throws SQLException {
         List<Tuple<String, Integer>> fieldNameList = new ArrayList<>();
         final Statement statement = connection.createStatement();
+        boolean isH2 = isH2DataBase(connection);    
         try {
             final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + tableLocation + " LIMIT 0;");
+                    "SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
                 for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
@@ -240,10 +244,11 @@ public class JDBCUtilities {
      * @throws SQLException If the table does not exists, or sql request fail.
      */
     public static int getRowCount(Connection connection, String tableReference) throws SQLException {
+        boolean isH2 = isH2DataBase(connection);    
         Statement st = connection.createStatement();
         int rowCount = 0;
         try {
-            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", TableLocation.parse(tableReference)));
+            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", TableLocation.parse(tableReference).toString(isH2)));
             try {
                 if (rs.next()) {
                     rowCount = rs.getInt(1);
@@ -444,8 +449,9 @@ public class JDBCUtilities {
      * @throws java.sql.SQLException
      */
     public static boolean tableExists(Connection connection, TableLocation tableLocation) throws SQLException {
+        boolean isH2 = isH2DataBase(connection);
         try (Statement statement = connection.createStatement()) {
-            statement.execute("SELECT * FROM " + tableLocation + " LIMIT 0;");
+            statement.execute("SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
             return true;
         } catch (SQLException ex) {
             return false;
@@ -496,10 +502,11 @@ public class JDBCUtilities {
      * @return The list of distinct values of the field.
      */
     public static List<String> getUniqueFieldValues(Connection connection, String tableName, String fieldName) throws SQLException {
+        boolean isH2 = isH2DataBase(connection);    
         final Statement statement = connection.createStatement();
         List<String> fieldValues = new ArrayList<String>();
         try {
-            ResultSet result = statement.executeQuery("SELECT DISTINCT " + TableLocation.quoteIdentifier(fieldName) + " FROM " + TableLocation.parse(tableName));
+            ResultSet result = statement.executeQuery("SELECT DISTINCT " + TableLocation.quoteIdentifier(fieldName) + " FROM " + TableLocation.parse(tableName).toString(isH2));
             try {
             while (result.next()) {
                 fieldValues.add(result.getString(1));
