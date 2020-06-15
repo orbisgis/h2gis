@@ -575,6 +575,31 @@ public class GeometryTableUtilities {
         }
         return false;
     }
+    
+     /**
+     * Check if the table contains a geometry column
+     *
+     * @param connection
+     * @param tableLocation
+     *
+     * @return True if the ResultSet contains one geometry field
+     *
+     * @throws SQLException
+     */
+    public static boolean hasGeometryColumn(Connection connection, TableLocation tableLocation) throws SQLException {
+        Statement statement = connection.createStatement();
+        try (ResultSet resultSet = statement.executeQuery(
+                "SELECT * FROM " + tableLocation.toString(JDBCUtilities.isH2DataBase(connection)) + " WHERE 1=0;")) {
+            ResultSetMetaData meta = resultSet.getMetaData();
+            int columnCount = meta.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Compute the full extend of a ResultSet using the first geometry field. If

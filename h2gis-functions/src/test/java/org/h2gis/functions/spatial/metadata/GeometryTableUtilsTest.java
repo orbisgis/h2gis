@@ -250,10 +250,51 @@ public class GeometryTableUtilsTest {
         st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
         ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM POINT3D");
         assertTrue(GeometryTableUtilities.hasGeometryColumn(rs));
+        assertTrue(GeometryTableUtilities.hasGeometryColumn(connection, TableLocation.parse("POINT3D")));
         st.execute("DROP TABLE IF EXISTS POINT3D");
         st.execute("CREATE TABLE POINT3D (gid int)");
         rs = connection.createStatement().executeQuery("SELECT * FROM POINT3D");
         assertFalse(GeometryTableUtilities.hasGeometryColumn(rs));
+        st.execute("DROP SCHEMA IF EXISTS ORBISGIS CASCADE");
+        st.execute("CREATE SCHEMA ORBISGIS;");
+        st.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
+        assertTrue(GeometryTableUtilities.hasGeometryColumn(connection, TableLocation.parse("ORBISGIS.POINT3D")));
+        
+    }
+    
+    @Test
+    public void testHasGeometryFieldPostGIS(TestInfo testInfo) throws SQLException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            fail("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            Statement stat = con.createStatement();
+            stat.execute("DROP TABLE IF EXISTS POINT3D");
+            stat.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
+            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM POINT3D");
+            assertTrue(GeometryTableUtilities.hasGeometryColumn(rs));
+            assertTrue(GeometryTableUtilities.hasGeometryColumn(con, TableLocation.parse("point3d")));
+            stat.execute("DROP TABLE IF EXISTS POINT3D");
+            stat.execute("CREATE TABLE POINT3D (gid int)");
+            rs = con.createStatement().executeQuery("SELECT * FROM POINT3D");
+            assertFalse(GeometryTableUtilities.hasGeometryColumn(rs));
+            stat.execute("DROP SCHEMA IF EXISTS ORBISGIS CASCADE");
+            stat.execute("CREATE SCHEMA ORBISGIS;");
+            stat.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
+            assertTrue(GeometryTableUtilities.hasGeometryColumn(con, TableLocation.parse("orbisgis.point3d")));
+        }
+
     }
 
     // getResultSetEnvelope(ResultSet resultSet)
