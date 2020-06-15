@@ -43,15 +43,11 @@ import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GeometryTableUtilsTest {
 
     private static Connection connection;
     private Statement st;
-    
-    private static final Logger log = LoggerFactory.getLogger(GeometryTableUtilsTest.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -280,7 +276,7 @@ public class GeometryTableUtilsTest {
             con = ds.getConnection();
 
         } catch (SQLException e) {
-            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+            fail("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
         }
         if (con != null) {
             Statement stat = con.createStatement();
