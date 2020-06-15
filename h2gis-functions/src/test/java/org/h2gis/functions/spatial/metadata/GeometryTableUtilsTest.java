@@ -722,17 +722,23 @@ public class GeometryTableUtilsTest {
         assertEquals(4326, geomMetadata.getSRID());
     }
 
-    @Disabled
     @Test
-    public void testEstimatedExtentSchemaPostGIS() throws SQLException {
-        String url = "jdbc:postgresql://?/?";
+    public void testEstimatedExtentSchemaPostGIS(TestInfo testInfo) throws SQLException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
         Properties props = new Properties();
-        props.setProperty("user", "");
-        props.setProperty("password", "");
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
         DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
-        DataSource ds = dataSourceFactory.createDataSource(props);
-        Connection con = ds.getConnection();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
         Statement statement = con.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
         statement.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
@@ -742,19 +748,26 @@ public class GeometryTableUtilsTest {
         assertNotNull(geom);
         assertEquals(4326, geom.getSRID());
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
+        }
     }
 
-    @Disabled
     @Test
-    public void testEnvelopeSchemaPostGIS() throws SQLException {
-        String url = "jdbc:postgresql://?/?";
+    public void testEnvelopeSchemaPostGIS(TestInfo testInfo) throws SQLException {
+         String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
         Properties props = new Properties();
-        props.setProperty("user", "?");
-        props.setProperty("password", "?");
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
         DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
-        DataSource ds = dataSourceFactory.createDataSource(props);
-        Connection con = ds.getConnection();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
         Statement statement = con.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
         statement.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
@@ -764,6 +777,7 @@ public class GeometryTableUtilsTest {
         assertTrue(geom.getArea()>0);
         assertEquals(4326,geom.getSRID());
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
+        }
     }
 
     @Test
