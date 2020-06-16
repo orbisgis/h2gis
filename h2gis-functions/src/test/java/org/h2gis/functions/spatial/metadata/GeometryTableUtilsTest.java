@@ -38,6 +38,8 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.Tuple;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
 public class GeometryTableUtilsTest {
 
     private static Connection connection;
+    private static Connection conPost;
     private Statement st;
     private static final Logger log = LoggerFactory.getLogger(GeometryTableUtilsTest.class);
 
@@ -77,6 +80,22 @@ public class GeometryTableUtilsTest {
                 + " 'LINESTRING(2 2, 1 1)', 'POLYGON((1 1, 1 3, 3 3, 3 1, 1 1))', 'MULTIPOINT((3 3))',"
                 + " 'MULTILINESTRING((1 1, 3 3))', 'MULTIPOLYGON(((1 1, 1 3, 3 3, 3 1, 1 1)))',"
                 + " 'GEOMETRYCOLLECTION(POINT(3 3))')");
+
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+
+        DataSource ds = dataSourceFactory.createDataSource(props);
+        conPost = ds.getConnection();
+        if(conPost == null) {
+            System.setProperty("postgresql", "false");
+        }
+        else {
+            System.setProperty("postgresql", "true");
+        }
     }
 
     @AfterAll
@@ -266,41 +285,24 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    public void testHasGeometryFieldPostGIS(TestInfo testInfo) throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
-        Properties props = new Properties();
-        props.setProperty("user", "orbisgis");
-        props.setProperty("password", "orbisgis");
-        props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
-        Connection con = null;
-        try {
-            DataSource ds = dataSourceFactory.createDataSource(props);
-            con = ds.getConnection();
-
-        } catch (SQLException e) {
-            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
-        }
-        if (con != null) {
-            Statement stat = con.createStatement();
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void testHasGeometryFieldPostGIS() throws SQLException {
+            Statement stat = conPost.createStatement();
             stat.execute("DROP TABLE IF EXISTS POINT3D");
             stat.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
-            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM POINT3D");
+            ResultSet rs = conPost.createStatement().executeQuery("SELECT * FROM POINT3D");
             assertTrue(GeometryTableUtilities.hasGeometryColumn(rs));
-            assertTrue(GeometryTableUtilities.hasGeometryColumn(con, TableLocation.parse("point3d")));
+            assertTrue(GeometryTableUtilities.hasGeometryColumn(conPost, TableLocation.parse("point3d")));
             stat.execute("DROP TABLE IF EXISTS POINT3D");
             stat.execute("CREATE TABLE POINT3D (gid int)");
-            rs = con.createStatement().executeQuery("SELECT * FROM POINT3D");
+            rs = conPost.createStatement().executeQuery("SELECT * FROM POINT3D");
             assertFalse(GeometryTableUtilities.hasGeometryColumn(rs));
             stat.execute("DROP SCHEMA IF EXISTS ORBISGIS CASCADE");
             stat.execute("CREATE SCHEMA ORBISGIS;");
             stat.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
-            assertTrue(GeometryTableUtilities.hasGeometryColumn(con, TableLocation.parse("orbisgis.point3d")));
-        }
-
+            assertTrue(GeometryTableUtilities.hasGeometryColumn(conPost, TableLocation.parse("orbisgis.point3d")));
     }
 
-    // getResultSetEnvelope(ResultSet resultSet)
     @Test
     public void testResultSetEnvelope1() throws SQLException {
         ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
@@ -723,61 +725,31 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    public void testEstimatedExtentSchemaPostGIS(TestInfo testInfo) throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
-        Properties props = new Properties();
-        props.setProperty("user", "orbisgis");
-        props.setProperty("password", "orbisgis");
-        props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
-        Connection con = null;
-        try {
-            DataSource ds = dataSourceFactory.createDataSource(props);
-            con = ds.getConnection();
-
-        } catch (SQLException e) {
-            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
-        }
-        if (con != null) {
-        Statement statement = con.createStatement();
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void testEstimatedExtentSchemaPostGIS() throws SQLException {
+        Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
         statement.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
         statement.execute("ANALYZE MYSCHEMA.GEOMTABLE");
         TableLocation tableLocation = TableLocation.parse("myschema.geomtable");
-        Geometry geom = GeometryTableUtilities.getEstimatedExtent(con, tableLocation, "the_geom");
+        Geometry geom = GeometryTableUtilities.getEstimatedExtent(conPost, tableLocation, "the_geom");
         assertNotNull(geom);
         assertEquals(4326, geom.getSRID());
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
-        }
     }
 
     @Test
-    public void testEnvelopeSchemaPostGIS(TestInfo testInfo) throws SQLException {
-         String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
-        Properties props = new Properties();
-        props.setProperty("user", "orbisgis");
-        props.setProperty("password", "orbisgis");
-        props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
-        Connection con = null;
-        try {
-            DataSource ds = dataSourceFactory.createDataSource(props);
-            con = ds.getConnection();
-
-        } catch (SQLException e) {
-            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
-        }
-        if (con != null) {
-        Statement statement = con.createStatement();
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void testEnvelopeSchemaPostGIS() throws SQLException {
+        Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
         statement.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
         TableLocation tableLocation = TableLocation.parse("myschema.geomtable");
-        Geometry geom = GeometryTableUtilities.getEnvelope(con, tableLocation, "the_geom");
+        Geometry geom = GeometryTableUtilities.getEnvelope(conPost, tableLocation, "the_geom");
         assertNotNull(geom);
         assertTrue(geom.getArea()>0);
         assertEquals(4326,geom.getSRID());
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
-        }
     }
 
     @Test
