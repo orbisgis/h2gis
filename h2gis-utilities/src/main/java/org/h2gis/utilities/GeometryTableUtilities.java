@@ -111,8 +111,7 @@ public class GeometryTableUtilities {
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
             if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                GeometryMetaData geometryMetaData = GeometryMetaData.getMetaData(metadata.getColumnTypeName(i));
-                geometryMetaDatas.put(metadata.getColumnName(i), geometryMetaData);
+                geometryMetaDatas.put(metadata.getColumnName(i), new GeometryMetaData());
             }
         }
         return geometryMetaDatas;
