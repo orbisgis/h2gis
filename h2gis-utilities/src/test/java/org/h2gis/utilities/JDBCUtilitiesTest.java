@@ -81,7 +81,6 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE TABLE perstable");
         assertTrue(JDBCUtilities.isTemporaryTable(connection, "temptable1"));
         assertFalse(JDBCUtilities.isTemporaryTable(connection, "PERSTable"));
-        st.execute("DROP TABLE TEMPTABLE1,perstable");
     }
 
     @Test
