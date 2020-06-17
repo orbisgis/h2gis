@@ -713,6 +713,20 @@ public class JDBCUtilities {
             throw new SQLException("The table " + location + " doesn't exist");
         }
     }
+     /**
+     * Create table ddl command
+     *
+     * @param connection
+     * @param location
+     * @param isH2
+     * @return
+     * @throws SQLException
+     */
+    public static String createDDL(Connection connection, TableLocation location, boolean isH2) throws SQLException {
+        final StringBuilder builder = new StringBuilder(256);
+        String tableName = location.toString(isH2);
+        return createDDL( connection, tableName ) ;
+    }
 
     /**
      * Create table ddl command
@@ -722,10 +736,9 @@ public class JDBCUtilities {
      * @return
      * @throws SQLException
      */
-    private static String createDDL(Connection connection, TableLocation location, boolean isH2) throws SQLException {
+    public static String createDDL(Connection connection, String tableName) throws SQLException {
         final StringBuilder builder = new StringBuilder(256);
-        String tableName = location.toString(isH2);
-        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, location);
+        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse(tableName));
         builder.append("CREATE TABLE ").append(tableName);
         final Statement statement = connection.createStatement();
         try {
