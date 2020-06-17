@@ -75,7 +75,8 @@ public class JDBCUtilitiesTest {
     }
 
     @Test
-    public void testTemporaryTable() throws SQLException {
+    public void testTemporaryTable() throws SQLException {        
+        st.execute("DROP view IF EXISTS perstable_view cascade");
         st.execute("DROP TABLE IF EXISTS TEMPTABLE1,perstable");
         st.execute("CREATE TEMPORARY TABLE TEMPTABLE1");
         st.execute("CREATE TABLE perstable");
