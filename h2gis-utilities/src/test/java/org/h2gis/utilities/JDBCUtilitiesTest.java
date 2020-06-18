@@ -3,21 +3,20 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
+ * This code is part of the H2GIS project. H2GIS is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation; version 3.0 of
+ * the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details <http://www.gnu.org/licenses/>.
  *
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
 package org.h2gis.utilities;
 
 import org.h2gis.api.EmptyProgressVisitor;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.h2gis.utilities.JDBCUtilities.TABLE_TYPE;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
 
@@ -48,10 +48,10 @@ public class JDBCUtilitiesTest {
     @BeforeAll
     public static void init() throws Exception {
         String dataBaseLocation = new File("target/JDBCUtilitiesTest").getAbsolutePath();
-        String databasePath = "jdbc:h2:"+dataBaseLocation;
-        File dbFile = new File(dataBaseLocation+".mv.db");
+        String databasePath = "jdbc:h2:" + dataBaseLocation;
+        File dbFile = new File(dataBaseLocation + ".mv.db");
         Class.forName("org.h2.Driver");
-        if(dbFile.exists()) {
+        if (dbFile.exists()) {
             dbFile.delete();
         }
         // Keep a connection alive to not close the DataBase on each unit test
@@ -75,13 +75,24 @@ public class JDBCUtilitiesTest {
     }
 
     @Test
-    public void testTemporaryTable() throws SQLException {
+    public void testTemporaryTable() throws SQLException {        
+        st.execute("DROP view IF EXISTS perstable_view cascade");
         st.execute("DROP TABLE IF EXISTS TEMPTABLE1,perstable");
         st.execute("CREATE TEMPORARY TABLE TEMPTABLE1");
         st.execute("CREATE TABLE perstable");
         assertTrue(JDBCUtilities.isTemporaryTable(connection, "temptable1"));
         assertFalse(JDBCUtilities.isTemporaryTable(connection, "PERSTable"));
-        st.execute("DROP TABLE TEMPTABLE1,perstable");
+    }
+
+    @Test
+    public void testTableType() throws SQLException {        
+        st.execute("DROP view IF EXISTS perstable_view cascade");
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE1,perstable");
+        st.execute("CREATE TEMPORARY TABLE TEMPTABLE1(id int)");
+        st.execute("CREATE TABLE perstable(id int)");
+        st.execute("CREATE VIEW perstable_view as select * from perstable; ");
+        assertEquals(TABLE_TYPE.TEMPORARY, JDBCUtilities.getTableType(connection, TableLocation.parse("temptable1")));
+        assertEquals(TABLE_TYPE.TABLE, JDBCUtilities.getTableType(connection, TableLocation.parse("perstable")));
     }
 
     @Test
@@ -119,7 +130,7 @@ public class JDBCUtilitiesTest {
     public void testPrimaryKeyExtractOnNonexistantTable() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         assertThrows(SQLException.class, () -> {
-                JDBCUtilities.getIntegerPrimaryKey(connection, TableLocation.parse("TEMPTABLE"));           
+            JDBCUtilities.getIntegerPrimaryKey(connection, TableLocation.parse("TEMPTABLE"));
         });
     }
 
@@ -154,7 +165,7 @@ public class JDBCUtilitiesTest {
         assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("\"teMpTAbLE\"")));
         assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
         assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
-        assertFalse(JDBCUtilities.tableExists(connection,TableLocation.parse( "TEMPTABLE")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("TEMPTABLE")));
     }
 
     @Test
@@ -162,7 +173,7 @@ public class JDBCUtilitiesTest {
         assertTrue(JDBCUtilities.isH2DataBase(connection));
         assertTrue(JDBCUtilities.isH2DataBase(new ConnectionWrapper(connection)));
     }
-    
+
     @Test
     public void testGetColumnNamesAndIndexes() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
@@ -209,6 +220,7 @@ public class JDBCUtilitiesTest {
     }
 
     private static class CancelThread extends Thread {
+
         private ProgressVisitor pm;
 
         private CancelThread(ProgressVisitor pm) {
@@ -229,10 +241,10 @@ public class JDBCUtilitiesTest {
     @Test
     public void testIsLinkedTable() throws ClassNotFoundException, SQLException {
         String dataBaseLocation = new File("target/JDBCUtilitiesTest2").getAbsolutePath();
-        String databasePath = "jdbc:h2:"+dataBaseLocation;
-        File dbFile = new File(dataBaseLocation+".mv.db");
+        String databasePath = "jdbc:h2:" + dataBaseLocation;
+        File dbFile = new File(dataBaseLocation + ".mv.db");
         Class.forName("org.h2.Driver");
-        if(dbFile.exists()) {
+        if (dbFile.exists()) {
             dbFile.delete();
         }
         // Keep a connection alive to not close the DataBase on each unit test
@@ -244,21 +256,22 @@ public class JDBCUtilitiesTest {
 
         Statement statement = connection.createStatement();
         statement.execute("DROP TABLE IF EXISTS LINKEDTABLE");
-        statement.execute("CREATE LINKED TABLE LINKEDTABLE('org.h2.Driver', '"+databasePath+"', 'sa', '', 'TEMPTABLE');");
+        statement.execute("CREATE LINKED TABLE LINKEDTABLE('org.h2.Driver', '" + databasePath + "', 'sa', '', 'TEMPTABLE');");
         assertTrue(JDBCUtilities.isLinkedTable(connection, "LINKEDTABLE"));
+        assertEquals(TABLE_TYPE.TABLE_LINK, JDBCUtilities.getTableType(connection, TableLocation.parse("LINKEDTABLE")));
     }
-    
+
     @Test
     public void testCreateEmptyTable() throws SQLException {
         st.execute("drop table if exists emptytable");
         JDBCUtilities.createEmptyTable(connection, "emptytable");
         ResultSet res = st.executeQuery("SELECT * FROM emptytable;");
         ResultSetMetaData rsmd = res.getMetaData();
-        assertTrue(rsmd.getColumnCount()==0);
+        assertTrue(rsmd.getColumnCount() == 0);
         assertTrue(!res.next());
         st.execute("DROP TABLE emptytable");
     }
-    
+
     @Test
     public void testColumnNames() throws SQLException {
         st.execute("DROP TABLE IF EXISTS temptable");
@@ -270,23 +283,23 @@ public class JDBCUtilitiesTest {
         expecteds.add("NAME");
         assertEquals(expecteds, JDBCUtilities.getColumnNames(md));
     }
-    
+
     @Test
     public void testGetObjectClass() throws SQLException {
         st.execute("drop table if exists mytable; create table mytable(temperature double precision);"
-                + "insert into mytable values(12.1258952354)");      
+                + "insert into mytable values(12.1258952354)");
         ResultSet res = st.executeQuery("SELECT * FROM mytable;");
         res.next();
-        assertEquals((float)12.1258952354d, res.getObject(1, Float.class));
+        assertEquals((float) 12.1258952354d, res.getObject(1, Float.class));
         assertEquals(12, res.getObject(1, Integer.class));
-        assertEquals((float)12.1258952354d, res.getObject("temperature", Float.class));
+        assertEquals((float) 12.1258952354d, res.getObject("temperature", Float.class));
         assertEquals(12, res.getObject("temperature", Integer.class));
         st.execute("DROP TABLE mytable");
     }
-    
+
     // wrapSpatialDataSource(DataSource dataSource)
     @Test
-    public void testWrapSpatialDataSource(){
+    public void testWrapSpatialDataSource() {
         assertTrue(JDBCUtilities.wrapSpatialDataSource(new CustomDataSource()) instanceof CustomDataSource);
         assertTrue(JDBCUtilities.wrapSpatialDataSource(new CustomDataSource1()) instanceof DataSourceWrapper);
         assertTrue(JDBCUtilities.wrapSpatialDataSource(new CustomDataSource2()) instanceof DataSourceWrapper);
@@ -294,41 +307,96 @@ public class JDBCUtilitiesTest {
 
     // wrapConnection(Connection connection)
     @Test
-    public void testWrapConnection(){
+    public void testWrapConnection() {
         assertTrue(JDBCUtilities.wrapConnection(connection) instanceof ConnectionWrapper);
         assertTrue(JDBCUtilities.wrapConnection(new CustomConnection1(connection)) instanceof ConnectionWrapper);
         assertTrue(JDBCUtilities.wrapConnection(new CustomConnection(connection)) instanceof ConnectionWrapper);
     }
 
     private class CustomDataSource implements DataSource {
-        @Override public Connection getConnection() throws SQLException {return null;}
-        @Override public Connection getConnection(String s, String s1) throws SQLException {return null;}
-        @Override public <T> T unwrap(Class<T> aClass) throws SQLException {return null;}
-        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException {return true;}
-        @Override public PrintWriter getLogWriter() throws SQLException {return null;}
-        @Override public void setLogWriter(PrintWriter printWriter) throws SQLException {}
-        @Override public void setLoginTimeout(int i) throws SQLException {}
-        @Override public int getLoginTimeout() throws SQLException {return 0;}
-        @Override public Logger getParentLogger() throws SQLFeatureNotSupportedException {return null;}
+
+        @Override
+        public Connection getConnection() throws SQLException {
+            return null;
+        }
+
+        @Override
+        public Connection getConnection(String s, String s1) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> aClass) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public boolean isWrapperFor(Class<?> aClass) throws SQLException {
+            return true;
+        }
+
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            return null;
+        }
+
+        @Override
+        public void setLogWriter(PrintWriter printWriter) throws SQLException {
+        }
+
+        @Override
+        public void setLoginTimeout(int i) throws SQLException {
+        }
+
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            return 0;
+        }
+
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            return null;
+        }
     }
 
     private class CustomDataSource1 extends CustomDataSource {
-        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException {throw new SQLException();}
+
+        @Override
+        public boolean isWrapperFor(Class<?> aClass) throws SQLException {
+            throw new SQLException();
+        }
     }
 
     private class CustomDataSource2 extends CustomDataSource {
-        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException {return false;}
+
+        @Override
+        public boolean isWrapperFor(Class<?> aClass) throws SQLException {
+            return false;
+        }
     }
 
     private class CustomConnection1 extends ConnectionWrapper {
-        public CustomConnection1(Connection connection) {super(connection);}
-        @Override public boolean isWrapperFor(Class<?> var1) throws SQLException{throw new SQLException();}
+
+        public CustomConnection1(Connection connection) {
+            super(connection);
+        }
+
+        @Override
+        public boolean isWrapperFor(Class<?> var1) throws SQLException {
+            throw new SQLException();
+        }
     }
 
     private class CustomConnection extends ConnectionWrapper {
-        public CustomConnection(Connection connection) {super(connection);}
-        @Override public boolean isWrapperFor(Class<?> var1) throws SQLException{return true;}
+
+        public CustomConnection(Connection connection) {
+            super(connection);
+        }
+
+        @Override
+        public boolean isWrapperFor(Class<?> var1) throws SQLException {
+            return true;
+        }
     }
-   
-   
+
 }

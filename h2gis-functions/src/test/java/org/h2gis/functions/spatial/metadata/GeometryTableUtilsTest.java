@@ -45,6 +45,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
+import org.h2gis.utilities.JDBCUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,10 +91,9 @@ public class GeometryTableUtilsTest {
 
         DataSource ds = dataSourceFactory.createDataSource(props);
         conPost = ds.getConnection();
-        if(conPost == null) {
+        if (conPost == null) {
             System.setProperty("postgresql", "false");
-        }
-        else {
+        } else {
             System.setProperty("postgresql", "true");
         }
     }
@@ -281,26 +281,26 @@ public class GeometryTableUtilsTest {
         st.execute("CREATE SCHEMA ORBISGIS;");
         st.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
         assertTrue(GeometryTableUtilities.hasGeometryColumn(connection, TableLocation.parse("ORBISGIS.POINT3D")));
-        
+
     }
-    
+
     @Test
     @DisabledIfSystemProperty(named = "postgresql", matches = "false")
     public void testHasGeometryFieldPostGIS() throws SQLException {
-            Statement stat = conPost.createStatement();
-            stat.execute("DROP TABLE IF EXISTS POINT3D");
-            stat.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
-            ResultSet rs = conPost.createStatement().executeQuery("SELECT * FROM POINT3D");
-            assertTrue(GeometryTableUtilities.hasGeometryColumn(rs));
-            assertTrue(GeometryTableUtilities.hasGeometryColumn(conPost, TableLocation.parse("point3d")));
-            stat.execute("DROP TABLE IF EXISTS POINT3D");
-            stat.execute("CREATE TABLE POINT3D (gid int)");
-            rs = conPost.createStatement().executeQuery("SELECT * FROM POINT3D");
-            assertFalse(GeometryTableUtilities.hasGeometryColumn(rs));
-            stat.execute("DROP SCHEMA IF EXISTS ORBISGIS CASCADE");
-            stat.execute("CREATE SCHEMA ORBISGIS;");
-            stat.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
-            assertTrue(GeometryTableUtilities.hasGeometryColumn(conPost, TableLocation.parse("orbisgis.point3d")));
+        Statement stat = conPost.createStatement();
+        stat.execute("DROP TABLE IF EXISTS POINT3D");
+        stat.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
+        ResultSet rs = conPost.createStatement().executeQuery("SELECT * FROM POINT3D");
+        assertTrue(GeometryTableUtilities.hasGeometryColumn(rs));
+        assertTrue(GeometryTableUtilities.hasGeometryColumn(conPost, TableLocation.parse("point3d")));
+        stat.execute("DROP TABLE IF EXISTS POINT3D");
+        stat.execute("CREATE TABLE POINT3D (gid int)");
+        rs = conPost.createStatement().executeQuery("SELECT * FROM POINT3D");
+        assertFalse(GeometryTableUtilities.hasGeometryColumn(rs));
+        stat.execute("DROP SCHEMA IF EXISTS ORBISGIS CASCADE");
+        stat.execute("CREATE SCHEMA ORBISGIS;");
+        stat.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
+        assertTrue(GeometryTableUtilities.hasGeometryColumn(conPost, TableLocation.parse("orbisgis.point3d")));
     }
 
     @Test
@@ -625,7 +625,7 @@ public class GeometryTableUtilsTest {
         assertEquals("GEOMETRY", geomMet.geometryType);
         assertEquals(GeometryTypeCodes.GEOMETRY, geomMet.geometryTypeCode);
     }
-    
+
     @Test
     public void testGetMetadatasFromResulset() throws SQLException {
         st.execute("DROP TABLE IF EXISTS POINT3D");
@@ -659,42 +659,41 @@ public class GeometryTableUtilsTest {
     public void testGeometryMetadataSQL() throws Exception {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY)");
         GeometryMetaData geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals("GEOMETRY", geomMetadata.getSQL());       
+        assertEquals("GEOMETRY", geomMetadata.getSQL());
         st.execute("ALTER TABLE GEO_POINT ALTER COLUMN THE_GEOM type geometry(POINT Z, 4326)");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());        
+        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
         st.execute("ALTER TABLE GEO_POINT ALTER COLUMN THE_GEOM type geometry(POINTZM)");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals("GEOMETRY(POINTZM)", geomMetadata.getSQL());        
+        assertEquals("GEOMETRY(POINTZM)", geomMetadata.getSQL());
     }
-    
+
     @Test
     public void testAlterSRID() throws Exception {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINT))");
         st.execute("insert into geo_point VALUES('POINT(0 0)')");
         GeometryMetaData geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals(0, geomMetadata.getSRID());       
+        assertEquals(0, geomMetadata.getSRID());
         GeometryTableUtilities.alterSRID(connection, TableLocation.parse("GEO_POINT", true), "THE_GEOM", 4326);
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals("GEOMETRY(POINT,4326)", geomMetadata.getSQL());
-        assertEquals(4326, geomMetadata.getSRID());         
+        assertEquals(4326, geomMetadata.getSRID());
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINTZ))");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals(0, geomMetadata.getSRID());       
+        assertEquals(0, geomMetadata.getSRID());
         GeometryTableUtilities.alterSRID(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM", 4326);
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());   
+        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
         assertEquals(4326, geomMetadata.getSRID());
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINTZ, 2154))");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals(2154, geomMetadata.getSRID());
         GeometryTableUtilities.alterSRID(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM", 4326);
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());   
+        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
         assertEquals(4326, geomMetadata.getSRID());
     }
-    
-    
+
     @Test
     public void testUpdateSRIDFunction() throws Exception {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINT))");
@@ -707,20 +706,20 @@ public class GeometryTableUtilsTest {
         assertEquals(4326, geomMetadata.getSRID());
         ResultSet res = st.executeQuery("select * from geo_point");
         res.next();
-        assertEquals(4326, ((Geometry)res.getObject(1)).getSRID());
+        assertEquals(4326, ((Geometry) res.getObject(1)).getSRID());
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINTZ))");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals(0, geomMetadata.getSRID());
         st.execute("SELECT UpdateGeometrySRID('GEO_POINT','THE_GEOM',4326);");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());   
+        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
         assertEquals(4326, geomMetadata.getSRID());
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINTZ, 2154))");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals(2154, geomMetadata.getSRID());
         st.execute("SELECT UpdateGeometrySRID('GEO_POINT','THE_GEOM',4326);");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
-        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());   
+        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
         assertEquals(4326, geomMetadata.getSRID());
     }
 
@@ -747,8 +746,8 @@ public class GeometryTableUtilsTest {
         TableLocation tableLocation = TableLocation.parse("myschema.geomtable");
         Geometry geom = GeometryTableUtilities.getEnvelope(conPost, tableLocation, "the_geom");
         assertNotNull(geom);
-        assertTrue(geom.getArea()>0);
-        assertEquals(4326,geom.getSRID());
+        assertTrue(geom.getArea() > 0);
+        assertEquals(4326, geom.getSRID());
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
     }
 
@@ -780,5 +779,55 @@ public class GeometryTableUtilsTest {
         assertEquals(GeometryTypeCodes.POINTM, geomMet.geometryTypeCode);
     }
 
+    @Test
+    public void testCreateDDL() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable");
+        assertEquals("CREATE TABLE PERSTABLE", JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
+                + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR(2147483647),CITY VARCHAR(12),TEMPERATURE DOUBLE,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
+                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY(POINTZ,4326))",
+                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));        
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 0))");
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY(POINTZ,0))",
+                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));          
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(GEOMETRY, 0))");
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY)",
+                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));   
+        assertEquals("CREATE TABLE MYTABLE (THE_GEOM GEOMETRY)",
+                JDBCUtilities.createTableDDL( st.executeQuery("SELECT the_geom from PERSTABLE"), "MYTABLE"));  
+    }
+    
+    @Test
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void testCreateDDLPostGIS() throws SQLException {
+        Statement stat = conPost.createStatement();
+        stat.execute("DROP TABLE IF EXISTS perstable");
+        stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
+                + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
+        assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY,type int4,name varchar(2147483647),city varchar(12),temperature float8,location GEOMETRY(POINTZ,4326),wind varchar(64))",
+                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));
+        stat.execute("DROP TABLE IF EXISTS perstable");
+        stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
+        assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY(POINTZ,4326))",
+                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));        
+        stat.execute("DROP TABLE IF EXISTS perstable");
+        stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 0))");
+        assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY(POINTZ,0))",
+                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));          
+        stat.execute("DROP TABLE IF EXISTS perstable");
+        stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(GEOMETRY, 0))");
+        assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY)",
+                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));   
+        assertEquals("CREATE TABLE mytable (the_geom GEOMETRY)",
+                JDBCUtilities.createTableDDL( stat.executeQuery("SELECT the_geom from PERSTABLE"), "mytable"));  
+    }
 
 }
