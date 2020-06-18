@@ -759,14 +759,20 @@ public class JDBCUtilities {
                     String columnTypeName = metadata.getColumnTypeName(i);
                     int columnType = metadata.getColumnType(i);
                     if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
-                        builder.append(columnName).append(" ").append(columnTypeName);
-                        builder.append("(").append(metadata.getPrecision(i)).append(")");
+                        int precision = metadata.getPrecision(i);
+                        if (precision == Integer.MAX_VALUE) {
+                            builder.append(columnName).append(" ").append(columnTypeName);
+                        } else {
+                            builder.append(columnName).append(" ").append(columnTypeName);
+                            builder.append("(").append(precision).append(")");
+                        }
                     } else {
                         if (columnType == Types.CHAR) {
                             builder.append(columnName).append(" ").append(columnTypeName);
                             builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
-                        } //Geometry
-                        else if (columnTypeName.equalsIgnoreCase("geometry")) {
+                        } else if (columnType == Types.DOUBLE) {
+                            builder.append(columnName).append(" ").append("DOUBLE PRECISION");
+                        } else if (columnTypeName.equalsIgnoreCase("geometry")) {
                             GeometryMetaData geomMetadata = geomMetadatas.get(columnName);
                             if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
                                 builder.append(columnName).append(" ").append(columnTypeName);
@@ -851,11 +857,9 @@ public class JDBCUtilities {
                 if (columnType == Types.CHAR) {
                     builder.append(columnName).append(" ").append(columnTypeName);
                     builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
-                }
-                else if (columnType == Types.DOUBLE) {
+                } else if (columnType == Types.DOUBLE) {
                     builder.append(columnName).append(" ").append("DOUBLE PRECISION");
-                }
-                else if (columnTypeName.equalsIgnoreCase("geometry")) {
+                } else if (columnTypeName.equalsIgnoreCase("geometry")) {
                     builder.append(columnName).append(" ").append(columnTypeName);
                 } else {
                     builder.append(columnName).append(" ").append(columnTypeName);
