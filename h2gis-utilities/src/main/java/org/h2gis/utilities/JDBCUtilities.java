@@ -702,13 +702,11 @@ public class JDBCUtilities {
      * @return a create table ddl command
      * @throws SQLException
      */
-    public static String createTableDDL(Connection connection, TableLocation location, String outputTableName) throws SQLException {
-        if (outputTableName == null || outputTableName.isEmpty()) {
-            throw new SQLException("The output table name cannot be null or empty ");
-        }
+    public static String createTableDDL(Connection connection, TableLocation location, String outputTableName) throws SQLException {        
         if (JDBCUtilities.tableExists(connection, location)) {
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            return createDDL(connection, location, isH2);
+            String tableName = location.toString(isH2);
+            return createTableDDL(connection, tableName, outputTableName);
         } else {
             throw new SQLException("The table " + location + " doesn't exist");
         }
@@ -718,33 +716,25 @@ public class JDBCUtilities {
      * Create table ddl command
      *
      * @param connection
-     * @param location
-     * @param isH2
+     * @param sourceTableName the name of the source table
+     * @param targetTableName the table of the target table used after 
+     * the CREATE TABLE <targetTableName>
      * @return
      * @throws SQLException
      */
-    public static String createDDL(Connection connection, TableLocation location, boolean isH2) throws SQLException {
+    public static String createTableDDL(Connection connection, String sourceTableName, String targetTableName) throws SQLException {
+        if (sourceTableName == null || sourceTableName.isEmpty()) {
+            throw new SQLException("The source table name cannot be null or empty");
+        }
+        if (targetTableName == null || targetTableName.isEmpty()) {
+            throw new SQLException("The target table name cannot be null or empty");
+        }
         final StringBuilder builder = new StringBuilder(256);
-        String tableName = location.toString(isH2);
-        return createDDL(connection, tableName);
-    }
-
-    /**
-     * Create table ddl command
-     *
-     * @param connection
-     * @param tableName
-     * @return
-     * @throws SQLException
-     */
-    public static String createDDL(Connection connection, String tableName) throws SQLException {
-        final StringBuilder builder = new StringBuilder(256);
-        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse(tableName));
-        builder.append("CREATE TABLE ").append(tableName);
+        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse(sourceTableName));
+        builder.append("CREATE TABLE ").append(targetTableName);
         final Statement statement = connection.createStatement();
         try {
-            final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + tableName + " LIMIT 0;");
+            final ResultSet resultSet = statement.executeQuery("SELECT * FROM " + sourceTableName + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
                 int columnCount = metadata.getColumnCount();
@@ -773,12 +763,16 @@ public class JDBCUtilities {
                         } else if (columnType == Types.DOUBLE) {
                             builder.append(columnName).append(" ").append("DOUBLE PRECISION");
                         } else if (columnTypeName.equalsIgnoreCase("geometry")) {
-                            GeometryMetaData geomMetadata = geomMetadatas.get(columnName);
-                            if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
+                            if (geomMetadatas.isEmpty()) {
                                 builder.append(columnName).append(" ").append(columnTypeName);
                             } else {
-                                builder.append(columnName).append(" ").append(columnTypeName)
-                                        .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
+                                GeometryMetaData geomMetadata = geomMetadatas.get(columnName);
+                                if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
+                                    builder.append(columnName).append(" ").append(columnTypeName);
+                                } else {
+                                    builder.append(columnName).append(" ").append(columnTypeName)
+                                            .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
+                                }
                             }
                         } else {
                             builder.append(columnName).append(" ").append(columnTypeName);
@@ -810,7 +804,8 @@ public class JDBCUtilities {
     public static String createTableDDL(Connection connection, TableLocation location) throws SQLException {
         if (JDBCUtilities.tableExists(connection, location)) {
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            return createDDL(connection, location, isH2);
+            String tableName = location.toString(isH2);
+            return createTableDDL(connection, tableName, tableName);
         } else {
             throw new SQLException("The table " + location + " doesn't exist");
         }
@@ -827,11 +822,28 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static String createTableDDL(ResultSet resultSet, String outputTableName) throws SQLException {
-        if (outputTableName == null || outputTableName.isEmpty()) {
-            throw new SQLException("The table name cannot be null or empty");
+        return createTableDDL(resultSet, outputTableName, outputTableName);
+    }
+    
+    /**
+     * Create table ddl command
+     *
+     * @param resultSet
+     * @param sourceTableName the name of the source table
+     * @param targetTableName the table of the target table used after 
+     * the CREATE TABLE <targetTableName>
+     * @return
+     * @throws SQLException
+     */
+    public static String createTableDDL(ResultSet resultSet, String sourceTableName, String targetTableName) throws SQLException {
+        if (sourceTableName == null || sourceTableName.isEmpty()) {
+            throw new SQLException("The source table name cannot be null or empty");
+        }
+        if (targetTableName == null || targetTableName.isEmpty()) {
+            throw new SQLException("The target table name cannot be null or empty");
         }
         final StringBuilder builder = new StringBuilder(256);
-        builder.append("CREATE TABLE ").append(outputTableName);
+        builder.append("CREATE TABLE ").append(targetTableName);
         ResultSetMetaData metadata = resultSet.getMetaData();
         int columnCount = metadata.getColumnCount();
         if (columnCount > 0) {
@@ -871,4 +883,5 @@ public class JDBCUtilities {
         }
         return builder.toString();
     }
+   
 }
