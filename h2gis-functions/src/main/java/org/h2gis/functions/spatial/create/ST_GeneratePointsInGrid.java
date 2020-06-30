@@ -44,9 +44,9 @@ public class ST_GeneratePointsInGrid extends DeterministicScalarFunction {
     static PointOnGeometryLocator extentLocator;
 
     public ST_GeneratePointsInGrid() {
-        addProperty(PROP_REMARKS, "ST_GeneratePoints(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask)\n"
+        addProperty(PROP_REMARKS, "ST_GeneratePointsInGrid(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask)\n"
                 + " generates a regular set of points according a x and y cell sizes. \n"
-                + "The usemask argument is used to keep the points loacted inside the input geometry. \n");
+                + "The usemask argument is used to keep the points located inside the input geometry. \n");
     }
 
     @Override
