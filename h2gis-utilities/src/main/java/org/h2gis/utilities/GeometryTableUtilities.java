@@ -931,7 +931,7 @@ public class GeometryTableUtilities {
      *
      * @param connection Active connection (not closed by this function)
      * @param location Location of the table
-     * @param geometryField Geometry field or empty string (take the first
+     * @param geometryColumn Geometry field or empty string (take the first
      * geometry field)
      *
      * @return Envelope of the table as Geometry
@@ -939,23 +939,23 @@ public class GeometryTableUtilities {
      * @throws SQLException If the table not exists, empty or geometry field
      * empty.
      */
-    public static Geometry getEnvelope(Connection connection, TableLocation location, String geometryField)
+    public static Geometry getEnvelope(Connection connection, TableLocation location, String geometryColumn)
             throws SQLException {
-        if (geometryField == null || geometryField.isEmpty()) {
+        if (geometryColumn == null || geometryColumn.isEmpty()) {
             throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
                     + "cannot be computed");
         }
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if (isH2) {
             try (ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
-                    + TableLocation.quoteIdentifier(geometryField) + ") as ext FROM " + location)) {
+                    + TableLocation.quoteIdentifier(geometryColumn) + ") as ext FROM " + location)) {
                 if (rs.next()) {
                     return ((Geometry) rs.getObject(1));
                 }
             }
         } else {
             try (ResultSet rs = connection.createStatement().executeQuery("SELECT ST_SetSRID(ST_Extent("
-                    + TableLocation.quoteIdentifier(geometryField) + "), MAX(ST_SRID(" + TableLocation.quoteIdentifier(geometryField) + "))) as ext FROM " + location)) {
+                    + TableLocation.quoteIdentifier(geometryColumn) + "), MAX(ST_SRID(" + TableLocation.quoteIdentifier(geometryColumn) + "))) as ext FROM " + location)) {
                 if (rs.next()) {
                     return ((Geometry) rs.getObject(1));
                 }
@@ -977,7 +977,7 @@ public class GeometryTableUtilities {
      *
      * @param connection Active connection (not closed by this function)
      * @param location Location of the table
-     * @param geometryFields List of geometry columns or geometry functions
+     * @param geometryColumns List of geometry columns or geometry functions
      *
      * @return Envelope of the table as Geometry
      *
@@ -985,9 +985,9 @@ public class GeometryTableUtilities {
      * empty.
      *
      */
-    public static Geometry getEnvelope(Connection connection, TableLocation location, String... geometryFields)
+    public static Geometry getEnvelope(Connection connection, TableLocation location, String... geometryColumns)
             throws SQLException {
-        return getEnvelope(connection, location, geometryFields, null);
+        return getEnvelope(connection, location, geometryColumns, null);
     }
 
     /**
@@ -1004,7 +1004,7 @@ public class GeometryTableUtilities {
      *
      * @param connection Active connection (not closed by this function)
      * @param location Location of the table
-     * @param geometryFields List of geometry columns or geometry functions
+     * @param geometryColumns List of geometry columns or geometry functions
      * @param filter filter condition after the from
      *
      * @return Envelope of the table as Geometry
@@ -1013,9 +1013,9 @@ public class GeometryTableUtilities {
      * empty.
      *
      */
-    public static Geometry getEnvelope(Connection connection, TableLocation location, String[] geometryFields, String filter)
+    public static Geometry getEnvelope(Connection connection, TableLocation location, String[] geometryColumns, String filter)
             throws SQLException {
-        if (geometryFields == null || geometryFields.length == 0) {
+        if (geometryColumns == null || geometryColumns.length == 0) {
             throw new SQLException("The table " + location + " does not contain a geometry columns, then the extent "
                     + "cannot be computed");
         }
@@ -1023,8 +1023,8 @@ public class GeometryTableUtilities {
         int columnCount = 0;
         StringBuilder sb = new StringBuilder("SELECT ");
         if (isH2) {
-            for (int i = 0; i < geometryFields.length; i++) {
-                String geomField = geometryFields[i];
+            for (int i = 0; i < geometryColumns.length; i++) {
+                String geomField = geometryColumns[i];
                 if (i > 0) {
                     sb.append(",");
                 }
@@ -1034,8 +1034,8 @@ public class GeometryTableUtilities {
                 }
             }
         } else {
-            for (int i = 0; i < geometryFields.length; i++) {
-                String geomField = geometryFields[i];
+            for (int i = 0; i < geometryColumns.length; i++) {
+                String geomField = geometryColumns[i];
                 if (i > 0) {
                     sb.append(",");
                 }
@@ -1048,6 +1048,123 @@ public class GeometryTableUtilities {
             }
         }
         sb.append(" FROM ").append(location.toString(isH2));
+        if(filter!=null && !filter.isEmpty()){
+            sb.append(" ").append(filter);
+        }
+        Envelope aggregatedEnvelope = new Envelope();
+        int srid = 0;
+        try (ResultSet rs = connection.createStatement().executeQuery(sb.toString())) {
+            if (rs.next()) {
+                for (int i = 0; i < columnCount; i++) {
+                    Geometry geom = (Geometry) rs.getObject(i + 1);
+                    int currentSRID = geom.getSRID();
+                    if (srid == 0) {
+                        srid = currentSRID;
+                    } else if (srid != currentSRID) {
+                        throw new SQLException("Operation on mixed SRID geometries not supported");
+                    }
+                    aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
+                }
+            }
+        }
+        if (aggregatedEnvelope.isNull()) {
+            return null;
+        } else {
+            Geometry geom = new GeometryFactory().toGeometry(aggregatedEnvelope);
+            geom.setSRID(srid);
+            return geom;
+        }
+    }
+    
+    /**
+     *
+     * Merge the bounding box of all geometries inside a provided subquery,
+     * geometry columns
+     *
+     * Note that the geometry column can be an expression.
+     *
+     * Supported syntaxes 
+     * the_geom -> Column name 
+     * st_buffer(the_geom, 20) -> Geometry function
+     *
+     *
+     *
+     * @param connection Active connection (not closed by this function)
+     * @param subQuery a subquery to filter the data
+     * @param geometryColumns List of geometry columns or geometry functions
+     *
+     * @return Envelope of the table as Geometry
+     *
+     * @throws SQLException If the table not exists, empty or geometry field
+     * empty.
+     *
+     */
+    public static Geometry getEnvelope(Connection connection, String subQuery, String[] geometryColumns)
+            throws SQLException {
+        return getEnvelope(connection, subQuery, geometryColumns, null);
+    }
+    
+    /**
+     *
+     * Merge the bounding box of all geometries inside a provided subquery,
+     * geometry columns and filter condition
+     *
+     * Note that the geometry column can be an expression.
+     *
+     * Supported syntaxes 
+     * the_geom -> Column name 
+     * st_buffer(the_geom, 20) -> Geometry function
+     *
+     *
+     *
+     * @param connection Active connection (not closed by this function)
+     * @param subQuery a subquery to filter the data
+     * @param geometryColumns List of geometry columns or geometry functions
+     * @param filter filter condition after the from
+     *
+     * @return Envelope of the table as Geometry
+     *
+     * @throws SQLException If the table not exists, empty or geometry field
+     * empty.
+     *
+     */
+    public static Geometry getEnvelope(Connection connection, String subQuery, String[] geometryColumns, String filter)
+            throws SQLException {
+        if (geometryColumns == null || geometryColumns.length == 0) {
+            throw new SQLException("Geometry columns cannot be null or empty");
+        }
+        if(subQuery==null || subQuery.isEmpty()){
+            throw new SQLException("The subquery cannot be null or empty");
+        }
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        int columnCount = 0;
+        StringBuilder sb = new StringBuilder("SELECT ");
+        if (isH2) {
+            for (int i = 0; i < geometryColumns.length; i++) {
+                String geomField = geometryColumns[i];
+                if (i > 0) {
+                    sb.append(",");
+                }
+                if (geomField != null && !geomField.isEmpty()) {
+                    sb.append("ST_EXTENT(").append(geomField).append(")").append(" as geom_").append(i);
+                    columnCount++;
+                }
+            }
+        } else {
+            for (int i = 0; i < geometryColumns.length; i++) {
+                String geomField = geometryColumns[i];
+                if (i > 0) {
+                    sb.append(",");
+                }
+                if (geomField != null && !geomField.isEmpty()) {
+                    sb.append(" ST_SetSRID(ST_EXTENT(").append(geomField).append("), MAX(ST_SRID(")
+                            .append(geomField).
+                            append(" ))) as geom_").append(i);
+                    columnCount++;
+                }
+            }
+        }
+        sb.append(" FROM ").append("(").append(subQuery).append(") as foo");
         if(filter!=null && !filter.isEmpty()){
             sb.append(" ").append(filter);
         }
