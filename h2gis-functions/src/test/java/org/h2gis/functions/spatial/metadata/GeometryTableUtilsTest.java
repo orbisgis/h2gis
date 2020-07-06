@@ -46,6 +46,8 @@ import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
 import org.h2gis.utilities.JDBCUtilities;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -783,31 +785,31 @@ public class GeometryTableUtilsTest {
     public void testCreateDDL() throws SQLException {
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable");
-        assertEquals("CREATE TABLE PERSTABLE", JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));    
+        assertEquals("CREATE TABLE PERSTABLE", JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         String ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"));
         st.execute("DROP TABLE IF EXISTS perstable");
-        st.execute(ddl);       
+        st.execute(ddl);
         assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
         assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY(POINTZ,4326))",
-                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));        
+                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 0))");
         assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY(POINTZ,0))",
-                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));          
+                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(GEOMETRY, 0))");
         assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY)",
-                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));   
+                JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE")));
         assertEquals("CREATE TABLE MYTABLE (THE_GEOM GEOMETRY)",
-                JDBCUtilities.createTableDDL( st.executeQuery("SELECT the_geom from PERSTABLE"), "MYTABLE"));  
+                JDBCUtilities.createTableDDL(st.executeQuery("SELECT the_geom from PERSTABLE"), "MYTABLE"));
     }
-    
+
     @Test
     @DisabledIfSystemProperty(named = "postgresql", matches = "false")
     public void testCreateDDLPostGIS() throws SQLException {
@@ -819,23 +821,23 @@ public class GeometryTableUtilsTest {
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute(ddl);
         assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY,type int4,name varchar,city varchar(12),temperature DOUBLE PRECISION,location GEOMETRY(POINTZ,4326),wind varchar(64))",
-               ddl);
+                ddl);
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
         ddl = JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable"));
-        assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY(POINTZ,4326))",ddl);        
+        assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY(POINTZ,4326))", ddl);
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 0))");
         assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY(POINTZ,0))",
-                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));          
+                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(GEOMETRY, 0))");
         assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY)",
-                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));   
+                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));
         assertEquals("CREATE TABLE mytable (the_geom GEOMETRY)",
-                JDBCUtilities.createTableDDL( stat.executeQuery("SELECT the_geom from PERSTABLE"), "mytable"));  
+                JDBCUtilities.createTableDDL(stat.executeQuery("SELECT the_geom from PERSTABLE"), "mytable"));
     }
-    
+
     @Test
     public void testCreateDDLSourceTarget() throws SQLException {
         st.execute("DROP TABLE IF EXISTS perstable");
@@ -843,14 +845,293 @@ public class GeometryTableUtilsTest {
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         String ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "orbisgis");
         assertEquals("CREATE TABLE orbisgis (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
-               ddl);
+                ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
-               ddl);        
+                ddl);
+    }
+
+    @Test
+    public void testGetEnvelopeFromGeometryFields() throws SQLException, ParseException {
+        String sqlData = "DROP TABLE IF EXISTS public.building_indicators;\n"
+                + "CREATE TABLE public.building_indicators (\n"
+                + "	the_geom geometry(POLYGON, 32630),\n"
+                + "	id_build int4\n"
+                + "); "
+                + "INSERT INTO public.building_indicators\n"
+                + "VALUES('SRID=32630;POLYGON ((576569.8855746118 5384560.202691146, 576569.6799396832 5384553.6405112585, 576584.1349142857 5384553.281278896, 576584.3405324102 5384559.843459481, 576569.8855746118 5384560.202691146))', 1164),"
+                + "('SRID=32630;POLYGON ((576613.4515820902 5384506.430423924, 576623.851014461 5384506.127270323, 576624.030867693 5384514.579094129, 576613.7066755823 5384514.772095093, 576613.4515820902 5384506.430423924))', 1165),"
+                + "('SRID=32630;POLYGON ((576615.749017773 5384624.174842924, 576638.3786205315 5384640.147609505, 576632.6616354721 5384648.519150911, 576609.8565085419 5384632.443959317, 576615.749017773 5384624.174842924))', 1166), "
+                + "('SRID=32630;POLYGON ((576635.6545708041 5384554.315989608, 576638.6060492478 5384554.133821507, 576638.5595789884 5384552.132020645, 576646.5234286813 5384552.018102771, 576646.7754414822 5384560.582087368, 576635.786417653 5384560.877169167, 576635.6545708041 5384554.315989608))', 1167), "
+                + "('SRID=32630;POLYGON ((576555.1334797409 5384549.885025587, 576558.5272249203 5384549.708830485, 576558.5752354743 5384551.599474974, 576564.9174325457 5384551.4633860495, 576565.0988820936 5384559.804052239, 576555.3644671134 5384560.005180355, 576555.2370617936 5384553.110537442, 576555.1334797409 5384549.885025587))', 1168),"
+                + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
+
+        st.execute(sqlData);
+        TableLocation location = TableLocation.parse("public.building_indicators", true);
+        Geometry env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"the_geom"});
+        WKTReader reader = new WKTReader();
+        Geometry expectedGeom = reader.read("POLYGON ((576555.1334797409 5384506.127270323, 576555.1334797409 5384648.519150911, 576646.7754414822 5384648.519150911, 576646.7754414822 5384506.127270323, 576555.1334797409 5384506.127270323))");
+        expectedGeom.setSRID(32630);
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)"});
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)", "the_geom"});
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+               GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(orbisgis,0)"});
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+                GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"});
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
     
+    @Test
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void testGetEnvelopeFromGeometryFieldsPostGIS() throws SQLException, ParseException {
+        String sqlData = "DROP TABLE IF EXISTS public.buildings;\n"
+                + "CREATE TABLE public.buildings (\n"
+                + "	the_geom geometry(POLYGON, 32630),\n"
+                + "	id_build int4\n"
+                + "); "
+                + "INSERT INTO public.buildings\n"
+                + "VALUES('SRID=32630;POLYGON ((576569.8855746118 5384560.202691146, 576569.6799396832 5384553.6405112585, 576584.1349142857 5384553.281278896, 576584.3405324102 5384559.843459481, 576569.8855746118 5384560.202691146))', 1164),"
+                + "('SRID=32630;POLYGON ((576613.4515820902 5384506.430423924, 576623.851014461 5384506.127270323, 576624.030867693 5384514.579094129, 576613.7066755823 5384514.772095093, 576613.4515820902 5384506.430423924))', 1165),"
+                + "('SRID=32630;POLYGON ((576615.749017773 5384624.174842924, 576638.3786205315 5384640.147609505, 576632.6616354721 5384648.519150911, 576609.8565085419 5384632.443959317, 576615.749017773 5384624.174842924))', 1166), "
+                + "('SRID=32630;POLYGON ((576635.6545708041 5384554.315989608, 576638.6060492478 5384554.133821507, 576638.5595789884 5384552.132020645, 576646.5234286813 5384552.018102771, 576646.7754414822 5384560.582087368, 576635.786417653 5384560.877169167, 576635.6545708041 5384554.315989608))', 1167), "
+                + "('SRID=32630;POLYGON ((576555.1334797409 5384549.885025587, 576558.5272249203 5384549.708830485, 576558.5752354743 5384551.599474974, 576564.9174325457 5384551.4633860495, 576565.0988820936 5384559.804052239, 576555.3644671134 5384560.005180355, 576555.2370617936 5384553.110537442, 576555.1334797409 5384549.885025587))', 1168),"
+                + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
+        Statement stat = conPost.createStatement();
+        stat.execute(sqlData);
+        TableLocation location = TableLocation.parse("public.buildings");
+        Geometry env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"the_geom"});
+        WKTReader reader = new WKTReader();
+        Geometry expectedGeom = reader.read("POLYGON ((576555.1334797409 5384506.127270323, 576555.1334797409 5384648.519150911, 576646.7754414822 5384648.519150911, 576646.7754414822 5384506.127270323, 576555.1334797409 5384506.127270323))");
+        expectedGeom.setSRID(32630);
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)"});
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)", "the_geom"});
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+               GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(orbisgis,0)"});
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+                GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"});
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+    }
+    
+    
+    @Test
+    public void testGetEnvelopeFromGeometryFieldsWithFilter() throws SQLException, ParseException {
+        String sqlData = "DROP TABLE IF EXISTS public.building_indicators;\n"
+                + "CREATE TABLE public.building_indicators (\n"
+                + "	the_geom geometry(POLYGON, 32630),\n"
+                + "	id_build int4\n"
+                + "); "
+                + "INSERT INTO public.building_indicators\n"
+                + "VALUES('SRID=32630;POLYGON ((576569.8855746118 5384560.202691146, 576569.6799396832 5384553.6405112585, 576584.1349142857 5384553.281278896, 576584.3405324102 5384559.843459481, 576569.8855746118 5384560.202691146))', 1164),"
+                + "('SRID=32630;POLYGON ((576613.4515820902 5384506.430423924, 576623.851014461 5384506.127270323, 576624.030867693 5384514.579094129, 576613.7066755823 5384514.772095093, 576613.4515820902 5384506.430423924))', 1165),"
+                + "('SRID=32630;POLYGON ((576615.749017773 5384624.174842924, 576638.3786205315 5384640.147609505, 576632.6616354721 5384648.519150911, 576609.8565085419 5384632.443959317, 576615.749017773 5384624.174842924))', 1166), "
+                + "('SRID=32630;POLYGON ((576635.6545708041 5384554.315989608, 576638.6060492478 5384554.133821507, 576638.5595789884 5384552.132020645, 576646.5234286813 5384552.018102771, 576646.7754414822 5384560.582087368, 576635.786417653 5384560.877169167, 576635.6545708041 5384554.315989608))', 1167), "
+                + "('SRID=32630;POLYGON ((576555.1334797409 5384549.885025587, 576558.5272249203 5384549.708830485, 576558.5752354743 5384551.599474974, 576564.9174325457 5384551.4633860495, 576565.0988820936 5384559.804052239, 576555.3644671134 5384560.005180355, 576555.2370617936 5384553.110537442, 576555.1334797409 5384549.885025587))', 1168),"
+                + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
+
+        st.execute(sqlData);
+        TableLocation location = TableLocation.parse("public.building_indicators", true);
+        Geometry env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"the_geom"}, "WHERE id_build=1164");
+        WKTReader reader = new WKTReader();
+        Geometry expectedGeom = reader.read("POLYGON ((576569.6799396832 5384553.281278896, 576569.6799396832 5384560.202691146, 576584.3405324102 5384560.202691146, 576584.3405324102 5384553.281278896, 576569.6799396832 5384553.281278896))");
+        expectedGeom.setSRID(32630);
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)"}, "WHERE id_build=1164");
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)", "the_geom"}, "WHERE id_build=1164");
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+               GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)"}, "select");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+                GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"}, "");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+    }
+    
+    @Test
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")    
+    public void testGetEnvelopeFromGeometryFieldsWithFilterPostGIS() throws SQLException, ParseException {
+        String sqlData = "DROP TABLE IF EXISTS public.buildings;\n"
+                + "CREATE TABLE public.buildings (\n"
+                + "	the_geom geometry(POLYGON, 32630),\n"
+                + "	id_build int4\n"
+                + "); "
+                + "INSERT INTO public.buildings\n"
+                + "VALUES('SRID=32630;POLYGON ((576569.8855746118 5384560.202691146, 576569.6799396832 5384553.6405112585, 576584.1349142857 5384553.281278896, 576584.3405324102 5384559.843459481, 576569.8855746118 5384560.202691146))', 1164),"
+                + "('SRID=32630;POLYGON ((576613.4515820902 5384506.430423924, 576623.851014461 5384506.127270323, 576624.030867693 5384514.579094129, 576613.7066755823 5384514.772095093, 576613.4515820902 5384506.430423924))', 1165),"
+                + "('SRID=32630;POLYGON ((576615.749017773 5384624.174842924, 576638.3786205315 5384640.147609505, 576632.6616354721 5384648.519150911, 576609.8565085419 5384632.443959317, 576615.749017773 5384624.174842924))', 1166), "
+                + "('SRID=32630;POLYGON ((576635.6545708041 5384554.315989608, 576638.6060492478 5384554.133821507, 576638.5595789884 5384552.132020645, 576646.5234286813 5384552.018102771, 576646.7754414822 5384560.582087368, 576635.786417653 5384560.877169167, 576635.6545708041 5384554.315989608))', 1167), "
+                + "('SRID=32630;POLYGON ((576555.1334797409 5384549.885025587, 576558.5272249203 5384549.708830485, 576558.5752354743 5384551.599474974, 576564.9174325457 5384551.4633860495, 576565.0988820936 5384559.804052239, 576555.3644671134 5384560.005180355, 576555.2370617936 5384553.110537442, 576555.1334797409 5384549.885025587))', 1168),"
+                + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
+
+        Statement stat = conPost.createStatement();
+        stat.execute(sqlData);
+        TableLocation location = TableLocation.parse("public.buildings");
+        Geometry env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"the_geom"}, "WHERE id_build=1164");
+        WKTReader reader = new WKTReader();
+        Geometry expectedGeom = reader.read("POLYGON ((576569.6799396832 5384553.281278896, 576569.6799396832 5384560.202691146, 576584.3405324102 5384560.202691146, 576584.3405324102 5384553.281278896, 576569.6799396832 5384553.281278896))");
+        expectedGeom.setSRID(32630);
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(), env.getEnvelopeInternal());
+
+        env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)"}, "WHERE id_build=1164");
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)", "the_geom"}, "WHERE id_build=1164");
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+               GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)"}, "select");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+                GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"}, "");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+    }
+    
+    @Test
+    public void testGetEnvelopeFromGeometryFieldsSubQuery() throws SQLException, ParseException {
+        String sqlData = "DROP TABLE IF EXISTS public.building_indicators;\n"
+                + "CREATE TABLE public.building_indicators (\n"
+                + "	the_geom geometry(POLYGON, 32630),\n"
+                + "	id_build int4\n"
+                + "); "
+                + "INSERT INTO public.building_indicators\n"
+                + "VALUES('SRID=32630;POLYGON ((576569.8855746118 5384560.202691146, 576569.6799396832 5384553.6405112585, 576584.1349142857 5384553.281278896, 576584.3405324102 5384559.843459481, 576569.8855746118 5384560.202691146))', 1164),"
+                + "('SRID=32630;POLYGON ((576613.4515820902 5384506.430423924, 576623.851014461 5384506.127270323, 576624.030867693 5384514.579094129, 576613.7066755823 5384514.772095093, 576613.4515820902 5384506.430423924))', 1165),"
+                + "('SRID=32630;POLYGON ((576615.749017773 5384624.174842924, 576638.3786205315 5384640.147609505, 576632.6616354721 5384648.519150911, 576609.8565085419 5384632.443959317, 576615.749017773 5384624.174842924))', 1166), "
+                + "('SRID=32630;POLYGON ((576635.6545708041 5384554.315989608, 576638.6060492478 5384554.133821507, 576638.5595789884 5384552.132020645, 576646.5234286813 5384552.018102771, 576646.7754414822 5384560.582087368, 576635.786417653 5384560.877169167, 576635.6545708041 5384554.315989608))', 1167), "
+                + "('SRID=32630;POLYGON ((576555.1334797409 5384549.885025587, 576558.5272249203 5384549.708830485, 576558.5752354743 5384551.599474974, 576564.9174325457 5384551.4633860495, 576565.0988820936 5384559.804052239, 576555.3644671134 5384560.005180355, 576555.2370617936 5384553.110537442, 576555.1334797409 5384549.885025587))', 1168),"
+                + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
+
+        st.execute(sqlData);
+        Geometry env = GeometryTableUtilities.getEnvelope(connection, "SELECT * FROM public.building_indicators WHERE id_build=1164", new String[]{"the_geom"});
+        WKTReader reader = new WKTReader();
+        Geometry expectedGeom = reader.read("POLYGON ((576569.6799396832 5384553.281278896, 576569.6799396832 5384560.202691146, 576584.3405324102 5384560.202691146, 576584.3405324102 5384553.281278896, 576569.6799396832 5384553.281278896))");
+        expectedGeom.setSRID(32630);
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(connection, "SELECT * FROM public.building_indicators WHERE id_build=1164", new String[]{"st_buffer(the_geom,0)"});
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(connection, "SELECT * FROM public.building_indicators WHERE id_build=1164", new String[]{"st_buffer(the_geom,0)", "the_geom"});
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+               GeometryTableUtilities.getEnvelope(connection, "SELECT", new String[]{"st_buffer(the_geom,0)"});
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+        
+        assertThrows(SQLException.class, () -> {
+            try {
+                GeometryTableUtilities.getEnvelope(connection, "SELECT * FROM public.building_indicators WHERE id_build=1164", new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"});
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+    }
+    
+    @Test
+    public void testGetEnvelopeFromGeometryFieldsSubQueryFilter() throws SQLException, ParseException {
+        String sqlData = "DROP TABLE IF EXISTS public.building_indicators;\n"
+                + "CREATE TABLE public.building_indicators (\n"
+                + "	the_geom geometry(POLYGON, 32630),\n"
+                + "	id_build int4\n"
+                + "); "
+                + "INSERT INTO public.building_indicators\n"
+                + "VALUES('SRID=32630;POLYGON ((576569.8855746118 5384560.202691146, 576569.6799396832 5384553.6405112585, 576584.1349142857 5384553.281278896, 576584.3405324102 5384559.843459481, 576569.8855746118 5384560.202691146))', 1164),"
+                + "('SRID=32630;POLYGON ((576613.4515820902 5384506.430423924, 576623.851014461 5384506.127270323, 576624.030867693 5384514.579094129, 576613.7066755823 5384514.772095093, 576613.4515820902 5384506.430423924))', 1165),"
+                + "('SRID=32630;POLYGON ((576615.749017773 5384624.174842924, 576638.3786205315 5384640.147609505, 576632.6616354721 5384648.519150911, 576609.8565085419 5384632.443959317, 576615.749017773 5384624.174842924))', 1166), "
+                + "('SRID=32630;POLYGON ((576635.6545708041 5384554.315989608, 576638.6060492478 5384554.133821507, 576638.5595789884 5384552.132020645, 576646.5234286813 5384552.018102771, 576646.7754414822 5384560.582087368, 576635.786417653 5384560.877169167, 576635.6545708041 5384554.315989608))', 1167), "
+                + "('SRID=32630;POLYGON ((576555.1334797409 5384549.885025587, 576558.5272249203 5384549.708830485, 576558.5752354743 5384551.599474974, 576564.9174325457 5384551.4633860495, 576565.0988820936 5384559.804052239, 576555.3644671134 5384560.005180355, 576555.2370617936 5384553.110537442, 576555.1334797409 5384549.885025587))', 1168),"
+                + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
+
+        st.execute(sqlData);
+        Geometry env = GeometryTableUtilities.getEnvelope(connection, "SELECT * FROM public.building_indicators WHERE id_build=1164", new String[]{"the_geom"}, "limit 1");
+        WKTReader reader = new WKTReader();
+        Geometry expectedGeom = reader.read("POLYGON ((576569.6799396832 5384553.281278896, 576569.6799396832 5384560.202691146, 576584.3405324102 5384560.202691146, 576584.3405324102 5384553.281278896, 576569.6799396832 5384553.281278896))");
+        expectedGeom.setSRID(32630);
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(connection, "SELECT * FROM public.building_indicators WHERE id_build=1164", new String[]{"st_buffer(the_geom,0)"},"limit 1");
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+        
+        env = GeometryTableUtilities.getEnvelope(connection, "SELECT * FROM public.building_indicators WHERE id_build=1164", new String[]{"st_buffer(the_geom,0)", "the_geom"}, "limit 1");
+        assertEquals(expectedGeom.getSRID(), env.getSRID());
+        assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
+    }
 
 }
