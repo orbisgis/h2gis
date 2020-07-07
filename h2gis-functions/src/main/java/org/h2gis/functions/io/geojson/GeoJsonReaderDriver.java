@@ -694,7 +694,11 @@ public class GeoJsonReaderDriver {
                     cachedColumnNames.put(fieldName, "DOUBLE PRECISION");
                     break;
                 case VALUE_NUMBER_INT:
-                    cachedColumnNames.put(fieldName, "BIGINT");
+                    if (jp.getNumberType() == JsonParser.NumberType.INT) {
+                        cachedColumnNames.put(fieldName, "INT");
+                    } else {
+                        cachedColumnNames.put(fieldName, "BIGINT");
+                    }
                     break;
                 case START_ARRAY:
                     cachedColumnNames.put(fieldName, "ARRAY");
@@ -856,7 +860,11 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getValueAsDouble();
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                values[cachedColumnIndex.get(fieldName)] =  jp.getBigIntegerValue();
+                if(jp.getNumberType() == JsonParser.NumberType.INT) {
+                    values[cachedColumnIndex.get(fieldName)] = jp.getIntValue();
+                } else {
+                    values[cachedColumnIndex.get(fieldName)] = jp.getLongValue();
+                }
             } else if (value == JsonToken.START_ARRAY) {
                 ArrayList<Object> arrayList = parseArray(jp);
                 values[cachedColumnIndex.get(fieldName)] = arrayList.toArray();
