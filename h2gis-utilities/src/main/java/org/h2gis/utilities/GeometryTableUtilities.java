@@ -697,6 +697,9 @@ public class GeometryTableUtilities {
             if (!tableLocation.getSchema().isEmpty()) {
                 query.append("'").append(tableLocation.getSchema()).append("',");
             }
+            else{
+                query.append("'").append("public").append("',");
+            }
             query.append("'").append(tableLocation.getTable()).append("','").append(geometryColumnName).append("') :: geometry");
             try (ResultSet rs = connection.createStatement().executeQuery(query.toString())) {
                 if (rs.next()) {
@@ -1021,15 +1024,19 @@ public class GeometryTableUtilities {
         }
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         int columnCount = 0;
-        StringBuilder sb = new StringBuilder("SELECT ");
-        if (isH2) {
+        StringBuilder mainSelect = new StringBuilder("SELECT ");
+        StringBuilder subSELECT = new StringBuilder("SELECT ");
+        if (isH2) {            
             for (int i = 0; i < geometryColumns.length; i++) {
                 String geomField = geometryColumns[i];
                 if (i > 0) {
-                    sb.append(",");
+                    mainSelect.append(",");
+                    subSELECT.append(",");
                 }
                 if (geomField != null && !geomField.isEmpty()) {
-                    sb.append("ST_EXTENT(").append(geomField).append(")").append(" as geom_").append(i);
+                    String columnName = "geom_"+i;
+                    subSELECT.append(geomField).append(" as ").append(columnName);
+                    mainSelect.append("ST_EXTENT(").append(columnName).append(")").append(" as ").append(columnName);                    
                     columnCount++;
                 }
             }
@@ -1037,33 +1044,41 @@ public class GeometryTableUtilities {
             for (int i = 0; i < geometryColumns.length; i++) {
                 String geomField = geometryColumns[i];
                 if (i > 0) {
-                    sb.append(",");
+                    mainSelect.append(",");                    
+                    subSELECT.append(",");
                 }
                 if (geomField != null && !geomField.isEmpty()) {
-                    sb.append(" ST_SetSRID(ST_EXTENT(").append(geomField).append("), MAX(ST_SRID(")
-                            .append(geomField).
-                            append(" ))) as geom_").append(i);
+                    String columnName = "geom_"+i;
+                    subSELECT.append(geomField).append(" as ").append(columnName);
+                    mainSelect.append(" ST_SetSRID(ST_EXTENT(").append(columnName).append("), MAX(ST_SRID(")
+                            .append(columnName).
+                            append(" ))) as ").append(columnName);
                     columnCount++;
                 }
             }
         }
-        sb.append(" FROM ").append(location.toString(isH2));
-        if(filter!=null && !filter.isEmpty()){
-            sb.append(" ").append(filter);
+        mainSelect.append(" FROM ");
+        subSELECT.append(" FROM ").append(location.toString(isH2)).append(" ");
+        if (filter != null && !filter.isEmpty()) {
+            subSELECT.append(filter);
         }
+        subSELECT.append(" ) as foo");
+        mainSelect.append("(").append(subSELECT.toString());
         Envelope aggregatedEnvelope = new Envelope();
         int srid = 0;
-        try (ResultSet rs = connection.createStatement().executeQuery(sb.toString())) {
+        try (ResultSet rs = connection.createStatement().executeQuery(mainSelect.toString())) {
             if (rs.next()) {
-                for (int i = 0; i < columnCount; i++) {
+                for (int i = 0; i < columnCount; i++) {                    
                     Geometry geom = (Geometry) rs.getObject(i + 1);
-                    int currentSRID = geom.getSRID();
-                    if (srid == 0) {
-                        srid = currentSRID;
-                    } else if (srid != currentSRID) {
-                        throw new SQLException("Operation on mixed SRID geometries not supported");
+                    if (geom != null) {
+                        int currentSRID = geom.getSRID();
+                        if (srid == 0) {
+                            srid = currentSRID;
+                        } else if (srid != currentSRID) {
+                            throw new SQLException("Operation on mixed SRID geometries not supported");
+                        }
+                        aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
                     }
-                    aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
                 }
             }
         }
@@ -1174,13 +1189,15 @@ public class GeometryTableUtilities {
             if (rs.next()) {
                 for (int i = 0; i < columnCount; i++) {
                     Geometry geom = (Geometry) rs.getObject(i + 1);
-                    int currentSRID = geom.getSRID();
-                    if (srid == 0) {
-                        srid = currentSRID;
-                    } else if (srid != currentSRID) {
-                        throw new SQLException("Operation on mixed SRID geometries not supported");
+                    if (geom != null) {
+                        int currentSRID = geom.getSRID();
+                        if (srid == 0) {
+                            srid = currentSRID;
+                        } else if (srid != currentSRID) {
+                            throw new SQLException("Operation on mixed SRID geometries not supported");
+                        }
+                        aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
                     }
-                    aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
                 }
             }
         }
