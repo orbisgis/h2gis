@@ -729,18 +729,14 @@ public class GeometryTableUtilsTest {
     @DisabledIfSystemProperty(named = "postgresql", matches = "false")
     public void testEstimatedExtentPostGIS() throws SQLException {
         Statement statement = conPost.createStatement();
-        statement.execute("DROP TABLE IF EXISTS geomtable; \n"
-                + "CREATE TABLE geomtable (THE_GEOM GEOMETRY(GEOMETRY, 4326));\n"
-                + "insert\n"
-                + "	into\n"
-                + "	geomtable\n"
-                + "values (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),\n"
-                + "(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326));");
-        statement.execute("ANALYZE geomtable");
+        statement.execute("DROP TABLE IF EXISTS PUBLIC.GEOMTABLE; CREATE TABLE PUBLIC.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
+        statement.execute("INSERT INTO PUBLIC.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
+        statement.execute("ANALYZE PUBLIC.GEOMTABLE");
         TableLocation tableLocation = TableLocation.parse("geomtable");
         Geometry geom = GeometryTableUtilities.getEstimatedExtent(conPost, tableLocation, "the_geom");
         assertNotNull(geom);
-        assertEquals(4326, geom.getSRID());
+        assertEquals(4326, geom.getSRID());        
+        statement.execute("DROP SCHEMA IF EXISTS PUBLIC.GEOMTABLE;");
     }
 
     @Test
