@@ -22,15 +22,11 @@ package org.h2gis.functions.io.geojson;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * GeoJSON driver to import a GeoJSON file and export a spatial table in a

@@ -23,7 +23,6 @@ import org.h2.tools.Csv;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -36,6 +35,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
+import org.h2gis.utilities.FileUtilities;
 
 /**
  * This driver allow to import and export the Tab Separated Values (TSV): a
@@ -108,7 +108,7 @@ public class TSVDriverFunction implements DriverFunction {
         Matcher matcher = pattern.matcher(tableReference);
         if (matcher.find()) {
             if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
-                if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
+                if (FileUtilities.isExtensionWellFormated(fileName, "tsv")) {
                     if (deleteFiles) {
                         Files.deleteIfExists(fileName.toPath());
                     }
@@ -118,7 +118,7 @@ public class TSVDriverFunction implements DriverFunction {
                             exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, new EmptyProgressVisitor());
                         }
                     }
-                } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+                } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
                     if (deleteFiles) {
                         Files.deleteIfExists(fileName.toPath());
                     }
@@ -131,7 +131,7 @@ public class TSVDriverFunction implements DriverFunction {
                             exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, new EmptyProgressVisitor());
                         }
                     }
-                } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+                } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
                     if (deleteFiles) {
                         Files.deleteIfExists(fileName.toPath());
                     }
@@ -152,7 +152,7 @@ public class TSVDriverFunction implements DriverFunction {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
+            if (FileUtilities.isExtensionWellFormated(fileName, "tsv")) {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
                 }
@@ -164,7 +164,7 @@ public class TSVDriverFunction implements DriverFunction {
                         exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, new EmptyProgressVisitor());
                     }
                 }
-            } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+            } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
                 }
@@ -177,7 +177,7 @@ public class TSVDriverFunction implements DriverFunction {
                         exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, new EmptyProgressVisitor());
                     }
                 }
-            } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+            } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
                 }

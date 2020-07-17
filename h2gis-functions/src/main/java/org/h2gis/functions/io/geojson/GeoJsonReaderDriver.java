@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import org.h2.value.ValueGeometry;
-import org.h2.value.ValueNull;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
@@ -899,8 +898,11 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
                 values[cachedColumnIndex.get(fieldName)] = jp.getValueAsDouble();
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                BigDecimal bigDecId = new BigDecimal(jp.getBigIntegerValue());
-                values[cachedColumnIndex.get(fieldName)] = bigDecId;
+                if(jp.getNumberType() == JsonParser.NumberType.INT) {
+                    values[cachedColumnIndex.get(fieldName)] = jp.getIntValue();
+                } else {
+                    values[cachedColumnIndex.get(fieldName)] = jp.getLongValue();
+                }
             } else if (value == JsonToken.START_ARRAY) {
                 ArrayList<Object> arrayList = parseArray(jp);
                 values[cachedColumnIndex.get(fieldName)] = arrayList.toArray();

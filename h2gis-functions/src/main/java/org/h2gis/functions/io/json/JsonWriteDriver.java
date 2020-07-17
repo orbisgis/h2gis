@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.slf4j.Logger;
@@ -38,6 +37,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.h2gis.utilities.FileUtilities;
 
 /**
  * JSON class to write a table or a resultset to a file
@@ -83,16 +83,16 @@ public class JsonWriteDriver {
         if (rs == null) {
             throw new SQLException("The ResultSet to save is null or empty : no data to write.");
         }
-        if (FileUtil.isExtensionWellFormated(file, "json")) {
+        if (FileUtilities.isExtensionWellFormated(file, "json")) {
             try(FileOutputStream fos = new FileOutputStream(file)) {
                 jsonWrite(progress, rs, fos, encoding);
             }
-        } else if (FileUtil.isExtensionWellFormated(file, "gz")) {
+        } else if (FileUtilities.isExtensionWellFormated(file, "gz")) {
             try(FileOutputStream fos = new FileOutputStream(file);
                 GZIPOutputStream gzos = new GZIPOutputStream(fos)){
                 jsonWrite(progress, rs, gzos, encoding);
             }
-        } else if (FileUtil.isExtensionWellFormated(file, "zip")) {
+        } else if (FileUtilities.isExtensionWellFormated(file, "zip")) {
             try (FileOutputStream fos = new FileOutputStream(file);
                  ZipOutputStream zip = new ZipOutputStream(fos)) {
                 zip.putNextEntry(new ZipEntry(file.getName().substring(0, file.getName().length()-4)));

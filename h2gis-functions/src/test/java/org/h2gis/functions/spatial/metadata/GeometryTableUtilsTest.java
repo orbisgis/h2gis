@@ -736,7 +736,7 @@ public class GeometryTableUtilsTest {
         Geometry geom = GeometryTableUtilities.getEstimatedExtent(conPost, tableLocation, "the_geom");
         assertNotNull(geom);
         assertEquals(4326, geom.getSRID());        
-        statement.execute("DROP SCHEMA IF EXISTS PUBLIC.GEOMTABLE;");
+        statement.execute("DROP TABLE IF EXISTS PUBLIC.GEOMTABLE;");
     }
 
     @Test

@@ -21,11 +21,9 @@
 package org.h2gis.functions.io.gpx.model;
 
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -37,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.utilities.FileUtilities;
 
 /**
  * Main class to parse the GPX file
@@ -127,16 +126,18 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     
 
     /**
-     * Reads the document and parses it. The other methods are called
+     * Reads the document and parses it.The other methods are called
      * automatically when corresponding markup is found.
      *
      * @param tableName the table used to create all tables
+     * @param progress
      * @return a boolean value if the parser ends successfully or not
      * @throws SQLException if the creation of the tables failed
+     * @throws java.io.FileNotFoundException
      */
     public boolean read(String tableName, ProgressVisitor progress) throws SQLException, FileNotFoundException {
         boolean success = false;
-        if (FileUtil.isFileImportable(fileName, "gpx")) {
+        if (FileUtilities.isFileImportable(fileName, "gpx")) {
             // Initialisation
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
 
