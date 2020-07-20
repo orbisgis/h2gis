@@ -30,7 +30,6 @@ import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.internal.SHPDriver;
 import org.h2gis.functions.io.shp.internal.ShapeType;
 import org.h2gis.functions.io.shp.internal.ShapefileHeader;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.functions.io.utility.PRJUtil;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
@@ -45,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
 import org.locationtech.jts.geom.Geometry;
@@ -72,7 +72,7 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        if (!FileUtil.isExtensionWellFormated(fileName, "shp")) {
+        if (!FileUtilities.isExtensionWellFormated(fileName, "shp")) {
             throw new SQLException("Only .shp extension is supported");
         }
         if (deleteFiles) {
@@ -259,7 +259,7 @@ public class SHPDriverFunction implements DriverFunction {
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        if (FileUtil.isFileImportable(fileName, "shp")) {
+        if (FileUtilities.isFileImportable(fileName, "shp")) {
             if (deleteTables) {
                 TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
                 String table = requestedTable.getTable();

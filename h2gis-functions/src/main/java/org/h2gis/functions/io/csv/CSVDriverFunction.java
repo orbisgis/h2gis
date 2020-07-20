@@ -23,7 +23,6 @@ package org.h2gis.functions.io.csv;
 import org.h2.tools.Csv;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -33,6 +32,7 @@ import java.nio.file.Files;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.utilities.FileUtilities;
 
 /**
  * Basic CSV importer and exporter
@@ -88,7 +88,7 @@ public class CSVDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        if (!FileUtil.isExtensionWellFormated(fileName, "csv")) {
+        if (!FileUtilities.isExtensionWellFormated(fileName, "csv")) {
             throw new SQLException("Only .csv extension is supported");
         }
         if(deleteFiles){
@@ -171,7 +171,7 @@ public class CSVDriverFunction implements DriverFunction{
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (FileUtil.isFileImportable(fileName, "csv")) {
+        if (FileUtilities.isFileImportable(fileName, "csv")) {
             if(deleteTables) {
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 TableLocation requestedTable = TableLocation.parse(tableReference, isH2);

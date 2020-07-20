@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
@@ -37,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
+import org.h2gis.utilities.FileUtilities;
 
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
@@ -111,12 +111,12 @@ public class GeoJsonWriteDriver {
      * @throws java.io.IOException
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
-        if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
+        if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             }
             geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
-        } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+        } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             }
@@ -134,7 +134,7 @@ public class GeoJsonWriteDriver {
                     throw new SQLException(ex);
                 }
             }
-        } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+        } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             }
@@ -325,12 +325,12 @@ public class GeoJsonWriteDriver {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
+            if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
                 if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
                 }
                 geojsonWriter(progress, tableName, new FileOutputStream(fileName), encoding);
-            } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+            } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
                 if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
                 }
@@ -348,7 +348,7 @@ public class GeoJsonWriteDriver {
                         throw new SQLException(ex);
                     }
                 }
-            } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+            } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
                 if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
                 }

@@ -30,7 +30,6 @@ import org.h2gis.functions.io.dbf.internal.DbaseFileException;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.h2gis.functions.io.file_table.FileEngine;
 import org.h2gis.functions.io.file_table.H2TableIndex;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -42,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.utilities.FileUtilities;
 
 /**
  * @author Erwan Bocher, CNRS
@@ -65,7 +65,7 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        if (!FileUtil.isExtensionWellFormated(fileName, "dbf")) {
+        if (!FileUtilities.isExtensionWellFormated(fileName, "dbf")) {
             throw new SQLException("Only .dbf extension is supported");
         }
         if(deleteFiles){
@@ -216,7 +216,7 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (FileUtil.isFileImportable(fileName, "dbf")) {
+        if (FileUtilities.isFileImportable(fileName, "dbf")) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             if (deleteTables) {

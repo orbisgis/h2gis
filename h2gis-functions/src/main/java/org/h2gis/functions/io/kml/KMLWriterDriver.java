@@ -21,7 +21,6 @@
 package org.h2gis.functions.io.kml;
 
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -36,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
 
@@ -75,7 +75,7 @@ public class KMLWriterDriver {
         Matcher matcher = pattern.matcher(tableName);
         if (matcher.find()) {
             if (tableName.startsWith("(") && tableName.endsWith(")")) {
-                if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
+                if (FileUtilities.isExtensionWellFormated(fileName, "kml")) {
                     if(deleteFile){
                         Files.deleteIfExists(fileName.toPath());
                     }
@@ -91,7 +91,7 @@ public class KMLWriterDriver {
                     }
                     this.tableName =  "QUERY_"+System.currentTimeMillis();
                     writeKML(progress.subProcess(rowCount), fileName,resultSet,  spatialFieldName.first(),  encoding);
-                }else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
+                }else if (FileUtilities.isExtensionWellFormated(fileName, "kmz")) {
                     if(deleteFile){
                         Files.deleteIfExists(fileName.toPath());
                     }
@@ -122,12 +122,12 @@ public class KMLWriterDriver {
                 // Read Geometry Index and type
                 Tuple<String, Integer> spatialFieldName = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
                 this.tableName=tableName;
-            if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
+            if (FileUtilities.isExtensionWellFormated(fileName, "kml")) {
                 if(deleteFile){
                     Files.deleteIfExists(fileName.toPath());
                 }
                 writeKML(progress, fileName,resultSet,  spatialFieldName.first(),  encoding);
-            }else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
+            }else if (FileUtilities.isExtensionWellFormated(fileName, "kmz")) {
                 if(deleteFile){
                     Files.deleteIfExists(fileName.toPath());
                 }
