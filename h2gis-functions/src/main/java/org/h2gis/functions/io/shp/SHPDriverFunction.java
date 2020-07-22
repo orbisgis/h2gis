@@ -308,12 +308,12 @@ public class SHPDriverFunction implements DriverFunction {
                     lastSql = String.format("INSERT INTO %s VALUES (DEFAULT, %s )", parse,
                             DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
                     connection.setAutoCommit(false);
+                    final int columnCount = shpDriver.getFieldCount();
                     try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
-                            Value[] values = shpDriver.getRow(rowId);
-                            for (int columnId = 0; columnId < values.length; columnId++) {
-                                preparedStatement.setObject(columnId + 1, values[columnId].getObject());
+                            for (int columnId = 0; columnId < columnCount; columnId++) {
+                                preparedStatement.setObject(columnId + 1, shpDriver.getField(rowId, columnId).getObject());
                             }
                             preparedStatement.addBatch();
                             batchSize++;

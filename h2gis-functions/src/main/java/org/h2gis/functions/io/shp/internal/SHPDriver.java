@@ -22,6 +22,7 @@ package org.h2gis.functions.io.shp.internal;
 
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
 import org.h2gis.api.FileDriver;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
@@ -39,7 +40,7 @@ import java.nio.file.Path;
  * How to use:
  *
  * In Write mode,
- * Declare fields by calling {@link SHPDriver#initDriver(java.io.File, ShapeType, org.h2gis.drivers.dbf.internal.DbaseFileHeader)}
+ * Declare fields by calling {@link SHPDriver#initDriver(File, ShapeType, DbaseFileHeader)} Driver(java.io.File, ShapeType, org.h2gis.drivers.dbf.internal.DbaseFileHeader)}
  * then write row using
  *
  *
@@ -222,28 +223,40 @@ public class SHPDriver implements FileDriver {
         }
     }
 
+    @Override
     public int getFieldCount() {
         return dbfDriver.getFieldCount() + 1;
     }
 
     @Override
-    public Value[] getRow(long rowId) throws IOException {
-        final int fieldCount = getFieldCount();
-        Value[] values = new Value[fieldCount];
-        int deltaDBF = 0;
-        for (int i = 0; i < fieldCount; i++) {
-            if (i == geometryFieldIndex) {
-                Geometry geom = shapefileReader.geomAt(shxFileReader.getOffset((int) rowId));
-                if (geom != null) {
-                    geom.setSRID(getSrid());
-                }
-                values[i] = ValueGeometry.getFromGeometry(geom);  
+    public int getEstimatedRowSize(long rowId) {
+        int totalSize = 0;
+        totalSize += dbfDriver.getEstimatedRowSize(rowId);
+        try {
+            totalSize += shxFileReader.getContentLength((int) rowId);
+        } catch (IOException ex) {
+            // Ignore
+        }
+        return totalSize;
+    }
+
+    @Override
+    public Value getField(long rowId, int column) throws IOException {
+        if (column == geometryFieldIndex) {
+            Geometry geom = shapefileReader.geomAt(shxFileReader.getOffset((int) rowId));
+            if (geom != null) {
+                geom.setSRID(getSrid());
+                return ValueGeometry.getFromGeometry(geom);
             } else {
-                values[i] = dbfDriver.getDbaseFileReader().getFieldValue((int) rowId, deltaDBF);
-                deltaDBF++;
+                return ValueNull.INSTANCE;
+            }
+        } else {
+            if(geometryFieldIndex < column) {
+                return dbfDriver.getDbaseFileReader().getFieldValue((int) rowId, column - 1);
+            } else {
+                return dbfDriver.getDbaseFileReader().getFieldValue((int) rowId, column);
             }
         }
-        return values;
     }
 
     /**
