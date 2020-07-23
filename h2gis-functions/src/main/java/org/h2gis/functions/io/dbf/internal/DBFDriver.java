@@ -132,18 +132,23 @@ public class DBFDriver implements FileDriver {
     /**
      * @return Column count
      */
+    @Override
     public int getFieldCount() {
         return getDbaseFileHeader().getNumFields();
     }
 
     @Override
-    public Value[] getRow(long rowId) throws IOException {
-        final int fieldCount = dbaseFileReader.getFieldCount();
-        Value[] values = new Value[fieldCount];
-        for(int fieldId=0;fieldId<fieldCount;fieldId++) {
-            values[fieldId] = dbaseFileReader.getFieldValue((int)rowId, fieldId);
+    public int getEstimatedRowSize(long rowId) {
+        int totalSize = 0;
+        for(int column = 0; column < getFieldCount(); column++) {
+            totalSize += dbaseFileReader.getLengthFor(column);
         }
-        return values;
+        return totalSize;
+    }
+
+    @Override
+    public Value getField(long rowId, int columnId) throws IOException {
+        return dbaseFileReader.getFieldValue((int)rowId, columnId);
     }
 
     /**

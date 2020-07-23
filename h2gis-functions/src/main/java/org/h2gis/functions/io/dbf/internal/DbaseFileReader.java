@@ -165,7 +165,7 @@ public class DbaseFileReader {
 
         }
 
-        private int getLengthFor(int column) {
+        public int getLengthFor(int column) {
                 return header.getFieldLength(column);
         }
 

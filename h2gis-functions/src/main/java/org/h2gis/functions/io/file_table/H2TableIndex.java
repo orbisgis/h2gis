@@ -22,6 +22,7 @@ package org.h2gis.functions.io.file_table;
 
 import org.h2.api.ErrorCode;
 import org.h2.command.dml.AllColumnsForPlan;
+import org.h2.engine.Constants;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -87,17 +88,7 @@ public class H2TableIndex extends BaseIndex {
 
     @Override
     public Row getRow(Session session, long key) {
-        try {
-            Object[] driverRow = driver.getRow(key - 1);
-            Value[] values = new Value[driverRow.length + 1];
-            System.arraycopy(driverRow, 0, values, 1, driverRow.length);
-            values[0] = ValueBigint.get(key);
-            Row row = Row.get(values, Row.MEMORY_CALCULATE);
-            row.setKey(key);
-            return row;
-        } catch (IOException ex) {
-            throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
-        }
+        return new DriverRow(driver, key);
     }
 
     @Override
@@ -252,6 +243,103 @@ public class H2TableIndex extends BaseIndex {
             } else {
                 return false;
             }
+        }
+    }
+
+    /**
+     * This class is requiring only field value on demand instead of gathering the full row values from drivers
+     */
+    public static class DriverRow extends Row {
+        FileDriver driver;
+        int memory; // estimated row size in bytes
+
+        public DriverRow(FileDriver driver, long key) {
+            this.driver = driver;
+            this.key = key;
+        }
+
+        @Override
+        public Value[] getValueList() {
+            try {
+                Value[] values = new Value[getColumnCount()];
+                values[0] = ValueBigint.get(key);
+                for(int i = 1; i < values.length; i++) {
+                    values[i] = (Value)(driver.getField(key - 1, i - 1));
+                }
+                return values;
+            } catch (IOException ex) {
+                throw DbException.get(ErrorCode.IO_EXCEPTION_1, ex);
+            }
+        }
+
+        @Override
+        public int getColumnCount() {
+            return driver.getFieldCount() + 1;
+        }
+
+        @Override
+        public Value getValue(int column) {
+            if(column == ROWID_INDEX) {
+                return ValueBigint.get(key);
+            } else {
+                try {
+                    if(column == 0) {
+                        // pk
+                        return ValueBigint.get(key);
+                    } else {
+                        return (Value)(driver.getField(key - 1, column - 1));
+                    }
+                } catch (IOException ex) {
+                    throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
+                }
+            }
+        }
+
+        @Override
+        public void setValue(int i, Value value) {
+            if (i == ROWID_INDEX) {
+                key = value.getLong();
+            }
+        }
+
+        @Override
+        public int getMemory() {
+            if (memory != MEMORY_CALCULATE) {
+                return memory;
+            }
+            return memory = calculateMemory();
+        }
+
+        @Override
+        public void copyFrom(SearchRow source) {
+            setKey(source.getKey());
+            for (int i = 0; i < getColumnCount(); i++) {
+                setValue(i, source.getValue(i));
+            }
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder("( /* key:").append(key).append(" */ ");
+            for (int i = 0, length = getColumnCount(); i < length; i++) {
+                if (i > 0) {
+                    builder.append(", ");
+                }
+                Value v = getValue(i);
+                builder.append(v == null ? "null" : v.getTraceSQL());
+            }
+            return builder.append(')').toString();
+        }
+
+        /**
+         * Calculate the estimated memory used for this row, in bytes.
+         *
+         * @return the memory
+         */
+        int calculateMemory() {
+            int m = Constants.MEMORY_ROW + Constants.MEMORY_ARRAY + getColumnCount() * Constants.MEMORY_POINTER;
+            m += driver.getEstimatedRowSize(key - 1);
+            return m;
         }
     }
 }

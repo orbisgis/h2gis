@@ -245,6 +245,7 @@ public class DBFDriverFunction implements DriverFunction {
                     }
                     try {
                         connection.setAutoCommit(false);
+                        int columnCount = dbfDriver.getFieldCount();
                         try (PreparedStatement preparedStatement = connection.prepareStatement(
                                 String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
                                         getQuestionMark(dbfHeader.getNumFields() + 1)))) {
@@ -252,9 +253,8 @@ public class DBFDriverFunction implements DriverFunction {
                             long batchSize = 0;
                             for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
                                 preparedStatement.setObject(1, rowId + 1);
-                                Value[] values = dbfDriver.getRow(rowId);
-                                for (int columnId = 0; columnId < values.length; columnId++) {
-                                    preparedStatement.setObject(columnId + 2, values[columnId].getObject());
+                                for (int columnId = 0; columnId < columnCount; columnId++) {
+                                    preparedStatement.setObject(columnId + 2, dbfDriver.getField(rowId, columnId).getObject());
                                 }
                                 preparedStatement.addBatch();
                                 batchSize++;
