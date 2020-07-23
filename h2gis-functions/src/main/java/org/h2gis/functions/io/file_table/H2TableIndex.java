@@ -88,7 +88,7 @@ public class H2TableIndex extends BaseIndex {
 
     @Override
     public Row getRow(Session session, long key) {
-        return new DriverRow(driver, key - 1);
+        return new DriverRow(driver, key);
     }
 
     @Override
@@ -287,7 +287,7 @@ public class H2TableIndex extends BaseIndex {
                         // pk
                         return ValueBigint.get(key);
                     } else {
-                        return (Value)(driver.getField(key, column - 1));
+                        return (Value)(driver.getField(key - 1, column - 1));
                     }
                 } catch (IOException ex) {
                     throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
@@ -338,7 +338,7 @@ public class H2TableIndex extends BaseIndex {
          */
         int calculateMemory() {
             int m = Constants.MEMORY_ROW + Constants.MEMORY_ARRAY + getColumnCount() * Constants.MEMORY_POINTER;
-            m += driver.getEstimatedRowSize(key);
+            m += driver.getEstimatedRowSize(key - 1);
             return m;
         }
     }
