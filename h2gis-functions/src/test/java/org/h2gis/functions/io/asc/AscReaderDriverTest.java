@@ -40,7 +40,6 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import org.h2gis.unitTest.GeometryAsserts;
-import org.h2gis.utilities.JDBCUtilities;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,7 @@ public class AscReaderDriverTest {
 
     @BeforeEach
     public void tearUp() throws Exception {
-        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase("/tmp/dbgis;AUTO_SERVER=TRUE", true, ""));
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
     @AfterEach
@@ -144,8 +143,8 @@ public class AscReaderDriverTest {
             assertEquals(114, rs.getInt("Z"));
         }
 
-        st.execute("CALL SHPWRITE('/tmp/grid.shp', 'PRECIP30MIN')");
-        //st.execute("CALL SHPWRITE('/tmp/grid_nodata.shp', '(SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  st_buffer(ST_SETSRID(ST_MAKEPOINT(-179.5,-80.25), 4326), 0.1)))')");
+        st.execute("CALL SHPWRITE('target/grid.shp', 'PRECIP30MIN')");
+        //st.execute("CALL SHPWRITE('target/grid_nodata.shp', '(SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  st_buffer(ST_SETSRID(ST_MAKEPOINT(-179.5,-80.25), 4326), 0.1)))')");
 
         // Check nodata cell
         st = connection.createStatement();

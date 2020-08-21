@@ -21,7 +21,6 @@
 package org.h2gis.functions.io.shp;
 
 import org.h2.util.StringUtils;
-import org.h2.value.Value;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;

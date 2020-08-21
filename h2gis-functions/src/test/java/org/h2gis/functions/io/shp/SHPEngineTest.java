@@ -192,10 +192,12 @@ public class SHPEngineTest {
         File src = new File(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
         File srcDbf = new File(SHPEngineTest.class.getResource("waternetwork.dbf").getPath());
         File srcShx = new File(SHPEngineTest.class.getResource("waternetwork.shx").getPath());
-        File tmpFile = File.createTempFile("waternetwork","");
-        File dst = new File(tmpFile + ".shp");
-        File dstDbf = new File(tmpFile + ".dbf");
-        File dstShx = new File(tmpFile + ".shx");
+        File dst = new File("target/waternetwork_dst.shp");
+        dst.delete();
+        File dstDbf = new File("target/waternetwork_dst.dbf");
+        dstDbf.delete();
+        File dstShx = new File("target/waternetwork_dst.shx");
+        dstShx.delete();
         FileUtils.copyFile(src, dst);
         FileUtils.copyFile(srcDbf, dstDbf);
         FileUtils.copyFile(srcShx, dstShx);

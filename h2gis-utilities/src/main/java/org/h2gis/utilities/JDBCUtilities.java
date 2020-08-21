@@ -865,6 +865,5 @@ public class JDBCUtilities {
             builder.append(")");
         }
         return builder.toString();
-    }
-   
+    }   
 }
