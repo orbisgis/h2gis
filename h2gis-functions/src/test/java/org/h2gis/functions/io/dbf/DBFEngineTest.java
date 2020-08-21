@@ -160,7 +160,10 @@ public class  DBFEngineTest {
     public void testReopenMovedDbf() throws Exception {
         // Copy file in target
         File srcDbf = new File(SHPEngineTest.class.getResource("waternetwork.dbf").getPath());
-        File dstDbf = File.createTempFile("waternetwork",".dbf");
+        File dstDbf = new File("target/waternetwork.dbf");
+        if(dstDbf.exists()){
+            dstDbf.delete();       
+        }   
         FileUtils.copyFile(srcDbf, dstDbf);
         Statement st = connection.createStatement();
         st.execute("drop table if exists dbftable");
