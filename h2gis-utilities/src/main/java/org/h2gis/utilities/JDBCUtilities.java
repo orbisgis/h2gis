@@ -25,6 +25,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import javax.sql.DataSource;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
@@ -41,6 +42,37 @@ import org.h2gis.utilities.wrapper.DataSourceWrapper;
 public class JDBCUtilities {
 
     public static final String H2_DRIVER_PACKAGE_NAME = "org.h2.jdbc";
+
+    public enum TABLE_TYPE {
+        TABLE, VIEW, FOREIGN_TABLE, TEMPORARY, TABLE_LINK, UNKOWN;
+
+        /**
+         * Build a new {@code TABLE_TYPE} from a {@code String table_type_name}.
+         *
+         * @param table_type_name
+         * @return A {@code TABLE_TYPE} value.
+         */
+        public static TABLE_TYPE fromString(String table_type_name) {
+            String token = table_type_name == null ? "" : table_type_name;
+            if (token.contains("BASE TABLE")) {
+                return TABLE;
+            } else if (token.equals("TABLE")) {
+                return TABLE;
+            } else if (token.contains("SYSTEM TABLE")) {
+                return TABLE;
+            } else if (token.contains("VIEW")) {
+                return VIEW;
+            } else if (token.contains("FOREIGN TABLE")) {
+                return FOREIGN_TABLE;
+            } else if (token.contains("TEMPORARY")) {
+                return TEMPORARY;
+            } else if (token.contains("TABLE LINK")) {
+                return TABLE_LINK;
+            } else {
+                return UNKOWN;
+            }
+        }
+    }
 
     public enum FUNCTION_TYPE {
         ALL, BUILT_IN, ALIAS
@@ -88,7 +120,7 @@ public class JDBCUtilities {
      */
     public static boolean hasField(Connection connection, String tableName, String fieldName) throws SQLException {
         final Statement statement = connection.createStatement();
-        boolean isH2 = isH2DataBase(connection);       
+        boolean isH2 = isH2DataBase(connection);
         try {
             final ResultSet resultSet = statement.executeQuery(
                     "SELECT * FROM " + TableLocation.parse(tableName).toString(isH2) + " LIMIT 0;");
@@ -150,7 +182,7 @@ public class JDBCUtilities {
      * @throws SQLException If jdbc throws an error
      */
     public static String getColumnName(Connection connection, TableLocation tableLocation, int columnIndex) throws SQLException {
-        boolean isH2 = isH2DataBase(connection);    
+        boolean isH2 = isH2DataBase(connection);
         final Statement statement = connection.createStatement();
         try {
             final ResultSet resultSet = statement.executeQuery(
@@ -164,7 +196,7 @@ public class JDBCUtilities {
             statement.close();
         }
     }
-    
+
     /**
      * Returns the list of all the column names of a table.
      *
@@ -175,7 +207,7 @@ public class JDBCUtilities {
      */
     public static List<String> getColumnNames(Connection connection, TableLocation tableLocation) throws SQLException {
         List<String> fieldNameList = new ArrayList<>();
-        boolean isH2 = isH2DataBase(connection);    
+        boolean isH2 = isH2DataBase(connection);
         final Statement statement = connection.createStatement();
         try {
             final ResultSet resultSet = statement.executeQuery(
@@ -205,14 +237,14 @@ public class JDBCUtilities {
     public static List<Tuple<String, Integer>> getColumnNamesAndIndexes(Connection connection, TableLocation tableLocation) throws SQLException {
         List<Tuple<String, Integer>> fieldNameList = new ArrayList<>();
         final Statement statement = connection.createStatement();
-        boolean isH2 = isH2DataBase(connection);    
+        boolean isH2 = isH2DataBase(connection);
         try {
             final ResultSet resultSet = statement.executeQuery(
                     "SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
                 for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
-                    fieldNameList.add(new Tuple<>(metadata.getColumnName(columnId),columnId));
+                    fieldNameList.add(new Tuple<>(metadata.getColumnName(columnId), columnId));
                 }
             } finally {
                 resultSet.close();
@@ -244,7 +276,7 @@ public class JDBCUtilities {
      * @throws SQLException If the table does not exists, or sql request fail.
      */
     public static int getRowCount(Connection connection, String tableReference) throws SQLException {
-        boolean isH2 = isH2DataBase(connection);    
+        boolean isH2 = isH2DataBase(connection);
         Statement st = connection.createStatement();
         int rowCount = 0;
         try {
@@ -327,11 +359,10 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static boolean isH2DataBase(Connection connection) throws SQLException {
-        if(connection.getClass().getName().startsWith(H2_DRIVER_PACKAGE_NAME) ||
-                connection.getClass().equals(ConnectionWrapper.class)){
+        if (connection.getClass().getName().startsWith(H2_DRIVER_PACKAGE_NAME)
+                || connection.getClass().equals(ConnectionWrapper.class)) {
             return true;
-        }
-        else{
+        } else {
             return connection.getMetaData().getDriverName().equals("H2 JDBC Driver");
         }
     }
@@ -386,10 +417,11 @@ public class JDBCUtilities {
         }
         return 0;
     }
-    
+
     /**
-     * Method to fetch an integer primary key (name + index).
-     * Return null otherwise
+     * Method to fetch an integer primary key (name + index). Return null
+     * otherwise
+     *
      * @param connection Connection
      * @param tableLocation table identifier
      * @return The name and the index of an integer primary key used for
@@ -502,15 +534,15 @@ public class JDBCUtilities {
      * @return The list of distinct values of the field.
      */
     public static List<String> getUniqueFieldValues(Connection connection, String tableName, String fieldName) throws SQLException {
-        boolean isH2 = isH2DataBase(connection);    
+        boolean isH2 = isH2DataBase(connection);
         final Statement statement = connection.createStatement();
         List<String> fieldValues = new ArrayList<String>();
         try {
             ResultSet result = statement.executeQuery("SELECT DISTINCT " + TableLocation.quoteIdentifier(fieldName) + " FROM " + TableLocation.parse(tableName).toString(isH2));
             try {
-            while (result.next()) {
-                fieldValues.add(result.getString(1));
-            }   
+                while (result.next()) {
+                    fieldValues.add(result.getString(1));
+                }
             } finally {
                 result.close();
             }
@@ -548,8 +580,7 @@ public class JDBCUtilities {
         }
         return columnNames;
     }
-    
-    
+
     /**
      * In order to be able to use {@link ResultSet#unwrap(Class)} and
      * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get
@@ -595,7 +626,6 @@ public class JDBCUtilities {
         }
     }
 
-
     /**
      *
      * @param st Statement to cancel
@@ -630,4 +660,210 @@ public class JDBCUtilities {
             }
         }
     }
+
+    /**
+     * Return the type of the table using an Enum
+     *
+     * @param connection
+     * @param location
+     * @return
+     * @throws SQLException
+     */
+    public static TABLE_TYPE getTableType(Connection connection, TableLocation location) throws SQLException {
+        boolean isH2 = isH2DataBase(connection);
+        try (ResultSet rs = getTablesView(connection, location.getCatalog(), location.getSchema(), location.getTable())) {
+            if (rs.next()) {
+                if (isH2) {
+                    // H2                   
+                    String storage = rs.getString("STORAGE_TYPE");
+                    if (storage.contains("TEMPORARY")) {
+                        return TABLE_TYPE.TEMPORARY;
+                    } else {
+                        return TABLE_TYPE.fromString(rs.getString("TABLE_TYPE"));
+                    }
+                } else {
+                    // Standard SQL
+                    return TABLE_TYPE.fromString(rs.getString("TABLE_TYPE"));
+                }
+            } else {
+                throw new SQLException("The table " + location + " does not exists");
+            }
+        }
+    }
+
+    /**
+     * A simple method to generate a DDL create table command from a table name
+     *
+     * Takes into account only data types
+     *
+     * @param connection
+     * @param location
+     * @param outputTableName
+     * @return a create table ddl command
+     * @throws SQLException
+     */
+    public static String createTableDDL(Connection connection, TableLocation location, String outputTableName) throws SQLException {        
+        if (JDBCUtilities.tableExists(connection, location)) {
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            String tableName = location.toString(isH2);
+            return createTableDDL(connection, tableName, outputTableName);
+        } else {
+            throw new SQLException("The table " + location + " doesn't exist");
+        }
+    }
+
+    /**
+     * Create table ddl command
+     *
+     * @param connection
+     * @param sourceTableName the name of the source table
+     * @param targetTableName the table of the target table used after 
+     * the CREATE TABLE <targetTableName>
+     * @return
+     * @throws SQLException
+     */
+    public static String createTableDDL(Connection connection, String sourceTableName, String targetTableName) throws SQLException {
+        if (sourceTableName == null || sourceTableName.isEmpty()) {
+            throw new SQLException("The source table name cannot be null or empty");
+        }
+        if (targetTableName == null || targetTableName.isEmpty()) {
+            throw new SQLException("The target table name cannot be null or empty");
+        }
+        final StringBuilder builder = new StringBuilder(256);
+        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse(sourceTableName));
+        builder.append("CREATE TABLE ").append(targetTableName);
+        final Statement statement = connection.createStatement();
+        try {
+            final ResultSet resultSet = statement.executeQuery("SELECT * FROM " + sourceTableName + " LIMIT 0;");
+            try {
+                ResultSetMetaData metadata = resultSet.getMetaData();
+                int columnCount = metadata.getColumnCount();
+                if (columnCount > 0) {
+                    builder.append(" (");
+                }
+                for (int i = 1; i <= columnCount; i++) {
+                    if (i > 1) {
+                        builder.append(",");
+                    }
+                    String columnName = metadata.getColumnName(i);
+                    String columnTypeName = metadata.getColumnTypeName(i);
+                    int columnType = metadata.getColumnType(i);
+                    if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
+                        int precision = metadata.getPrecision(i);
+                        if (precision == Integer.MAX_VALUE) {
+                            builder.append(columnName).append(" ").append(columnTypeName);
+                        } else {
+                            builder.append(columnName).append(" ").append(columnTypeName);
+                            builder.append("(").append(precision).append(")");
+                        }
+                    } else {
+                        if (columnType == Types.CHAR) {
+                            builder.append(columnName).append(" ").append(columnTypeName);
+                            builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
+                        } else if (columnType == Types.DOUBLE) {
+                            builder.append(columnName).append(" ").append("DOUBLE PRECISION");
+                        } else if (columnTypeName.equalsIgnoreCase("geometry")) {
+                            if (geomMetadatas.isEmpty()) {
+                                builder.append(columnName).append(" ").append(columnTypeName);
+                            } else {
+                                GeometryMetaData geomMetadata = geomMetadatas.get(columnName);
+                                if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
+                                    builder.append(columnName).append(" ").append(columnTypeName);
+                                } else {
+                                    builder.append(columnName).append(" ").append(columnTypeName)
+                                            .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
+                                }
+                            }
+                        } else {
+                            builder.append(columnName).append(" ").append(columnTypeName);
+                        }
+                    }
+                }
+                if (columnCount > 0) {
+                    builder.append(")");
+                }
+                return builder.toString();
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            statement.close();
+        }
+    }
+
+    /**
+     * A simple method to generate a DDL create table command from a table name
+     *
+     * Takes into account only data types
+     *
+     * @param connection
+     * @param location
+     * @return a create table ddl command
+     * @throws SQLException
+     */
+    public static String createTableDDL(Connection connection, TableLocation location) throws SQLException {
+        if (JDBCUtilities.tableExists(connection, location)) {
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            String tableName = location.toString(isH2);
+            return createTableDDL(connection, tableName, tableName);
+        } else {
+            throw new SQLException("The table " + location + " doesn't exist");
+        }
+    }
+
+    /**
+     * A simple method to generate a DDL create table command from a query
+     *
+     * Takes into account only data types
+     *
+     * @param outputTableName
+     * @param resultSet
+     * @return a create table ddl command
+     * @throws SQLException
+     */
+    public static String createTableDDL(ResultSet resultSet, String outputTableName) throws SQLException {       
+        if (outputTableName == null || outputTableName.isEmpty()) {
+            throw new SQLException("The target table name cannot be null or empty");
+        }
+        final StringBuilder builder = new StringBuilder(256);
+        builder.append("CREATE TABLE ").append(outputTableName);
+        ResultSetMetaData metadata = resultSet.getMetaData();
+        int columnCount = metadata.getColumnCount();
+        if (columnCount > 0) {
+            builder.append(" (");
+        }
+        for (int i = 1; i <= columnCount; i++) {
+            if (i > 1) {
+                builder.append(",");
+            }
+            String columnName = metadata.getColumnName(i);
+            String columnTypeName = metadata.getColumnTypeName(i);
+            int columnType = metadata.getColumnType(i);
+            if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
+                int precision = metadata.getPrecision(i);
+                if (precision == Integer.MAX_VALUE) {
+                    builder.append(columnName).append(" ").append(columnTypeName);
+                } else {
+                    builder.append(columnName).append(" ").append(columnTypeName);
+                    builder.append("(").append(precision).append(")");
+                }
+
+            } else {
+                if (columnType == Types.CHAR) {
+                    builder.append(columnName).append(" ").append(columnTypeName);
+                    builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
+                } else if (columnType == Types.DOUBLE) {
+                    builder.append(columnName).append(" ").append("DOUBLE PRECISION");
+                } else if (columnTypeName.equalsIgnoreCase("geometry")) {
+                    builder.append(columnName).append(" ").append(columnTypeName);
+                } else {
+                    builder.append(columnName).append(" ").append(columnTypeName);
+                }
+            }
+        }
+        if (columnCount > 0) {
+            builder.append(")");
+        }
+        return builder.toString();
+    }   
 }

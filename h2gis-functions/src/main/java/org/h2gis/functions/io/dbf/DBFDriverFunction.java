@@ -30,7 +30,6 @@ import org.h2gis.functions.io.dbf.internal.DbaseFileException;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.h2gis.functions.io.file_table.FileEngine;
 import org.h2gis.functions.io.file_table.H2TableIndex;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -42,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.utilities.FileUtilities;
 
 /**
  * @author Erwan Bocher, CNRS
@@ -65,7 +65,7 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        if (!FileUtil.isExtensionWellFormated(fileName, "dbf")) {
+        if (!FileUtilities.isExtensionWellFormated(fileName, "dbf")) {
             throw new SQLException("Only .dbf extension is supported");
         }
         if(deleteFiles){
@@ -216,7 +216,7 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (FileUtil.isFileImportable(fileName, "dbf")) {
+        if (FileUtilities.isFileImportable(fileName, "dbf")) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             if (deleteTables) {
@@ -245,6 +245,7 @@ public class DBFDriverFunction implements DriverFunction {
                     }
                     try {
                         connection.setAutoCommit(false);
+                        int columnCount = dbfDriver.getFieldCount();
                         try (PreparedStatement preparedStatement = connection.prepareStatement(
                                 String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
                                         getQuestionMark(dbfHeader.getNumFields() + 1)))) {
@@ -252,9 +253,8 @@ public class DBFDriverFunction implements DriverFunction {
                             long batchSize = 0;
                             for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
                                 preparedStatement.setObject(1, rowId + 1);
-                                Value[] values = dbfDriver.getRow(rowId);
-                                for (int columnId = 0; columnId < values.length; columnId++) {
-                                    preparedStatement.setObject(columnId + 2, values[columnId].getObject());
+                                for (int columnId = 0; columnId < columnCount; columnId++) {
+                                    preparedStatement.setObject(columnId + 2, dbfDriver.getField(rowId, columnId).getObject());
                                 }
                                 preparedStatement.addBatch();
                                 batchSize++;

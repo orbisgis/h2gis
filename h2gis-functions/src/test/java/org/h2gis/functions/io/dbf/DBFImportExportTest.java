@@ -84,14 +84,12 @@ public class DBFImportExportTest {
         dbfDriver.initDriverFromFile(dbfFile);
         assertEquals(3, dbfDriver.getFieldCount());
         assertEquals(2, dbfDriver.getRowCount());
-        Value[] row = dbfDriver.getRow(0);
-        assertEquals(1, row[0].getInt());
-        assertEquals(4.9406564584124654, row[1].getDouble(), 1e-12);
-        assertEquals("main area", row[2].getString());
-        row = dbfDriver.getRow(1);
-        assertEquals(2, row[0].getInt());
-        assertEquals(2.2250738585072009,  row[1].getDouble(), 1e-12);
-        assertEquals("second area", row[2].getString());
+        assertEquals(1, dbfDriver.getField(0, 0).getInt());
+        assertEquals(4.9406564584124654, dbfDriver.getField(0, 1).getDouble(), 1e-12);
+        assertEquals("main area", dbfDriver.getField(0, 2).getString());
+        assertEquals(2, dbfDriver.getField(1, 0).getInt());
+        assertEquals(2.2250738585072009,  dbfDriver.getField(1, 1).getDouble(), 1e-12);
+        assertEquals("second area", dbfDriver.getField(1,2).getString());
     }
 
     @Test

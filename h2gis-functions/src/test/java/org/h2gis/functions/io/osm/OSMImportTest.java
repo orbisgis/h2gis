@@ -266,7 +266,7 @@ public class OSMImportTest {
     //@Test
     public void downloadOSMFile() throws SQLException, IOException {
         if(IsNetworkAvailable()){
-        File file = File.createTempFile("osm_"+ System.currentTimeMillis(), ".osm");    
+        File file = new File("target/osm_"+ System.currentTimeMillis()+".osm");    
         file.delete();
         st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"')");
         assertTrue(new File(file.getPath()).exists());
@@ -277,7 +277,7 @@ public class OSMImportTest {
     //@Test
     public void downloadOSMFileOtherCRS() throws SQLException, IOException {
         if(IsNetworkAvailable()){
-        File file = File.createTempFile("osm_"+ System.currentTimeMillis(), ".osm");    
+        File file = new File("target/osm_"+ System.currentTimeMillis()+".osm"); 
         file.delete();
         st.execute("CALL ST_OSMDownloader(st_setsrid('POLYGON ((315277.503815014 6738471.213193273, 315301.65142755094 6738842.610305913, 315943.06660168327 6738800.941488851, 315918.95925093885 6738429.541760649, 315277.503815014 6738471.213193273)) '::GEOMETRY, 2154), '"+ file.getPath()+"')");
         assertTrue(new File(file.getPath()).exists());
@@ -288,7 +288,7 @@ public class OSMImportTest {
     //@Test
     public void downloadOSMFile2() throws SQLException, IOException {
         if(IsNetworkAvailable()){
-        File file = File.createTempFile("osm2_"+ System.currentTimeMillis(), ".osm");    
+        File file = new File("target/osm_"+ System.currentTimeMillis()+".osm"); 
         file.delete();
         st.execute("CALL ST_OSMDownloader('POLYGON ((-2.130192869203905 47.633867888575935, -2.1318522937536533 47.640236490902, -2.1233757737562904 47.64032618952631, -2.1196532808473956 47.63960860053182, -2.1203708698418815 47.63377818995163, -2.130192869203905 47.633867888575935))'::GEOMETRY, '"+ file.getPath()+"')");
         assertTrue(new File(file.getPath()).exists());
@@ -299,7 +299,7 @@ public class OSMImportTest {
     //@Test
     public void downloadOSMFileTwice() throws SQLException, IOException {
         if(IsNetworkAvailable()){
-        File file = File.createTempFile("osm_"+ System.currentTimeMillis(), ".osm");    
+        File file = new File("target/osm_"+ System.currentTimeMillis()+".osm"); 
         file.delete();
         st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"')");
         st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"', true)");
@@ -311,7 +311,7 @@ public class OSMImportTest {
     //@Test
     public void downloadOSMFileAndImport() throws SQLException, IOException {
         if(IsNetworkAvailable()){
-        File file = File.createTempFile("osm3_"+ System.currentTimeMillis(), ".osm");    
+        File file = new File("target/osm_"+ System.currentTimeMillis()+".osm"); 
         file.delete();
         st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"')");
         assertTrue(new File(file.getPath()).exists());
@@ -336,7 +336,7 @@ public class OSMImportTest {
      */
     public static boolean IsNetworkAvailable() {
         try {
-            final URL url = new URL("http://www.google.com");
+            final URL url = new URL("https://www.qwant.com/");
             final URLConnection conn = url.openConnection();
             conn.connect();
             return true;

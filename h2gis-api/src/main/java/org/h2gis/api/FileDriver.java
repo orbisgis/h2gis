@@ -45,6 +45,17 @@ public interface FileDriver {
     long getRowCount();
 
     /**
+     * @return Estimated row length in bytes
+     */
+    int getEstimatedRowSize(long rowId);
+
+    /**
+     *
+     * @return Column count
+     */
+    int getFieldCount();
+
+    /**
      * Close the file, free resources.
      *
      * @throws IOException Closing error.
@@ -58,7 +69,7 @@ public interface FileDriver {
      * @return The row content.
      * @throws java.io.IOException Read error.
      */
-    Object[] getRow(long rowId) throws IOException;
+    Object getField(long rowId, int columnId) throws IOException;
 
     /**
      * Insert values to the current row.
