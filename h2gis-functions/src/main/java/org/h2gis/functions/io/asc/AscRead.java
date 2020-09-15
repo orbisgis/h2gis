@@ -46,11 +46,10 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
                 + "CALL ASCREAD('dem.asc', 'MYTABLE');\n"
                 + "CALL ASCREAD('dem.asc', 'MYTABLE', TYPE);\n"
                 + "TYPE of z data 1 for integer, 2 for double (default 2)"
-                + "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POINTS);\n"
+                + "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POLYGONS);\n"
                 + "GEOM_FILTER - Extract only pixels that intersects the provided geometry envelope, null to disable filter\n"
                 + "DOWNSCALE_INT - Coefficient used for exporting less cells (1 all cells, 2 for size / 2)\n"
-                + "AS_POLYGONS - If true pixels are converted to polygons. (default false return points)\n"
-                + "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POINTS);\n");
+                + "AS_POLYGONS - If true pixels are converted to polygons. (default false return points)\n");
     }
 
     @Override
@@ -185,9 +184,7 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         if (downScale > 1) {
             ascReaderDriver.setDownScale(downScale);
         }
-        if (!extractAsPolygons) {
-            ascReaderDriver.setAs3DPoint(extractAsPolygons);
-        }
+        ascReaderDriver.setAs3DPoint(!extractAsPolygons);
         ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
     }
 
@@ -215,9 +212,9 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         if (downScale > 1) {
             ascReaderDriver.setDownScale(downScale);
         }
-        if (!extractAsPolygons) {
-            ascReaderDriver.setAs3DPoint(extractAsPolygons);
-        }
+
+        ascReaderDriver.setAs3DPoint(!extractAsPolygons);
+
         ascReaderDriver.setDeleteTable(deleteTable);
 
         ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
@@ -247,9 +244,7 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         if (downScale > 1) {
             ascReaderDriver.setDownScale(downScale);
         }
-        if (!extractAsPolygons) {
-            ascReaderDriver.setAs3DPoint(extractAsPolygons);
-        }
+        ascReaderDriver.setAs3DPoint(!extractAsPolygons);
         ascReaderDriver.setEncoding(encoding);
         ascReaderDriver.setZType(zType);
         ascReaderDriver.setDeleteTable(deleteTable);
