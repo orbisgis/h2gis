@@ -283,7 +283,7 @@ public class AscReaderDriverTest {
             assertEquals((15 / 5) * (20 / 5), rs.getInt("CPT"));
         }
     }
-    
+
     @Test
     public void testASCReadPoints() throws IOException, SQLException {
         Statement st = connection.createStatement();
@@ -325,4 +325,22 @@ public class AscReaderDriverTest {
             }
         }
     }
+
+    @Test
+    public void testASCReadMultiTables() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE PRECIP30MIN1 IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN1')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN2')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+
+        try (ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN1")) {
+            assertTrue(rs.next());
+            assertEquals(299, rs.getInt("CPT"));
+        }
+        try (ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN2")) {
+            assertTrue(rs.next());
+            assertEquals(299, rs.getInt("CPT"));
+        }
+    }
+
 }

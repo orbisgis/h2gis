@@ -272,18 +272,18 @@ public class AscReaderDriver {
             PreparedStatement preparedStatement;
             if (as3DPoint) {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer," + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
+                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
                 } else {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision," + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
+                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
                 }
                 preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(isH2)
                         + "(the_geom, Z) VALUES (?, ?)");
             } else {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer, " + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
+                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
 
                 } else {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision, " + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
+                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
                 }
                 preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(isH2)
                         + "(the_geom, Z) VALUES (?, ?)");
