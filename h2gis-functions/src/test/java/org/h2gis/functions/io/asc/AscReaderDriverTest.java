@@ -343,4 +343,23 @@ public class AscReaderDriverTest {
         }
     }
 
+    @Test
+    public void testReadPrecipDownscaleSQL() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', NULL, 5, TRUE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+
+        // Check number of extracted cells
+        try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
+            assertTrue(rs.next());
+            assertEquals((15 / 5) * (20 / 5), rs.getInt("CPT"));
+        }
+        // check fir cell value
+        try(ResultSet rs = st.executeQuery("SELECT the_geom  FROM PRECIP30MIN limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POLYGON Z ((-180 -82.5 234, -180 -80 234, -177.5 -80 234, -177.5 -82.5 234, -180 -82.5 234))", rs.getObject("THE_GEOM"));
+        }
+    }
+
+
 }
