@@ -20,7 +20,6 @@
 package org.h2gis.functions.io.shp;
 
 import org.h2.table.Column;
-import org.h2.value.Value;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;

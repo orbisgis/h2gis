@@ -48,7 +48,6 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
                 + "\n path of the file, table name"
                 + "\n path of the file, true for delete the table with the same file name"
                 + "\n path of the file, table name, true to delete the table name"
-                + "\n path of the file, table name, true to delete the table name"
                 + "\n path of the file, table name, encoding chartset"
                 + "\n path of the file, table name, encoding chartset, true to delete the table name");
     }

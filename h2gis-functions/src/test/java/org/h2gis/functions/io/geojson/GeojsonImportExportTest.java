@@ -1110,5 +1110,27 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }
+    
+    @Test
+    public void testSelectWriteReadGeojsonParameters() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS;");
+            stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ', true);");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();
+            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING(1 10, 20 15)")));
+            res.close();
+            stat.execute("CALL GeoJsonRead('target/lines.geojson', true);");
+            res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();
+            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING(1 10, 20 15)")));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
 }
 
