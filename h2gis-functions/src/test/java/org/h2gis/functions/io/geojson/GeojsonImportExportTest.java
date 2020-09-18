@@ -926,6 +926,12 @@ public class GeojsonImportExportTest {
             res.next();
             assertEquals(1, res.getInt(1));
         }
+        stat.execute("CALL GeoJSONRead('target/lineal_export.geojson', true)");
+
+        try (ResultSet res = stat.executeQuery("SELECT COUNT(*) FROM IMPORT_LINEAL;")) {
+            res.next();
+            assertEquals(1, res.getInt(1));
+        }
     }
 
     @Test

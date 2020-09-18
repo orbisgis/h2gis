@@ -49,7 +49,6 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
                 "\n path of the file, table name"+
                 "\n path of the file, true for delete the table with the same file name"+
                 "\n path of the file, table name, true to delete the table name"+
-                "\n path of the file, table name, true to delete the table name"+
                 "\n path of the file, table name, encoding chartset"+
                 "\n path of the file, table name, encoding chartset, true to delete the table name");
     }
@@ -112,12 +111,19 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
         boolean deleteTable =  false;
         if(option instanceof ValueBoolean){
             deleteTable = option.getBoolean();
+            String name = URIUtilities.fileFromString(fileName).getName();
+            String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+            if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+                importTable(connection, fileName, tableName, null, deleteTable);
+            } else {
+                throw new SQLException("The file name contains unsupported characters");
+            }
         }else if (option instanceof ValueVarchar){
             tableReference = option.getString();
+            importTable(connection, fileName, tableReference, null, false);
         }else if (!(option instanceof ValueNull)){
             throw new SQLException("Supported optional parameter is boolean or varchar");
         }
-        importTable(connection, fileName, tableReference, null, false);
     }
 
     /**
