@@ -78,7 +78,7 @@ public class AscReaderDriver {
     private double xValue;
     private boolean readFirst;
     private double noData;
-    private int zType = 1;
+    private int zType = 2;
     private boolean deleteTable = false;
     private String encoding = "UTF-8";
     private boolean importNodata = false;

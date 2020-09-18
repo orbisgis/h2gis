@@ -369,5 +369,6 @@ public class AscReaderDriverTest {
             GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
             assertTrue(rs.getObject("Z") instanceof Double);
         }
+
     }
 }
