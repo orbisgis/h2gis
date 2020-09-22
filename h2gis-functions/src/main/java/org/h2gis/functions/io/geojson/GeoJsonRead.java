@@ -66,7 +66,7 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
      */
     public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        String tableName = name.substring(0, name.lastIndexOf(".")).replace(".", "_").toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
             importTable(connection, fileName, tableName, null, false);
         } else {

@@ -371,4 +371,16 @@ public class AscReaderDriverTest {
         }
 
     }
+    
+    @Test
+    public void testASCReadGZFile() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE PRECIP30MIN_ASC IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc.gz").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom  FROM PRECIP30MIN_ASC limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+        }
+        st.execute("DROP TABLE PRECIP30MIN_ASC IF EXISTS");        
+    }
 }
