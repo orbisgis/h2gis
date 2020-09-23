@@ -1181,6 +1181,17 @@ public class GeometryTableUtilsTest {
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
     }
-
+    
+    @Test
+    public void testAuthorityAndSRID() throws SQLException, ParseException {
+        assertNull(GeometryTableUtilities.getAuthorityAndSRID(connection, 0));
+        String[] authSrid = GeometryTableUtilities.getAuthorityAndSRID(connection, 4326);
+        assertEquals(authSrid[0], "EPSG");
+        assertEquals(authSrid[1], "4326");
+        authSrid = GeometryTableUtilities.getAuthorityAndSRID(connection, 2154);
+        assertEquals(authSrid[0], "EPSG");
+        assertEquals(authSrid[1], "2154");
+        assertNull(GeometryTableUtilities.getAuthorityAndSRID(connection, -9999));
+    }
 
 }

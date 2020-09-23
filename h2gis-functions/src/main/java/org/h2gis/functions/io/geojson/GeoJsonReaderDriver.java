@@ -84,6 +84,8 @@ public class GeoJsonReaderDriver {
      *
      * @param connection
      * @param fileName
+     * @param encoding
+     * @param deleteTable
      */
     public GeoJsonReaderDriver(Connection connection, File fileName, String encoding, boolean deleteTable) {
         this.connection = connection;

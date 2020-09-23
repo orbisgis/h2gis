@@ -67,7 +67,7 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      */
     public static void readAscii(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase().replace(".", "_");
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
             readAscii(connection, fileName, ValueVarchar.get(tableName));
         } else {
@@ -91,7 +91,7 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         Geometry envelope = null;
         if (option instanceof ValueInteger) {
             zType = option.getInt();
-            if (zType != 1 || zType != 2) {
+            if (!(zType == 1 || zType == 2)) {
                 throw new SQLException("Please use 1 for integer or 2 for double conversion");
             }
         } else if (option instanceof ValueVarchar) {
@@ -139,7 +139,7 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         Geometry envelope = null;
         if (option instanceof ValueInteger) {
             zType = option.getInt();
-            if (zType != 1 || zType != 2) {
+            if (!(zType == 1 || zType == 2)) {
                 throw new SQLException("Please use 1 for integer or 2 for double conversion");
             }
         } else if (option instanceof ValueBoolean) {

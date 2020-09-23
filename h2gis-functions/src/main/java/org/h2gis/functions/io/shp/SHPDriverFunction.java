@@ -20,7 +20,6 @@
 package org.h2gis.functions.io.shp;
 
 import org.h2.table.Column;
-import org.h2.value.Value;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
@@ -83,6 +82,15 @@ public class SHPDriverFunction implements DriverFunction {
             Files.deleteIfExists(new File(nameWithoutExt + ".dbf").toPath());
             Files.deleteIfExists(new File(nameWithoutExt + ".shx").toPath());
             Files.deleteIfExists(new File(nameWithoutExt + ".prj").toPath());
+        }
+        else{
+            //If one of the files exist throw an error
+            String path = fileName.getAbsolutePath();
+            String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
+            if(fileName.exists() || new File(nameWithoutExt + ".dbf").exists()
+                    || new File(nameWithoutExt + ".shx").exists()||new File(nameWithoutExt + ".prj").exists()){
+                throw new IOException("The file already exist.");
+            }
         }
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         String regex = ".*(?i)\\b(select|from)\\b.*";

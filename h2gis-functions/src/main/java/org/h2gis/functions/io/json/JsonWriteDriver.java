@@ -24,8 +24,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +36,6 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.h2gis.utilities.FileUtilities;
 
 /**
  * JSON class to write a table or a resultset to a file
@@ -49,7 +47,18 @@ public class JsonWriteDriver {
 
     /** Logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonWriteDriver.class);
-    
+
+    private final Connection connection;
+
+    /**
+     * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
+     *
+     * @param connection
+     */
+    public JsonWriteDriver(Connection connection) {
+        this.connection = connection;
+    }
+
     /**
      * Write a resulset to a json file
      * 
@@ -107,38 +116,191 @@ public class JsonWriteDriver {
      * Write the table to JSON format.
      *
      * @param progress    ProgressVisitor following the writing.
-     * @param nameOrQuery Name of the table to write or SQL query used to gather data to write.
-     * @param file        Destination file.
+     * @param tableName Name of the table to write or SQL query used to gather data to write.
+     * @param fileName        Destination file.
      * @param deleteFile  True if the destination files should be deleted, false otherwise.
      * @param encoding    Encoding of the destination file.
      * @param connection  Connection to the database.
      * @throws SQLException Exception thrown when an SQL error occurs.
      * @throws IOException  Exception when a file writing error occurs.
      */
-    public void write(ProgressVisitor progress, String nameOrQuery, File file, boolean deleteFile, String encoding,
-                      Connection connection) throws SQLException, IOException {
-        if(nameOrQuery == null) {
+    public void write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFile, String encoding) throws SQLException, IOException {
+        if(tableName == null) {
             throw new SQLException("The select query or the table name must not be null.");
         }
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(nameOrQuery);
+        Matcher matcher = pattern.matcher(tableName);
         if (matcher.find()) {
-            if (nameOrQuery.startsWith("(") && nameOrQuery.endsWith(")")) {
-                PreparedStatement ps = connection.prepareStatement(
-                        nameOrQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                ResultSet resultSet = ps.executeQuery();
-                write(progress, resultSet, file, deleteFile, encoding);
+            if (tableName.startsWith("(") && tableName.endsWith(")")) {
+                if (FileUtilities.isExtensionWellFormated(fileName, "json")) {
+                    if (deleteFile) {
+                        Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The json file already exist.");
+                    }
+                    PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet rs = ps.executeQuery();
+                    jsonWrite(progress, rs, new FileOutputStream(fileName), encoding);
+                } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
+                    if (deleteFile) {
+                        Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The gz file already exist.");
+                    }
+                    GZIPOutputStream gzos = null;
+                    try {
+                        FileOutputStream fos = new FileOutputStream(fileName);
+                        gzos = new GZIPOutputStream(fos);
+                        PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                        ResultSet rs = ps.executeQuery();
+                        jsonWrite(progress, rs, gzos, encoding);
+                    } finally {
+                        try {
+                            if (gzos != null) {
+                                gzos.close();
+                            }
+                        } catch (IOException ex) {
+                            throw new SQLException(ex);
+                        }
+                    }
+
+                } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
+                    if (deleteFile) {
+                        Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The zip file already exist.");
+                    }
+                    ZipOutputStream zip = null;
+                    try {
+                        FileOutputStream fos = new FileOutputStream(fileName);
+                        zip = new ZipOutputStream(fos);
+                        zip.putNextEntry(new ZipEntry(fileName.getName().substring(0, fileName.getName().length()-4)));
+                        PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                        ResultSet rs = ps.executeQuery();
+                        jsonWrite(progress, rs, zip, encoding);
+                    } finally {
+                        try {
+                            if (zip != null) {
+                                zip.close();
+                            }
+                        } catch (IOException ex) {
+                            throw new SQLException(ex);
+                        }
+                    }
+                }else {
+                    throw new SQLException("Only .json , .gz or .zip extensions are supported");
+                }
+
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }        
         } else {
-            TableLocation location = TableLocation.parse(nameOrQuery, JDBCUtilities.isH2DataBase(connection));
-            int recordCount = JDBCUtilities.getRowCount(connection, location);
+            if (FileUtilities.isExtensionWellFormated(fileName, "json")) {
+                if (deleteFile) {
+                    Files.deleteIfExists(fileName.toPath());
+                } else if (fileName.exists()) {
+                    throw new IOException("The json file already exist.");
+                }
+                jsonWrite(progress, tableName, new FileOutputStream(fileName), encoding);
+            } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
+                if (deleteFile) {
+                    Files.deleteIfExists(fileName.toPath());
+                } else if (fileName.exists()) {
+                    throw new IOException("The gz file already exist.");
+                }
+                GZIPOutputStream gzos = null;
+                try {
+                    FileOutputStream fos = new FileOutputStream(fileName);
+                    gzos = new GZIPOutputStream(fos);
+                    jsonWrite(progress, tableName, gzos, encoding);
+                } finally {
+                    try {
+                        if (gzos != null) {
+                            gzos.close();
+                        }
+                    } catch (IOException ex) {
+                        throw new SQLException(ex);
+                    }
+                }
+            } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
+                if (deleteFile) {
+                    Files.deleteIfExists(fileName.toPath());
+                } else if (fileName.exists()) {
+                    throw new IOException("The zip file already exist.");
+                }
+                ZipOutputStream zip = null;
+                try {
+                    FileOutputStream fos = new FileOutputStream(fileName);
+                    zip = new ZipOutputStream(fos);
+                    zip.putNextEntry(new ZipEntry(fileName.getName().substring(0, fileName.getName().length()-4)));
+                    jsonWrite(progress, tableName, zip, encoding);
+                } finally {
+                    try {
+                        if (zip != null) {
+                            zip.close();
+                        }
+                    } catch (IOException ex) {
+                        throw new SQLException(ex);
+                    }
+                }
+            } else {
+                throw new SQLException("Only .json , .gz or .zip extensions are supported");
+            }
+        }
+    }
+
+    /**
+     * Write a json resulset
+     *
+     * @param progress ProgressVisitor following the writing.
+     * @param fos       OutputStream used for writing data.
+     * @param encoding Encoding of the destination file.
+     * @throws SQLException Exception thrown when an SQL error occurs.
+     * @throws IOException  Exception when a file writing error occurs.
+     */
+    private void jsonWrite(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
+        JsonEncoding jsonEncoding =  getEncoding(encoding);
+        try {
+            final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+            int recordCount = JDBCUtilities.getRowCount(connection, parse);
             if (recordCount > 0) {
-                Statement st = connection.createStatement();
-                ResultSet rs = st.executeQuery(String.format("SELECT * FROM %s", location.getTable()));
-                write(progress, rs, file, deleteFile, encoding);
+                ProgressVisitor copyProgress = progress.subProcess(recordCount);
+
+                try ( // Read table content
+                      Statement st = connection.createStatement()) {
+                    JsonFactory jsonFactory = new JsonFactory();
+                    JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
+                    ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
+                    try {
+                        ResultSetMetaData rsmd = rs.getMetaData();
+                        int numColumns = rsmd.getColumnCount();
+                        while (rs.next()) {
+                            jsonGenerator.writeStartObject();
+                            for (int i = 1; i < numColumns + 1; i++) {
+                                String columnName = rsmd.getColumnName(i);
+                                int t = rsmd.getColumnType(i);
+                                writeObject(t, rs, i, jsonGenerator, columnName);
+                            }
+                            jsonGenerator.writeEndObject();
+                            copyProgress.endStep();
+                        }
+                        copyProgress.endOfProgress();
+                        jsonGenerator.flush();
+                        jsonGenerator.close();
+
+                    } finally {
+                        rs.close();
+                    }
+                }
+            }
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException ex) {
+                throw new SQLException(ex);
             }
         }
     }

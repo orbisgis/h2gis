@@ -21,7 +21,6 @@
 package org.h2gis.functions.io.dbf;
 
 import org.h2.util.StringUtils;
-import org.h2.value.Value;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -77,7 +76,7 @@ public class DBFImportExportTest {
         stat.execute("insert into area values(1, 4.9406564584124654, 'main area')");
         stat.execute("insert into area values(2, 2.2250738585072009, 'second area')");
         // Create a dbf file using table area
-        stat.execute("CALL DBFWrite('target/area_export.dbf', 'AREA')");
+        stat.execute("CALL DBFWrite('target/area_export.dbf', 'AREA', true)");
         // Read this dbf file to check values
         assertTrue(dbfFile.exists());
         DBFDriver dbfDriver = new DBFDriver();
@@ -177,7 +176,7 @@ public class DBFImportExportTest {
         stat.execute("insert into area values(null, 4.9406564584124654, 'main area')");
         stat.execute("insert into area values(null, 2.2250738585072009, 'second area')");
         // Create a shape file using table area
-        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
+        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA', true)");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
         ResultSet rs = stat.executeQuery("SELECT * FROM AREA2");
@@ -196,7 +195,7 @@ public class DBFImportExportTest {
         stat.execute("insert into area values(1, "+v1+", 'main area')");
         stat.execute("insert into area values(2, "+v2+", 'second area')");
         // Create a shape file using table area
-        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
+        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA', true)");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
         ResultSet rs = stat.executeQuery("SELECT val FROM AREA2 order by id");
@@ -219,7 +218,7 @@ public class DBFImportExportTest {
         stat.execute("insert into area values(1, "+v1+", 'main area')");
         stat.execute("insert into area values(2, "+v2+", 'second area')");
         // Create a shape file using table area
-        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
+        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA', true)");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
         ResultSet rs = stat.executeQuery("SELECT val FROM AREA2 order by id");
@@ -237,7 +236,7 @@ public class DBFImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
         stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
         stat.execute("create table TABLE_EMPTY(id INTEGER)");
-        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
+        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY', true);");
         stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
         ResultSetMetaData rsmd = res.getMetaData();
@@ -252,7 +251,7 @@ public class DBFImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
         stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
         stat.execute("create table TABLE_EMPTY()");
-        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
+        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY', true);");
         stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
         ResultSetMetaData rsmd = res.getMetaData();

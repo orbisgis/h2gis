@@ -78,7 +78,7 @@ public class AscReaderDriver {
     private double xValue;
     private boolean readFirst;
     private double noData;
-    private int zType = 1;
+    private int zType = 2;
     private boolean deleteTable = false;
     private String encoding = "UTF-8";
     private boolean importNodata = false;
@@ -281,7 +281,6 @@ public class AscReaderDriver {
             } else {
                 if (zType == 1) {
                     st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
-
                 } else {
                     st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
                 }

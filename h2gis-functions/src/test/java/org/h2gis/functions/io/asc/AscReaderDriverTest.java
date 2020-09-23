@@ -143,7 +143,7 @@ public class AscReaderDriverTest {
             assertEquals(114, rs.getInt("Z"));
         }
 
-        st.execute("CALL SHPWRITE('target/grid.shp', 'PRECIP30MIN')");
+        st.execute("CALL SHPWRITE('target/grid.shp', 'PRECIP30MIN', true)");
         //st.execute("CALL SHPWRITE('target/grid_nodata.shp', '(SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  st_buffer(ST_SETSRID(ST_MAKEPOINT(-179.5,-80.25), 4326), 0.1)))')");
 
         // Check nodata cell
@@ -325,41 +325,70 @@ public class AscReaderDriverTest {
             }
         }
     }
-
+    
     @Test
-    public void testASCReadMultiTables() throws IOException, SQLException {
-        Statement st = connection.createStatement();
-        st.execute("DROP TABLE PRECIP30MIN1 IF EXISTS");
-        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN1')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
-        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN2')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
-
-        try (ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN1")) {
-            assertTrue(rs.next());
-            assertEquals(299, rs.getInt("CPT"));
-        }
-        try (ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN2")) {
-            assertTrue(rs.next());
-            assertEquals(299, rs.getInt("CPT"));
-        }
-    }
-
-    @Test
-    public void testReadPrecipDownscaleSQL() throws IOException, SQLException {
+    public void testASCReadPointsTwoTimes() throws IOException, SQLException {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
-        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', NULL, 5, TRUE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
-
-        // Check number of extracted cells
-        try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
-            assertTrue(rs.next());
-            assertEquals((15 / 5) * (20 / 5), rs.getInt("CPT"));
-        }
-        // check fir cell value
+        st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
         try(ResultSet rs = st.executeQuery("SELECT the_geom  FROM PRECIP30MIN limit 1")) {
             assertTrue(rs.next());
-            GeometryAsserts.assertGeometryEquals("SRID=3857;POLYGON Z ((-180 -82.5 234, -180 -80 234, -177.5 -80 234, -177.5 -82.5 234, -180 -82.5 234))", rs.getObject("THE_GEOM"));
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+        }
+        st.execute("DROP TABLE PRECIP30MIN_NEXT IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s','PRECIP30MIN_NEXT')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom  FROM PRECIP30MIN_NEXT limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
         }
     }
 
+    @Test
+    public void testASCReadPointsZType() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s', 1)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom, z  FROM PRECIP30MIN limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+            assertTrue(rs.getObject("Z") instanceof Integer);
+        }
 
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s', 2)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom, z  FROM PRECIP30MIN limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+            assertTrue(rs.getObject("Z") instanceof Double);
+        }
+
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s', 'mydemtable', 2)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom, z  FROM mydemtable limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+            assertTrue(rs.getObject("Z") instanceof Double);
+        }
+        
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom, z  FROM PRECIP30MIN limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+            assertTrue(rs.getObject("Z") instanceof Double);
+        }
+
+    }
+    
+    @Test
+    public void testASCReadGZFile() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE PRECIP30MIN_ASC IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc.gz").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom  FROM PRECIP30MIN_ASC limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+        }
+        st.execute("DROP TABLE PRECIP30MIN_ASC IF EXISTS");        
+    }
 }

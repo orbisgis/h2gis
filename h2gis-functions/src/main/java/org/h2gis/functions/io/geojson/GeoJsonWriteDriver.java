@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.h2gis.utilities.FileUtilities;
 
@@ -71,33 +72,7 @@ public class GeoJsonWriteDriver {
      */
     public GeoJsonWriteDriver(Connection connection) {
         this.connection = connection;
-    }
-
-    /**
-     * Write a resulset to a geojson file
-     *
-     * @param progress
-     * @param resultSet
-     * @param file
-     * @throws SQLException
-     * @throws IOException
-     */
-    public void write(ProgressVisitor progress, ResultSet resultSet, File file, String encoding) throws SQLException, IOException {
-        write(progress, resultSet, file, encoding, false);
-    }
-
-    /**
-     * Write a resulset to a geojson file
-     *
-     * @param progress
-     * @param resultSet
-     * @param file
-     * @throws SQLException
-     * @throws IOException
-     */
-    public void write(ProgressVisitor progress, ResultSet resultSet, File file) throws SQLException, IOException {
-        write(progress, resultSet, file, null, false);
-    }
+    }    
 
     /**
      * Write a resulset to a geojson file
@@ -114,11 +89,15 @@ public class GeoJsonWriteDriver {
         if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
+            } else if (fileName.exists()) {
+                throw new IOException("The geojson file already exist.");
             }
             geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
         } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
+            } else if (fileName.exists()) {
+                throw new IOException("The gz file already exist.");
             }
             GZIPOutputStream gzos = null;
             try {
@@ -137,6 +116,8 @@ public class GeoJsonWriteDriver {
         } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
+            } else if (fileName.exists()) {
+                throw new IOException("The zip file already exist.");
             }
             ZipOutputStream zip = null;
             try {
@@ -177,6 +158,7 @@ public class GeoJsonWriteDriver {
             }
         }
         try {
+            int srid = 0;
             int rowCount = 0;
             int type = rs.getType();
             if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
@@ -192,12 +174,34 @@ public class GeoJsonWriteDriver {
             // header of the GeoJSON file
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("type", "FeatureCollection");
-            jsonGenerator.writeArrayFieldStart("features");
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 cacheMetadata(resultSetMetaData);
+                //Read the first geometry to find its SRID
+                rs.next();
+                Geometry firstGeom = (Geometry) rs.getObject(geometryInfo.second());
+                String[] authAndSrid = GeometryTableUtilities.getAuthorityAndSRID(connection, firstGeom.getSRID());
+                if (authAndSrid != null) {
+                    //Write the SRID based on the first geometry
+                    writeCRS(jsonGenerator, authAndSrid);
+                    srid = Integer.valueOf(authAndSrid[1]);
+                }
+                jsonGenerator.writeArrayFieldStart("features");
+                //Don't forget to save the first geom
+                // feature header
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("type", "Feature");
+                //Write the first geometry
+                writeGeometry((Geometry) rs.getObject(geometryInfo.second()), jsonGenerator);
+                //Write the properties
+                writeProperties(jsonGenerator, rs);
+                // feature footer
+                jsonGenerator.writeEndObject();
+                copyProgress.endStep();
+
+                //Iterate next rows and check SRID
                 while (rs.next()) {
-                    writeFeature(jsonGenerator, rs, geometryInfo.second());
+                    writeFeatureCheckSRID(jsonGenerator, rs, geometryInfo.second(), srid);
                     copyProgress.endStep();
                 }
                 copyProgress.endOfProgress();
@@ -294,14 +298,6 @@ public class GeoJsonWriteDriver {
         }
     }
 
-    public void write(ProgressVisitor progress, String tableName, File fileName, String encoding) throws SQLException, IOException {
-        write(progress, tableName, fileName, encoding, false);
-    }
-
-    public void write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFile) throws SQLException, IOException {
-        write(progress, tableName, fileName, null, deleteFile);
-    }
-
     /**
      * Write the spatial table to GeoJSON format.
      *
@@ -309,6 +305,7 @@ public class GeoJsonWriteDriver {
      * @param tableName
      * @param fileName
      * @param encoding
+     * @param deleteFile
      * @throws SQLException
      * @throws java.io.IOException
      */
@@ -318,9 +315,63 @@ public class GeoJsonWriteDriver {
         Matcher matcher = pattern.matcher(tableName);
         if (matcher.find()) {
             if (tableName.startsWith("(") && tableName.endsWith(")")) {
-                PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                ResultSet resultSet = ps.executeQuery();
-                write(progress, resultSet, fileName, encoding, deleteFile);
+                if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
+                    if (deleteFile) {
+                        Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The geojson file already exist.");
+                    }
+                    PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet rs = ps.executeQuery();
+                    geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
+                } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
+                    if (deleteFile) {
+                        Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The gz file already exist.");
+                    }
+                    GZIPOutputStream gzos = null;
+                    try {
+                        FileOutputStream fos = new FileOutputStream(fileName);
+                        gzos = new GZIPOutputStream(fos);
+                        PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                        ResultSet rs = ps.executeQuery();
+                        geojsonWriter(progress, rs, gzos, encoding);
+                    } finally {
+                        try {
+                            if (gzos != null) {
+                                gzos.close();
+                            }
+                        } catch (IOException ex) {
+                            throw new SQLException(ex);
+                        }
+                    }
+                } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
+                    if (deleteFile) {
+                        Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The zip file already exist.");
+                    }
+                    ZipOutputStream zip = null;
+                    try {
+                        FileOutputStream fos = new FileOutputStream(fileName);
+                        zip = new ZipOutputStream(fos);
+                        zip.putNextEntry(new ZipEntry(fileName.getName().substring(0, fileName.getName().length()-4)));
+                        PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                        ResultSet rs = ps.executeQuery();
+                        geojsonWriter(progress, rs, zip, encoding);
+                    } finally {
+                        try {
+                            if (zip != null) {
+                                zip.close();
+                            }
+                        } catch (IOException ex) {
+                            throw new SQLException(ex);
+                        }
+                    }
+                } else {
+                    throw new SQLException("Only .geojson , .gz or .zip extensions are supported");
+                }
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
@@ -328,11 +379,15 @@ public class GeoJsonWriteDriver {
             if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
                 if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
+                } else if (fileName.exists()) {
+                    throw new IOException("The geojson file already exist.");
                 }
                 geojsonWriter(progress, tableName, new FileOutputStream(fileName), encoding);
             } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
                 if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
+                } else if (fileName.exists()) {
+                    throw new IOException("The gz file already exist.");
                 }
                 GZIPOutputStream gzos = null;
                 try {
@@ -351,11 +406,14 @@ public class GeoJsonWriteDriver {
             } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
                 if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
+                } else if (fileName.exists()) {
+                    throw new IOException("The zip file already exist.");
                 }
                 ZipOutputStream zip = null;
                 try {
                     FileOutputStream fos = new FileOutputStream(fileName);
                     zip = new ZipOutputStream(fos);
+                    zip.putNextEntry(new ZipEntry(fileName.getName().substring(0, fileName.getName().length()-4)));
                     geojsonWriter(progress, tableName, zip, encoding);
                 } finally {
                     try {
@@ -370,6 +428,46 @@ public class GeoJsonWriteDriver {
                 throw new SQLException("Only .geojson , .gz or .zip extensions are supported");
             }
         }
+    }
+
+    /**
+     * Write a GeoJSON feature and check its SRID.
+     *
+     * Features in GeoJSON contain a geometry object and additional properties,
+     * and a feature collection represents a list of features.
+     *
+     * A complete GeoJSON data structure is always an object (in JSON terms). In
+     * GeoJSON, an object consists of a collection of name/value pairs -- also
+     * called members. For each member, the name is always a string. Member
+     * values are either a string, number, object, array or one of the literals:
+     * true, false, and null. An array consists of elements where each element
+     * is a value as described above.
+     *
+     * Syntax:
+     *
+     * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
+     * 0.5]}, "properties": {"prop0": "value0"} }
+     *
+     * @param jsonGenerator
+     * @param rs
+     * @param geoFieldIndex
+     */
+    private void writeFeatureCheckSRID(JsonGenerator jsonGenerator, ResultSet rs, int geoFieldIndex, int srid) throws IOException, SQLException {
+        // feature header
+        jsonGenerator.writeStartObject();
+        jsonGenerator.writeStringField("type", "Feature");
+        //Write the first geometry
+        Geometry geom = (Geometry) rs.getObject(geoFieldIndex);
+        int geomSRID = geom.getSRID();
+        if (geomSRID != srid) {
+            throw new SQLException("Geojson file doesn't support mixed srid. \n"
+                    + srid + " != " + geomSRID);
+        }
+        writeGeometry(geom, jsonGenerator);
+        //Write the properties
+        writeProperties(jsonGenerator, rs);
+        // feature footer
+        jsonGenerator.writeEndObject();
     }
 
     /**
