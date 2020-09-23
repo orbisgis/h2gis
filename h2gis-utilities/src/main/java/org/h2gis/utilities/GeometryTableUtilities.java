@@ -1232,6 +1232,42 @@ public class GeometryTableUtilities {
         }
         return getEnvelope(connection, location, geometryFields.keySet().stream().findFirst().get());
     }
+    
+    
+    /**
+     * Return an array of two string if the input SRID exists in the spatial ref table.
+     * The array contains the authority name and
+     * its SRID code. 
+     * If the SRID does not exist return null
+     * 
+     * @param connection Active connection
+     * @param srid 
+     * 
+     * @return Array of two string that correspond to the authority name and its
+     * SRID code
+     *
+     * @throws SQLException
+     */
+    public static String[] getAuthorityAndSRID(Connection connection, int srid)
+            throws SQLException {
+        String authority = null;
+        String sridCode = null;
+        if (srid != 0) {
+            PreparedStatement ps = connection.prepareStatement("SELECT AUTH_NAME FROM PUBLIC.SPATIAL_REF_SYS "
+                    + " WHERE SRID = ?");
+            ps.setInt(1, srid);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    authority = rs.getString(1);
+                    sridCode = String.valueOf(srid);
+                }
+            } finally {
+                ps.close();
+            }
+            return new String[]{authority, sridCode};
+        }
+        return null;        
+    }
 
     /**
      * Return an array of two string that correspond to the authority name and

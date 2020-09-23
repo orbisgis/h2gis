@@ -1103,20 +1103,56 @@ public class GeojsonImportExportTest {
             res.close();
         }
     }
-
-    @Test
+    
+     @Test
     public void testSelectWrite() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
             stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
-            GeometryAsserts.assertGeometryEquals("LINESTRING(1 10, 20 15)", res.getString("THE_GEOM"));
+            Geometry geom = (Geometry) res.getObject("THE_GEOM");
+            assertEquals(4326, geom.getSRID());
+            GeometryAsserts.assertGeometryEquals("SRID=4326;LINESTRING(1 10, 20 15)", geom);
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }
+
+    @Test
+    public void testSelectWritePostGIS(TestInfo testInfo) throws Exception {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            // Create a shape file using table area
+            GeoJsonDriverFunction driver = new GeoJsonDriverFunction();
+            driver.exportTable(con, "(SELECT ST_GEOMFROMTEXT('LINESTRING(1 10, 20 15)', 4326) as the_geom)", new File("target/lines.geojson"), new EmptyProgressVisitor());
+            driver.importFile(con, "TABLE_LINESTRINGS_READ", new File("target/lines.geojson"), new EmptyProgressVisitor());
+            try (Statement stat = con.createStatement()) {
+                ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+                res.next();
+                Geometry geom = (Geometry) res.getObject("THE_GEOM");
+                assertEquals(4326, geom.getSRID());
+                GeometryAsserts.assertGeometryEquals("SRID=4326;LINESTRING(1 10, 20 15)", geom);
+                res.close();
+                stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+            }
+        }
+    }
     
+        
     @Test
     public void testSelectWriteReadGeojsonParameters() throws Exception {
         try (Statement stat = connection.createStatement()) {

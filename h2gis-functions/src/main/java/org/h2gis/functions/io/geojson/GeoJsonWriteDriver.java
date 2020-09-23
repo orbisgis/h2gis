@@ -177,6 +177,7 @@ public class GeoJsonWriteDriver {
             }
         }
         try {
+            int srid = 0;
             int rowCount = 0;
             int type = rs.getType();
             if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
@@ -191,13 +192,35 @@ public class GeoJsonWriteDriver {
 
             // header of the GeoJSON file
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("type", "FeatureCollection");
-            jsonGenerator.writeArrayFieldStart("features");
+            jsonGenerator.writeStringField("type", "FeatureCollection");           
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 cacheMetadata(resultSetMetaData);
+                //Read the first geometry to find its SRID
+                rs.next();
+                Geometry firstGeom = (Geometry) rs.getObject(geometryInfo.second());
+                String[] authAndSrid = GeometryTableUtilities.getAuthorityAndSRID(connection, firstGeom.getSRID());
+                if (authAndSrid != null) {
+                    //Write the SRID based on the first geometry
+                    writeCRS(jsonGenerator, authAndSrid);
+                    srid =  Integer.valueOf(authAndSrid[1]);
+                }
+                jsonGenerator.writeArrayFieldStart("features");
+                //Don't forget to save the first geom
+                // feature header
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("type", "Feature");
+                //Write the first geometry
+                writeGeometry((Geometry) rs.getObject(geometryInfo.second()), jsonGenerator);
+                //Write the properties
+                writeProperties(jsonGenerator, rs);
+                // feature footer
+                jsonGenerator.writeEndObject();  
+                copyProgress.endStep();
+                 
+                //Iterate next rows and check SRID
                 while (rs.next()) {
-                    writeFeature(jsonGenerator, rs, geometryInfo.second());
+                    writeFeatureCheckSRID(jsonGenerator, rs, geometryInfo.second(), srid);
                     copyProgress.endStep();
                 }
                 copyProgress.endOfProgress();
@@ -309,6 +332,7 @@ public class GeoJsonWriteDriver {
      * @param tableName
      * @param fileName
      * @param encoding
+     * @param deleteFile
      * @throws SQLException
      * @throws java.io.IOException
      */
@@ -370,6 +394,46 @@ public class GeoJsonWriteDriver {
                 throw new SQLException("Only .geojson , .gz or .zip extensions are supported");
             }
         }
+    }
+    
+    /**
+     * Write a GeoJSON feature and check its SRID.
+     *
+     * Features in GeoJSON contain a geometry object and additional properties,
+     * and a feature collection represents a list of features.
+     *
+     * A complete GeoJSON data structure is always an object (in JSON terms). In
+     * GeoJSON, an object consists of a collection of name/value pairs -- also
+     * called members. For each member, the name is always a string. Member
+     * values are either a string, number, object, array or one of the literals:
+     * true, false, and null. An array consists of elements where each element
+     * is a value as described above.
+     *
+     * Syntax:
+     *
+     * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
+     * 0.5]}, "properties": {"prop0": "value0"} }
+     *
+     * @param jsonGenerator
+     * @param rs
+     * @param geoFieldIndex
+     */
+    private void writeFeatureCheckSRID(JsonGenerator jsonGenerator, ResultSet rs, int geoFieldIndex, int srid) throws IOException, SQLException {
+        // feature header
+        jsonGenerator.writeStartObject();
+        jsonGenerator.writeStringField("type", "Feature");
+        //Write the first geometry
+        Geometry geom = (Geometry) rs.getObject(geoFieldIndex);
+        int geomSRID = geom.getSRID();
+        if(geomSRID!=srid){
+            throw new SQLException("Geojson file doesn't support mixed srid. \n"
+                    +  srid + " != "+ geomSRID);
+        }        
+        writeGeometry(geom, jsonGenerator);
+        //Write the properties
+        writeProperties(jsonGenerator, rs);
+        // feature footer
+        jsonGenerator.writeEndObject();
     }
 
     /**
