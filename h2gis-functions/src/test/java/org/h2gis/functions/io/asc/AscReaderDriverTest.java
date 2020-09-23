@@ -369,6 +369,14 @@ public class AscReaderDriverTest {
             GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
             assertTrue(rs.getObject("Z") instanceof Double);
         }
+        
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom, z  FROM PRECIP30MIN limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
+            assertTrue(rs.getObject("Z") instanceof Double);
+        }
 
     }
     
