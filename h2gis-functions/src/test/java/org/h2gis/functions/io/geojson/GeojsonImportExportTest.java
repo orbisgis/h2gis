@@ -43,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2gis.utilities.URIUtilities;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -224,7 +226,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT))");
             stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)')");
             stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)')");
-            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS');");
+            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS', true);");
             stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
             res.next();
@@ -244,7 +246,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINTZ))");
             stat.execute("insert into TABLE_POINTS values( 'POINT(1 2 3)')");
             stat.execute("insert into TABLE_POINTS values( 'POINT(10 200 2000)')");
-            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS');");
+            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS', true);");
             stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
             res.next();
@@ -264,7 +266,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT), id INT, climat VARCHAR)");
             stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)', 1, 'bad')");
             stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)', 2, 'good')");
-            stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS');");
+            stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS', true);");
             stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'TABLE_POINTS_READ');");
             try (ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;")) {
                 res.next();
@@ -289,7 +291,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING))");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)')");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)')");
-            stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'TABLE_LINESTRINGS');");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'TABLE_LINESTRINGS', true);");
             stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
@@ -310,7 +312,7 @@ public class GeojsonImportExportTest {
                     + "  (150 140, 210 190, 210 220))')");
             stat.execute("insert into TABLE_MULTILINESTRINGS values( 'MULTILINESTRING ((126 324, 280 300), \n"
                     + "  (140 190, 320 220))')");
-            stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_MULTILINESTRINGS');");
+            stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_MULTILINESTRINGS', true);");
             stat.execute("CALL GeoJsonRead('target/mutilines.geojson', 'TABLE_MULTILINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTILINESTRINGS_READ;");
             res.next();
@@ -331,7 +333,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_MULTIPOINTS(the_geom GEOMETRY(MULTIPOINT))");
             stat.execute("insert into TABLE_MULTIPOINTS values( 'MULTIPOINT ((140 260), (246 284))')");
             stat.execute("insert into TABLE_MULTIPOINTS values( 'MULTIPOINT ((150 290), (180 170), (266 275))')");
-            stat.execute("CALL GeoJsonWrite('target/multipoints.geojson', 'TABLE_MULTIPOINTS');");
+            stat.execute("CALL GeoJsonWrite('target/multipoints.geojson', 'TABLE_MULTIPOINTS', true);");
             stat.execute("CALL GeoJsonRead('target/multipoints.geojson', 'TABLE_MULTIPOINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");
             res.next();
@@ -349,7 +351,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON");
             stat.execute("create table TABLE_POLYGON(the_geom GEOMETRY(POLYGON))");
             stat.execute("insert into TABLE_POLYGON values( 'POLYGON ((110 320, 220 320, 220 200, 110 200, 110 320))')");
-            stat.execute("CALL GeoJsonWrite('target/polygon.geojson', 'TABLE_POLYGON');");
+            stat.execute("CALL GeoJsonWrite('target/polygon.geojson', 'TABLE_POLYGON', true);");
             stat.execute("CALL GeoJsonRead('target/polygon.geojson', 'TABLE_POLYGON_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POLYGON_READ;");
             res.next();
@@ -367,7 +369,7 @@ public class GeojsonImportExportTest {
             stat.execute("insert into TABLE_POLYGON values( 'POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), \n"
                     + "  (120 280, 170 280, 170 220, 120 220, 120 280), \n"
                     + "  (191 195, 250 195, 250 140, 191 140, 191 195))')");
-            stat.execute("CALL GeoJsonWrite('target/polygonholes.geojson', 'TABLE_POLYGON');");
+            stat.execute("CALL GeoJsonWrite('target/polygonholes.geojson', 'TABLE_POLYGON', true);");
             stat.execute("CALL GeoJsonRead('target/polygonholes.geojson', 'TABLE_POLYGON_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POLYGON_READ;");
             res.next();
@@ -387,7 +389,7 @@ public class GeojsonImportExportTest {
             stat.execute("insert into TABLE_MULTIPOLYGON values( 'MULTIPOLYGON (((95 352, 160 352, 160 290, 95 290, 95 352)), \n"
                     + "  ((151 235, 236 235, 236 176, 151 176, 151 235)), \n"
                     + "  ((200 350, 245 350, 245 278, 200 278, 200 350)))')");
-            stat.execute("CALL GeoJsonWrite('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON');");
+            stat.execute("CALL GeoJsonWrite('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON', true);");
             stat.execute("CALL GeoJsonRead('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOLYGON_READ;");
             res.next();
@@ -407,7 +409,7 @@ public class GeojsonImportExportTest {
             stat.execute("insert into TABLE_GEOMETRYCOLLECTION values( 'GEOMETRYCOLLECTION (POLYGON ((80 320, 110 320, 110 280, 80 280, 80 320)), \n"
                     + "  LINESTRING (70 190, 77 200, 150 240), \n"
                     + "  POINT (160 300))')");
-            stat.execute("CALL GeoJsonWrite('target/geometrycollection.geojson', 'TABLE_GEOMETRYCOLLECTION');");
+            stat.execute("CALL GeoJsonWrite('target/geometrycollection.geojson', 'TABLE_GEOMETRYCOLLECTION', true);");
             stat.execute("CALL GeoJsonRead('target/geometrycollection.geojson', 'TABLE_GEOMETRYCOLLECTION_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_GEOMETRYCOLLECTION_READ;");
             res.next();
@@ -427,7 +429,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOLYGON");
             stat.execute("create table TABLE_MULTIPOLYGON(the_geom GEOMETRY(MULTIPOLYGON))");
             stat.execute("insert into TABLE_MULTIPOLYGON values( 'MULTIPOLYGON (((95 352, 160 352, 160 290, 95 290, 95 352)))')");
-            stat.execute("CALL GeoJsonWrite('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON');");
+            stat.execute("CALL GeoJsonWrite('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON', true);");
             stat.execute("CALL GeoJsonRead('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOLYGON_READ;");
             res.next();
@@ -443,7 +445,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS");
             stat.execute("create table TABLE_MULTIPOINTS(the_geom GEOMETRY(MULTIPOINT))");
             stat.execute("insert into TABLE_MULTIPOINTS values( 'MULTIPOINT ((140 260))')");
-            stat.execute("CALL GeoJsonWrite('target/multipoints.geojson', 'TABLE_MULTIPOINTS');");
+            stat.execute("CALL GeoJsonWrite('target/multipoints.geojson', 'TABLE_MULTIPOINTS', true);");
             stat.execute("CALL GeoJsonRead('target/multipoints.geojson', 'TABLE_MULTIPOINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");
             res.next();
@@ -459,7 +461,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS");
             stat.execute("create table TABLE_MULTILINESTRINGS(the_geom GEOMETRY(MULTILINESTRING))");
             stat.execute("insert into TABLE_MULTILINESTRINGS values( 'MULTILINESTRING ((90 220, 260 320, 280 200))')");
-            stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_MULTILINESTRINGS');");
+            stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_MULTILINESTRINGS', true);");
             stat.execute("CALL GeoJsonRead('target/mutilines.geojson', 'TABLE_MULTILINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTILINESTRINGS_READ;");
             res.next();
@@ -476,7 +478,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_POINTS_CRS(the_geom GEOMETRY(POINT,4326), id INT, climat VARCHAR)");
             stat.execute("insert into TABLE_POINTS_CRS values( ST_GEOMFROMTEXT('POINT(1 2)', 4326), 1, 'bad')");
             stat.execute("insert into TABLE_POINTS_CRS values( ST_GEOMFROMTEXT('POINT(10 200)',4326), 2, 'good')");
-            stat.execute("CALL GeoJsonWrite('target/points_crs_properties.geojson', 'TABLE_POINTS_CRS');");
+            stat.execute("CALL GeoJsonWrite('target/points_crs_properties.geojson', 'TABLE_POINTS_CRS', true);");
             stat.execute("CALL GeoJsonRead('target/points_crs_properties.geojson', 'TABLE_POINTS_CRS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_CRS_READ;");
             res.next();
@@ -495,7 +497,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT,9999), id INT, climat VARCHAR)");
             stat.execute("insert into TABLE_POINTS values( ST_GEOMFROMTEXT('POINT(1 2)', 9999), 1, 'bad')");
             stat.execute("insert into TABLE_POINTS values( ST_GEOMFROMTEXT('POINT(10 200)',9999), 2, 'good')");
-            stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS');");
+            stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS', true);");
             stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'TABLE_POINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
             res.next();
@@ -514,7 +516,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_MIXED(the_geom GEOMETRY)");
             stat.execute("insert into TABLE_MIXED values( 'MULTIPOINT ((140 260), (246 284))')");
             stat.execute("insert into TABLE_MIXED values( 'LINESTRING (150 290, 180 170, 266 275)')");
-            stat.execute("CALL GeoJsonWrite('target/mixedgeom.geojson', 'TABLE_MIXED');");
+            stat.execute("CALL GeoJsonWrite('target/mixedgeom.geojson', 'TABLE_MIXED', true);");
             stat.execute("CALL GeoJsonRead('target/mixedgeom.geojson', 'TABLE_MIXED_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MIXED_READ;");
             res.next();
@@ -560,7 +562,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT), id int)");
             stat.execute("insert into TABLE_POINTS values( null, 1)");
             stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)', 2)");
-            stat.execute("CALL GeoJsonWrite('target/null_point.geojson', 'TABLE_POINTS');");
+            stat.execute("CALL GeoJsonWrite('target/null_point.geojson', 'TABLE_POINTS', true);");
             stat.execute("CALL GeoJsonRead('target/null_point.geojson', 'TABLE_POINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
             res.next();
@@ -581,7 +583,7 @@ public class GeojsonImportExportTest {
             stat.execute("insert into TABLE_COMPLEX values( null, 1463655908000)");
             stat.execute("insert into TABLE_COMPLEX values( 'POINT(10 200)', 1)");
             stat.execute("insert into TABLE_COMPLEX values( 'LINESTRING(15 20, 0 0)',  NULL)");
-            stat.execute("CALL GeoJsonWrite('target/complex.geojson', 'TABLE_COMPLEX');");
+            stat.execute("CALL GeoJsonWrite('target/complex.geojson', 'TABLE_COMPLEX', true);");
             stat.execute("CALL GeoJsonRead('target/complex.geojson', 'TABLE_COMPLEX_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_COMPLEX_READ;");
             res.next();
@@ -678,7 +680,7 @@ public class GeojsonImportExportTest {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES;");
             stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES');");
-            stat.execute("CALL GeoJsonWrite('target/properties_read.geojson','TABLE_PROPERTIES')");
+            stat.execute("CALL GeoJsonWrite('target/properties_read.geojson','TABLE_PROPERTIES', true)");
             stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES_READ;");
             stat.execute("CALL GeoJsonRead('target/properties_read.geojson', 'TABLE_PROPERTIES_READ')");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_PROPERTIES_READ;");
@@ -713,7 +715,7 @@ public class GeojsonImportExportTest {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_NULL;");
             stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("null.geojson").getPath()) + ", 'TABLE_NULL');");
-            stat.execute("CALL GeoJsonWrite('target/null_read.geojson','TABLE_NULL')");
+            stat.execute("CALL GeoJsonWrite('target/null_read.geojson','TABLE_NULL', true)");
             stat.execute("DROP TABLE IF EXISTS TABLE_NULL_READ");
             stat.execute("CALL GeoJsonRead('target/null_read.geojson', 'TABLE_NULL_READ')");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_NULL_READ;");
@@ -784,7 +786,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
             stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT))");
-            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS');");
+            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS', true);");
             stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
             ResultSetMetaData rsmd = res.getMetaData();
@@ -799,7 +801,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_PROPS");
             stat.execute("create table TABLE_MIXED_PROPS(the_geom GEOMETRY, decimal_field DECIMAL(4, 2), numeric_field NUMERIC(4,2), real_field REAL)");
             stat.execute("insert into TABLE_MIXED_PROPS values( 'MULTIPOINT ((140 260), (246 284))', 12.12, 14.23, 23)");
-            stat.execute("CALL GeoJsonWrite('target/mixedgeomprops.geojson', 'TABLE_MIXED_PROPS');");
+            stat.execute("CALL GeoJsonWrite('target/mixedgeomprops.geojson', 'TABLE_MIXED_PROPS', true);");
             stat.execute("CALL GeoJsonRead('target/mixedgeomprops.geojson', 'TABLE_MIXED_PROPS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MIXED_PROPS_READ;");
             res.next();
@@ -820,17 +822,16 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 2 6)')");
-        // Create a shape file using table area
-        stat.execute("CALL GeoJSONWrite('target/lineal_export.geojson', 'LINEAL')");
-        // Read this shape file to check values
+        // Create a geojson file using table area
+        stat.execute("CALL GeoJSONWrite('target/lineal_export.geojson', 'LINEAL', true)");
+        // Read this geojson file to check values
         assertTrue(fileOut.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
         stat.execute("CALL GeoJSONRead('target/lineal_export.geojson', 'IMPORT_LINEAL', true)");
-
         try (ResultSet res = stat.executeQuery("SELECT IDAREA FROM IMPORT_LINEAL;")) {
             res.next();
             assertEquals(1, res.getInt(1));
-        }
+        }  
     }
 
 
@@ -877,7 +878,7 @@ public class GeojsonImportExportTest {
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 2 6)')");
         ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");
         GeoJsonWriteDriver gjw = new GeoJsonWriteDriver(connection);
-        gjw.write(new EmptyProgressVisitor(), resultSet, new File("target/lineal_export.geojson"));
+        gjw.write(new EmptyProgressVisitor(), resultSet, new File("target/lineal_export.geojson"), null, true);
         // Read this geojson file to check values
         assertTrue(fileOut.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL,LINEAL_EXPORT;");
@@ -896,7 +897,7 @@ public class GeojsonImportExportTest {
         stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 2 6)'),(2, 'LINESTRING(-15 109 5, 120 2 6)')");
         // Create a geojson file using a query
-        stat.execute("CALL GeoJSONWrite('target/lineal_export.geojson', '(SELECT THE_GEOM FROM LINEAL LIMIT 1 )')");
+        stat.execute("CALL GeoJSONWrite('target/lineal_export.geojson', '(SELECT THE_GEOM FROM LINEAL LIMIT 1 )', true)");
         // Read this shape file to check values
         assertTrue(fileOut.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL,LINEAL_EXPORT;");
@@ -961,9 +962,9 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS LINEAL");
             stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
             stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-            ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");
-            GeoJsonWriteDriver gjw = new GeoJsonWriteDriver(connection);
-            gjw.write(new EmptyProgressVisitor(), resultSet, new File("target/lineal_export.geojson"), "CP52");
+            ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");            
+            GeoJsonDriverFunction geoJsonDriver = new GeoJsonDriverFunction();
+            geoJsonDriver.exportTable(connection, "(SELECT * FROM lineal)", new File("target/lineal_export.geojson"), "CP52", true, new EmptyProgressVisitor());
         });
     }
 
@@ -974,8 +975,8 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS LINEAL");
             stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
             stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-            GeoJsonWriteDriver gjw = new GeoJsonWriteDriver(connection);
-            gjw.write(new EmptyProgressVisitor(), "lineal", new File("target/lineal_export.geojson"), "CP52");
+            GeoJsonDriverFunction geoJsonDriver = new GeoJsonDriverFunction();
+            geoJsonDriver.exportTable(connection, "lineal", new File("target/lineal_export.geojson"), "CP52", true, new EmptyProgressVisitor());  
         });
     }
 
@@ -987,7 +988,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
-            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)', true);");
             stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
@@ -1000,7 +1001,7 @@ public class GeojsonImportExportTest {
     @Test
     public void testSelectWriteRead() throws Exception {
         try (Statement stat = connection.createStatement()) {
-            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)', true);");
             stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
@@ -1028,7 +1029,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT), id INT, climat VARCHAR)");
             stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)', 1, 'bad')");
-            stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'table_points');");
+            stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'table_points', true);");
             stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'table_points_import');");
             try (ResultSet res = stat.executeQuery("SELECT * FROM table_points_import;")) {
                 res.next();
@@ -1107,7 +1108,7 @@ public class GeojsonImportExportTest {
      @Test
     public void testSelectWrite() throws Exception {
         try (Statement stat = connection.createStatement()) {
-            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)', true);");
             stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
@@ -1138,7 +1139,7 @@ public class GeojsonImportExportTest {
         if (con != null) {
             // Create a shape file using table area
             GeoJsonDriverFunction driver = new GeoJsonDriverFunction();
-            driver.exportTable(con, "(SELECT ST_GEOMFROMTEXT('LINESTRING(1 10, 20 15)', 4326) as the_geom)", new File("target/lines.geojson"), new EmptyProgressVisitor());
+            driver.exportTable(con, "(SELECT ST_GEOMFROMTEXT('LINESTRING(1 10, 20 15)', 4326) as the_geom)",  new File("target/lines.geojson"), true,new EmptyProgressVisitor());
             driver.importFile(con, "TABLE_LINESTRINGS_READ", new File("target/lines.geojson"), new EmptyProgressVisitor());
             try (Statement stat = con.createStatement()) {
                 ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
@@ -1160,7 +1161,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
-            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)', TRUE);");
             stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ', true);");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
@@ -1171,6 +1172,21 @@ public class GeojsonImportExportTest {
             res.next();
             assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING(1 10, 20 15)")));
             res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
+    
+    @Test
+    public void testSelectWriteManyTimes() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS;");
+            stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)', true);");
+            assertThrows(JdbcSQLNonTransientException.class, () -> {
+                stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
+            });
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }

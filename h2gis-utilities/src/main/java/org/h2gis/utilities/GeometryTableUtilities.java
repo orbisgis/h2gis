@@ -1260,11 +1260,11 @@ public class GeometryTableUtilities {
                 if (rs.next()) {
                     authority = rs.getString(1);
                     sridCode = String.valueOf(srid);
+                    return new String[]{authority, sridCode};
                 }
             } finally {
                 ps.close();
             }
-            return new String[]{authority, sridCode};
         }
         return null;        
     }

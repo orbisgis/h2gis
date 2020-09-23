@@ -143,7 +143,7 @@ public class AscReaderDriverTest {
             assertEquals(114, rs.getInt("Z"));
         }
 
-        st.execute("CALL SHPWRITE('target/grid.shp', 'PRECIP30MIN')");
+        st.execute("CALL SHPWRITE('target/grid.shp', 'PRECIP30MIN', true)");
         //st.execute("CALL SHPWRITE('target/grid_nodata.shp', '(SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  st_buffer(ST_SETSRID(ST_MAKEPOINT(-179.5,-80.25), 4326), 0.1)))')");
 
         // Check nodata cell

@@ -78,6 +78,8 @@ public class KMLWriterDriver {
                 if (FileUtilities.isExtensionWellFormated(fileName, "kml")) {
                     if(deleteFile){
                         Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The kml file already exist.");
                     }
                     PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     ResultSet resultSet = ps.executeQuery();
@@ -94,6 +96,8 @@ public class KMLWriterDriver {
                 }else if (FileUtilities.isExtensionWellFormated(fileName, "kmz")) {
                     if(deleteFile){
                         Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The kmz file already exist.");
                     }
                     PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     ResultSet resultSet = ps.executeQuery();
@@ -126,10 +130,15 @@ public class KMLWriterDriver {
                 if(deleteFile){
                     Files.deleteIfExists(fileName.toPath());
                 }
+                else if (fileName.exists()) {
+                    throw new IOException("The kml file already exist.");
+                }
                 writeKML(progress, fileName,resultSet,  spatialFieldName.first(),  encoding);
             }else if (FileUtilities.isExtensionWellFormated(fileName, "kmz")) {
                 if(deleteFile){
                     Files.deleteIfExists(fileName.toPath());
+                }else if (fileName.exists()) {
+                    throw new IOException("The kmz file already exist.");
                 }
                 String name = fileName.getName();
                 int pos = name.lastIndexOf(".");

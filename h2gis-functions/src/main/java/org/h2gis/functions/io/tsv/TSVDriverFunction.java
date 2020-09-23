@@ -111,6 +111,8 @@ public class TSVDriverFunction implements DriverFunction {
                 if (FileUtilities.isExtensionWellFormated(fileName, "tsv")) {
                     if (deleteFiles) {
                         Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The tsv file already exist.");
                     }
                     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
                         try (Statement st = connection.createStatement()) {
@@ -121,19 +123,24 @@ public class TSVDriverFunction implements DriverFunction {
                 } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
                     if (deleteFiles) {
                         Files.deleteIfExists(fileName.toPath());
+                    } else if (fileName.exists()) {
+                        throw new IOException("The gz file already exist.");
                     }
                     final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                    TableLocation location = TableLocation.parse(tableReference, isH2);
+                    TableLocation location = TableLocation.parse(tableReference, isH2);                    
                     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                             new GZIPOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, new EmptyProgressVisitor());
+                            exportFromResultSet(connection, st.executeQuery(location.toString(isH2)), bw, encoding, new EmptyProgressVisitor());
                         }
                     }
                 } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
                     if (deleteFiles) {
                         Files.deleteIfExists(fileName.toPath());
+                    }
+                    else if (fileName.exists()) {
+                        throw new IOException("The zip file already exist.");
                     }
                     final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                     TableLocation location = TableLocation.parse(tableReference, isH2);
@@ -155,6 +162,8 @@ public class TSVDriverFunction implements DriverFunction {
             if (FileUtilities.isExtensionWellFormated(fileName, "tsv")) {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
+                } else if (fileName.exists()) {
+                    throw new IOException("The tsv file already exist.");
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 TableLocation location = TableLocation.parse(tableReference, isH2);
@@ -167,6 +176,8 @@ public class TSVDriverFunction implements DriverFunction {
             } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
+                }else if (fileName.exists()) {
+                    throw new IOException("The gz file already exist.");
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 TableLocation location = TableLocation.parse(tableReference, isH2);
@@ -180,6 +191,8 @@ public class TSVDriverFunction implements DriverFunction {
             } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
+                }else if (fileName.exists()) {
+                    throw new IOException("The zip file already exist.");
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 TableLocation location = TableLocation.parse(tableReference, isH2);

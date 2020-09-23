@@ -62,17 +62,17 @@ public class JsonWriteDriverTest {
     }
 
     /**
-     * Test the {@link JsonWriteDriver#write(ProgressVisitor, String, File, boolean, String, Connection)} method.
+     * Test the {@link JsonWriteDriver#write(ProgressVisitor, String, File, boolean, String)} method.
      */
     @Test
     void testWrite1() {
-        JsonWriteDriver writer = new JsonWriteDriver();
+        JsonWriteDriver writer = new JsonWriteDriver(connection);
         //Write query
         String path = "./target/" + JsonWriteDriverTest.class.getSimpleName() +
                 "_" + UUID.randomUUID().toString();
         File f = new File(path + ".json");
         try {
-            writer.write(new EmptyProgressVisitor(), "(SELECT idarea FROM table_point)", f, true, "UTF-8", connection);
+            writer.write(new EmptyProgressVisitor(), "(SELECT idarea FROM table_point)", f, true, "UTF-8");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -84,7 +84,7 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         f = new File(path + ".json");
         try {
-            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-8", connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-8");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -96,7 +96,7 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         f = new File(path + ".zip");
         try {
-            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-8", connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-8");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -108,7 +108,7 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         f = new File(path + ".gz");
         try {
-            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-8", connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-8");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -120,7 +120,7 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         f = new File(path + ".json");
         try {
-            writer.write(null, "table_point", f, true, "UTF-8", connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-8");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -132,22 +132,22 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         final File f1 = new File(path + ".json");
         assertThrows(SQLException.class, () ->
-                writer.write(new EmptyProgressVisitor(), "", f1, true, "UTF-8", connection));
+                writer.write(new EmptyProgressVisitor(), "", f1, true, "UTF-8"));
 
         //No query
         path = "./target/" + JsonWriteDriverTest.class.getSimpleName() +
                 "_" + UUID.randomUUID().toString();
         final File f2 = new File(path + ".json");
         assertThrows(SQLException.class, () ->
-                writer.write(new EmptyProgressVisitor(), null, f2, true, "UTF-8", connection));
+                writer.write(new EmptyProgressVisitor(), "", f2, true, "UTF-8"));
 
         //No parenthesis
         assertThrows(SQLException.class, () ->
-            writer.write(new EmptyProgressVisitor(), "SELECT idarea FROM table_point", f2, true, "UTF-8", connection));
+            writer.write(new EmptyProgressVisitor(), "SELECT idarea FROM table_point", f2, true, "UTF-8"));
 
         //Rewrite
         try {
-            writer.write(new EmptyProgressVisitor(), "(SELECT idarea FROM table_point)", f, true, "UTF-8", connection);
+            writer.write(new EmptyProgressVisitor(), "(SELECT idarea FROM table_point)", f, true, "UTF-8");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -156,7 +156,7 @@ public class JsonWriteDriverTest {
 
         //No rewrite
         try {
-            writer.write(new EmptyProgressVisitor(), "table_point", f, false, "UTF-8", connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-8");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -168,7 +168,7 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         f = new File(path + ".json");
         try {
-            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-16", connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-16");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -180,7 +180,7 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         f = new File(path + ".json");
         try {
-            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-32", connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "UTF-32");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -192,7 +192,7 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         f = new File(path + ".json");
         try {
-            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "", connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, "");
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -204,7 +204,7 @@ public class JsonWriteDriverTest {
                 "_" + UUID.randomUUID().toString();
         f = new File(path + ".json");
         try {
-            writer.write(new EmptyProgressVisitor(), "table_point", f, true, null, connection);
+            writer.write(new EmptyProgressVisitor(), "table_point", f, true, null);
         } catch (SQLException | IOException throwables) {
             fail(throwables);
         }
@@ -212,11 +212,12 @@ public class JsonWriteDriverTest {
         assertEquals(71, f.length());
 
         //No connection
+        JsonWriteDriver writer2 = new JsonWriteDriver(null);
         path = "./target/" + JsonWriteDriverTest.class.getSimpleName() +
                 "_" + UUID.randomUUID().toString();
         File f3 = new File(path + ".json");
         assertThrows(NullPointerException.class, () ->
-                writer.write(new EmptyProgressVisitor(), "table_point", f3, true, "UTF-8", null));
+                writer2.write(new EmptyProgressVisitor(), "table_point", f3, true, "UTF-8"));
     }
 
     /**
@@ -233,7 +234,7 @@ public class JsonWriteDriverTest {
         catch (SQLException e) {
             fail(e);
         }
-        JsonWriteDriver writer = new JsonWriteDriver();
+        JsonWriteDriver writer = new JsonWriteDriver(connection);
 
         //Write query
         String path = "./target/" + JsonWriteDriverTest.class.getSimpleName() +

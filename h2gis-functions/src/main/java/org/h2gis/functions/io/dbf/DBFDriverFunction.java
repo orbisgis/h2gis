@@ -71,6 +71,9 @@ public class DBFDriverFunction implements DriverFunction {
         if(deleteFiles){
             Files.deleteIfExists(fileName.toPath());
         }
+        else if (fileName.exists()) {
+            throw new IOException("The dbf file already exist.");
+        }
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableReference);

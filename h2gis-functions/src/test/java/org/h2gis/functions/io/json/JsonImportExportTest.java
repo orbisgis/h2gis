@@ -70,7 +70,7 @@ public class JsonImportExportTest {
              stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
              stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
-             stat.execute("CALL JSONWrite('target/result.json', 'TABLE_POINT');");
+             stat.execute("CALL JSONWrite('target/result.json', 'TABLE_POINT', true);");
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
              assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
@@ -83,7 +83,8 @@ public class JsonImportExportTest {
              stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
              ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
-             new JsonWriteDriver().write(new EmptyProgressVisitor(), rs, new File("target/result.json"), true);
+             JsonWriteDriver jsonDriver = new JsonWriteDriver(connection);
+             jsonDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.json"), true);
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
              assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
@@ -96,7 +97,8 @@ public class JsonImportExportTest {
             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
             stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
-            new JsonWriteDriver().write(new EmptyProgressVisitor(), rs, new File("target/result.gz"), true);
+            JsonWriteDriver jsonDriver = new JsonWriteDriver(connection);
+            jsonDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.gz"), true);
             File outpuFile = new File("target/result.gz");
             assertTrue(outpuFile.exists());
             GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outpuFile));
@@ -113,7 +115,7 @@ public class JsonImportExportTest {
              stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
              stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000)),(2, 'POINT(12 200)', (10000, 20000, 30000, 10000))");
-             stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)');");
+             stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)', true);");
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
              assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
@@ -126,7 +128,7 @@ public class JsonImportExportTest {
                 stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
                 stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
                 stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000)),(2, 'POINT(12 200)', (10000, 20000, 30000, 10000))");
-                stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)', 'CP52');");
+                stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)', 'CP52', true);");
             }
         });
     }
@@ -138,7 +140,7 @@ public class JsonImportExportTest {
             stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
-            stat.execute("CALL JsonWrite('target/lines.json', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            stat.execute("CALL JsonWrite('target/lines.json', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)', true);");
             String result = new String( Files.readAllBytes(Paths.get("target/lines.json")));
             assertEquals("{\"THE_GEOM\":\"LINESTRING (1 10, 20 15)\",\"ID\":2}",result);
         }
@@ -147,7 +149,7 @@ public class JsonImportExportTest {
     @Test
     public void testSelectWrite() throws Exception {
         try (Statement stat = connection.createStatement()) {
-            stat.execute("CALL JsonWrite('target/lines.json', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            stat.execute("CALL JsonWrite('target/lines.json', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)', true);");
             String result = new String( Files.readAllBytes(Paths.get("target/lines.json")));
             assertEquals("{\"THE_GEOM\":\"SRID=4326;LINESTRING (1 10, 20 15)\"}",result);
         }

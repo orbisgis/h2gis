@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 
 /**
  *
@@ -87,7 +88,7 @@ public class TSVDriverTest {
         stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
         File tsvFile = new File("target/area éxport.tsv");
         DriverFunction exp = new TSVDriverFunction();
-        exp.exportTable(connection, "AREA", tsvFile, new EmptyProgressVisitor());
+        exp.exportTable(connection, "AREA", tsvFile, true, new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mytsv");
         exp.importFile(connection, "MYTSV", tsvFile, new EmptyProgressVisitor());
         try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from mytsv")) {
@@ -104,7 +105,7 @@ public class TSVDriverTest {
         stat.execute("create table myTSV(the_geom GEOMETRY, idarea int primary key)");
         stat.execute("insert into myTSV values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
         stat.execute("insert into myTSV values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
-        stat.execute("CALL TSVWrite('target/mytsv_export.tsv', 'myTSV')");
+        stat.execute("CALL TSVWrite('target/mytsv_export.tsv', 'myTSV', true)");
         assertTrue(tsvFile.exists());
         stat.execute("CALL TSVRead('target/mytsv_export.tsv', 'TSV_IMPORT');");
         try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from TSV_IMPORT")) {
@@ -121,7 +122,7 @@ public class TSVDriverTest {
         stat.execute("create table myTSV(the_geom GEOMETRY, idarea int primary key)");
         stat.execute("insert into myTSV values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
         stat.execute("insert into myTSV values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
-        stat.execute("CALL TSVWrite('target/mytsv_export.gz', 'myTSV')");
+        stat.execute("CALL TSVWrite('target/mytsv_export.gz', 'myTSV', true)");
         assertTrue(tsvFile.exists());
         stat.execute("CALL TSVRead('target/mytsv_export.gz', 'TSV_IMPORT', true);");
         try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from TSV_IMPORT")) {
@@ -135,7 +136,7 @@ public class TSVDriverTest {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS empty_table");
             stat.execute("create table empty_table()");
-            stat.execute("CALL TSVWrite('target/empty_table.tsv', 'empty_table');");
+            stat.execute("CALL TSVWrite('target/empty_table.tsv', 'empty_table', true);");
             stat.execute("CALL TSVRead('target/empty_table.tsv', 'empty_table_read');");
             ResultSet res = stat.executeQuery("SELECT * FROM empty_table_read;");
             ResultSetMetaData rsmd = res.getMetaData();
@@ -187,7 +188,7 @@ public class TSVDriverTest {
         stat.execute("create table myTSV(the_geom GEOMETRY, idarea int primary key)");
         stat.execute("insert into myTSV values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
         stat.execute("insert into myTSV values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
-        stat.execute("CALL TSVWrite('target/mytsv_export.tsv', '(SELECT * FROM myTSV)')");
+        stat.execute("CALL TSVWrite('target/mytsv_export.tsv', '(SELECT * FROM myTSV)', true)");
         assertTrue(tsvFile.exists());
         stat.execute("CALL TSVRead('target/mytsv_export.tsv', 'MYTSV_IMPORT');");
         try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from MYTSV_IMPORT")) {
@@ -204,7 +205,7 @@ public class TSVDriverTest {
             stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
-            stat.execute("CALL TSVWrite('target/lines.tsv', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            stat.execute("CALL TSVWrite('target/lines.tsv', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)', true);");
             stat.execute("CALL TSVRead('target/lines.tsv', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
@@ -244,6 +245,21 @@ public class TSVDriverTest {
                 res.close();
                 stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
             }
+        }
+    }
+    
+    @Test
+    public void testSelectWriteManyTimes() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS, TABLE_LINESTRINGS_READ");
+            stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
+            stat.execute("CALL TSVWrite('target/lines.tsv', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)', true);");
+            assertThrows(JdbcSQLNonTransientException.class, () -> {
+                 stat.execute("CALL TSVWrite('target/lines.tsv', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            });
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }
     
