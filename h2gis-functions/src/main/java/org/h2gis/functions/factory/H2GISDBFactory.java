@@ -113,7 +113,7 @@ public class H2GISDBFactory {
         properties.setProperty(DataSourceFactory.JDBC_PASSWORD, "sa");
         DataSource dataSource = dataSourceFactory.createDataSource(properties);
         // Init spatial ext
-        if(initSpatial) {
+        if(initSpatial) {            
             try (Connection connection = dataSource.getConnection()) {
                 H2GISFunctions.load(connection);
             }

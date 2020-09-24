@@ -94,6 +94,7 @@ import java.sql.*;
 import org.h2gis.functions.spatial.crs.ST_FindUTMSRID;
 import org.h2gis.functions.spatial.crs.UpdateGeometrySRID;
 import org.h2gis.functions.spatial.metadata.FindGeometryMetadata;
+import org.h2gis.functions.system.JTSVersion;
 
 /**
  * Add H2GIS features to an H2 database
@@ -313,7 +314,8 @@ public class H2GISFunctions {
                 new ST_GeneratePointsInGrid(),
                 new AscRead(),
                 new FindGeometryMetadata(),
-                new UpdateGeometrySRID()
+                new UpdateGeometrySRID(),
+                new JTSVersion(),
         };
     }
 
@@ -336,7 +338,12 @@ public class H2GISFunctions {
      * @throws java.sql.SQLException
      */
     public static void load(Connection connection) throws SQLException {
-        registerH2GISFunctions(connection,"");
+        org.locationtech.jts.JTSVersion jtsVersion = org.locationtech.jts.JTSVersion.CURRENT_VERSION;
+        if (jtsVersion.getMinor() < 17) {
+            LOGGER.warn("Some spatial functions will not be compatible with your version of JTS (" + jtsVersion.toString() + ")\n"
+                    + "Please a JTS version greater or equals to 1.17");
+        }
+        registerH2GISFunctions(connection, "");
         registerSpatialTables(connection);
     }
 
