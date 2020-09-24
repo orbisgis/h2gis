@@ -45,6 +45,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
+import org.h2gis.functions.spatial.crs.UpdateGeometrySRID;
 import org.h2gis.utilities.JDBCUtilities;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -723,6 +724,18 @@ public class GeometryTableUtilsTest {
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
         assertEquals(4326, geomMetadata.getSRID());
+        st.execute("SELECT UpdateGeometrySRID('GEO_POINT','the_geom',4326);");
+        geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
+        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
+        assertEquals(4326, geomMetadata.getSRID());        
+    }
+    
+    @Test
+    public void testUpdateSRIDFunctionResponse() throws Exception {
+        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINT))");
+        st.execute("insert into geo_point VALUES('SRID=0;POINT(0 0)')");
+        assertTrue(UpdateGeometrySRID.changeSRID(connection, "GEO_POINT", "THE_GEOM",4326));
+        assertFalse(UpdateGeometrySRID.changeSRID(connection, "GEO_POINT", "THE_GEOM",4326));
     }
     
     @Test
