@@ -1315,19 +1315,28 @@ public class GeometryTableUtilities {
      */
     public static boolean alterSRID(Connection connection, TableLocation tableLocation, String geometryColumnName, int srid) throws SQLException {
         if (srid >= 0) {
-            String tableName = tableLocation.toString(JDBCUtilities.isH2DataBase(connection));
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            String tableName = tableLocation.toString(isH2);
             if (tableName.isEmpty()) {
                 throw new SQLException("The table name cannot be empty");
             }
-            GeometryMetaData metadata = GeometryTableUtilities.getMetaData(connection, tableLocation, geometryColumnName);
+            String fieldName = TableLocation.capsIdentifier(geometryColumnName, isH2);
+            GeometryMetaData metadata = GeometryTableUtilities.getMetaData(connection, tableLocation, fieldName);
             if (metadata != null) {
+                if(metadata.getSRID()==srid){
+                    return false;
+                }
+                fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
                 StringBuilder geometrySignature = new StringBuilder("GEOMETRY");
                 geometrySignature.append("(").append(metadata.geometryType);
                 geometrySignature.append(",").append(srid).append(")");
 
-                StringBuilder query = new StringBuilder("ALTER TABLE ").append(tableName).append(" ALTER COLUMN ").append(geometryColumnName);
-                query.append(" TYPE ").append(geometrySignature.toString()).append(" USING ST_SetSRID(").append(geometryColumnName).append(",").append(srid).append(")");
-                return connection.createStatement().execute(query.toString());
+                StringBuilder query = new StringBuilder("ALTER TABLE ").append(tableName).append(" ALTER COLUMN ").append(fieldName);
+                query.append(" TYPE ").append(geometrySignature.toString()).append(" USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(")");
+                connection.createStatement().execute(query.toString());
+                return true;
+            }else{
+                return false;
             }
         }
         throw new SQLException("The SRID value must be greater or equal than 0");
