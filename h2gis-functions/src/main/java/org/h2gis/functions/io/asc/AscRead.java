@@ -105,7 +105,7 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         }
         if (tableReference == null) {
             final String name = URIUtilities.fileFromString(fileName).getName();
-            String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+            String tableName = name.substring(0, name.lastIndexOf(".")).replace(".", "_").toUpperCase();
             if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
                 tableReference = tableName;
             } else {

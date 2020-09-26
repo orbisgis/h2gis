@@ -298,4 +298,28 @@ public class DBFImportExportTest {
             assertEquals("second area", res.getString("descr"));
         }
     }
+    
+    
+    @Test
+    public void testWriteReadNotSensitive() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File dbfFile = new File("target/area_export.dbf");
+        stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
+        stat.execute("create table area(id integer, val REAL, descr CHAR(50))");
+        double v1 = 406.56;
+        double v2 = 250.73;
+        stat.execute("insert into area values(1, "+v1+", 'main area')");
+        stat.execute("insert into area values(2, "+v2+", 'second area')");
+        // Create a shape file using table area
+        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'area', true)");
+        // Read this shape file to check values
+        stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
+        ResultSet rs = stat.executeQuery("SELECT val FROM AREA2 order by id");
+        assertTrue(rs.next());
+        assertEquals(v1, rs.getDouble(1), 1e-2);
+        assertTrue(rs.next());
+        assertEquals(v2, rs.getDouble(1), 1e-2);
+        assertFalse(rs.next());
+        rs.close();
+    }
 }

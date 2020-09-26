@@ -36,7 +36,7 @@ public class H2GISversion extends DeterministicScalarFunction{
 
     
     public H2GISversion(){
-        addProperty(PROP_REMARKS, "Returns H2GISGIS version number");
+        addProperty(PROP_REMARKS, "Returns H2GIS version number");
     }
     
     

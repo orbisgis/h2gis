@@ -49,8 +49,6 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
                 + "\n path of the file"
                 + "\n path of the file, table name"
                 + "\n path of the file, true for delete the table with the same file name"
-                + "\n path of the file, table name, true to delete the table name"
-                + "\n path of the file, table name, true to delete the table name"
                 + "\n path of the file, table name, encoding chartset"
                 + "\n path of the file, table name, encoding chartset, true to delete the table name");
     }
@@ -95,7 +93,12 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
         String tableReference = null;
         boolean deleteTable = false;
         if (option instanceof ValueBoolean) {
-            deleteTable = option.getBoolean();
+           deleteTable = option.getBoolean();
+            final String name = URIUtilities.fileFromString(fileName).getName();
+            tableReference = name.substring(0, name.lastIndexOf(".")).replace(".", "_").toUpperCase();
+            if (!tableReference.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+                throw new SQLException("The file name contains unsupported characters");
+            }
         } else if (option instanceof ValueVarchar) {
             tableReference = option.getString();
         } else if (!(option instanceof ValueNull)) {

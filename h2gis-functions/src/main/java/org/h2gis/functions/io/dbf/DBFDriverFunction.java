@@ -114,9 +114,9 @@ public class DBFDriverFunction implements DriverFunction {
             }
 
         } else {
-               int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 String tableName = TableLocation.parse(tableReference, isH2).toString(isH2);
+                int recordCount = JDBCUtilities.getRowCount(connection, tableName);                
                 // Read table content
                 Statement st = connection.createStatement();
                 JDBCUtilities.attachCancelResultSet(st, progress);
