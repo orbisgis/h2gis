@@ -740,6 +740,7 @@ public class GeometryTableUtilsTest {
         st.execute("insert into geo_point VALUES('SRID=0;POINT(0 0)')");
         assertTrue(UpdateGeometrySRID.changeSRID(connection, "GEO_POINT", "THE_GEOM",4326));
         assertFalse(UpdateGeometrySRID.changeSRID(connection, "GEO_POINT", "THE_GEOM",4326));
+        assertTrue(UpdateGeometrySRID.changeSRID(connection, "GEO_POINT", "THE_GEOM",0));
     }
     
     @Test

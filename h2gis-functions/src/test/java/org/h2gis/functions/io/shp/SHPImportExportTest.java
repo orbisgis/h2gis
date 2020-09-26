@@ -871,4 +871,25 @@ public class SHPImportExportTest {
             }
         }
     }
+    
+    @Test
+    public void exportImportNotSensitive() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/punctual_export.shp");
+        stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
+        stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINT Z))");
+        stat.execute("insert into punctual values(1, 'POINT(-10 109 5)')");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/punctual_export.shp', 'punctual', true)");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
+        stat.execute("CALL SHPRead('target/punctual_export.shp', 'IMPORT_PUNCTUAL')");
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        Coordinate coord = geom.getCoordinate();
+        assertEquals(coord.z, 5, 10E-1);
+        res.close();
+    }
 }
