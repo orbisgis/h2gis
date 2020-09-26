@@ -21,7 +21,8 @@ package org.h2gis.functions.spatial.crs;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -30,7 +31,7 @@ import org.h2gis.utilities.TableLocation;
  * 
  * @author Erwan Bocher, CNRS (2020)
  */
-public class UpdateGeometrySRID extends DeterministicScalarFunction {
+public class UpdateGeometrySRID  extends AbstractFunction implements ScalarFunction {
 
     public UpdateGeometrySRID() {
         addProperty(PROP_REMARKS, "Updates the SRID of all features in a geometry column. ");
