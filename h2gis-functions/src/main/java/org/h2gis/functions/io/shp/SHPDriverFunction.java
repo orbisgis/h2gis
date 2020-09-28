@@ -116,18 +116,19 @@ public class SHPDriverFunction implements DriverFunction {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            TableLocation location = TableLocation.parse(tableReference, isH2);
-            int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+            TableLocation tableLocation = TableLocation.parse(tableReference, isH2);
+            String location = tableLocation.toString(isH2);
+            int recordCount = JDBCUtilities.getRowCount(connection, location);
             ProgressVisitor copyProgress = progress.subProcess(recordCount);
             // Read Geometry Index and type
-            Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, TableLocation.parse(tableReference, isH2));
+            Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableLocation);
             Statement st = connection.createStatement();
             JDBCUtilities.attachCancelResultSet(st, progress);
-            ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
+            ResultSet rs = st.executeQuery(String.format("select * from %s", location));
             doExport(spatialFieldNameAndIndex.second(), rs, recordCount, fileName, copyProgress, options);
             String path = fileName.getAbsolutePath();
             String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
-            PRJUtil.writePRJ(connection, location, spatialFieldNameAndIndex.first(), new File(nameWithoutExt + ".prj"));
+            PRJUtil.writePRJ(connection, tableLocation, spatialFieldNameAndIndex.first(), new File(nameWithoutExt + ".prj"));
             copyProgress.endOfProgress();
         }
 

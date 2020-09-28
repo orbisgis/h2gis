@@ -46,7 +46,6 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
                 + "\n Supported arguments :"
                 + "\n path of the file"
                 + "\n path of the file, table name"
-                + "\n path of the file, true for delete the table with the same file name"
                 + "\n path of the file, table name, true to delete the table name"
                 + "\n path of the file, table name, encoding chartset"
                 + "\n path of the file, table name, encoding chartset, true to delete the table name");
@@ -89,7 +88,7 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
         if (option instanceof ValueBoolean) {
             deleteTable = option.getBoolean();
             final String name = URIUtilities.fileFromString(fileName).getName();
-            String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+            String tableName = name.substring(0, name.lastIndexOf(".")).replace(".", "_").toUpperCase();
             if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
                 importTable(connection, fileName, tableName, null, deleteTable);
             } else {

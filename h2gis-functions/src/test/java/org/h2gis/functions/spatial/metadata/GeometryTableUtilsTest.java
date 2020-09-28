@@ -727,7 +727,11 @@ public class GeometryTableUtilsTest {
         st.execute("SELECT UpdateGeometrySRID('GEO_POINT','the_geom',4326);");
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
-        assertEquals(4326, geomMetadata.getSRID());        
+        assertEquals(4326, geomMetadata.getSRID());  
+        st.execute("SELECT UpdateGeometrySRID('geo_point','the_geom',4326);");
+        geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
+        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
+        assertEquals(4326, geomMetadata.getSRID()); 
     }
     
     @Test
@@ -736,6 +740,7 @@ public class GeometryTableUtilsTest {
         st.execute("insert into geo_point VALUES('SRID=0;POINT(0 0)')");
         assertTrue(UpdateGeometrySRID.changeSRID(connection, "GEO_POINT", "THE_GEOM",4326));
         assertFalse(UpdateGeometrySRID.changeSRID(connection, "GEO_POINT", "THE_GEOM",4326));
+        assertTrue(UpdateGeometrySRID.changeSRID(connection, "GEO_POINT", "THE_GEOM",0));
     }
     
     @Test

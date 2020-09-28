@@ -954,6 +954,32 @@ public class GeojsonImportExportTest {
             assertEquals(1, res.getInt(1));
         }
     }
+    
+    @Test
+    public void exportQueryImportFileGZOption2() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File fileOut = new File("target/lineal_export.gz");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 2 6)'),(2, 'LINESTRING(-15 109 5, 120 2 6)')");
+        // Create a geojson file using a query
+        stat.execute("CALL GeoJSONWrite('target/lineal_export.geojson.gz', '(SELECT THE_GEOM FROM LINEAL LIMIT 1 )', true)");
+        // Read this shape file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS LINEAL_EXPORT_GEOJSON;");
+        stat.execute("CALL GeoJSONRead('target/lineal_export.geojson.gz')");
+
+        try (ResultSet res = stat.executeQuery("SELECT COUNT(*) FROM LINEAL_EXPORT_GEOJSON;")) {
+            res.next();
+            assertEquals(1, res.getInt(1));
+        }
+        stat.execute("CALL GeoJSONRead('target/lineal_export.geojson.gz', true)");
+
+        try (ResultSet res = stat.executeQuery("SELECT COUNT(*) FROM LINEAL_EXPORT_GEOJSON;")) {
+            res.next();
+            assertEquals(1, res.getInt(1));
+        }
+    }
 
     @Test
     public void exportResultSetBadEncoding() throws SQLException, IOException {
@@ -1188,6 +1214,26 @@ public class GeojsonImportExportTest {
                 stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             });
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
+    
+    @Test
+    public void testWriteReadNoSensitive() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+            stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINTZ))");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(1 2 3)')");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(10 200 2000)')");
+            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'table_POINTS', true);");
+            stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
+            res.next();
+            assertEquals(3,((Geometry) res.getObject(1)).getCoordinate().getZ());
+            res.next();
+            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());;
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
     }
 }
