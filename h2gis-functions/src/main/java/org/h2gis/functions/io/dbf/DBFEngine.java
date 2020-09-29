@@ -62,7 +62,7 @@ public class DBFEngine extends FileEngine<DBFDriver> {
         for (int i = 0; i < header.getNumFields(); i++) {
             String fieldsName = header.getFieldName(i);
             final int type = dbfTypeToH2Type(header,i);
-            TypeInfo typeInfo = new TypeInfo(type, header.getFieldLength(i), 0, ValueNull.VARCHAR, null);
+            TypeInfo typeInfo = new TypeInfo(type, header.getFieldLength(i), 0, TypeInfo.TYPE_VARCHAR);
             Column column = new Column(fieldsName.toUpperCase(), typeInfo);
             data.columns.add(column);
         }

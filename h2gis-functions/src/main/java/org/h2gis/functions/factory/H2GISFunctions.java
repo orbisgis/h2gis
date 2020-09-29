@@ -362,12 +362,12 @@ public class H2GISFunctions {
                 + " TABLE_NAME f_table_name, "
                 + " COLUMN_NAME f_geometry_column, "
                 + "1 storage_type, "
-                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, COLUMN_TYPE)[1]:: int as geometry_type, "
-                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, COLUMN_TYPE)[2]:: int as coord_dimension, "
-                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, COLUMN_TYPE)[3]:: int as srid, "
-                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, COLUMN_TYPE)[4]:: varchar as type "
+                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, DATA_TYPE)[1]:: int as geometry_type, "
+                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, DATA_TYPE)[2]:: int as coord_dimension, "
+                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, DATA_TYPE)[3]:: int as srid, "
+                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, DATA_TYPE)[4]:: varchar as type "
                 + " FROM INFORMATION_SCHEMA.COLUMNS"
-                + " WHERE TYPE_NAME = 'GEOMETRY';");
+                + " WHERE DATA_TYPE = 'GEOMETRY';");
         ResultSet rs = connection.getMetaData().getTables("", "PUBLIC", "SPATIAL_REF_SYS", null);
         if (!rs.next()) {
             InputStreamReader reader = new InputStreamReader(

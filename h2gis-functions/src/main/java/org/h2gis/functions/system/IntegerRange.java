@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.system;
 
+import org.h2.value.Value;
 import org.h2.value.ValueArray;
 import org.h2.value.ValueInteger;
 import org.h2gis.api.DeterministicScalarFunction;
@@ -48,7 +49,7 @@ public class IntegerRange extends DeterministicScalarFunction{
      * @param end to end
      * @return 
      */
-    public static  ValueArray createArray(int begin, int end) {
+    public static  Value[] createArray(int begin, int end) {
         return createArray(begin, end, 1);
     }
     
@@ -59,7 +60,7 @@ public class IntegerRange extends DeterministicScalarFunction{
      * @param step increment
      * @return 
      */
-    public static ValueArray createArray(int begin, int end, int step) {
+    public static Value[] createArray(int begin, int end, int step) {
         if (end < begin) {
             throw new IllegalArgumentException("End must be greater or equal to begin");
         }
@@ -69,7 +70,7 @@ public class IntegerRange extends DeterministicScalarFunction{
             getArray[i] = ValueInteger.get(i * step + begin);
 
         }        
-        return ValueArray.get(getArray);
+        return getArray;
     }
     
 }

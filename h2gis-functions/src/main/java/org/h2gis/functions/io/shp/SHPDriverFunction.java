@@ -20,6 +20,7 @@
 package org.h2gis.functions.io.shp;
 
 import org.h2.table.Column;
+import org.h2.value.TypeInfo;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
@@ -289,16 +290,13 @@ public class SHPDriverFunction implements DriverFunction {
                 try (
                     // Build CREATE TABLE sql request
                     Statement st = connection.createStatement()) {
-                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2);
+                    List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
+                    otherCols.add(new Column("THE_GEOM", TypeInfo.TYPE_GEOMETRY));
+                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2, otherCols);
                     if (!types.isEmpty()) {
                         types = ", " + types;
                     }
                     parse = TableLocation.parse(tableReference, isH2);
-                    List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
-                    otherCols.add(new Column("THE_GEOM", 0));
-                    for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
-                        otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
-                    }
                     String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                     srid = PRJUtil.getSRID(shpDriver.prjFile);
                     shpDriver.setSRID(srid);
@@ -322,7 +320,7 @@ public class SHPDriverFunction implements DriverFunction {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
                             for (int columnId = 0; columnId < columnCount; columnId++) {
-                                preparedStatement.setObject(columnId + 1, shpDriver.getField(rowId, columnId).getObject());
+                                preparedStatement.setObject(columnId + 1, shpDriver.getField(rowId, columnId));
                             }
                             preparedStatement.addBatch();
                             batchSize++;

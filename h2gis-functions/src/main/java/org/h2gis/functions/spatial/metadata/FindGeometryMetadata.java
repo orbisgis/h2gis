@@ -25,8 +25,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.util.StringUtils;
 import org.h2.value.Value;
-import org.h2.value.ValueArray;
 import org.h2.value.ValueInteger;
+import org.h2.value.ValueJavaObject;
 import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
@@ -61,14 +61,14 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
      * @param tableName
      * @param columnName
      * @param geometryTableSignature
-     * @return an array of values with the following values order 
+     * @return an array of values with the following values order
      * values[0] =   GEOMETRY_TYPE 
      * values[1] = COORD_DIMENSION 
      * values[2] = SRID 
      * values[3] =   TYPE
      * @throws SQLException
      */
-    public static ValueArray extractMetadata(Connection connection, String catalogName, String schemaName, String tableName, String columnName, String geometryTableSignature) throws SQLException {
+    public static Value[] extractMetadata(Connection connection, String catalogName, String schemaName, String tableName, String columnName, String geometryTableSignature) throws SQLException {
         GeometryMetaData geomMeta = GeometryMetaData.getMetaData(geometryTableSignature);
         int srid = geomMeta.getSRID();
         Value[] values = new Value[4];
@@ -82,11 +82,13 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
                 }
             }
         }
+
         values[0] = ValueInteger.get(geomMeta.getGeometryTypeCode());
         values[1] = ValueInteger.get(geomMeta.getDimension());
         values[2] = ValueInteger.get(srid);
         values[3] = ValueVarchar.get(geomMeta.getSfs_geometryType());
-        return ValueArray.get(values);
+
+        return values;
     }
 
 }

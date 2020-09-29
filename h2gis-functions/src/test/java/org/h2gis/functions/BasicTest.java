@@ -109,9 +109,9 @@ public class BasicTest {
         public void testSameClass() {
             GeometryFactory geometryFactory = new GeometryFactory();
             Geometry geometry = geometryFactory.createPoint(new Coordinate(0,0));
-            assertEquals(Value.GEOMETRY, DataType.getTypeFromClass(geometry.getClass()), "H2 does not use the same " +
+            assertEquals(Value.GEOMETRY, DataType.getDefaultForPrimitiveType(geometry.getClass()), "H2 does not use the same " +
                     "JTS ! Expected:\n" + Geometry.class.getName() + "\n but got:\n"
-                    + DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass()), true) + "\n");
+                    + DataType.getDefaultForPrimitiveType(geometry.getClass()) + "\n");
         }
 
         @Test

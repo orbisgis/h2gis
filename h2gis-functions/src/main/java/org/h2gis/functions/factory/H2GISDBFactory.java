@@ -173,6 +173,6 @@ public class H2GISDBFactory {
      * @throws java.lang.ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName, boolean initSpatial )throws SQLException, ClassNotFoundException {
-        return createSpatialDataBase(dbName, initSpatial, H2_PARAMETERS);
+        return createSpatialDataBase(dbName, initSpatial, "");
     }
 }

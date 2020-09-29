@@ -33,6 +33,21 @@
         <maven.compiler.source>8</maven.compiler.source>
         <site.basedir>${project.basedir}</site.basedir>
     </properties>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>2.0.201-20200928.000000-1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.locationtech.jts</groupId>
+                <artifactId>jts-core</artifactId>
+                <version>1.17.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- Build Settings -->
     <build>
