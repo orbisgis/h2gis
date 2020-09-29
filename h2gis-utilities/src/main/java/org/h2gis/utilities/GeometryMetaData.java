@@ -413,7 +413,7 @@ public class GeometryMetaData {
      * @param type : geometry type
      * @return GeometryMetaData
      */
-    private static GeometryMetaData createMetadataFromGeometryType(String type) {
+    public static GeometryMetaData createMetadataFromGeometryType(String type) {
         return createMetadataFromGeometryType(type, 0);
     }
 
@@ -426,7 +426,7 @@ public class GeometryMetaData {
      * @param srid : srid value
      * @return GeometryMetaData
      */
-    private static GeometryMetaData createMetadataFromGeometryType(String type, int srid) {
+    public static GeometryMetaData createMetadataFromGeometryType(String type, int srid) {
         GeometryMetaData geometryMetaData = new GeometryMetaData();
         geometryMetaData.setSRID(srid);
         if (type == null) {
