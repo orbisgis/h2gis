@@ -676,4 +676,11 @@ public class GeometryMetaData {
         return geometryMetaData;
     }
 
+    /**
+     * Return the SFS geometry type code
+     * @return
+     */
+    public int getSfs_geometryTypeCode() {
+        return sfs_geometryTypeCode;
+    }
 }

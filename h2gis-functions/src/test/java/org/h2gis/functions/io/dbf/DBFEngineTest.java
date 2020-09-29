@@ -67,21 +67,28 @@ public class  DBFEngineTest {
             ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
             assertTrue(rs.next());
             assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
             assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-            assertEquals("CHAR",rs.getString("TYPE_NAME"));
+            assertEquals("CHARACTER",rs.getString("DATA_TYPE"));
             assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
             assertTrue(rs.next());
             assertEquals("GID",rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-            assertEquals(18,rs.getInt("NUMERIC_PRECISION"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
+            assertEquals(64,rs.getInt("NUMERIC_PRECISION"));
             assertTrue(rs.next());
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
-            assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+            assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
+            assertEquals(20,rs.getInt("DECLARED_NUMERIC_PRECISION"));
         }
         st.execute("drop table dbftable");
+    }
+
+    static void print(ResultSet res) throws SQLException {
+        List<String> columns = JDBCUtilities.getColumnNames(res.getMetaData());
+        for(String column:columns){
+            System.out.println(column + " + "+ res.getString(column));
+        }
     }
 
     @Test
@@ -243,17 +250,18 @@ public class  DBFEngineTest {
         try (ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
             assertTrue(rs.next());
             assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
             assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-            assertEquals("CHAR",rs.getString("TYPE_NAME"));
+            assertEquals("CHARACTER",rs.getString("DATA_TYPE"));
             assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
             assertTrue(rs.next());
             assertEquals("GID",rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
+            print(rs);
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+            assertEquals("DOUBLE",rs.getString("DATA_TYPE"));
         }
         st.execute("drop table dbftable");
     }
@@ -305,11 +313,8 @@ public class  DBFEngineTest {
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM DBFTABLE WHERE "+H2TableIndex.PK_COLUMN_NAME+" = 5");
         try {
             assertTrue(rs.next());
-            System.out.println(rs.getString(1));
-            System.out.println("\": "+H2TableIndex.PK_COLUMN_NAME+" = 5 */\nWHERE "+
-                    H2TableIndex.PK_COLUMN_NAME.replaceAll("\"", "")+" = 5");
-            assertTrue(rs.getString(1).endsWith("\": "+H2TableIndex.PK_COLUMN_NAME+" = 5 */\nWHERE \""+
-                    H2TableIndex.PK_COLUMN_NAME+"\" = 5"));
+            assertTrue(rs.getString(1).endsWith("\": "+H2TableIndex.PK_COLUMN_NAME+" = CAST(5 AS BIGINT) */\nWHERE \""+
+                    H2TableIndex.PK_COLUMN_NAME+"\" = CAST(5 AS BIGINT)"));
         } finally {
             rs.close();
         }

@@ -19,17 +19,12 @@
  */
 package org.h2gis.functions.spatial.metadata;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import org.h2.util.StringUtils;
 import org.h2.value.Value;
 import org.h2.value.ValueArray;
 import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
-import org.h2gis.utilities.TableLocation;
 
 public class FindGeometryMetadata extends DeterministicScalarFunction{
 
@@ -44,7 +39,7 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
     }
 
     /**
-     * Extract the geometry metadata from its create table signature
+     * Extract the geometry metadata from its OGC signature
      *
      * Examples:
      *
@@ -55,18 +50,17 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
      * @param geometryTableSignature
      * @return an array of values with the following values order
      * values[0] =   GEOMETRY_TYPE 
-     * values[1] = COORD_DIMENSION 
-     * values[2] = SRID 
+     * values[1] = COORD_DIMENSION
      * values[3] =   TYPE
      * @throws SQLException
      */
-    public static ValueArray extractMetadata(String geometryTableSignature) throws SQLException {
+    public static String[] extractMetadata(String geometryTableSignature)  {
         GeometryMetaData geomMeta = GeometryMetaData.createMetadataFromGeometryType(geometryTableSignature);
-        Value[] values = new Value[3];
-        values[0] = ValueVarchar.get(String.valueOf(geomMeta.getGeometryTypeCode()));
-        values[1] = ValueVarchar.get(String.valueOf(geomMeta.getDimension()));
-        values[2] = ValueVarchar.get(geomMeta.getSfs_geometryType());
-        return ValueArray.get(values, null);
+        String[] values = new String[3];
+        values[0] = String.valueOf(geomMeta.getSfs_geometryTypeCode());
+        values[1] = String.valueOf(geomMeta.getDimension());
+        values[2] = geomMeta.getSfs_geometryType();
+        return values;
     }
 
 }

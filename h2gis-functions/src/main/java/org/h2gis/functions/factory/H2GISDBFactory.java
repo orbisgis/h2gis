@@ -38,7 +38,7 @@ import java.util.Properties;
  */
 public class H2GISDBFactory {
 
-    public static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0;DB_CLOSE_DELAY=5";
+    public static final String H2_PARAMETERS = ";DB_CLOSE_ON_EXIT=FALSE";
 
     private H2GISDBFactory() {
         // utility
@@ -173,6 +173,6 @@ public class H2GISDBFactory {
      * @throws java.lang.ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName, boolean initSpatial )throws SQLException, ClassNotFoundException {
-        return createSpatialDataBase(dbName, initSpatial, "");
+        return createSpatialDataBase(dbName, initSpatial, H2_PARAMETERS);
     }
 }
