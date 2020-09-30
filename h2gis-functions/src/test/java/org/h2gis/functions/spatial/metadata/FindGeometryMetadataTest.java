@@ -65,31 +65,31 @@ public class FindGeometryMetadataTest {
 
     @Test
     public void testFindGeometryMetadata() throws SQLException {
-        st.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable (the_geom GEOMETRY(POINTZ, 2154));" +
-                "INSERT INTO geotable values ('SRID=2154;POINTZ(1 1 0)') ");
+        st.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable (the_geom GEOMETRY); ");
+        //st.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable (the_geom GEOMETRY(POINT, 2154)); ");
         ResultSet res = st.executeQuery(
                 "SELECT  TABLE_CATALOG f_table_catalog, "
                         + " TABLE_SCHEMA f_table_schema, "
                         + " TABLE_NAME f_table_name, "
                         + " COLUMN_NAME f_geometry_column, "
                         + "1 storage_type, "
-                        + "FindGeometryMetadata(GEOMETRY_TYPE)[1]:: int as geometry_type, "
-                        + "FindGeometryMetadata(GEOMETRY_TYPE)[2]:: int as coord_dimension, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[1]:: int as geometry_type, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[2]:: int as coord_dimension, "
                         + "GEOMETRY_SRID:: int as srid, "
-                        + "FindGeometryMetadata(GEOMETRY_TYPE)[3] as type "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[3] as type "
                         + " FROM INFORMATION_SCHEMA.COLUMNS"
                         + " WHERE DATA_TYPE = 'GEOMETRY';");
 
         assertTrue(res.next());
-        assertEquals("DBH2FINDGEOMETRYMETADATATEST",res.getString("TABLE_CATALOG"));
-        assertEquals("PUBLIC",res.getString("TABLE_SCHEMA"));
-        assertEquals("GEOTABLE",res.getString("TABLE_NAME"));
-        assertEquals("THE_GEOM",res.getString("COLUMN_NAME"));
-        assertEquals(1,res.getInt("STORAGE_TYPE"));
-        assertEquals(1,res.getInt("GEOMETRY_TYPE"));
-        assertEquals(3,res.getInt("COORD_DIMENSION"));
-        assertEquals(2154,res.getInt("SRID"));
-        assertEquals("POINTZ",res.getString("TYPE"));
+        assertEquals("DBH2FINDGEOMETRYMETADATATEST", res.getString("TABLE_CATALOG"));
+        assertEquals("PUBLIC", res.getString("TABLE_SCHEMA"));
+        assertEquals("GEOTABLE", res.getString("TABLE_NAME"));
+        assertEquals("THE_GEOM", res.getString("COLUMN_NAME"));
+        assertEquals(1, res.getInt("STORAGE_TYPE"));
+        assertEquals(0, res.getInt("GEOMETRY_TYPE"));
+        assertEquals(2, res.getInt("COORD_DIMENSION"));
+        assertEquals(0, res.getInt("SRID"));
+        assertEquals("GEOMETRY", res.getString("TYPE"));
 
         st.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable (the_geom GEOMETRY(POINTZM, 0));" +
                 "INSERT INTO geotable values ('SRID=0;POINTZ(1 1 0 5)') ");
@@ -99,23 +99,109 @@ public class FindGeometryMetadataTest {
                         + " TABLE_NAME f_table_name, "
                         + " COLUMN_NAME f_geometry_column, "
                         + "1 storage_type, "
-                        + "FindGeometryMetadata(GEOMETRY_TYPE)[1]:: int as geometry_type, "
-                        + "FindGeometryMetadata(GEOMETRY_TYPE)[2]:: int as coord_dimension, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[1]:: int as geometry_type, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[2]:: int as coord_dimension, "
                         + "GEOMETRY_SRID:: int as srid, "
-                        + "FindGeometryMetadata(GEOMETRY_TYPE)[3] as type "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[3] as type "
                         + " FROM INFORMATION_SCHEMA.COLUMNS"
                         + " WHERE DATA_TYPE = 'GEOMETRY';");
 
         assertTrue(res.next());
-        assertEquals("DBH2FINDGEOMETRYMETADATATEST",res.getString("TABLE_CATALOG"));
-        assertEquals("PUBLIC",res.getString("TABLE_SCHEMA"));
-        assertEquals("GEOTABLE",res.getString("TABLE_NAME"));
-        assertEquals("THE_GEOM",res.getString("COLUMN_NAME"));
-        assertEquals(1,res.getInt("STORAGE_TYPE"));
-        assertEquals(1,res.getInt("GEOMETRY_TYPE"));
-        assertEquals(4,res.getInt("COORD_DIMENSION"));
-        assertEquals(0,res.getInt("SRID"));
-        assertEquals("POINTZM",res.getString("TYPE"));
+        assertEquals("DBH2FINDGEOMETRYMETADATATEST", res.getString("TABLE_CATALOG"));
+        assertEquals("PUBLIC", res.getString("TABLE_SCHEMA"));
+        assertEquals("GEOTABLE", res.getString("TABLE_NAME"));
+        assertEquals("THE_GEOM", res.getString("COLUMN_NAME"));
+        assertEquals(1, res.getInt("STORAGE_TYPE"));
+        assertEquals(3001, res.getInt("GEOMETRY_TYPE"));
+        assertEquals(4, res.getInt("COORD_DIMENSION"));
+        assertEquals(0, res.getInt("SRID"));
+        assertEquals("POINTZM", res.getString("TYPE"));
+
+        st.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable (the_geom GEOMETRY(POINTZ, 2154));" +
+                "INSERT INTO geotable values ('SRID=2154;POINTZ(1 1 0)') ");
+
+        res = st.executeQuery(
+                "SELECT  TABLE_CATALOG f_table_catalog, "
+                        + " TABLE_SCHEMA f_table_schema, "
+                        + " TABLE_NAME f_table_name, "
+                        + " COLUMN_NAME f_geometry_column, "
+                        + "1 storage_type, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[1]:: int as geometry_type, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[2]:: int as coord_dimension, "
+                        + "GEOMETRY_SRID:: int as srid, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[3] as type "
+                        + " FROM INFORMATION_SCHEMA.COLUMNS"
+                        + " WHERE DATA_TYPE = 'GEOMETRY';");
+
+        assertTrue(res.next());
+        assertEquals("DBH2FINDGEOMETRYMETADATATEST", res.getString("TABLE_CATALOG"));
+        assertEquals("PUBLIC", res.getString("TABLE_SCHEMA"));
+        assertEquals("GEOTABLE", res.getString("TABLE_NAME"));
+        assertEquals("THE_GEOM", res.getString("COLUMN_NAME"));
+        assertEquals(1, res.getInt("STORAGE_TYPE"));
+        assertEquals(1001, res.getInt("GEOMETRY_TYPE"));
+        assertEquals(3, res.getInt("COORD_DIMENSION"));
+        assertEquals(2154, res.getInt("SRID"));
+        assertEquals("POINTZ", res.getString("TYPE"));
     }
 
+    @Test
+    public void testFindGeometryMetadataAlterTable() throws SQLException {
+        st.execute("drop table if exists geo_point;\n" +
+                "CREATE TABLE geo_point (the_geom GEOMETRY);\n" +
+                "ALTER TABLE GEO_POINT ALTER COLUMN THE_GEOM type geometry(POINTZ, 4326);\n" +
+                "INSERT INTO GEO_POINT values ('SRID=4326;POINTZ(1 1 0)');");
+        ResultSet res = st.executeQuery(
+                "SELECT  TABLE_CATALOG f_table_catalog, "
+                        + " TABLE_SCHEMA f_table_schema, "
+                        + " TABLE_NAME f_table_name, "
+                        + " COLUMN_NAME f_geometry_column, "
+                        + "1 storage_type, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[1]:: int as geometry_type, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[2]:: int as coord_dimension, "
+                        + "GEOMETRY_SRID:: int as srid, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[3] as type "
+                        + " FROM INFORMATION_SCHEMA.COLUMNS"
+                        + " WHERE DATA_TYPE = 'GEOMETRY';");
+
+        assertTrue(res.next());
+        assertEquals("DBH2FINDGEOMETRYMETADATATEST", res.getString("TABLE_CATALOG"));
+        assertEquals("PUBLIC", res.getString("TABLE_SCHEMA"));
+        assertEquals("GEO_POINT", res.getString("TABLE_NAME"));
+        assertEquals("THE_GEOM", res.getString("COLUMN_NAME"));
+        assertEquals(1, res.getInt("STORAGE_TYPE"));
+        assertEquals(1, res.getInt("GEOMETRY_TYPE"));
+        assertEquals(3, res.getInt("COORD_DIMENSION"));
+        assertEquals(4326, res.getInt("SRID"));
+        assertEquals("POINTZ", res.getString("TYPE"));
     }
+
+    @Test
+    public void testFindGeometryMetadataAlterTableEmpty() throws SQLException {
+        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY);");
+        st.execute(" ALTER TABLE GEO_POINT ALTER COLUMN THE_GEOM type geometry(POINTZ, 4326);");
+        ResultSet res = st.executeQuery(
+                "SELECT  TABLE_CATALOG f_table_catalog, "
+                        + " TABLE_SCHEMA f_table_schema, "
+                        + " TABLE_NAME f_table_name, "
+                        + " COLUMN_NAME f_geometry_column, "
+                        + "1 storage_type, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[1]:: int as geometry_type, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[2]:: int as coord_dimension, "
+                        + "GEOMETRY_SRID:: int as srid, "
+                        + "FindGeometryMetadata(DATA_TYPE,GEOMETRY_TYPE)[3] as type "
+                        + " FROM INFORMATION_SCHEMA.COLUMNS"
+                        + " WHERE DATA_TYPE = 'GEOMETRY';");
+
+        assertTrue(res.next());
+        assertEquals("DBH2FINDGEOMETRYMETADATATEST", res.getString("TABLE_CATALOG"));
+        assertEquals("PUBLIC", res.getString("TABLE_SCHEMA"));
+        assertEquals("GEO_POINT", res.getString("TABLE_NAME"));
+        assertEquals("THE_GEOM", res.getString("COLUMN_NAME"));
+        assertEquals(1, res.getInt("STORAGE_TYPE"));
+        assertEquals(1, res.getInt("GEOMETRY_TYPE"));
+        assertEquals(3, res.getInt("COORD_DIMENSION"));
+        assertEquals(4326, res.getInt("SRID"));
+        assertEquals("POINTZ", res.getString("TYPE"));
+    }
+}

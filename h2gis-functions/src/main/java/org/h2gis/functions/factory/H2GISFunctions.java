@@ -362,10 +362,10 @@ public class H2GISFunctions {
                 + " TABLE_NAME f_table_name, "
                 + " COLUMN_NAME f_geometry_column, "
                 + "1 storage_type, "
-                + "FindGeometryMetadata(GEOMETRY_TYPE)[1]:: int as geometry_type, "
-                + "FindGeometryMetadata(GEOMETRY_TYPE)[2]:: int as coord_dimension, "
+                + "FindGeometryMetadata(DATA_TYPE, GEOMETRY_TYPE)[1]:: int as geometry_type, "
+                + "FindGeometryMetadata(DATA_TYPE, GEOMETRY_TYPE)[2]:: int as coord_dimension, "
                 + "GEOMETRY_SRID:: int as srid, "
-                + "FindGeometryMetadata(GEOMETRY_TYPE)[3] as type "
+                + "FindGeometryMetadata(DATA_TYPE, GEOMETRY_TYPE)[3] as type "
                 + " FROM INFORMATION_SCHEMA.COLUMNS"
                 + " WHERE DATA_TYPE = 'GEOMETRY';");
         ResultSet rs = connection.getMetaData().getTables("", "PUBLIC", "SPATIAL_REF_SYS", null);

@@ -432,7 +432,7 @@ public class GeometryMetaData {
         if (type == null) {
             return geometryMetaData;
         }
-        int dimension_ = 0;
+        int dimension_ = 2;
         int geometry_code = GeometryTypeCodes.GEOMETRY;
         String sfs_geometry_type = "GEOMETRY";
         String geometry_type = "GEOMETRY";

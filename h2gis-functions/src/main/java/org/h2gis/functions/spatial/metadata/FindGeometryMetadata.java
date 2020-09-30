@@ -47,17 +47,20 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
      * POINT Z
      * POINT ZM
      *
-     * @param geometryTableSignature
+     * @param geometry_type
      * @return an array of values with the following values order
      * values[0] =   GEOMETRY_TYPE 
      * values[1] = COORD_DIMENSION
      * values[3] =   TYPE
      * @throws SQLException
      */
-    public static String[] extractMetadata(String geometryTableSignature)  {
-        GeometryMetaData geomMeta = GeometryMetaData.createMetadataFromGeometryType(geometryTableSignature);
+    public static String[] extractMetadata(String data_type, String geometry_type)  {
+        if(geometry_type==null){
+            geometry_type=data_type;
+        }
+        GeometryMetaData geomMeta = GeometryMetaData.createMetadataFromGeometryType(geometry_type);
         String[] values = new String[3];
-        values[0] = String.valueOf(geomMeta.getSfs_geometryTypeCode());
+        values[0] = String.valueOf(geomMeta.getGeometryTypeCode());
         values[1] = String.valueOf(geomMeta.getDimension());
         values[2] = geomMeta.getSfs_geometryType();
         return values;

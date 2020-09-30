@@ -261,7 +261,7 @@ public class  DBFEngineTest {
             assertTrue(rs.next());
             print(rs);
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-            assertEquals("DOUBLE",rs.getString("DATA_TYPE"));
+            assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
         }
         st.execute("drop table dbftable");
     }
