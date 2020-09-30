@@ -84,12 +84,6 @@ public class  DBFEngineTest {
         st.execute("drop table dbftable");
     }
 
-    static void print(ResultSet res) throws SQLException {
-        List<String> columns = JDBCUtilities.getColumnNames(res.getMetaData());
-        for(String column:columns){
-            System.out.println(column + " + "+ res.getString(column));
-        }
-    }
 
     @Test
     public void readDBFDataTest() throws SQLException {
@@ -259,7 +253,6 @@ public class  DBFEngineTest {
             assertEquals("GID",rs.getString("COLUMN_NAME"));
             assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
-            print(rs);
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
             assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
         }

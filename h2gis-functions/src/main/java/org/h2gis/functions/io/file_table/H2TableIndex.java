@@ -184,8 +184,6 @@ public class H2TableIndex extends Index {
     public boolean isRowIdIndex() {
         return isScanIndex;
     }
-
-
     
 
     private static class SHPCursor implements Cursor {

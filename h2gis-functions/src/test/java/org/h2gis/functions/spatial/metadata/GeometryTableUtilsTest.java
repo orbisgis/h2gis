@@ -19,7 +19,10 @@
  */
 package org.h2gis.functions.spatial.metadata;
 
+import org.h2.util.StringUtils;
+import org.h2gis.functions.TestUtilities;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.io.shp.SHPEngineTest;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.junit.jupiter.api.*;
 
@@ -1212,4 +1215,50 @@ public class GeometryTableUtilsTest {
         assertNull(GeometryTableUtilities.getAuthorityAndSRID(connection, -9999));
     }
 
+    @Test
+    public void testIsSpatialIndexed() throws Exception {
+        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (id int, the_geom GEOMETRY)");
+        st.execute("INSERT INTO geo_point VALUES(1, 'POINT(1 2)')");
+        st.execute("create spatial index geotable_sp_index on geo_point(the_geom)");
+        assertTrue(GeometryTableUtilities.isSpatialIndexed(connection, TableLocation.parse("GEO_POINT"), "the_geom"));
+        st.execute("drop index geotable_sp_index ");
+        assertFalse(GeometryTableUtilities.isSpatialIndexed(connection, TableLocation.parse("GEO_POINT"), "the_geom"));
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void testPostGISIsSpatialIndexed() throws Exception {
+        Statement stat = conPost.createStatement();
+        stat.execute("drop table if exists geo_point; CREATE TABLE geo_point (id int, the_geom GEOMETRY)");
+        stat.execute("INSERT INTO geo_point VALUES(1, 'POINT(1 2)')");
+        stat.execute("create index geotable_sp_index on geo_point  USING GIST (the_geom);");
+        assertTrue(GeometryTableUtilities.isSpatialIndexed(conPost, TableLocation.parse("geo_point"), "the_geom"));
+        stat.execute("drop index geotable_sp_index ");
+        assertFalse(GeometryTableUtilities.isSpatialIndexed(conPost, TableLocation.parse("geo_point"), "the_geom"));
+    }
+
+    @Test
+    public void checkIndexes() throws SQLException {
+        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (id int, the_geom GEOMETRY)");
+        st.execute("INSERT INTO geo_point VALUES(1, 'POINT(1 2)')");
+        st.execute("create spatial index geotable_sp_index on geo_point(the_geom)");
+        String query  = String.format("SELECT I.*,C.* FROM INFORMATION_SCHEMA.INDEXES AS I , " +
+                "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
+                "INFORMATION_SCHEMA.INDEX_COLUMNS WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
+                "WHERE I.TABLE_SCHEMA=C.TABLE_SCHEMA AND I.TABLE_NAME=C.TABLE_NAME and C.COLUMN_NAME='%s'", "PUBLIC", "GEO_POINT", "THE_GEOM","THE_GEOM");
+        ResultSet rs = st.executeQuery(query);
+        rs.next();
+        TestUtilities.printValues(rs);
+        st.execute("DROP TABLE IF EXISTS shptable");
+        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
+        System.out.println("The table exists "+ JDBCUtilities.tableExists(connection, TableLocation.parse("SHPTABLE")));
+        st.execute("create spatial index on shptable(the_geom)");
+        query  = String.format("SELECT I.*,C.* FROM INFORMATION_SCHEMA.INDEXES AS I , " +
+                "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
+                "INFORMATION_SCHEMA.INDEX_COLUMNS WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
+                "WHERE I.TABLE_SCHEMA=C.TABLE_SCHEMA AND I.TABLE_NAME=C.TABLE_NAME and C.COLUMN_NAME='%s'", "PUBLIC", "SHPTABLE", "THE_GEOM","THE_GEOM");
+        rs = st.executeQuery(query);
+        rs.next();
+        TestUtilities.printValues(rs);
+    }
 }

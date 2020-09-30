@@ -22,6 +22,7 @@ package org.h2gis.functions.io.shp;
 
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
+import org.h2gis.functions.TestUtilities;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -74,22 +75,22 @@ public class SHPEngineTest {
                 ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'")) {
             assertTrue(rs.next());
             assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
             assertEquals("THE_GEOM",rs.getString("COLUMN_NAME"));
-            assertEquals("GEOMETRY",rs.getString("TYPE_NAME"));
+            assertEquals("GEOMETRY",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
             assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-            assertEquals("CHAR",rs.getString("TYPE_NAME"));
+            assertEquals("CHARACTER",rs.getString("DATA_TYPE"));
             assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
             assertTrue(rs.next());
             assertEquals("GID",rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-            assertEquals(18,rs.getInt("NUMERIC_PRECISION"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
+            assertEquals(64,rs.getInt("NUMERIC_PRECISION"));
             assertTrue(rs.next());
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
-            assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+            assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
+            assertEquals(20,rs.getInt("DECLARED_NUMERIC_PRECISION"));
         }
         st.execute("drop table shptable");
     }
@@ -293,22 +294,13 @@ public class SHPEngineTest {
         } finally {
             rs.close();
         }
-        // Check if the index is here
-        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
-        try {
-            assertTrue(rs.next());
-            assertEquals("org.h2.mvstore.db.MVSpatialIndex", rs.getString("INDEX_CLASS"));
-        } finally {
-            rs.close();
-        }
+        // Check if the index exists
+        assertTrue(GeometryTableUtilities.isSpatialIndexed(connection, TableLocation.parse("SHPTABLE"), "the_geom"));
         st.execute("DROP TABLE IF EXISTS shptable");
-        // Check if the index has been removed
-        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
-        try {
-            assertFalse(rs.next());
-        } finally {
-            rs.close();
-        }
+
+        // Check if the index exists
+        assertFalse(GeometryTableUtilities.isSpatialIndexed(connection, TableLocation.parse("SHPTABLE"), "the_geom"));
+
 
         //Alphanumeric index
         st.execute("DROP TABLE IF EXISTS shptable");
@@ -400,7 +392,7 @@ public class SHPEngineTest {
         //
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM shptable where PK >=4 order by PK limit 5");
         assertTrue(rs.next());
-        assertTrue(rs.getString(1).contains("PUBLIC.\"SHPTABLE.PK_INDEX_1") && rs.getString(1).contains("\": PK >= 4"));
+        assertTrue(rs.getString(1).contains("PUBLIC.\"SHPTABLE.PK_INDEX_1") && rs.getString(1).contains("\": PK >= CAST(4 AS BIGINT)"));
         rs.close();
         // Query declared Table columns
         rs = st.executeQuery("SELECT * FROM shptable where PK >=4 order by PK limit 5");
