@@ -70,8 +70,8 @@ public class CreateFunctionTest {
     @Test
     public void test_ST_BoundingCircle1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('SRID=4326;POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
-        rs.next();        
-        assertGeometryEquals("SRID=4326;POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
+        rs.next();
+        assertGeometryBarelyEquals("SRID=4326;POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
                 + "355.97696351423673 204.69731282226294, 343.22623616044143 180.84237978870843, "
                 + "326.06664389021483 159.93335610978517, 305.1576202112916 142.77376383955857, "
                 + "281.3026871777371 130.02303648576327, 255.41857648803023 122.17117734991535, "
@@ -95,7 +95,7 @@ public class CreateFunctionTest {
     public void test_ST_BoundingCircle2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('SRID=3426;LINESTRING (140 200, 170 150)'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("SRID=3426;POLYGON ((184.1547594742265 175, 183.59455894601797 "
+        assertGeometryBarelyEquals("SRID=3426;POLYGON ((184.1547594742265 175, 183.59455894601797 "
                 + "169.3121885858704, 181.9354855535274 163.8429565746244, "
                 + "179.24129655680906 158.8024834852735, 175.6155281280883 154.3844718719117, "
                 + "171.1975165147265 150.75870344319094, 166.1570434253756 148.0645144464726, "
@@ -119,7 +119,7 @@ public class CreateFunctionTest {
     public void test_ST_MinimumBoundingCircle1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MinimumBoundingCircle('SRID=3426;POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("SRID=3426;POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
+        assertGeometryBarelyEquals("SRID=3426;POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
                 + "355.97696351423673 204.69731282226294, 343.22623616044143 180.84237978870843, "
                 + "326.06664389021483 159.93335610978517, 305.1576202112916 142.77376383955857, "
                 + "281.3026871777371 130.02303648576327, 255.41857648803023 122.17117734991535, "
@@ -439,7 +439,7 @@ public class CreateFunctionTest {
 
     @Test
     public void testST_MakeGridFromGeometry() throws Exception {
-        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1);");
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1);");
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 4);
@@ -756,7 +756,7 @@ public class CreateFunctionTest {
     public void test_ST_MinimumRectangle2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('POLYGON ((150 290, 110 210, 280 130, 280 250, 235 221, 150 290))'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("POLYGON ((279.99999999999693 129.99999999999395, "
+        assertGeometryBarelyEquals("POLYGON ((279.99999999999693 129.99999999999395, "
                 + "326.23229461756006 228.24362606231597, 156.23229461756213 308.24362606231944, "
                 + "109.99999999999888 209.99999999999753, 279.99999999999693 129.99999999999395))",rs.getObject(1));
         rs.close();
@@ -767,7 +767,7 @@ public class CreateFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('LINESTRING (60 290, 67 300, 140 330, 136 319, 127 314, "
                 + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("POLYGON ((125.65411764705883 347.6564705882353, "
+        assertGeometryBarelyEquals("POLYGON ((125.65411764705883 347.6564705882353, "
                 + "8.571764705882353 252.52705882352942, "
                 + "152.91764705882352 74.87058823529412, 270 170, 125.65411764705883 347.6564705882353))",rs.getObject(1));
         rs.close();
