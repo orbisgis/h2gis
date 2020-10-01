@@ -1499,7 +1499,7 @@ public class GeoJsonReaderDriver {
             case Types.BIGINT:
                 return "BIGINT";
             case Types.ARRAY:
-                return "ARRAY";
+                return "BLOB";
             default:
                 throw new SQLException("Unkown data type");
         }

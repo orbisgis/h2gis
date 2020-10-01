@@ -2104,6 +2104,31 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_Force3DM1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force3DM('LINESTRING (-10 10, 10 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING M(-10 10 0, 10 10 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_T_Force3DM2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force3DM('LINESTRINGZ (-10 10 10 , 10 10 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING M(-10 10 0, 10 10 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_T_Force3DM3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT  ST_Force3DM('LINESTRINGM (-10 10 10 , 10 10 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRINGM(-10 10 10, 10 10 10)", rs.getBytes(1));
+        rs.close();
+    }
+
+
+    @Test
     public void test_ST_Force3D1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Force3D('LINESTRING (-10 10, 10 10)'::GEOMETRY);");
         rs.next();

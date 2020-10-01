@@ -316,7 +316,8 @@ public class H2GISFunctions {
                 new FindGeometryMetadata(),
                 new UpdateGeometrySRID(),
                 new JTSVersion(),
-                new ST_Force4D()
+                new ST_Force4D(),
+                new ST_Force3DM()
         };
     }
 

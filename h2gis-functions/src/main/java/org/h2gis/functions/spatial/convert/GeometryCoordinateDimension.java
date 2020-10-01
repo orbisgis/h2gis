@@ -42,17 +42,11 @@ public class GeometryCoordinateDimension {
      public static Geometry force(Geometry geom, int dimension) {
          Geometry g = geom;
          if (geom instanceof Point) {
-             CoordinateSequence cs = ((Point) geom).getCoordinateSequence();
-             if(cs.getDimension()!=dimension|| cs.getMeasures()==1) {
-                 g = gf.createPoint(convertSequence(cs, dimension));
-                 g.setSRID(geom.getSRID());
-             }
+             g = gf.createPoint(convertSequence(((Point) geom).getCoordinateSequence(), dimension));
+             g.setSRID(geom.getSRID());
          } else if (geom instanceof LineString) {
-             CoordinateSequence cs = ((LineString) geom).getCoordinateSequence();
-             if(cs.getDimension()!=dimension || cs.getMeasures()==1) {
-                 g = gf.createLineString(convertSequence(cs, dimension));
-                 g.setSRID(geom.getSRID());
-             }
+             g = gf.createLineString(convertSequence(((LineString) geom).getCoordinateSequence(), dimension));
+             g.setSRID(geom.getSRID());
          } else if (geom instanceof Polygon) {
              g = GeometryCoordinateDimension.convert((Polygon) geom, dimension);
              g.setSRID(geom.getSRID());
@@ -128,26 +122,14 @@ public class GeometryCoordinateDimension {
      * @return 
      */
     public static Polygon convert(Polygon polygon, int dimension) {
-        CoordinateSequence cs = polygon.getExteriorRing().getCoordinateSequence();
-        if(cs.getDimension()!=dimension|| cs.getMeasures()==1) {
-            LinearRing shell = gf.createLinearRing(convertSequence(cs,dimension));
-            int nbOfHoles = polygon.getNumInteriorRing();
-            final LinearRing[] holes = new LinearRing[nbOfHoles];
-            for (int i = 0; i < nbOfHoles; i++) {
-                CoordinateSequence csHole = polygon.getInteriorRingN(i).getCoordinateSequence();
-                if(csHole.getDimension()!=dimension|| cs.getMeasures()==1) {
-                    holes[i] = gf.createLinearRing(convertSequence(csHole, dimension));
-                }
-                else {
-                    holes[i] =polygon.getInteriorRingN(i);
-                }
-            }
-            Polygon p = gf.createPolygon(shell, holes);
-            p.setSRID(polygon.getSRID());
-            return p;
+        LinearRing shell = gf.createLinearRing(convertSequence(polygon.getExteriorRing().getCoordinateSequence(),dimension));
+        int nbOfHoles = polygon.getNumInteriorRing();
+        final LinearRing[] holes = new LinearRing[nbOfHoles];
+        for (int i = 0; i < nbOfHoles; i++) {
+            holes[i] = gf.createLinearRing(convertSequence(polygon.getInteriorRingN(i).getCoordinateSequence(), dimension));
         }
-        return polygon;
-    }   
+        return  gf.createPolygon(shell, holes);
+    }
     
     
 
@@ -159,11 +141,7 @@ public class GeometryCoordinateDimension {
      * @return 
      */
     public static LineString convert(LineString lineString,int dimension) {
-        CoordinateSequence cs = lineString.getCoordinateSequence();
-        if(cs.getDimension()!=dimension|| cs.getMeasures()==1) {
-            return gf.createLineString(convertSequence(cs,dimension));
-        }
-        return lineString;
+        return gf.createLineString(convertSequence(lineString.getCoordinateSequence(),dimension));
     }
 
     /**
