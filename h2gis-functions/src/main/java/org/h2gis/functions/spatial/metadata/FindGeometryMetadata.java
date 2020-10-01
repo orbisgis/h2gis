@@ -19,12 +19,18 @@
  */
 package org.h2gis.functions.spatial.metadata;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.h2.util.StringUtils;
 import org.h2.value.Value;
 import org.h2.value.ValueArray;
 import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.TableLocation;
 
 public class FindGeometryMetadata extends DeterministicScalarFunction{
 
@@ -49,20 +55,33 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
      *
      * @param geometry_type
      * @return an array of values with the following values order
-     * values[0] =   GEOMETRY_TYPE 
+     * values[0] =   GEOMETRY_TYPE
      * values[1] = COORD_DIMENSION
+     * values[2] = SRID
      * values[3] =   TYPE
      * @throws SQLException
      */
-    public static String[] extractMetadata(String data_type, String geometry_type)  {
+    public static String[] extractMetadata(Connection connection, String catalogName, String schemaName, String tableName, String columnName, String data_type, String geometry_type, String srid) throws SQLException {
         if(geometry_type==null){
             geometry_type=data_type;
         }
+        String[] values = new String[4];
+        if(srid==null) {
+            try ( // Fetch the first geometry to find a stored SRID
+                  Statement st = connection.createStatement();
+                  ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
+                          StringUtils.quoteJavaString(columnName.toUpperCase()), new TableLocation(catalogName, schemaName, tableName)))) {
+                if (rs.next()) {
+                    srid = rs.getString(1);
+                }
+            }
+        }
         GeometryMetaData geomMeta = GeometryMetaData.createMetadataFromGeometryType(geometry_type);
-        String[] values = new String[3];
         values[0] = String.valueOf(geomMeta.getGeometryTypeCode());
         values[1] = String.valueOf(geomMeta.getDimension());
-        values[2] = geomMeta.getSfs_geometryType();
+        values[2] = srid;
+        values[3] = geomMeta.getSfs_geometryType();
+
         return values;
     }
 
