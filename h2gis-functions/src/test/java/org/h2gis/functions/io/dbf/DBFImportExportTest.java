@@ -105,14 +105,14 @@ public class DBFImportExportTest {
         assertEquals("INTEGER", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("VARCHAR", rs.getString("DATA_TYPE"));
+        assertEquals("CHARACTER VARYING", rs.getString("DATA_TYPE"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID",rs.getString("COLUMN_NAME"));
         assertEquals("BIGINT", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE",rs.getString("DATA_TYPE"));
+        assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
         rs.close();
         // Check content
         rs = st.executeQuery("SELECT * FROM WATERNETWORK");

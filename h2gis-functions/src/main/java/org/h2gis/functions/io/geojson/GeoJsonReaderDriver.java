@@ -251,7 +251,11 @@ public class GeoJsonReaderDriver {
                 cachedColumnIndex.put(columnName, i++);
                 createTable.append(",").append(columns.getKey()).append(" ").append(getSQLTypeName(columnType));
                 if(columnType==Types.ARRAY){
-                    insertTable.append(",").append("cast(? as json)");
+                    if(isH2){
+                        insertTable.append(",").append("? FORMAT json");
+                    }else {
+                        insertTable.append(",").append("cast(? as json)");
+                    }
                 }else {
                     insertTable.append(",").append("?");
                 }
