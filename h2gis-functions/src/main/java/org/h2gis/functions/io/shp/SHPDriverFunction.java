@@ -20,6 +20,7 @@
 package org.h2gis.functions.io.shp;
 
 import org.h2.table.Column;
+import org.h2.util.JdbcUtils;
 import org.h2.value.TypeInfo;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
@@ -320,7 +321,7 @@ public class SHPDriverFunction implements DriverFunction {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
                             for (int columnId = 0; columnId < columnCount; columnId++) {
-                                preparedStatement.setObject(columnId + 1, shpDriver.getField(rowId, columnId));
+                                JdbcUtils.set(preparedStatement,columnId + 1, shpDriver.getField(rowId, columnId), null);
                             }
                             preparedStatement.addBatch();
                             batchSize++;

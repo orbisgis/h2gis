@@ -247,9 +247,14 @@ public class GeoJsonReaderDriver {
             int i = 1;
             for (Map.Entry<String, Integer> columns : cachedColumnNames.entrySet()) {
                 String columnName = columns.getKey();
+                Integer columnType = columns.getValue();
                 cachedColumnIndex.put(columnName, i++);
-                createTable.append(",").append(columns.getKey()).append(" ").append(getSQLTypeName(columns.getValue()));
-                insertTable.append(",").append("?");
+                createTable.append(",").append(columns.getKey()).append(" ").append(getSQLTypeName(columnType));
+                if(columnType==Types.ARRAY){
+                    insertTable.append(",").append("cast(? as json)");
+                }else {
+                    insertTable.append(",").append("?");
+                }
             }
             createTable.append(")");
             insertTable.append(")");
@@ -906,11 +911,15 @@ public class GeoJsonReaderDriver {
                     values[cachedColumnIndex.get(fieldName)] = jp.getLongValue();
                 }
             } else if (value == JsonToken.START_ARRAY) {
-                ArrayList<Object> arrayList = parseArray(jp);
-                values[cachedColumnIndex.get(fieldName)] = arrayList.toArray();
+                StringBuilder sb = new StringBuilder();
+                parseArray(jp, sb);
+                values[cachedColumnIndex.get(fieldName)] = sb.toString();
             } else if (value == JsonToken.START_OBJECT) {
-                String str = parseObject(jp);
-                values[cachedColumnIndex.get(fieldName)] = str;
+                StringBuilder sb = new StringBuilder();
+                parseObject(jp, sb);
+                jp.nextToken();
+                sb.append(jp.currentToken().asCharArray());
+                values[cachedColumnIndex.get(fieldName)] = sb.toString();
             } else if (value == JsonToken.VALUE_NULL) {
                 values[cachedColumnIndex.get(fieldName)] = null;
             } else {
@@ -1430,41 +1439,81 @@ public class GeoJsonReaderDriver {
      * @param jp the json parser
      * @return the array
      */
-    private ArrayList<Object> parseArray(JsonParser jp) throws IOException {
+    private void parseArray(JsonParser jp, StringBuilder sb) throws IOException {
+        sb.append(jp.currentToken().asCharArray());
         JsonToken value = jp.nextToken();
-        ArrayList<Object> ret = new ArrayList<>();
+        String sep = ",";
         while (value != JsonToken.END_ARRAY) {
             if (value == JsonToken.START_OBJECT) {
-                Object object = parseObject(jp);
-                ret.add(object);
+                parseObject(jp, sb);
+            }else  if (value == JsonToken.END_OBJECT) {
+                sb.append(jp.currentToken().asCharArray());
             } else if (value == JsonToken.START_ARRAY) {
-                ArrayList<Object> arrayList = parseArray(jp);
-                ret.add(arrayList.toArray());
-            } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                ret.add(jp.getValueAsInt());
-            } else if (value == JsonToken.VALUE_FALSE || value == JsonToken.VALUE_TRUE) {
-                ret.add(jp.getValueAsBoolean());
-            } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                ret.add(jp.getValueAsDouble());
-            } else if (value == JsonToken.VALUE_STRING) {
-                ret.add(jp.getValueAsString());
+                 parseArray(jp, sb);
             } else if (value == JsonToken.VALUE_NULL) {
-                ret.add("null");
+                sb.append("null");
+            } else if (value == JsonToken.FIELD_NAME)  {
+                sb.append("\""+jp.getValueAsString()+"\"");
+                sep=":";
+            } else if (value == JsonToken.VALUE_STRING)  {
+                sb.append("\""+jp.getValueAsString()+"\"");
+                sep =",";
+            } else  {
+                sb.append(jp.getValueAsString());
+                sep =",";
             }
             value = jp.nextToken();
+            if(value!=JsonToken.END_ARRAY&& value!=JsonToken.END_OBJECT){
+                sb.append(sep);
+            }
         }
-        return ret;
+        sb.append(jp.currentToken().asCharArray());
+    }
+    /**
+     * Parses Json object and append the StringBuilder
+     * @param jp the json parser
+     * @return the array
+     */
+    private void parseObject(JsonParser jp, StringBuilder sb) throws IOException {
+        sb.append(jp.currentToken().asCharArray());
+        JsonToken value = jp.nextToken();
+        String sep = ",";
+        while (value != JsonToken.END_OBJECT) {
+            if (value == JsonToken.START_OBJECT) {
+                //jp.nextToken();
+                sep="{";
+            } else if (value == JsonToken.START_ARRAY) {
+                sep="[";
+            } else if (value == JsonToken.FIELD_NAME)  {
+                sb.append("\""+jp.getValueAsString()+"\"");
+                sep=":";
+            } else if (value == JsonToken.VALUE_STRING)  {
+                sb.append("\""+jp.getValueAsString()+"\"");
+                sep =",";
+            } else  {
+                sb.append(jp.getValueAsString());
+                sep =",";
+            }
+            value = jp.nextToken();
+            if(value!=JsonToken.END_ARRAY&& value!=JsonToken.END_OBJECT){
+                sb.append(sep);
+            }
+
+        }
+        sb.append(jp.currentToken().asCharArray());
     }
 
-    /**
-     * Parses Json Object. Since their elements could be anything and H2GIS
-     * doesn't support such complicated structure, this parser will just write
-     * ordinary String object "{}". Syntax: Json Object: "member1": value1,
-     * "member2": value2}
-     *
-     * @param jp the json parser
-     * @return the object but written like a String
-     */
+
+
+        /**
+         * Parses Json Object. Since their elements could be anything and H2GIS
+         * doesn't support such complicated structure, this parser will just write
+         * ordinary String object "{}". Syntax: Json Object: "member1": value1,
+         * "member2": value2}
+         *
+         * @param jp the json parser
+         * @return the object but written like a String
+         */
     private String parseObject(JsonParser jp) throws IOException {
         String ret = "{";
         JsonToken value;
@@ -1499,7 +1548,7 @@ public class GeoJsonReaderDriver {
             case Types.BIGINT:
                 return "BIGINT";
             case Types.ARRAY:
-                return "BLOB";
+                return "JSON";
             default:
                 throw new SQLException("Unkown data type");
         }

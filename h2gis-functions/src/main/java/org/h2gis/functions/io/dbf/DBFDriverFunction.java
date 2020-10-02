@@ -21,8 +21,8 @@
 package org.h2gis.functions.io.dbf;
 
 import org.h2.table.Column;
+import org.h2.util.JdbcUtils;
 import org.h2.value.TypeInfo;
-import org.h2.value.Value;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
@@ -256,7 +256,7 @@ public class DBFDriverFunction implements DriverFunction {
                             for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
                                 preparedStatement.setObject(1, rowId + 1);
                                 for (int columnId = 0; columnId < columnCount; columnId++) {
-                                    preparedStatement.setObject(columnId + 2, dbfDriver.getField(rowId, columnId));
+                                    JdbcUtils.set(preparedStatement,columnId + 2, dbfDriver.getField(rowId, columnId), null);
                                 }
                                 preparedStatement.addBatch();
                                 batchSize++;
