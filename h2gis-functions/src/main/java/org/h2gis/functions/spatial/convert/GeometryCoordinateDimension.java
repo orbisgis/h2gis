@@ -67,6 +67,23 @@ public class GeometryCoordinateDimension {
     }
     
      /**
+     * Force the dimension of the MultiPoint and update correctly the coordinate
+     * dimension
+     *
+     * @param mp
+     * @param dimension
+     * @return
+     */
+    public static MultiPoint convert(MultiPoint mp, int dimension) {
+        int nb = mp.getNumGeometries();
+        final Point[] geometries = new Point[nb];
+        for (int i = 0; i < nb; i++) {
+            geometries[i] = (Point) force(mp.getGeometryN(i), dimension);
+        }
+        return gf.createMultiPoint(geometries);
+    }
+    
+     /**
       * Force the dimension of the GeometryCollection and update correctly the coordinate 
       * dimension
       * @param gc

@@ -29,12 +29,10 @@ import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKBWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
@@ -900,34 +898,48 @@ public class GeoJsonReaderDriver {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = TableLocation.quoteIdentifier(jp.getText().toUpperCase(), isH2); //FIELD_NAME columnName 
             JsonToken value = jp.nextToken();
-            if (value == JsonToken.VALUE_STRING) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getText();
-            } else if (value == JsonToken.VALUE_TRUE) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getValueAsBoolean();
-            } else if (value == JsonToken.VALUE_FALSE) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getValueAsBoolean();
-            } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getValueAsDouble();
-            } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                if(jp.getNumberType() == JsonParser.NumberType.INT) {
-                    values[cachedColumnIndex.get(fieldName)] = jp.getIntValue();
-                } else {
-                    values[cachedColumnIndex.get(fieldName)] = jp.getLongValue();
-                }
-            } else if (value == JsonToken.START_ARRAY) {
-                StringBuilder sb = new StringBuilder();
-                parseArray(jp, sb);
-                values[cachedColumnIndex.get(fieldName)] = sb.toString();
-            } else if (value == JsonToken.START_OBJECT) {
-                StringBuilder sb = new StringBuilder();
-                parseObject(jp, sb);
-                jp.nextToken();
-                sb.append(jp.currentToken().asCharArray());
-                values[cachedColumnIndex.get(fieldName)] = sb.toString();
-            } else if (value == JsonToken.VALUE_NULL) {
-                values[cachedColumnIndex.get(fieldName)] = null;
-            } else {
+            if (null == value) {
                 //ignore other value
+            } else switch (value) {
+                case VALUE_STRING:
+                    values[cachedColumnIndex.get(fieldName)] = jp.getText();
+                    break;
+                case VALUE_TRUE:
+                    values[cachedColumnIndex.get(fieldName)] = jp.getValueAsBoolean();
+                    break;
+                case VALUE_FALSE:
+                    values[cachedColumnIndex.get(fieldName)] = jp.getValueAsBoolean();
+                    break;
+                case VALUE_NUMBER_FLOAT:
+                    values[cachedColumnIndex.get(fieldName)] = jp.getValueAsDouble();
+                    break;
+                case VALUE_NUMBER_INT:
+                    if(jp.getNumberType() == JsonParser.NumberType.INT) {
+                        values[cachedColumnIndex.get(fieldName)] = jp.getIntValue();
+                    } else {
+                        values[cachedColumnIndex.get(fieldName)] = jp.getLongValue();
+                    }   break;
+                case START_ARRAY:
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        parseArray(jp, sb);
+                        values[cachedColumnIndex.get(fieldName)] = sb.toString();
+                        break;
+                    }
+                case START_OBJECT:
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        parseObject(jp, sb);
+                        jp.nextToken();
+                        sb.append(jp.currentToken().asCharArray());
+                        values[cachedColumnIndex.get(fieldName)] = sb.toString();
+                        break;
+                    }
+                case VALUE_NULL:
+                    values[cachedColumnIndex.get(fieldName)] = null;
+                    break;
+                default:
+                    break;
             }
         }
 

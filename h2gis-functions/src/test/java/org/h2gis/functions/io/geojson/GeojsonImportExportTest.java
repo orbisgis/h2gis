@@ -611,12 +611,12 @@ public class GeojsonImportExportTest {
             assertEquals("BIGINT", metadata.getColumnTypeName(4));
             assertEquals("BIGINT", metadata.getColumnTypeName(5));
             assertEquals("BIGINT", metadata.getColumnTypeName(6));
-            assertEquals("VARCHAR", metadata.getColumnTypeName(7));
+            assertEquals("CHARACTER VARYING", metadata.getColumnTypeName(7));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(8));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(9));
-            assertEquals("VARCHAR", metadata.getColumnTypeName(10));
+            assertEquals("CHARACTER VARYING", metadata.getColumnTypeName(10));
             assertEquals("BOOLEAN", metadata.getColumnTypeName(11));
-            assertEquals("VARCHAR", metadata.getColumnTypeName(12));
+            assertEquals("CHARACTER VARYING", metadata.getColumnTypeName(12));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(13));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(14));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(15));
@@ -662,14 +662,9 @@ public class GeojsonImportExportTest {
             assertEquals("1484846966000", res.getBigDecimal(10).toString());
             assertEquals("2017-01-19T18:29:27+01:00", res.getString(11));
             assertEquals("1484846967000", res.getBigDecimal(12).toString());
-            assertEquals("{}", res.getString(13));
-            Object[] tinyArray = {13, "string", "{}"};
-            Object[] expectedResult = {49, 40.0, "{}", "string", tinyArray};
-            Object[] result = (Object[]) res.getObject(14);
-            assertArrayEquals(expectedResult, result);
-            expectedResult = new Object[]{58, 47, 58, 57, 58, 49, 58, 51, 58, 58, 49, 57, 58, 58, 49, 58, 57, 56, 57, 58, 59, 58, 57, 58, 49, 47, 48, 57, 48, 58, 57, 57, 51, 56, 52, 57, 51, 57, 49, 58, 55, 58, 50, 48, 48, 52, 56, 57, 48, 58, 52, 48, 53, 50, 57, 54, 57, 47, 58, 57, 54, 54, 53, 56, 57, 55, 58, 58, 57, 58, 57, 57};
-            result = (Object[]) res.getObject(15);
-            assertArrayEquals(expectedResult, result);
+            assertEquals("{\"member1\":1, \"member2\":{\"member21\":21,\"member22\":22}}", res.getString(13));
+            assertEquals("{\"member1\":1, \"member2\":{\"member21\":21,\"member22\":22}}", res.getString(14));
+            assertEquals("{\"member1\":1, \"member2\":{\"member21\":21,\"member22\":22}}", res.getString(15));
             res.next();
             res.close();
         }
@@ -698,8 +693,8 @@ public class GeojsonImportExportTest {
             assertEquals("2017-01-19T18:29:27+01:00", res.getString(11));
             assertEquals("1484846967000", res.getBigDecimal(12).toString());
             assertEquals("{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}}", res.getString(13));
-            assertEquals("{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}}", res.getString(14));
-            assertEquals("{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}}", res.getString(15));
+            assertEquals("[49, 40.0, {\"member1\":1, \"member2\":{\"member21\":21,\"member22\":22}}, \"string\", [13, \"string\", {\"member3\":3, \"member4\":4}]]", res.getString(14));
+            assertEquals("[58,47,58,57,58,49,58,51,58,58,49,57,58,58,49,58,57,56,57,58,59,58,57,58,49,47,48,57,48,58,57,57,51,56,52,57,51,57,49,58,55,58,50,48,48,52,56,57,48,58,52,48,53,50,57,54,57,47,58,57,54,54,53,56,57,55,58,58,57,58,57,57]", res.getString(15));
             res.next();
             res.close();
         }

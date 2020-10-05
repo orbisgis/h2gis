@@ -456,8 +456,8 @@ public class CreateFunctionTest {
         rs.close();
         st.execute("DROP TABLE grid;");
     }
-
-    /**
+    
+     /**
      * Test to create a regular square grid from a subquery
      *
      * @throws Exception
