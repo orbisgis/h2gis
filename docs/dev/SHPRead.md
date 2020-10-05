@@ -13,8 +13,12 @@ permalink: /docs/dev/SHPRead/
 
 {% highlight mysql %}
 SHPRead(VARCHAR path);
+SHPRead(VARCHAR path, BOOLEAN deleteTable);
 SHPRead(VARCHAR path, VARCHAR tableName);
+SHPRead(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTable);
 SHPRead(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
+SHPRead(VARCHAR path, VARCHAR tableName, 
+        VARCHAR fileEncoding, BOOLEAN deleteTable);
 {% endhighlight %}
 
 ### Description
@@ -24,7 +28,10 @@ contents into a new table `tableName` in the database.
 Define `fileEncoding` to force encoding (useful when the header is
 missing encoding information).
 
-If the `tablename` parameter is not specified, then the resulting table has the same name as the shapefile.
+If:
+
+- the `tableName` parameter is not specified, then the resulting table has the same name as the shapefile.
+- the `deleteTable` parameter is `true` and table `tableName` already exists in the database, then table `tableName` will be removed / replaced by the new one. Else (no `deleteTable` parameter or `deleteTable` equal to `false`), an error indicating that the table `tableName` already exists will be throwned.
 
 <div class="note">
   <h5>Warning on the input file name</h5>
@@ -37,10 +44,10 @@ If the `tablename` parameter is not specified, then the resulting table has the 
 -- Basic syntax:
 CALL SHPRead('/home/user/file.shp', 'tableName');
 
--- In the next two examples, we show what happens when we attempt to
--- read a SHP file with the wrong encoding, and how to fix it. Here
--- UTF-8 doesn't understand accented characters, so "Sévérac" is
--- displayed as "S".
+-- In the next two examples, we show what happens when we attempt
+-- to read a SHP file with the wrong encoding, and how to fix it.
+-- Here UTF-8 doesn't understand accented characters, 
+-- so "Sévérac" is displayed as "S".
 CALL SHPRead('/home/user/COMMUNE.SHP', 'commune44utf',
              'utf-8');
 SELECT * FROM commune44utf LIMIT 2;
@@ -68,6 +75,25 @@ SELECT * FROM commune44iso LIMIT 2;
 -- |   317309.9 6727036.8, 317193.3 6727066.5, |         |
 -- |   317341.5 6727021)))                     |         |
 {% endhighlight %}
+
+#### Using the `deleteTable` parameter
+
+##### 1- Import the `COMMUNE.shp` layer into the `COMMUNE` table
+{% highlight mysql %}
+CALL SHPRead('/home/user/COMMUNE.shp', 'COMMUNE');
+{% endhighlight %}
+
+##### 2- Now, import once again `COMMUNE.shp`, using `deleteTable`=`true`
+{% highlight mysql %}
+CALL SHPRead('/home/user/COMMUNE.shp', 'COMMUNE', true);
+{% endhighlight %}
+Returns : `null` (= no errors, the table `COMMUNE` has been replaced).
+
+##### 3- Then, import once again `COMMUNE.shp`, using `deleteTable`=`false`
+{% highlight mysql %}
+CALL SHPRead('/home/user/COMMUNE.shp', 'COMMUNE', false);
+{% endhighlight %}
+Returns : `The table "COMMUNE" already exists`
 
 ##### See also
 
