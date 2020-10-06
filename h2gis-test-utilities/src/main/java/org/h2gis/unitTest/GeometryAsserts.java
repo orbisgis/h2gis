@@ -17,7 +17,6 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
 package org.h2gis.unitTest;
 
 import org.h2.value.ValueGeometry;
@@ -33,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Nicolas Fortin
  */
 public class GeometryAsserts {
+
     /**
      * Default, Epsilon value for metric projections unit test
      */
@@ -42,13 +42,34 @@ public class GeometryAsserts {
      * Check Geometry type,X,Y,Z and SRID
      *
      * @param expectedWKT Expected value, in WKT
-     * @param valueWKB    Test value, in WKB ex rs.getBytes()
+     * @param valueWKB Test value, in WKB ex rs.getBytes()
      */
     public static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
         if (expectedWKT == null) {
             assertNull(valueWKB);
         } else {
             assertGeometryEquals(expectedWKT, ValueGeometry.get(valueWKB).getGeometry());
+        }
+    }
+    
+     /**
+     * Check Geometry type,X,Y,Z
+     *
+     * @param expectedWKT Expected value, in WKT
+     * @param object Test value geometry
+     */
+    public static void assertGeometryEquals(String expectedWKT, Object object) {
+        if (expectedWKT == null) {
+            assertNull(object);
+        }
+        if(object instanceof ValueGeometry){
+            assertGeometryEquals( expectedWKT, (ValueGeometry) object);
+        }
+        else if(object instanceof Geometry){
+            assertGeometryEquals(expectedWKT,(Geometry) object);
+        }
+        else{
+            assertNull(object);
         }
     }
 
@@ -66,14 +87,14 @@ public class GeometryAsserts {
             ValueGeometry actual = ValueGeometry.getFromGeometry(geometry.norm());
             expected = ValueGeometry.getFromGeometry(expected.getGeometry().norm());
             String moreInfo = "";
-            if(!actual.equals(expected)) {
-                if(!GeometryCollection.class.getName().equals(expected.getGeometry().getClass().getName()) &&
-                        !GeometryCollection.class.getName().equals(actual.getGeometry().getClass().getName()) &&
-                        expected.getGeometry().equals(actual.getGeometry())) {
+            if (!actual.equals(expected)) {
+                if (!GeometryCollection.class.getName().equals(expected.getGeometry().getClass().getName())
+                        && !GeometryCollection.class.getName().equals(actual.getGeometry().getClass().getName())
+                        && expected.getGeometry().equals(actual.getGeometry())) {
                     moreInfo = "\n But are topologically equals";
                 }
             }
-            assertEquals(expected, actual, "Expected:\n" + expected.getString() + "\nActual:\n" + actual.getString()+moreInfo);
+            assertEquals(expected, actual, "Expected:\n" + expected.getString() + "\nActual:\n" + actual.getString() + moreInfo);
         }
     }
 
@@ -83,29 +104,30 @@ public class GeometryAsserts {
      * @param expectedWKT Expected value, in WKT
      * @param valueObject Test value geometry ex rs.getObject(i)
      */
-    public static void assertGeometryEquals(String expectedWKT, Object valueObject) {       
+    public static void assertGeometryEquals(String expectedWKT, ValueGeometry valueObject) {
         if (expectedWKT == null) {
             assertNull(valueObject);
         } else {
             ValueGeometry expected = ValueGeometry.get(expectedWKT);
-            ValueGeometry actual = ValueGeometry.getFromGeometry(((Geometry)valueObject).norm());
+            ValueGeometry actual = ValueGeometry.getFromGeometry(((ValueGeometry) valueObject).getGeometry().norm());            
             expected = ValueGeometry.getFromGeometry(expected.getGeometry().norm());
             String moreInfo = "";
-            if(!actual.equals(expected)) {
-                if(!GeometryCollection.class.getName().equals(expected.getGeometry().getClass().getName()) &&
-                        !GeometryCollection.class.getName().equals(actual.getGeometry().getClass().getName()) &&
-                        expected.getGeometry().equals(actual.getGeometry())) {
+            if (!actual.equals(expected)) {
+                if (!GeometryCollection.class.getName().equals(expected.getGeometry().getClass().getName())
+                        && !GeometryCollection.class.getName().equals(actual.getGeometry().getClass().getName())
+                        && expected.getGeometry().equals(actual.getGeometry())) {
                     moreInfo = "\n But are topologically equals";
                 }
             }
-            assertEquals(expected, actual, "Expected:\n" + expected.getString() + "\nActual:\n" + actual.getString()+moreInfo);
+            assertEquals(expected, actual, "Expected:\n" + expected.getString() + "\nActual:\n" + actual.getString() + moreInfo);
         }
     }
+
     /**
      * Check only X,Y and geometry type
      *
      * @param expectedWKT Expected value, in WKT
-     * @param valueWKT    Test value, in WKT ex rs.getString()
+     * @param valueWKT Test value, in WKT ex rs.getString()
      */
     public static void assertGeometryEquals(String expectedWKT, String valueWKT) {
         assertGeometryEquals(expectedWKT, ValueGeometry.get(valueWKT).getBytes());
@@ -114,7 +136,7 @@ public class GeometryAsserts {
     /**
      * Equals test with epsilon error acceptance.
      *
-     * @param expectedWKT     Expected value, in WKT
+     * @param expectedWKT Expected value, in WKT
      * @param resultSetObject Geometry, rs.getObject(i)
      */
     public static void assertGeometryBarelyEquals(String expectedWKT, Object resultSetObject) {

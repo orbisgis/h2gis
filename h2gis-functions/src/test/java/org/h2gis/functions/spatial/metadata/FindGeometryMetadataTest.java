@@ -22,9 +22,7 @@ package org.h2gis.functions.spatial.metadata;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.spatial.geometry.DummySpatialFunction;
 import org.h2gis.functions.spatial.properties.ST_SRID;
-import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.*;
 
 import java.sql.Connection;

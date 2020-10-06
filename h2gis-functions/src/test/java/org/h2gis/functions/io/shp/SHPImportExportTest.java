@@ -20,7 +20,6 @@
 package org.h2gis.functions.io.shp;
 
 import org.h2.util.StringUtils;
-import org.h2.value.ExtTypeInfoGeometry;
 import org.h2.value.ValueGeometry;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
@@ -52,8 +51,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.locationtech.jts.io.WKTReader;
 
 /**
  * Test copy data from SHP to database
@@ -101,9 +103,9 @@ public class SHPImportExportTest {
         assertEquals(2, shpDriver.getRowCount());
         assertEquals(1, shpDriver.getField(0, 0).getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", shpDriver.getField(0, 1).toString());
+        assertGeometryEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", (ValueGeometry) shpDriver.getField(0, 1));
         assertEquals(2, shpDriver.getField(1, 0).getInt());
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", shpDriver.getField(1, 1).toString());
+        assertGeometryEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", (ValueGeometry) shpDriver.getField(1, 1));
     }
 
     @Test
@@ -125,9 +127,9 @@ public class SHPImportExportTest {
         assertEquals(2, shpDriver.getRowCount());
         assertEquals(1, shpDriver.getField(0, 1).getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", shpDriver.getField(0, 0).toString());
+        assertGeometryEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", (ValueGeometry) shpDriver.getField(0, 0));
         assertEquals(2, shpDriver.getField(1, 1).getInt());
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", shpDriver.getField(1, 0).toString());
+        assertGeometryEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", (ValueGeometry) shpDriver.getField(1, 0));
     }
 
     @Test
@@ -154,20 +156,20 @@ public class SHPImportExportTest {
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
         assertEquals(H2TableIndex.PK_COLUMN_NAME, rs.getString("COLUMN_NAME"));
-        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
+        assertEquals("INTEGER", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("THE_GEOM", rs.getString("COLUMN_NAME"));
-        assertEquals("GEOMETRY", rs.getString("TYPE_NAME"));
+        assertEquals("GEOMETRY", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE", rs.getString("COLUMN_NAME"));
-        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
+        assertEquals("CHARACTER VARYING", rs.getString("DATA_TYPE"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID", rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT", rs.getString("TYPE_NAME"));
+        assertEquals("BIGINT", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("LENGTH", rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE", rs.getString("TYPE_NAME"));
+        assertEquals("DOUBLE PRECISION", rs.getString("DATA_TYPE"));
         rs.close();
         // Check content
         rs = st.executeQuery("SELECT * FROM WATERNETWORK");
@@ -209,9 +211,9 @@ public class SHPImportExportTest {
         assertEquals(2, shpDriver.getRowCount());
         assertEquals(1, shpDriver.getField(0, 1).getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", shpDriver.getField(0, 0).toString());
+        assertGeometryEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", (ValueGeometry) shpDriver.getField(0, 0));
         assertEquals(2, shpDriver.getField(1, 1).getInt());
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", shpDriver.getField(1, 0).toString());
+        assertGeometryEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", (ValueGeometry) shpDriver.getField(1, 0));
     }
 
     @Test
@@ -282,9 +284,9 @@ public class SHPImportExportTest {
         assertEquals(2, shpDriver.getRowCount());
         assertEquals(1, shpDriver.getField(0, 0).getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTILINESTRING ((-10 109, 90 109, 90 9, -10 9))", shpDriver.getField(0, 1).toString());
+        assertGeometryEquals("MULTILINESTRING ((-10 109, 90 109, 90 9, -10 9))", (ValueGeometry) shpDriver.getField(0, 1));
         assertEquals(2, shpDriver.getField(1, 0).getInt());
-        assertEquals("MULTILINESTRING ((90 109, 190 109, 190 9, 90 9))", shpDriver.getField(1, 1).toString());
+        assertGeometryEquals("MULTILINESTRING ((90 109, 190 109, 190 9, 90 9))", (ValueGeometry) shpDriver.getField(1, 1));
     }
 
     @Test
@@ -749,7 +751,7 @@ public class SHPImportExportTest {
             stat.execute("CALL SHPRead('target/lines.shp', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
-            GeometryAsserts.assertGeometryEquals("MULTILINESTRING ((1 10, 20 15))", res.getObject("THE_GEOM"));
+            GeometryAsserts.assertGeometryEquals("MULTILINESTRING ((1 10, 20 15))",  (Geometry)res.getObject("THE_GEOM"));
             assertEquals(2, res.getInt("ID"));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
@@ -765,7 +767,7 @@ public class SHPImportExportTest {
             res.next();
             Geometry geom = (Geometry) res.getObject("THE_GEOM");
             assertEquals(4326, geom.getSRID());
-            GeometryAsserts.assertGeometryEquals("SRID=4326;MULTILINESTRING ((1 10, 20 15))", geom);
+            assertGeometryEquals("SRID=4326;MULTILINESTRING ((1 10, 20 15))", geom);
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
@@ -778,21 +780,23 @@ public class SHPImportExportTest {
             stat.execute(" DROP TABLE IF EXISTS orbisgis;"
                     + "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));"
                     + "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY); ");
-            stat.execute("CALL SHPWrite('target/points.shp', '(SELECT st_buffer(the_geom, 10) as the_geom from orbisgis)', true);");
+            stat.execute("CALL SHPWrite('target/points.shp', '(SELECT st_buffer(the_geom, 10) as the_geom, id from orbisgis where id=1)', true);");
             stat.execute("CALL SHPRead('target/points.shp', 'TABLE_POINTS_READ', true);");
+            WKTReader wKTReader = new WKTReader();
+            Geometry geomOutPut = wKTReader.read("POINT(10 10)").buffer(10);
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
             res.next();
             Geometry geom = (Geometry) res.getObject("THE_GEOM");
-            assertEquals(4326, geom.getSRID());
-            GeometryAsserts.assertGeometryEquals("SRID=4326;MULTIPOLYGON (((0 10.000000000000007, 0.19214719596769747 11.950903220161292, 0.7612046748871375 13.826834323650909, 1.6853038769745545 15.555702330196034, 2.928932188134537 17.071067811865486, 4.444297669803992 18.314696123025463, 6.173165676349122 19.238795325112875, 8.04909677983874 19.807852804032308, 10.000000000000025 20, 11.950903220161308 19.8078528040323, 13.826834323650925 19.238795325112857, 15.555702330196048 18.314696123025435, 17.071067811865497 17.07106781186545, 18.31469612302547 15.555702330195993, 19.238795325112882 13.826834323650862, 19.80785280403231 11.950903220161244, 20 10, 19.807852804032304 8.049096779838717, 19.238795325112868 6.173165676349102, 18.314696123025453 4.444297669803978, 17.071067811865476 2.9289321881345254, 15.555702330196024 1.6853038769745474, 13.826834323650898 0.7612046748871322, 11.950903220161283 0.1921471959676957, 10 0, 8.049096779838719 0.1921471959676957, 6.173165676349103 0.7612046748871322, 4.44429766980398 1.6853038769745474, 2.9289321881345254 2.9289321881345245, 1.6853038769745474 4.444297669803978, 0.7612046748871322 6.173165676349106, 0.19214719596769392 8.049096779838722, 0 10.000000000000007)))", geom);
+            assertEquals(4326, geom.getSRID());            
+            assertGeometryBarelyEquals(geomOutPut.toString(), geom.getGeometryN(0));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
             stat.execute("CALL SHPRead('target/points.shp', true);");
-            res = stat.executeQuery("SELECT * FROM POINTS;");
+            res = stat.executeQuery("SELECT * FROM POINTS where id=1;");
             res.next();
             geom = (Geometry) res.getObject("THE_GEOM");
             assertEquals(4326, geom.getSRID());
-            GeometryAsserts.assertGeometryEquals("SRID=4326;MULTIPOLYGON (((0 10.000000000000007, 0.19214719596769747 11.950903220161292, 0.7612046748871375 13.826834323650909, 1.6853038769745545 15.555702330196034, 2.928932188134537 17.071067811865486, 4.444297669803992 18.314696123025463, 6.173165676349122 19.238795325112875, 8.04909677983874 19.807852804032308, 10.000000000000025 20, 11.950903220161308 19.8078528040323, 13.826834323650925 19.238795325112857, 15.555702330196048 18.314696123025435, 17.071067811865497 17.07106781186545, 18.31469612302547 15.555702330195993, 19.238795325112882 13.826834323650862, 19.80785280403231 11.950903220161244, 20 10, 19.807852804032304 8.049096779838717, 19.238795325112868 6.173165676349102, 18.314696123025453 4.444297669803978, 17.071067811865476 2.9289321881345254, 15.555702330196024 1.6853038769745474, 13.826834323650898 0.7612046748871322, 11.950903220161283 0.1921471959676957, 10 0, 8.049096779838719 0.1921471959676957, 6.173165676349103 0.7612046748871322, 4.44429766980398 1.6853038769745474, 2.9289321881345254 2.9289321881345245, 1.6853038769745474 4.444297669803978, 0.7612046748871322 6.173165676349106, 0.19214719596769392 8.049096779838722, 0 10.000000000000007)))", geom);
+            assertGeometryBarelyEquals(geomOutPut.toString(), geom.getGeometryN(0));
             res.close();
             stat.execute("DROP TABLE IF EXISTS POINTS");
         }
