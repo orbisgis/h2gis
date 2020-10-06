@@ -52,8 +52,8 @@ public class JsonWriteDriverTest {
         connection = H2GISDBFactory.createSpatialDataBase(
                 JsonWriteDriverTest.class.getSimpleName() + "_" + UUID.randomUUID().toString());
         Statement stat = connection.createStatement();
-        stat.execute("CREATE TABLE TABLE_POINT(idarea INT PRIMARY KEY, the_geom GEOMETRY(POINT), codes ARRAY)");
-        stat.execute("INSERT INTO TABLE_POINT VALUES(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
+        stat.execute("CREATE TABLE TABLE_POINT(idarea INT PRIMARY KEY, the_geom GEOMETRY(POINT), codes INTEGER ARRAY[4])");
+        stat.execute("INSERT INTO TABLE_POINT VALUES(1, 'POINT(1 2)', ARRAY[10000, 20000, 30000, 10000])");
     }
 
     @AfterAll
