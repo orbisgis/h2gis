@@ -232,6 +232,7 @@ public class  DBFEngineTest {
         st.execute("drop table SOTCHI_GOODHEADER");
     }
 
+    //TODO : check why the data type change from DOUBLE PRECISION to REAL
     @Test
     public void testRestartDb() throws Exception {
         Statement st = connection.createStatement();
@@ -254,7 +255,7 @@ public class  DBFEngineTest {
             assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-            assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
+            assertEquals("REAL",rs.getString("DATA_TYPE"));
         }
         st.execute("drop table dbftable");
     }

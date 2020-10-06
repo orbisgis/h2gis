@@ -741,6 +741,9 @@ public class GeoJsonReaderDriver {
                         break;
                     case START_OBJECT:
                         if (!hasField || dataType == Types.NULL) {
+                            cachedColumnNames.put(fieldName, Types.ARRAY);
+                        }
+                        else if (hasField && dataType != Types.ARRAY) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         parseObjectMetadata(jp);
@@ -930,8 +933,6 @@ public class GeoJsonReaderDriver {
                     {
                         StringBuilder sb = new StringBuilder();
                         parseObject(jp, sb);
-                        jp.nextToken();
-                        sb.append(jp.currentToken().asCharArray());
                         values[cachedColumnIndex.get(fieldName)] = sb.toString();
                         break;
                     }
@@ -1496,23 +1497,28 @@ public class GeoJsonReaderDriver {
         String sep = ",";
         while (value != JsonToken.END_OBJECT) {
             if (value == JsonToken.START_OBJECT) {
-                //jp.nextToken();
-                sep="{";
-            } else if (value == JsonToken.START_ARRAY) {
-                sep="[";
-            } else if (value == JsonToken.FIELD_NAME)  {
-                sb.append("\""+jp.getValueAsString()+"\"");
-                sep=":";
-            } else if (value == JsonToken.VALUE_STRING)  {
-                sb.append("\""+jp.getValueAsString()+"\"");
-                sep =",";
-            } else  {
-                sb.append(jp.getValueAsString());
-                sep =",";
-            }
-            value = jp.nextToken();
-            if(value!=JsonToken.END_ARRAY&& value!=JsonToken.END_OBJECT){
-                sb.append(sep);
+                parseObject(jp, sb);
+                value = jp.nextToken();
+                if (value != JsonToken.END_ARRAY && value != JsonToken.END_OBJECT) {
+                    sb.append(",");
+                }
+            } else {
+                if (value == JsonToken.START_ARRAY) {
+                    sep = "[";
+                } else if (value == JsonToken.FIELD_NAME) {
+                    sb.append("\"" + jp.getValueAsString() + "\"");
+                    sep = ":";
+                } else if (value == JsonToken.VALUE_STRING) {
+                    sb.append("\"" + jp.getValueAsString() + "\"");
+                    sep = ",";
+                } else {
+                    sb.append(jp.getValueAsString());
+                    sep = ",";
+                }
+                value = jp.nextToken();
+                if (value != JsonToken.END_ARRAY && value != JsonToken.END_OBJECT) {
+                    sb.append(sep);
+                }
             }
 
         }

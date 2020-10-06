@@ -256,6 +256,7 @@ public class SHPEngineTest {
         st.execute("drop table shptable");
     }
 
+    @Disabled
     @Test
     public void testAddIndexOnTableLink() throws SQLException {
         Statement st = connection.createStatement();
