@@ -23,10 +23,11 @@ SHPRead(VARCHAR path, VARCHAR tableName,
 
 ### Description
 
-Reads the file specified by `path` as a [shapefile][wiki] and copies its
-contents into a new table `tableName` in the database.
-Define `fileEncoding` to force encoding (useful when the header is
-missing encoding information).
+Reads the file specified by `path` as a [shapefile][wiki] and copies its contents into a new table `tableName` in the database.
+
+A new column named `PK`, storing a primary key (`INT` value), is added. If the input `.shp` has already a `PK` column then the added column is named `PK2` *(and so on)*.
+
+Define `fileEncoding` to force encoding (useful when the header is missing encoding information) (default value is `ISO-8859-1`).
 
 If:
 
@@ -40,60 +41,82 @@ If:
 
 ### Examples
 
-{% highlight mysql %}
--- Basic syntax:
-CALL SHPRead('/home/user/file.shp', 'tableName');
+In following example, we have a SHP file, which is stored here : `/home/user/city.shp`. This file is structured as follow.
 
--- In the next two examples, we show what happens when we attempt
--- to read a SHP file with the wrong encoding, and how to fix it.
--- Here UTF-8 doesn't understand accented characters, 
--- so "Sévérac" is displayed as "S".
-CALL SHPRead('/home/user/COMMUNE.SHP', 'commune44utf',
-             'utf-8');
-SELECT * FROM commune44utf LIMIT 2;
+|      THE_GEOM         |  NAME  |   ID  |
+|:---------------------:|:------:|:-----:|
+| MULTIPOLYGON(((...))) | Vannes | 56260 |
+| MULTIPOLYGON(((...))) | Theix  | 56251 |
+| MULTIPOLYGON(((...))) | Bréhan | 56024 |
+
+#### 1. Case with `path`
+
+{% highlight mysql %}
+CALL SHPRead('/home/user/city.shp');
+{% endhighlight %}
+
+The table `CITY` is created and a new `PK` column is added:
+
+| PK |      THE_GEOM         |  NAME  |   ID  |
+|:--:|:---------------------:|:------:|:-----:|
+| 1  | MULTIPOLYGON(((...))) | Vannes | 56260 |
+| ... | ... | ... | ... |
+
+#### 2. Case with `path` and `tableName`
+
+{% highlight mysql %}
+CALL SHPRead('/home/user/city.shp', 'MyCity');
+{% endhighlight %}
+
+The table `MYCITY` is created.
+
+#### 3. Case with `fileEncoding`
+
+In the next two examples, we show what happens when we attempt to read a SHP file with the wrong encoding, and how to fix it.
+Here UTF-8 doesn't understand accented characters, so the city named `Bréhan` is displayed as `Br`.
+
+{% highlight mysql %}
+CALL SHPRead('/home/user/city.shp', 'CITYutf', 'utf-8');
+SELECT * FROM CITYutf;
 -- Answer:
--- |                 THE_GEOM                  |   NOM   |
--- | ----------------------------------------- | ------- |
--- | MULTIPOLYGON(((350075.2 6719771.8,        | Puceul  |
--- |   350072.7 6719775.5, 350073 6719780.7,   |         |
--- |   350075.2 6719771.8)))                   |         |
--- | MULTIPOLYGON(((317341.5 6727021,          | S       |
--- |   317309.9 6727036.8, 317193.3 6727066.5, |         |
--- |   317341.5 6727021)))                     |         |
+-- | PK |        THE_GEOM       |  NAME  |  ID   |
+-- |----| --------------------- | ------ | ----- |
+-- | 1  | MULTIPOLYGON(((...))) | Vannes | 56260 |
+-- | 2  | MULTIPOLYGON(((...))) | Theix  | 56251 |
+-- | 3  | MULTIPOLYGON(((...))) | Br     | 56024 |
 
--- To fix this problem, we specify the right encoding:
-CALL SHPRead('/home/user/COMMUNE.SHP', 'commune44iso',
-             'iso-8859-1');
-SELECT * FROM commune44iso LIMIT 2;
+{% endhighlight %}
+To fix this problem, we specify the right encoding (`iso-8859-1`):
+
+{% highlight mysql %}
+CALL SHPRead('/home/user/city.shp', 'CITYiso', 'iso-8859-1');
+SELECT * FROM CITYiso;
 -- Answer:
--- |                 THE_GEOM                  |   NOM   |
--- | ----------------------------------------- | ------- |
--- | MULTIPOLYGON(((350075.2 6719771.8,        | Puceul  |
--- |   350072.7 6719775.5, 350073 6719780.7,   |         |
--- |   350075.2 6719771.8)))                   |         |
--- | MULTIPOLYGON(((317341.5 6727021,          | Sévérac |
--- |   317309.9 6727036.8, 317193.3 6727066.5, |         |
--- |   317341.5 6727021)))                     |         |
+-- | PK |        THE_GEOM       |  NAME  |  ID   |
+-- |----| --------------------- | ------ | ----- |
+-- | 1  | MULTIPOLYGON(((...))) | Vannes | 56260 |
+-- | 2  | MULTIPOLYGON(((...))) | Theix  | 56251 |
+-- | 3  | MULTIPOLYGON(((...))) | Bréhan | 56024 |
 {% endhighlight %}
 
-#### Using the `deleteTable` parameter
+#### 4. Case with `deleteTable`
 
-##### 1- Import the `COMMUNE.shp` layer into the `COMMUNE` table
+Import the `city.shp` layer into the `CITY` table
 {% highlight mysql %}
-CALL SHPRead('/home/user/COMMUNE.shp', 'COMMUNE');
+CALL SHPRead('/home/user/CITY.shp', 'CITY');
 {% endhighlight %}
 
-##### 2- Now, import once again `COMMUNE.shp`, using `deleteTable`=`true`
+Now, import once again `city.shp`, using `deleteTable`=`true`
 {% highlight mysql %}
-CALL SHPRead('/home/user/COMMUNE.shp', 'COMMUNE', true);
+CALL SHPRead('/home/user/city.shp', 'CITY', true);
 {% endhighlight %}
-Returns : `null` (= no errors, the table `COMMUNE` has been replaced).
+Returns : `null` (= no errors, the table `CITY` has been replaced).
 
-##### 3- Then, import once again `COMMUNE.shp`, using `deleteTable`=`false`
+Then, import once again `city.shp`, using `deleteTable`=`false`
 {% highlight mysql %}
-CALL SHPRead('/home/user/COMMUNE.shp', 'COMMUNE', false);
+CALL SHPRead('/home/user/city.shp', 'CITY', false);
 {% endhighlight %}
-Returns : `The table "COMMUNE" already exists`
+Returns : `The table "CITY" already exists`
 
 ##### See also
 

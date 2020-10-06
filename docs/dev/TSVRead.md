@@ -27,7 +27,7 @@ Reads the file specified by `path` as a Tab-Separated Values ([TSV][wiki]) file 
 
 This `.tsv` file may be zipped in a `.gz` file *(in this case, the `TSVRead` driver will unzip on the fly the `.gz` file)*. 
 
-Define `fileEncoding` to force encoding (useful when the header is missing encoding information).
+Define `fileEncoding` to force encoding (useful when the header is missing encoding information) (default value is `ISO-8859-1`).
 
 If:
 

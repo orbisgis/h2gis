@@ -93,7 +93,7 @@ CALL GeoJsonWrite('/home/user/test.geojson', 'TEST', 'utf-8');
 {% endhighlight %}
 
 #### 4. Case with `deleteTable`
-We condisder that the `test.tsv` already exists here `/home/user/`
+We condisder that the `test.geojson` already exists here `/home/user/`
 {% highlight mysql %}
 CALL GeoJsonWrite('/home/gpetit/test.geojson', 'TEST', true);
 -- or

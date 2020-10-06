@@ -14,7 +14,12 @@ permalink: /docs/dev/OSMRead/
 {% highlight mysql %}
 OSMRead(VARCHAR path);
 OSMRead(VARCHAR path, VARCHAR tableName);
-OSMRead(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTables);
+OSMRead(VARCHAR path, VARCHAR tableName, 
+        BOOLEAN deleteTables);
+OSMRead(VARCHAR path, VARCHAR tableName, 
+        VARCHAR fileEncoding);
+OSMRead(VARCHAR path, VARCHAR tableName, 
+        VARCHAR fileEncoding, BOOLEAN deleteTables);
 {% endhighlight %}
 
 ### Description
@@ -35,37 +40,54 @@ Reads a [OSM][wiki] file from `path` and creates several tables prefixed by `tab
  * (10) table_prefix + _way_member : table that stores all ways that are referenced into a relation -> ID_RELATION BIGINT, ID_WAY BIGINT, ROLE VARCHAR, WAY_ORDER INT.
  * (11) table_prefix + _relation_member : table that stores all relations that are referenced into a relation -> ID_RELATION BIGINT, ID_SUB_RELATION BIGINT, ROLE VARCHAR, RELATION_ORDER INT.
 
+
 By default, the `tableName` is the filename given in `path` without the extension.
-The OSM driver supports the following zipped extension : osm.gz and osm.bz2.
 
 <div class="note">
   <h5>Warning on the input file name</h5>
   <p>When a <code>tablename</code> is not specified, special caracters in the input file name are not allowed. The possible caracters are as follow: <code>A to Z</code>, <code>_</code> and <code>0 to 9</code>.</p>
 </div>
 
+The OSM driver supports the following zipped extension : `osm.gz` and `osm.bz2`.
+
+Define `fileEncoding` to force encoding (useful when the header is missing encoding information) (default value is `ISO-8859-1`).
+
 ### Examples
 
-Read OSM file:
+#### 1. Using `path`
 
 {% highlight mysql %}
-
--- Takes the table name from the filename
 CALL OSMRead('/home/user/bretagne.osm');
-
--- Uses the given table name
-CALL OSMRead('/home/user/bretagne.osm', 'OSM_BRETAGNE');
-
--- Uses a zipped file
-CALL OSMRead('/home/user/bretagne.osm.gz', 'OSM_BRETAGNE');
-
--- Uses another zipped file
-CALL OSMRead('/home/user/bretagne.osm.bz2', 'OSM_BRETAGNE');
-
--- Uses the given table name 
--- and remove existing tables prefixed with 'OSM_BRETAGNE'
-CALL OSMRead('/home/user/bretagne.osm', 'OSM_BRETAGNE', true);
-
 {% endhighlight %}
+
+#### 2. Using `path` and `tableName`
+
+
+{% highlight mysql %}
+CALL OSMRead('/home/user/bretagne.osm', 'OSM_BRETAGNE');
+{% endhighlight %}
+
+#### 3. Using a zipped file
+
+{% highlight mysql %}
+CALL OSMRead('/home/user/bretagne.osm.gz', 'OSM_BRETAGNE');
+{% endhighlight %}
+
+#### 4. Using `fileEncoding`
+
+{% highlight mysql %}
+CALL OSMRead('/home/user/bretagne.osm', 'OSM_BRETAGNE', 'utf-8');
+{% endhighlight %}
+
+
+#### 5. Using `deleteTables`
+
+{% highlight mysql %}
+CALL OSMRead('/home/user/bretagne.osm', 'OSM_BRETAGNE', true);
+{% endhighlight %}
+
+
+#### 6. Build OSM data
 
 Based on the created tables, the user can build other OSM data. 
 
@@ -92,7 +114,7 @@ ST_MAKEPOLYGON(ST_MAKELINE(THE_GEOM)) THE_GEOM FROM (SELECT (SELECT ST_ACCUM(THE
 
 ##### See also
 
-* [`ST_OSMDownloader`](../ST_OSMDownloader)
+* [`ST_OSMDownloader`](../ST_OSMDownloader), [`ST_OSMMapLink`](../ST_OSMMapLink)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/io/osm/OSMRead.java" target="_blank">Source code</a>
 
 [wiki]: http://wiki.openstreetmap.org/wiki/OSM_XML

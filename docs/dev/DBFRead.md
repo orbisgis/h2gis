@@ -27,7 +27,7 @@ DBFRead(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding,
 
 Reads the file specified by `path` as a [dBase][wiki] file and copies its contents into a new table `tableName` in the database.
 
-A new column named `PK`, storing a primary key (`INT` value), is added. If the input `.dbf` has already a `PK` column then the added column is named `PK2`.
+A new column named `PK`, storing a primary key (`INT` value), is added. If the input `.dbf` has already a `PK` column then the added column is named `PK2` *(and so on)*.
 
 Define `fileEncoding` to force encoding (useful when the header is missing encoding information) (default value is `ISO-8859-1`).
 
@@ -49,7 +49,7 @@ In following example, we have a DBF file, which is stored here : `/home/user/cit
 NAME   ID
 Vannes   56260
 Theix   56251
-Saint-Avé   56206
+Bréhan   56206
 {% endhighlight %}
 
 #### 1. Case with `path`
@@ -64,7 +64,7 @@ Returns the following table `CITY`. A column `PK` has been added.
 |:--:|:---------:|:-----:|
 | 1  | Vannes    | 56260 |
 | 2  | Theix     | 56251 |
-| 3  | Saint-Avé | 56206 |
+| 3  | Bréhan | 56206 |
 
 #### 2. Case with `tableName`
 
@@ -77,17 +77,17 @@ Returns the table `MYCITY`
 #### 3. Case with `fileEncoding` 
 
 In the next two examples, we show what happens when we attempt to read a DBF file with the wrong encoding, and how to fix it. 
-Here UTF-8 doesn't understand accented characters, so "`Saint-Avé`" is displayed as "`Saint-Av`".
+Here UTF-8 doesn't understand accented characters, so "`Bréhan`" is displayed as "`Br`".
 
 {% highlight mysql %}
 CALL DBFRead('/home/user/city.dbf', 'CITY', 'utf-8');
 
 -- Answer:
--- | PK |   NAME    |  ID   |
--- |----|-----------|-------|
--- | 1  | Vannes    | 56260 |
--- | 2  | Theix     | 56251 |
--- | 3  | Saint-Av  | 56206 |
+-- | PK |  NAME  |  ID   |
+-- |----|--------|-------|
+-- | 1  | Vannes | 56260 |
+-- | 2  | Theix  | 56251 |
+-- | 3  | Br     | 56206 |
 {% endhighlight %}
 
 To fix this problem, we specify the right encoding (`iso-8859-1`):
@@ -96,11 +96,11 @@ To fix this problem, we specify the right encoding (`iso-8859-1`):
 CALL DBFRead('/home/user/city.dbf', 'CITY', 'iso-8859-1');
 
 -- Answer:
--- | PK |   NAME    |  ID   |
--- |----|-----------|-------|
--- | 1  | Vannes    | 56260 |
--- | 2  | Theix     | 56251 |
--- | 3  | Saint-Avé | 56206 |
+-- | PK |  NAME  |  ID   |
+-- |----|--------|-------|
+-- | 1  | Vannes | 56260 |
+-- | 2  | Theix  | 56251 |
+-- | 3  | Bréhan | 56206 |
 {% endhighlight %}
 
 

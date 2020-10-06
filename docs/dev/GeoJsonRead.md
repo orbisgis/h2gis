@@ -65,7 +65,13 @@ CALL GeoJsonRead('/home/user/data.geojson', 'NEW_DATA');
 
 &rarr; Here `data.geojson` will produce a table named `NEW_DATA`.
 
-##### 3. Case with `deleteTable`
+##### 3. Case with `fileEncoding`
+
+{% highlight mysql %}
+CALL GeoJsonRead('/home/user/data.geojson', 'NEW_DATA', 'utf-8');
+{% endhighlight %}
+
+##### 4. Case with `deleteTable`
 
 Load the `data.geojson` file
 {% highlight mysql %}
