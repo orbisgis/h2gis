@@ -26,6 +26,7 @@ import org.h2gis.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.DocFlavor;
 import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -278,8 +279,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         try {
             firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.getKey(), tolerance);            
             int srid = geometryMetada.getValue().SRID;
-            makeEnvelopes(st, tolerance, isH2, srid);
-            nodesTable(st, nodesName, tolerance, isH2,srid);
+            boolean hasZ = geometryMetada.getValue().hasZ;
+            makeEnvelopes(st, tolerance, isH2, srid,hasZ);
+            nodesTable(st, nodesName, tolerance, isH2,srid, hasZ);
             edgesTable(st, nodesName, edgesName, tolerance, isH2);
             checkForNullEdgeEndpoints(st, edgesName);
             if (orientBySlope) {
@@ -346,13 +348,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Make a big table of all points in the coords table with an envelope around each point.
      * We will use this table to remove duplicate points.
      */
-    private static void makeEnvelopes(Statement st, double tolerance, boolean isH2, int srid) throws SQLException {
+    private static void makeEnvelopes(Statement st, double tolerance, boolean isH2, int srid, boolean hasZ) throws SQLException {
         st.execute("DROP TABLE IF EXISTS" + PTS_TABLE + ";");
+        String pointSignature = hasZ?"POINTZ":"POINT";
         if (tolerance > 0) {
             LOGGER.info("Calculating envelopes around coordinates...");
             // Putting all points and their envelopes together...
             st.execute("CREATE  TABLE " + PTS_TABLE + "( ID SERIAL PRIMARY KEY, "
-                    + "THE_GEOM GEOMETRY(POINT," + srid + "),"
+                    + "THE_GEOM GEOMETRY("+pointSignature+"," + srid + "),"
                     + "AREA GEOMETRY(POLYGON, " + srid + ")"
                     + ") ");
             st.execute("INSERT INTO " + PTS_TABLE + " (SELECT CAST((row_number() over()) as Integer) , a.THE_GEOM, A.AREA FROM  "
@@ -370,7 +373,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             // If the tolerance is zero, we just put all points together
             st.execute("CREATE  TABLE " + PTS_TABLE + "( "
                     + "ID SERIAL PRIMARY KEY, "
-                    + "THE_GEOM GEOMETRY(POINT," + srid + ")"
+                    + "THE_GEOM GEOMETRY("+pointSignature+"," + srid + ")"
                     + ")");
             st.execute("INSERT INTO " + PTS_TABLE + " (SELECT (row_number() over())::int , a.the_geom FROM "
                     + "(SELECT  START_POINT as THE_GEOM FROM " + COORDS_TABLE
@@ -391,13 +394,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     private static void nodesTable(Statement st,
                                    TableLocation nodesName,
-                                   double tolerance, boolean isH2, int srid) throws SQLException {
+                                   double tolerance, boolean isH2, int srid, boolean hasZ) throws SQLException {
         LOGGER.info("Creating the nodes table...");
         // Creating nodes table by removing copies from the pts table.
+        String pointSignature = hasZ?"POINTZ":"POINT";
         if (tolerance > 0) {
                st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM GEOMETRY(POINT, " + srid+"), "+
+                    "THE_GEOM GEOMETRY("+pointSignature+", " + srid+"), "+
                     "EXP GEOMETRY(POLYGON," +srid+")"+
                     ") " );
                 st.execute( "INSERT INTO "+nodesName +" (SELECT CAST((row_number() over()) AS INTEGER) , c.the_geom, c.area FROM (SELECT  A.THE_GEOM, A.AREA FROM "+ PTS_TABLE +" as  A, "+ PTS_TABLE +" as B " +
@@ -410,7 +414,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             // by using = rather than &&.
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM GEOMETRY(POINT, "+srid+")" +
+                    "THE_GEOM GEOMETRY("+pointSignature+", "+srid+")" +
                     ") " );            
             st.execute("INSERT INTO "+nodesName +" (SELECT CAST((row_number() over()) as INTEGER) , c.the_geom FROM (SELECT A.THE_GEOM FROM "+ PTS_TABLE + " as A," + PTS_TABLE + " as B " +
                     "WHERE A.THE_GEOM && B.THE_GEOM AND A.THE_GEOM=B.THE_GEOM " +
