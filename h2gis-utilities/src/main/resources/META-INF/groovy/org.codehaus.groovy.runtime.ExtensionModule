@@ -1,0 +1,7 @@
+moduleName=H2GIS Groovy commons extension
+moduleVersion=1.0
+extensionClasses=org.h2gis.utilities.JDBCUtilities, \
+  org.h2gis.utilities.GeographyUtilities, \
+  org.h2gis.utilities.GeometryTableUtilities, \
+  org.h2gis.utilities.TableUtilities
+staticExtensionClasses=
