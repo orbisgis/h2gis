@@ -250,7 +250,7 @@ public class GeoJsonReaderDriver {
                 createTable.append(",").append(columns.getKey()).append(" ").append(getSQLTypeName(columnType));
                 if(columnType==Types.ARRAY){
                     if(isH2){
-                        insertTable.append(",").append("? FORMAT json");
+                        insertTable.append(",").append(" ? FORMAT json");
                     }else {
                         insertTable.append(",").append("cast(? as json)");
                     }
@@ -696,7 +696,7 @@ public class GeoJsonReaderDriver {
     private void parsePropertiesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText().toUpperCase(), isH2); //FIELD_NAME columnName 
+            String fieldName = TableLocation.quoteIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
             JsonToken value = jp.nextToken();
             if (null != value) {
                 Integer dataType = cachedColumnNames.get(fieldName);
@@ -899,7 +899,7 @@ public class GeoJsonReaderDriver {
     private void parseProperties(JsonParser jp, Object[] values) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText().toUpperCase(), isH2); //FIELD_NAME columnName 
+            String fieldName = TableLocation.quoteIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
             JsonToken value = jp.nextToken();
             if (null == value) {
                 //ignore other value
