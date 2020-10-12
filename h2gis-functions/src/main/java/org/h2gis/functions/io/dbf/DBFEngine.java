@@ -61,9 +61,7 @@ public class DBFEngine extends FileEngine<DBFDriver> {
     public static void feedTableDataFromHeader(DbaseFileHeader header, CreateTableData data) throws IOException {
         for (int i = 0; i < header.getNumFields(); i++) {
             String fieldsName = header.getFieldName(i);
-            final int type = dbfTypeToH2Type(header,i);
-            TypeInfo typeInfo = new TypeInfo(type, header.getFieldLength(i), 0, ValueNull.VARCHAR, null);
-            Column column = new Column(fieldsName.toUpperCase(), typeInfo);
+            Column column = new Column(fieldsName.toUpperCase(), dbfTypeToH2Type(header,i));
             data.columns.add(column);
         }
     }
@@ -75,36 +73,38 @@ public class DBFEngine extends FileEngine<DBFDriver> {
      * @return H2 {@see Value}
      * @throws java.io.IOException
      */
-    private static int dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
+    private static TypeInfo dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
         switch (header.getFieldType(i)) {
             // (L)logical (T,t,F,f,Y,y,N,n)
             case 'l':
             case 'L':
-                return Value.BOOLEAN;
+                return TypeInfo.TYPE_BOOLEAN;
             // (C)character (String)
             case 'c':
             case 'C':
-                return Value.CHAR;
+                return TypeInfo.getTypeInfo(Value.CHAR, header.getFieldLength(i), 0, null);
             // (D)date (Date)
             case 'd':
             case 'D':
-                return Value.DATE;
+                return TypeInfo.TYPE_DATE;
             // (F)floating (Double)
             case 'n':
             case 'N':
                 if ((header.getFieldDecimalCount(i) == 0)) {
                     if ((header.getFieldLength(i) >= 0)
                             && (header.getFieldLength(i) < 10)) {
-                        return Value.INTEGER;
+                        return TypeInfo.TYPE_INTEGER;
                     } else {
-                        return Value.BIGINT;
+                        return TypeInfo.TYPE_BIGINT;
                     }
+                } else {
+                   return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, null);
                 }
             case 'f':
             case 'F': // floating point number
             case 'o':
             case 'O': // floating point number
-                return Value.DOUBLE;
+                return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, null);
             default:
                 throw new IOException("Unknown DBF field type "+header.getFieldType(i));
         }

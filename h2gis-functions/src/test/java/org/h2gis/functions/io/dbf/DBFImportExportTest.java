@@ -102,17 +102,17 @@ public class DBFImportExportTest {
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
         assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
+        assertEquals("INTEGER", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
+        assertEquals("CHARACTER VARYING", rs.getString("DATA_TYPE"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID",rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT", rs.getString("TYPE_NAME"));
+        assertEquals("BIGINT", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+        assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
         rs.close();
         // Check content
         rs = st.executeQuery("SELECT * FROM WATERNETWORK");
@@ -172,9 +172,9 @@ public class DBFImportExportTest {
         Statement stat = connection.createStatement();
         File dbfFile = new File("target/area_export.dbf");
         stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
-        stat.execute("create table area("+H2TableIndex.PK_COLUMN_NAME+" serial, val DOUBLE, descr CHAR(50))");
-        stat.execute("insert into area values(null, 4.9406564584124654, 'main area')");
-        stat.execute("insert into area values(null, 2.2250738585072009, 'second area')");
+        stat.execute("create table area("+H2TableIndex.PK_COLUMN_NAME+" INT, val DOUBLE, descr CHAR(50))");
+        stat.execute("insert into area values(1, 4.9406564584124654, 'main area')");
+        stat.execute("insert into area values(1, 2.2250738585072009, 'second area')");
         // Create a shape file using table area
         stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA', true)");
         // Read this shape file to check values
