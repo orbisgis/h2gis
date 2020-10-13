@@ -38,13 +38,13 @@ Pixels are converted into `PointZ` (or `PolygonZ`) geometry with Z as the pixel 
 
 Where:
 
-- `path` : the adress of the `.asc` file. This file may be zipped in a `.gz` file *(in this case, the `ASCRead` driver will unzip on the fly the `.gz` file)*, 
-- `myTable` : the name given to the resulting table,
+- `path` : adress of the `.asc` file. This file may be zipped in a `.gz` file *(in this case, the `ASCRead` driver will unzip on the fly the `.gz` file)*, 
+- `myTable` : name of the output table,
 - `type` : indicates whether the `z` data type will be casted to INTEGER (`1`) or left as DOUBLE (`2` - default value),
-- `geomFilter` : extract only pixels that intersects the provided geometry envelope (`null` to disable filter),
+- `geomFilter` : extract only pixels that intersects the provided geometry envelope (`null` or empty argument to disable filter),
 - `downScaleInt` : a coefficient used for exporting less cells (`1` all cells, `2` for size / 2, ...),
 - `asPolygons` : if `true`, pixels are converted into polygons (default value = `false` return points),
-- `deleteTable` : if `true` and table `tableName` already exists in the database, then table `tableName` will be removed / replaced by the new one. Else (no `deleteTable` parameter or `deleteTable` equal to `false`), an error indicating that the table `tableName` already exists will be throwned.
+- `deleteTable` : if `true` and table `tableName` already exists in the database, then table `tableName` will be removed / replaced by the new one. Else (no `deleteTable` parameter or `deleteTable` equal to `false`), throw an exception if the `tableName` already exist.
 
 ### Examples
 
