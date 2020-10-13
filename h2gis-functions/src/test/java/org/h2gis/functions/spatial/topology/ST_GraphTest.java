@@ -22,9 +22,11 @@ package org.h2gis.functions.spatial.topology;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.jupiter.api.*;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -71,7 +73,7 @@ public class ST_GraphTest {
     private void checkNode(ResultSet nodesResult, int nodeID, String nodeGeom) throws SQLException {
         assertTrue(nodesResult.next());
         assertEquals(nodeID, nodesResult.getInt("NODE_ID"));
-        assertGeometryEquals(nodeGeom, nodesResult.getBytes("THE_GEOM"));
+        assertGeometryEquals(nodeGeom, nodesResult.getObject("THE_GEOM"));
     }
 
     private void checkEdge(ResultSet edgesResult, int gid, int startNode, int endNode) throws SQLException {

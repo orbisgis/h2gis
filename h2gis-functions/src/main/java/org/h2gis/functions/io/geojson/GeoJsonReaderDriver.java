@@ -29,12 +29,10 @@ import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKBWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
@@ -247,9 +245,18 @@ public class GeoJsonReaderDriver {
             int i = 1;
             for (Map.Entry<String, Integer> columns : cachedColumnNames.entrySet()) {
                 String columnName = columns.getKey();
+                Integer columnType = columns.getValue();
                 cachedColumnIndex.put(columnName, i++);
-                createTable.append(",").append(columns.getKey()).append(" ").append(getSQLTypeName(columns.getValue()));
-                insertTable.append(",").append("?");
+                createTable.append(",").append(columns.getKey()).append(" ").append(getSQLTypeName(columnType));
+                if(columnType==Types.ARRAY){
+                    if(isH2){
+                        insertTable.append(",").append(" ? FORMAT json");
+                    }else {
+                        insertTable.append(",").append("cast(? as json)");
+                    }
+                }else {
+                    insertTable.append(",").append("?");
+                }
             }
             createTable.append(")");
             insertTable.append(")");
@@ -689,7 +696,7 @@ public class GeoJsonReaderDriver {
     private void parsePropertiesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText().toUpperCase(), isH2); //FIELD_NAME columnName 
+            String fieldName = TableLocation.quoteIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
             JsonToken value = jp.nextToken();
             if (null != value) {
                 Integer dataType = cachedColumnNames.get(fieldName);
@@ -734,6 +741,9 @@ public class GeoJsonReaderDriver {
                         break;
                     case START_OBJECT:
                         if (!hasField || dataType == Types.NULL) {
+                            cachedColumnNames.put(fieldName, Types.ARRAY);
+                        }
+                        else if (hasField && dataType != Types.ARRAY) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         parseObjectMetadata(jp);
@@ -889,32 +899,48 @@ public class GeoJsonReaderDriver {
     private void parseProperties(JsonParser jp, Object[] values) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText().toUpperCase(), isH2); //FIELD_NAME columnName 
+            String fieldName = TableLocation.quoteIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
             JsonToken value = jp.nextToken();
-            if (value == JsonToken.VALUE_STRING) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getText();
-            } else if (value == JsonToken.VALUE_TRUE) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getValueAsBoolean();
-            } else if (value == JsonToken.VALUE_FALSE) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getValueAsBoolean();
-            } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                values[cachedColumnIndex.get(fieldName)] = jp.getValueAsDouble();
-            } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                if(jp.getNumberType() == JsonParser.NumberType.INT) {
-                    values[cachedColumnIndex.get(fieldName)] = jp.getIntValue();
-                } else {
-                    values[cachedColumnIndex.get(fieldName)] = jp.getLongValue();
-                }
-            } else if (value == JsonToken.START_ARRAY) {
-                ArrayList<Object> arrayList = parseArray(jp);
-                values[cachedColumnIndex.get(fieldName)] = arrayList.toArray();
-            } else if (value == JsonToken.START_OBJECT) {
-                String str = parseObject(jp);
-                values[cachedColumnIndex.get(fieldName)] = str;
-            } else if (value == JsonToken.VALUE_NULL) {
-                values[cachedColumnIndex.get(fieldName)] = null;
-            } else {
+            if (null == value) {
                 //ignore other value
+            } else switch (value) {
+                case VALUE_STRING:
+                    values[cachedColumnIndex.get(fieldName)] = jp.getText();
+                    break;
+                case VALUE_TRUE:
+                    values[cachedColumnIndex.get(fieldName)] = jp.getValueAsBoolean();
+                    break;
+                case VALUE_FALSE:
+                    values[cachedColumnIndex.get(fieldName)] = jp.getValueAsBoolean();
+                    break;
+                case VALUE_NUMBER_FLOAT:
+                    values[cachedColumnIndex.get(fieldName)] = jp.getValueAsDouble();
+                    break;
+                case VALUE_NUMBER_INT:
+                    if(jp.getNumberType() == JsonParser.NumberType.INT) {
+                        values[cachedColumnIndex.get(fieldName)] = jp.getIntValue();
+                    } else {
+                        values[cachedColumnIndex.get(fieldName)] = jp.getLongValue();
+                    }   break;
+                case START_ARRAY:
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        parseArray(jp, sb);
+                        values[cachedColumnIndex.get(fieldName)] = sb.toString();
+                        break;
+                    }
+                case START_OBJECT:
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        parseObject(jp, sb);
+                        values[cachedColumnIndex.get(fieldName)] = sb.toString();
+                        break;
+                    }
+                case VALUE_NULL:
+                    values[cachedColumnIndex.get(fieldName)] = null;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -1430,41 +1456,86 @@ public class GeoJsonReaderDriver {
      * @param jp the json parser
      * @return the array
      */
-    private ArrayList<Object> parseArray(JsonParser jp) throws IOException {
+    private void parseArray(JsonParser jp, StringBuilder sb) throws IOException {
+        sb.append(jp.currentToken().asCharArray());
         JsonToken value = jp.nextToken();
-        ArrayList<Object> ret = new ArrayList<>();
+        String sep = ",";
         while (value != JsonToken.END_ARRAY) {
             if (value == JsonToken.START_OBJECT) {
-                Object object = parseObject(jp);
-                ret.add(object);
+                parseObject(jp, sb);
+            }else  if (value == JsonToken.END_OBJECT) {
+                sb.append(jp.currentToken().asCharArray());
             } else if (value == JsonToken.START_ARRAY) {
-                ArrayList<Object> arrayList = parseArray(jp);
-                ret.add(arrayList.toArray());
-            } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                ret.add(jp.getValueAsInt());
-            } else if (value == JsonToken.VALUE_FALSE || value == JsonToken.VALUE_TRUE) {
-                ret.add(jp.getValueAsBoolean());
-            } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                ret.add(jp.getValueAsDouble());
-            } else if (value == JsonToken.VALUE_STRING) {
-                ret.add(jp.getValueAsString());
+                 parseArray(jp, sb);
             } else if (value == JsonToken.VALUE_NULL) {
-                ret.add("null");
+                sb.append("null");
+            } else if (value == JsonToken.FIELD_NAME)  {
+                sb.append("\""+jp.getValueAsString()+"\"");
+                sep=":";
+            } else if (value == JsonToken.VALUE_STRING)  {
+                sb.append("\""+jp.getValueAsString()+"\"");
+                sep =",";
+            } else  {
+                sb.append(jp.getValueAsString());
+                sep =",";
             }
             value = jp.nextToken();
+            if(value!=JsonToken.END_ARRAY&& value!=JsonToken.END_OBJECT){
+                sb.append(sep);
+            }
         }
-        return ret;
+        sb.append(jp.currentToken().asCharArray());
+    }
+    /**
+     * Parses Json object and append the StringBuilder
+     * @param jp the json parser
+     * @return the array
+     */
+    private void parseObject(JsonParser jp, StringBuilder sb) throws IOException {
+        sb.append(jp.currentToken().asCharArray());
+        JsonToken value = jp.nextToken();
+        String sep = ",";
+        while (value != JsonToken.END_OBJECT) {
+            if (value == JsonToken.START_OBJECT) {
+                parseObject(jp, sb);
+                value = jp.nextToken();
+                if (value != JsonToken.END_ARRAY && value != JsonToken.END_OBJECT) {
+                    sb.append(",");
+                }
+            } else {
+                if (value == JsonToken.START_ARRAY) {
+                    sep = "[";
+                } else if (value == JsonToken.FIELD_NAME) {
+                    sb.append("\"" + jp.getValueAsString() + "\"");
+                    sep = ":";
+                } else if (value == JsonToken.VALUE_STRING) {
+                    sb.append("\"" + jp.getValueAsString() + "\"");
+                    sep = ",";
+                } else {
+                    sb.append(jp.getValueAsString());
+                    sep = ",";
+                }
+                value = jp.nextToken();
+                if (value != JsonToken.END_ARRAY && value != JsonToken.END_OBJECT) {
+                    sb.append(sep);
+                }
+            }
+
+        }
+        sb.append(jp.currentToken().asCharArray());
     }
 
-    /**
-     * Parses Json Object. Since their elements could be anything and H2GIS
-     * doesn't support such complicated structure, this parser will just write
-     * ordinary String object "{}". Syntax: Json Object: "member1": value1,
-     * "member2": value2}
-     *
-     * @param jp the json parser
-     * @return the object but written like a String
-     */
+
+
+        /**
+         * Parses Json Object. Since their elements could be anything and H2GIS
+         * doesn't support such complicated structure, this parser will just write
+         * ordinary String object "{}". Syntax: Json Object: "member1": value1,
+         * "member2": value2}
+         *
+         * @param jp the json parser
+         * @return the object but written like a String
+         */
     private String parseObject(JsonParser jp) throws IOException {
         String ret = "{";
         JsonToken value;
@@ -1499,7 +1570,7 @@ public class GeoJsonReaderDriver {
             case Types.BIGINT:
                 return "BIGINT";
             case Types.ARRAY:
-                return "ARRAY";
+                return "JSON";
             default:
                 throw new SQLException("Unkown data type");
         }

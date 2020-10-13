@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS, 2020
  */
 public class SystemFunctionTest {
 

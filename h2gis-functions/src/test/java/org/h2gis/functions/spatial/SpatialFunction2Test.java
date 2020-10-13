@@ -453,7 +453,7 @@ public class SpatialFunction2Test {
                 + "</gml:coordinates>"
                 + "</gml:LineString>');");
         rs.next();
-        assertGeometryEquals("LINESTRING (-71.16028 42.258729, -71.160837 42.259112, -71.161143 42.25932)", rs.getString(1));
+        assertGeometryEquals("SRID=4269;LINESTRING (-71.16028 42.258729, -71.160837 42.259112, -71.161143 42.25932)", rs.getString(1));
         rs.close();
     }    
     
@@ -758,7 +758,7 @@ public class SpatialFunction2Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(0 0)'::GEOMETRY, 'POINT(-118 38)'::GEOMETRY)");
         assertTrue(rs.next());
-        assertEquals(12421874.764417205, rs.getDouble(1),1e-12);
+        assertEquals(12421874.764417205, rs.getDouble(1),1e-8);
     }
 
     @Test
@@ -766,7 +766,7 @@ public class SpatialFunction2Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(ST_SetSRID('POINT(0 0)'::GEOMETRY, 4008), ST_SetSRID('POINT(-118 38)'::GEOMETRY, 4008))");
         assertTrue(rs.next());
-        assertEquals(12421855.452633386, rs.getDouble(1),1e-12);
+        assertEquals(12421855.452633386, rs.getDouble(1),1e-8);
     }
 
     @Test
@@ -863,7 +863,7 @@ public class SpatialFunction2Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT (130 210)'::GEOMETRY, 'MULTIPOLYGON (((50 400, 50 350, 50 300, 70 290, 80 280, 90 260, 99 254, 109 253, 120 252, 130 252, 140 255, 150 259, 159 264, 168 270, 172 280, 174 290, 175 300, 173 310, 167 320, 158 325, 148 325, 138 323, 129 316, 124 306, 114 312, 108 321, 105 332, 106 342, 112 351, 121 357, 132 359, 143 359, 153 359, 163 360, 173 359, 183 357, 193 355, 203 355, 216 355, 227 355, 238 357, 247 362, 256 369, 264 378, 269 387, 275 396, 273 406, 267 414, 259 421, 250 426, 240 426, 230 426, 220 425, 210 420, 199 418, 189 419, 179 419, 169 419, 158 419, 148 419, 138 419, 126 419, 116 419, 101 419, 83 419, 70 421, 60 427, 52 433, 44 441, 40 440, 50 400),(80 400, 100 400, 100 390, 80 390, 80 400),(177 395, 200 395, 200 380, 177 380, 177 395), (74 344, 80 344, 80 310, 74 310, 74 344)))'::GEOMETRY)");
         assertTrue(rs.next());
-        assertEquals(1074360.2834168628, rs.getDouble(1),1e-12);
+        assertEquals(1074360.2834168628, rs.getDouble(1),1e-8);
     }
     
     @Test
