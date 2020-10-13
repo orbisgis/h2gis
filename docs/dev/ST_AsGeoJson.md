@@ -22,19 +22,32 @@ Both 2D and 3D Geometries are supported.
 
 ### Examples
 
+#### Case with a `POINT`
+
 {% highlight mysql %}
 SELECT ST_AsGeoJSON('POINT(1 2)');
--- Answer: {"type":"Point","coordinates":[1.0,2.0]}
+{% endhighlight %}
 
-SELECT ST_AsGeoJSON('POLYGON((101 345 1, 300 345 2, 300 100 2,
-                              101 100 2, 101 345 1),
-                             (130 300 2, 190 300 2, 190 220 2,
-                              130 220 2, 130 300 2))');
--- Answer: {"type":"Polygon", "coordinates":[[[101.0, 345.0, 1.0],
---     [300.0, 345.0, 2.0], [300.0, 100.0, 2.0], [101.0, 100.0, 2.0],
---     [101.0, 345.0, 1.0]],
---    [[130.0, 300.0, 2.0], [190.0, 300.0, 2.0], [190.0, 220.0, 2.0],
---     [130.0, 220.0, 2.0], [130.0, 300.0, 2.0]]]}
+Answer:
+{% highlight xml %}
+{"type":"Point","coordinates":[1.0,2.0]}
+{% endhighlight %}
+
+#### Case with a `POLYGON`
+
+{% highlight mysql %}
+SELECT ST_AsGeoJSON('POLYGON
+    (101 345 1, 300 345 2, 300 100 2,101 100 2, 101 345 1),
+    (130 300 2, 190 300 2, 190 220 2, 130 220 2, 130 300 2))');
+{% endhighlight %}
+
+Answer:
+{% highlight xml %}
+{"type":"Polygon","coordinates":[[[101.0,345.0,1.0],
+       [300.0,345.0,2.0],[300.0,100.0,2.0],[101.0,100.0,2.0],
+       [101.0,345.0,1.0]],[[130.0,300.0,2.0],[190.0,300.0,2.0],
+       [190.0,220.0,2.0],[130.0,220.0,2.0],[130.0,300.0,2.0]]]
+}
 {% endhighlight %}
 
 ##### See also

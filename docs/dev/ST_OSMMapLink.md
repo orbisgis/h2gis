@@ -41,19 +41,25 @@ Use case with the Castle of Nantes, which coordinates are exprimed in the French
 ##### Case without `marker`
 
 {% highlight mysql %}
-SELECT ST_OSMMAPLINK(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326)) as URL FROM NANTES_CASTLE;
-
--- Answer: http://www.openstreetmap.org/?minlon=-1.550246541734283&minlat=47.21546462871126&maxlon=-1.5479838062318023&maxlat=47.21682348531568 
+SELECT ST_OSMMAPLINK(
+      ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326)
+                    ) as URL FROM NANTES_CASTLE; 
 {% endhighlight %}
+
+Answer: [http://www.openstreetmap.org/?minlon=-1.550246541734283&minlat=47.21546462871126&maxlon=-1.5479838062318023&maxlat=47.21682348531568](http://www.openstreetmap.org/?minlon=-1.550246541734283&minlat=47.21546462871126&maxlon=-1.5479838062318023&maxlat=47.21682348531568)
+
 <img class="displayed" src="../ST_OSMMapLink_castle_osm.png"/>
 
 ##### Case with `marker`
 
 {% highlight mysql %}
-SELECT ST_OSMMAPLINK(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326), true) as URL FROM NANTES_CASTLE;
-
--- Answer: http://www.openstreetmap.org/?minlon=-1.550246541734283&minlat=47.21546462871126&maxlon=-1.5479838062318023&maxlat=47.21682348531568&mlat=47.216144057013466&mlon=-1.5491151739830427 
+SELECT ST_OSMMAPLINK(
+      ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326), true
+                    ) as URL FROM NANTES_CASTLE;
 {% endhighlight %}
+
+Answer: [http://www.openstreetmap.org/?minlon=-1.550246541734283&minlat=47.21546462871126&maxlon=-1.5479838062318023&maxlat=47.21682348531568&mlat=47.216144057013466&mlon=-1.5491151739830427](http://www.openstreetmap.org/?minlon=-1.550246541734283&minlat=47.21546462871126&maxlon=-1.5479838062318023&maxlat=47.21682348531568&mlat=47.216144057013466&mlon=-1.5491151739830427) 
+
 <img class="displayed" src="../ST_OSMMapLink_castle_osm_marker.png"/>
 
 ##### See also

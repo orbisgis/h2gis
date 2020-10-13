@@ -13,21 +13,26 @@ permalink: /docs/dev/SHPWrite/
 
 {% highlight mysql %}
 SHPWrite(VARCHAR path, VARCHAR tableName);
+SHPWrite(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTable);
 SHPWrite(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
+SHPWrite(VARCHAR path, VARCHAR tableName, 
+         VARCHAR fileEncoding, BOOLEAN deleteTable);
 {% endhighlight %}
 
 ### Description
 
-Writes the contents of table `tableName` to a [shapefile][wiki]
+Writes the content of table `tableName` into a [shapefile][wiki]
 located at `path`.
 
 `tablename` can be either:
 
 * the name of an existing table,
-* the result of a query (`SELECT` instruction which has to be written between simple quote and parenthesis `'( )'`).
+* the result of a query (`SELECT` instruction which has to be written between simple quote and parenthesis `'( )'`). **Warning**: when using text value in the `WHERE` condition, you have to double the simple quote (different from double quote ""): `... WHERE TextColumn = ''myText''`.
+
+Define `fileEncoding` to force encoding (useful when the header is missing encoding information) (default value is `ISO-8859-1`).
 
 
-The default value of `fileEncoding` is `ISO-8859-1`.
+If the `deleteTable` parameter is `true` and if the specified `shapefile` already exists at the `path` address, then the `shapefile` will be removed / replaced by the new one. Else (no `deleteTable` parameter or `deleteTable` equal to `false`), an error indicating that the `shapefile` already exists will be throwned.
 
 <div class="note warning">
   <h5>Shapefiles do not support arbitrary geometrical data.</h5>
@@ -42,12 +47,19 @@ The default value of `fileEncoding` is `ISO-8859-1`.
 
 ### Examples
 
+In the following example, we are working with a table named `AREA` and defined as follow.
+
 {% highlight mysql %}
--- Create an example table containing POLYGONs and export it.
-CREATE TABLE AREA(THE_GEOM GEOMETRY, ID INT PRIMARY KEY);
+CREATE TABLE AREA(THE_GEOM GEOMETRY(POLYGON), ID INT);
 INSERT INTO AREA VALUES
     ('POLYGON((-10 109, 90 9, -10 9, -10 109))', 1),
     ('POLYGON((90 109, 190 9, 90 9, 90 109))', 2);
+{% endhighlight %}
+
+
+#### 1. Case with `path` and `tablename`
+
+{% highlight mysql %}
 CALL SHPWrite('/home/user/area.shp', 'AREA');
 
 -- Read it back, showing that the driver wrote POLYGONs as
@@ -61,7 +73,7 @@ SELECT * FROM AREA2;
 -- | MULTIPOLYGON(((90 109, 190 109, 90 9, 90 109)))  |  2 |
 {% endhighlight %}
 
-#### Case where `tablename` is the result of a selection.
+#### 2. Case where `tablename` is the result of a selection
 
 {% highlight mysql %}
 CALL SHPWRITE('/home/user/area.shp', 
@@ -75,6 +87,32 @@ SELECT * FROM AREA2;
 -- | ------------------------------------------------ | -- |
 -- | MULTIPOLYGON(((-10 109,, 90 9, -10 9, -10 109))) |  1 |
 {% endhighlight %}
+
+#### Case with `deleteTable`
+
+Export the table `AREA` into the `area.shp` file.
+
+{% highlight mysql %}
+CALL SHPWRITE('/home/user/area.shp', 'AREA');
+{% endhighlight %}
+
+The `area.shp` is created.
+
+Now write once again, using the `deleteTable` = `true`
+
+{% highlight mysql %}
+CALL SHPWRITE('/home/user/area.shp', 'AREA', true);
+{% endhighlight %}
+
+The existing `area.shp` file is removed and replaced by the new one. 
+
+Now, same but with `deleteTable` = `false`
+
+{% highlight mysql %}
+CALL SHPWRITE('/home/user/area.shp', 'AREA', false);
+{% endhighlight %}
+
+A message is thrown: `The file already exist`. 
 
 ### Export the .prj file
 

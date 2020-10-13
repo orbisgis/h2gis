@@ -5,7 +5,7 @@ category: geom2D/projections
 is_function: true
 description: Transform a Geometry from one CRS to another
 prev_section: ST_SetSRID
-next_section: geom2D/properties
+next_section: UpdateGeometrySRID
 permalink: /docs/dev/ST_Transform/
 ---
 
@@ -40,4 +40,7 @@ SELECT ST_Transform(ST_GeomFromText(
 
 ##### See also
 
+
+
+* [`ST_SetSRID`](../ST_SetSRID), [`UpdateGeometrySRID`](../UpdateGeometrySRID), [`ST_SRID`](../ST_SRID)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/crs/ST_Transform.java" target="_blank">Source code</a>

@@ -4,7 +4,7 @@ title: CSVRead
 category: h2drivers
 is_function: true
 description: CSV &rarr; Table
-prev_section: h2drivers
+prev_section: ASCRead
 next_section: CSVWrite
 permalink: /docs/dev/CSVRead/
 ---
