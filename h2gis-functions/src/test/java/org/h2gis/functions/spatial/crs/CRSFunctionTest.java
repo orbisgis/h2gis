@@ -237,7 +237,7 @@ public class CRSFunctionTest {
     private void check(ResultSet rs, String expectedGeom) throws SQLException {
         try {
             assertTrue(rs.next());
-            assertGeometryEquals(expectedGeom, rs.getObject(1));
+            assertGeometryBarelyEquals(expectedGeom, rs.getObject(1));
             assertFalse(rs.next());
         } finally {
             rs.close();
