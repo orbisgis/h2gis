@@ -313,7 +313,8 @@ public class H2GISFunctions {
                 new ST_GeneratePointsInGrid(),
                 new AscRead(),
                 new FindGeometryMetadata(),
-                new UpdateGeometrySRID()
+                new UpdateGeometrySRID(),
+                new ST_InsertPoint()
         };
     }
 
