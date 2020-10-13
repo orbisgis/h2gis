@@ -1337,32 +1337,31 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_AddPoint1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POINT(0 0 0)'::GEOMETRY, 'POINT(1 1)'::GEOMETRY);");
-        rs.next();
-        assertNull(rs.getObject(1));
-        rs.close();
+    public void test_ST_InsertPoint1() throws Exception {
+        assertThrows(SQLException.class, () -> {
+            st.executeQuery("SELECT ST_InsertPoint('POINT(0 0 0)'::GEOMETRY, 'POINT(1 1)'::GEOMETRY);");
+        });
     }
 
     @Test
-    public void test_ST_AddPoint2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('MULTIPOINT((0 0))'::GEOMETRY, 'POINT(1 1)'::GEOMETRY);");
+    public void test_ST_InsertPoint2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('MULTIPOINT((0 0))'::GEOMETRY, 'POINT(1 1)'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("MULTIPOINT((0 0), (1 1))", rs.getBytes(1));
         rs.close();
     }
 
     @Test
-    public void test_ST_AddPoint3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY, 4);");
+    public void test_ST_InsertPoint3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY, 4);");
         rs.next();
         assertGeometryEquals("LINESTRING(0 8, 1 8 , 1.5 8, 3 8, 8 8, 10 8, 20 8)", rs.getBytes(1));
         rs.close();
     }
 
     @Test
-    public void test_ST_AddPoint4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY);");
+    public void test_ST_InsertPoint4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY);");
         rs.next();
         //The geometry is not modified
         assertGeometryEquals("LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)", rs.getBytes(1));
@@ -1370,8 +1369,8 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_AddPoint5() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON ((118 134, 118 278, 266 278, 266 134, 118 134 ))'::GEOMETRY, 'POINT(196 278 )'::GEOMETRY, 4);");
+    public void test_ST_InsertPoint5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('POLYGON ((118 134, 118 278, 266 278, 266 134, 118 134 ))'::GEOMETRY, 'POINT(196 278 )'::GEOMETRY, 4);");
         rs.next();
         //The geometry is not modified
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((118 134, 118 278,196 278, 266 278, 266 134, 118 134 ))")));
@@ -1379,8 +1378,8 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_AddPoint6() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))'::GEOMETRY, "
+    public void test_ST_InsertPoint6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))'::GEOMETRY, "
                 + "'POINT(3 3 )'::GEOMETRY, 2);");
         rs.next();
         //The geometry is not modified
@@ -1389,8 +1388,8 @@ public class SpatialFunctionTest {
     }    
     
     @Test
-    public void test_ST_AddPoint7() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
+    public void test_ST_InsertPoint7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
                 + "(2 2, 4 2, 4 4, 2 4, 2 2))'::geometry,'POINT(3 3)'::geometry);");
         rs.next();
         assertGeometryEquals("POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
@@ -1399,8 +1398,8 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_AddPoint8() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('SRID=4326;POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
+    public void test_ST_InsertPoint8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('SRID=4326;POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
                 + "(2 2, 4 2, 4 4, 2 4, 2 2))'::geometry,'SRID=4326;POINT(3 3)'::geometry);");
         rs.next();
         assertGeometryEquals("SRID=4326;POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
@@ -1409,11 +1408,97 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_AddPoint9() throws Exception {
+    public void test_ST_InsertPoint9() throws Exception {
+        assertThrows(SQLException.class, () -> {
+            st.execute("SELECT ST_InsertPoint('SRID=4326;POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
+                    + "(2 2, 4 2, 4 4, 2 4, 2 2))'::geometry,'SRID=2154;POINT(3 3)'::geometry);");
+        });
+    }
+
+    @Test
+    public void test_ST_InsertPoint10() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, ST_POINTN('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 1));");
+        rs.next();
+        assertNull(rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint1() throws Exception {
+        assertThrows(SQLException.class, () -> {
+          st.executeQuery("SELECT ST_AddPoint('MULTIPOINT((0 0))'::GEOMETRY, 'POINT(1 1)'::GEOMETRY);");
+        });
+    }
+
+    @Test
+    public void test_ST_AddPoint2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(0 8)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8, 0 8)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(0 8)'::GEOMETRY, 3);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (0 8, 1 8, 3 8, 0 8, 10 8, 20 8)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint4() throws Exception {
+        assertThrows(SQLException.class, () -> {
+            st.execute("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(0 8)'::GEOMETRY, 8);");
+        });
+    }
+
+    @Test
+    public void test_ST_AddPoint5() throws Exception {
         assertThrows(SQLException.class, () -> {
             st.execute("SELECT ST_AddPoint('SRID=4326;POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
                     + "(2 2, 4 2, 4 4, 2 4, 2 2))'::geometry,'SRID=2154;POINT(3 3)'::geometry);");
         });
+    }
+
+    @Test
+    public void test_ST_AddPoint6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINTZ(0 8 1)'::GEOMETRY, 3);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (0 8, 1 8, 3 8, 0 8, 10 8, 20 8)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRINGZ(0 8 0, 1 8 0 , 3 8 0, 8 8 0, 10 8 0, 20 8 0)'::GEOMETRY, 'POINTZ(0 8 1)'::GEOMETRY, 3);");
+        rs.next();
+        assertGeometryEquals("LINESTRING Z (0 8 0, 1 8 0, 3 8 0, 0 8 1, 10 8 0, 20 8 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRINGZ(0 8 0, 1 8 0 , 3 8 0, 8 8 0, 10 8 0, 20 8 0)'::GEOMETRY, 'POINT(0 8)'::GEOMETRY, 3);");
+        rs.next();
+        assertGeometryEquals("LINESTRING Z (0 8 0, 1 8 0, 3 8 0, 0 8 0, 10 8 0, 20 8 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint9() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRINGM(0 8 0, 1 8 0 , 3 8 0, 8 8 0, 10 8 0, 20 8 0)'::GEOMETRY, 'POINT(0 8)'::GEOMETRY, 3);");
+        rs.next();
+        assertGeometryEquals("LINESTRING M (0 8 0, 1 8 0, 3 8 0, 0 8 0, 10 8 0, 20 8 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint10() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINTM(0 8 1)'::GEOMETRY, 3);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (0 8, 1 8, 3 8, 0 8, 10 8, 20 8)", rs.getBytes(1));
+        rs.close();
     }
 
     @Test
