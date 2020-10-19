@@ -49,7 +49,7 @@ public class ST_IsClosed extends DeterministicScalarFunction {
     /**
      * @param geometry Geometry
      * @return True if the provided geometry is a closed LINESTRING or
-     * MULTILINESTRING, null otherwise
+     * MULTILINESTRING, true otherwise
      */
     public static Boolean isClosed(Geometry geometry) {
         if (geometry == null) {
@@ -60,6 +60,6 @@ public class ST_IsClosed extends DeterministicScalarFunction {
         } else if (geometry instanceof LineString) {
             return ((LineString) geometry).isClosed();
         }
-        return null;
+        return true;
     }
 }
