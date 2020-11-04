@@ -317,7 +317,8 @@ public class H2GISFunctions {
                 new UpdateGeometrySRID(),
                 new JTSVersion(),
                 new ST_Force4D(),
-                new ST_Force3DM()
+                new ST_Force3DM(),
+                new ST_InsertPoint()
         };
     }
 
