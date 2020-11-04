@@ -315,10 +315,10 @@ public class H2GISFunctions {
                 new AscRead(),
                 new FindGeometryMetadata(),
                 new UpdateGeometrySRID(),
+                new ST_InsertPoint(),
                 new JTSVersion(),
                 new ST_Force4D(),
-                new ST_Force3DM(),
-                new ST_InsertPoint()
+                new ST_Force3DM()
         };
     }
 
