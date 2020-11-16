@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  * Asc driver to import ESRI ASCII Raster file as polygons
@@ -129,6 +130,18 @@ public class AscDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String encoding, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        if (connection == null) {
+            throw new SQLException("The connection cannot be null.\n");
+        }
+        if (tableReference == null || tableReference.isEmpty()) {
+            throw new SQLException("The table cannot be null or empty");
+        }
+        if (fileName == null) {
+            throw new SQLException("The file name cannot be null.\n");
+        }
+        if (progress == null) {
+            progress = new EmptyProgressVisitor();
+        }
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
         ascReaderDriver.setDeleteTable(deleteTables);
         ascReaderDriver.setEncoding(encoding);

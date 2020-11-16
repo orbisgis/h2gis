@@ -264,6 +264,15 @@ public class TSVDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        if (connection == null) {
+            throw new SQLException("The connection cannot be null.\n");
+        }
+        if (tableReference == null || tableReference.isEmpty()) {
+            throw new SQLException("The table name cannot be null or empty");
+        }
+        if (progress == null) {
+            progress = new EmptyProgressVisitor();
+        }
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
         if (fileName != null && fileName.getName().toLowerCase().endsWith(".tsv")) {

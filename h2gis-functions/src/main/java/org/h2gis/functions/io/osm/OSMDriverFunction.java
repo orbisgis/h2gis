@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  *
@@ -122,6 +123,15 @@ public class OSMDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        if (connection == null) {
+            throw new SQLException("The connection cannot be null.\n");
+        }
+        if (tableReference == null || tableReference.isEmpty()) {
+            throw new SQLException("The table name cannot be null or empty");
+        }        
+        if (progress == null) {
+            progress = new EmptyProgressVisitor();
+        }
         OSMParser osmp = new OSMParser(connection, fileName, options, deleteTables);
         osmp.read(tableReference, progress);
     }

@@ -3,21 +3,20 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
+ * This code is part of the H2GIS project. H2GIS is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation; version 3.0 of
+ * the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details <http://www.gnu.org/licenses/>.
  *
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
 package org.h2gis.functions.io.kml;
 
 import org.h2gis.api.DriverFunction;
@@ -65,12 +64,12 @@ public class KMLDriverFunction implements DriverFunction {
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName, null,  false,  progress);
+        exportTable(connection, tableReference, fileName, null, false, progress);
     }
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName, null,  deleteFiles,  progress);
+        exportTable(connection, tableReference, fileName, null, deleteFiles, progress);
     }
 
     @Override
@@ -80,32 +79,32 @@ public class KMLDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName,   String encoding, ProgressVisitor progress
-          ) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName, encoding,  false,  progress);
+    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress
+    ) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName, encoding, false, progress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-       throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName,  String options,ProgressVisitor progress
-                          ) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,boolean deleteTables, ProgressVisitor progress
-                           ) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress
+    ) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
+    ) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
