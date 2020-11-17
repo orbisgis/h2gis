@@ -26,9 +26,9 @@ import org.h2gis.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.DocFlavor;
 import java.sql.*;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -279,8 +279,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         try {
             firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.getKey(), tolerance);            
             int srid = geometryMetada.getValue().SRID;
-            makeEnvelopes(st, tolerance, isH2, srid);
-            nodesTable(st, nodesName, tolerance, isH2,srid);
+            boolean hasZ = geometryMetada.getValue().hasZ;
+            makeEnvelopes(st, tolerance, isH2, srid,hasZ);
+            nodesTable(st, nodesName, tolerance, isH2,srid, hasZ);
             edgesTable(st, nodesName, edgesName, tolerance, isH2);
             checkForNullEdgeEndpoints(st, edgesName);
             if (orientBySlope) {
@@ -347,61 +348,44 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Make a big table of all points in the coords table with an envelope around each point.
      * We will use this table to remove duplicate points.
      */
-    private static void makeEnvelopes(Statement st, double tolerance, boolean isH2, int srid) throws SQLException {
-        st.execute("DROP TABLE IF EXISTS"+ PTS_TABLE + ";");
+    private static void makeEnvelopes(Statement st, double tolerance, boolean isH2, int srid, boolean hasZ) throws SQLException {
+        st.execute("DROP TABLE IF EXISTS" + PTS_TABLE + ";");
+        String pointSignature = hasZ?"POINTZ":"POINT";
         if (tolerance > 0) {
-            LOGGER.info("Calculating envelopes around coordinates...");            
+            LOGGER.info("Calculating envelopes around coordinates...");
+            // Putting all points and their envelopes together...
+            st.execute("CREATE  TABLE " + PTS_TABLE + "( ID SERIAL PRIMARY KEY, "
+                    + "THE_GEOM GEOMETRY("+pointSignature+"," + srid + "),"
+                    + "AREA GEOMETRY(POLYGON, " + srid + ")"
+                    + ") ");
+            st.execute("INSERT INTO " + PTS_TABLE + " (SELECT CAST((row_number() over()) as Integer) , a.THE_GEOM, A.AREA FROM  "
+                    + "(SELECT  START_POINT AS THE_GEOM, START_POINT_EXP as AREA FROM " + COORDS_TABLE
+                    + " UNION ALL "
+                    + "SELECT  END_POINT AS THE_GEOM, END_POINT_EXP as AREA FROM " + COORDS_TABLE + ") as a);");
+            // Putting a spatial index on the envelopes...
             if (isH2) {
-                // Putting all points and their envelopes together...
-                st.execute("CREATE  TABLE "+ PTS_TABLE +"( "
-                        + "ID SERIAL PRIMARY KEY, "
-                        + "THE_GEOM GEOMETRY(POINT,"+srid+"), "
-                        + "AREA GEOMETRY(POLYGON,"+srid+") "
-                        + ") AS "
-                        + "SELECT NULL, START_POINT, START_POINT_EXP FROM "+ COORDS_TABLE
-                        + " UNION ALL "
-                        + "SELECT NULL, END_POINT, END_POINT_EXP FROM "+ COORDS_TABLE+";");
-                // Putting a spatial index on the envelopes...
-                st.execute("CREATE SPATIAL INDEX ON "+ PTS_TABLE +"(AREA);");
+                st.execute("CREATE SPATIAL INDEX ON " + PTS_TABLE + "(AREA);");
             } else {
-                // Putting all points and their envelopes together...
-                st.execute("CREATE  TABLE "+ PTS_TABLE + "( ID SERIAL PRIMARY KEY, "
-                        + "THE_GEOM GEOMETRY(POINT,"+srid+"),"
-                        + "AREA GEOMETRY(POLYGON, "+srid+")"
-                        + ") ");
-                 st.execute("INSERT INTO " + PTS_TABLE +" (SELECT (row_number() over())::int , a.THE_GEOM, A.AREA FROM  "
-                        + "(SELECT  START_POINT AS THE_GEOM, START_POINT_EXP as AREA FROM "+ COORDS_TABLE
-                        + " UNION ALL "
-                        + "SELECT  END_POINT AS THE_GEOM, END_POINT_EXP as AREA FROM "+ COORDS_TABLE+") as a);");
-                // Putting a spatial index on the envelopes...
-                st.execute("CREATE INDEX ON "+ PTS_TABLE +" USING GIST(AREA);");
+                st.execute("CREATE INDEX ON " + PTS_TABLE + " USING GIST(AREA);");
             }
         } else {
             LOGGER.info("Preparing temporary nodes table from coordinates...");
+            // If the tolerance is zero, we just put all points together
+            st.execute("CREATE  TABLE " + PTS_TABLE + "( "
+                    + "ID SERIAL PRIMARY KEY, "
+                    + "THE_GEOM GEOMETRY("+pointSignature+"," + srid + ")"
+                    + ")");
+            st.execute("INSERT INTO " + PTS_TABLE + " (SELECT (row_number() over())::int , a.the_geom FROM "
+                    + "(SELECT  START_POINT as THE_GEOM FROM " + COORDS_TABLE
+                    + " UNION ALL "
+                    + "SELECT  END_POINT as THE_GEOM FROM " + COORDS_TABLE + ") as a);");
             if (isH2) {
-                // If the tolerance is zero, we just put all points together
-                st.execute("CREATE  TABLE "+ PTS_TABLE +"( "
-                        + "ID SERIAL PRIMARY KEY, "
-                        + "THE_GEOM GEOMETRY(GEOMETRY, "+srid+")"
-                        + ") AS "
-                        + "SELECT NULL, START_POINT FROM "+ COORDS_TABLE
-                        + " UNION ALL "
-                        + "SELECT NULL, END_POINT FROM "+ COORDS_TABLE+";");
                 // Putting a spatial index on the points themselves...
-                st.execute("CREATE SPATIAL INDEX ON "+ PTS_TABLE +"(THE_GEOM);");
+                st.execute("CREATE SPATIAL INDEX ON " + PTS_TABLE + "(THE_GEOM);");
             } else {
-                // If the tolerance is zero, we just put all points together
-                st.execute("CREATE  TABLE "+ PTS_TABLE +"( "
-                        + "ID SERIAL PRIMARY KEY, "
-                        + "THE_GEOM GEOMETRY(POINT,"+srid+")"
-                        + ")");
-                st.execute("INSERT INTO "+ PTS_TABLE +" (SELECT (row_number() over())::int , a.the_geom FROM "
-                        + "(SELECT  START_POINT as THE_GEOM FROM "+ COORDS_TABLE
-                        + " UNION ALL "
-                        + "SELECT  END_POINT as THE_GEOM FROM "+ COORDS_TABLE+") as a);");
                 // Putting a spatial index on the points themselves...
-                st.execute("CREATE INDEX ON "+ PTS_TABLE + " USING GIST(THE_GEOM);");
-            }            
+                st.execute("CREATE INDEX ON " + PTS_TABLE + " USING GIST(THE_GEOM);");
+            }
         }
     }
 
@@ -410,58 +394,32 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     private static void nodesTable(Statement st,
                                    TableLocation nodesName,
-                                   double tolerance, boolean isH2, int srid) throws SQLException {
+                                   double tolerance, boolean isH2, int srid, boolean hasZ) throws SQLException {
         LOGGER.info("Creating the nodes table...");
         // Creating nodes table by removing copies from the pts table.
+        String pointSignature = hasZ?"POINTZ":"POINT";
         if (tolerance > 0) {
-            if(isH2){
-            st.execute("CREATE TABLE " + nodesName + "(" +
-                    "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM GEOMETRY(POINT), " +
-                    "EXP GEOMETRY(POLYGON)" +
-                    ") AS " +
-                    "SELECT NULL, A.THE_GEOM, A.AREA FROM "+ PTS_TABLE + " as A," + PTS_TABLE +" as B " +
-                    "WHERE A.AREA && B.AREA " +
-                    "GROUP BY A.ID " +
-                    "HAVING A.ID=MIN(B.ID);");
-            }
-            else{
                st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM GEOMETRY(POINT, " + srid+"), "+
+                    "THE_GEOM GEOMETRY("+pointSignature+", " + srid+"), "+
                     "EXP GEOMETRY(POLYGON," +srid+")"+
                     ") " );
-                st.execute( "INSERT INTO "+nodesName +" (SELECT (row_number() over())::int , c.the_geom, c.area FROM (SELECT  A.THE_GEOM, A.AREA FROM "+ PTS_TABLE +" as  A, "+ PTS_TABLE +" as B " +
+                st.execute( "INSERT INTO "+nodesName +" (SELECT CAST((row_number() over()) AS INTEGER) , c.the_geom, c.area FROM (SELECT  A.THE_GEOM, A.AREA FROM "+ PTS_TABLE +" as  A, "+ PTS_TABLE +" as B " +
                     "WHERE A.AREA && B.AREA " +
                     "GROUP BY A.ID " +
                     "HAVING A.ID=MIN(B.ID)) as c);"); 
-            }
+
         } else {
-            
-            if(isH2){
-               // If the tolerance is zero, we can create the NODES table
-            // by using = rather than &&.
-            st.execute("CREATE TABLE " + nodesName + "(" +
-                    "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM GEOMETRY" +
-                    ") AS " +
-                    "SELECT NULL, A.THE_GEOM FROM "+ PTS_TABLE + " as A," + PTS_TABLE + " as B " +
-                    "WHERE A.THE_GEOM && B.THE_GEOM AND A.THE_GEOM=B.THE_GEOM " +
-                    "GROUP BY A.ID " +
-                    "HAVING A.ID=MIN(B.ID);"); 
-            }
-            else{
             // If the tolerance is zero, we can create the NODES table
             // by using = rather than &&.
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM GEOMETRY(POINT, "+srid+")" +
+                    "THE_GEOM GEOMETRY("+pointSignature+", "+srid+")" +
                     ") " );            
-            st.execute("INSERT INTO "+nodesName +" (SELECT (row_number() over())::int , c.the_geom FROM (SELECT A.THE_GEOM FROM "+ PTS_TABLE + " as A," + PTS_TABLE + " as B " +
+            st.execute("INSERT INTO "+nodesName +" (SELECT CAST((row_number() over()) as INTEGER) , c.the_geom FROM (SELECT A.THE_GEOM FROM "+ PTS_TABLE + " as A," + PTS_TABLE + " as B " +
                     "WHERE A.THE_GEOM && B.THE_GEOM AND A.THE_GEOM=B.THE_GEOM " +
                     "GROUP BY A.ID " +
                     "HAVING A.ID=MIN(B.ID)) as c);");
-            }
         }
     }
 

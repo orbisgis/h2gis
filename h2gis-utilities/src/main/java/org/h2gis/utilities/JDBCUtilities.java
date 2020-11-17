@@ -342,8 +342,8 @@ public class JDBCUtilities {
         boolean isLinked;
         try {
             if (rs.next()) {
-                String tableType = rs.getString("TABLE_TYPE");
-                isLinked = tableType.contains("TABLE LINK");
+                String tableType = rs.getString("STORAGE_TYPE");
+                isLinked = tableType.equals("TABLE LINK");
             } else {
                 throw new SQLException("The table " + location + " does not exists");
             }
@@ -678,7 +678,10 @@ public class JDBCUtilities {
                     String storage = rs.getString("STORAGE_TYPE");
                     if (storage.contains("TEMPORARY")) {
                         return TABLE_TYPE.TEMPORARY;
-                    } else {
+                    }
+                    else if(storage.equals("TABLE LINK")) {
+                        return TABLE_TYPE.TABLE_LINK;
+                    }else{
                         return TABLE_TYPE.fromString(rs.getString("TABLE_TYPE"));
                     }
                 } else {

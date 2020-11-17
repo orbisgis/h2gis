@@ -27,6 +27,7 @@ import org.h2.message.DbException;
 import org.h2.table.Column;
 import org.h2.table.TableBase;
 import org.h2.util.StringUtils;
+import org.h2.value.TypeInfo;
 import org.h2.value.Value;
 import org.h2gis.api.FileDriver;
 import org.h2gis.utilities.URIUtilities;
@@ -62,7 +63,7 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
                 feedCreateTableData(driver, data);
                 // Add primary key column
                 String pkColumnName = getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, data.columns);
-                Column pk = new Column(pkColumnName, Value.BIGINT);
+                Column pk = new Column(pkColumnName, TypeInfo.TYPE_BIGINT);
                 pk.setPrimaryKey(true);
                 pk.setNullable(false);
                 data.columns.add(0, pk);
