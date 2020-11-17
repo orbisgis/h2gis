@@ -79,11 +79,7 @@ public class ResultSetWrapper implements ResultSet {
                 return geometryFactory.toGeometry(envelope);
             }
         }
-        if(object instanceof PGobject) {
-            return new PGObjectWrapper((PGobject) object);
-        } else {
-            return object;
-        }
+        return object;        
     }
 
     @Override
