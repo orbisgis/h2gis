@@ -39,8 +39,95 @@ public class GeographyUtilities {
      * see <a href="http://en.wikipedia.org/wiki/World_Geodetic_System"></a>. 
      */
     public static final double RADIUS_OF_EARTH_IN_METERS = 6378137.0;
-         
-    
+
+
+    /**
+     * This method is used to create a JTS envelope by a given point coordinates in degrees
+     * and spatial increments in meters.
+     *
+     * @param point Coordinates of a point used to build an envelope.
+     * @param dx Spatial horizontal increment expressed in meters
+     * @param dy Spatial vertical increment expressed in meters.
+     * @return an envelope
+     */
+    public static Envelope createEnvelope(Coordinate point, double dx, double dy) {
+        if (dx==0 || dy==0) {
+            return null;
+        }
+        else if (dx<0 || dy<0) {
+            throw new IllegalArgumentException("Create operation does not accept negative value");
+        }
+        double pLat = point.getY();
+        double pLon = point.getX();
+
+        //Check if the envelope has latitude, longitude coordinates
+        if (!UTMUtils.isValidLatitude((float) pLat)) {
+            throw new IllegalArgumentException("Invalid latitude"+ pLat);
+        }
+        if (!UTMUtils.isValidLatitude((float) pLon)) {
+            throw new IllegalArgumentException("Invalid longitude"+ pLon);
+        }
+        double dLat = computeLatitudeDistance(dy);
+        double dLon = computeLongitudeDistance(dx, pLat);
+
+        return new Envelope(Math.max(-180, pLon), Math.min(180, pLon + dLon),
+                Math.max(-90, pLat), Math.min(90, pLat + dLat));
+    }
+
+
+    /**
+     * This method is used to create a JTS envelope by a given point coordinates in degrees
+     * and spatial increments in meters.
+     *
+     * @param point Coordinates of a point used to build an envelope in degrees.
+     * @param dx Spatial horizontal increment expressed in meters.
+     * @param dy Spatial vertical increment expressed in meters.
+     * @param quadrant One of the four quadrants delimiting the plane
+     *        (counter-clockwise and starting from the upper right)
+     * @return an envelope
+     */
+    public static Envelope createEnvelopeByQuadrant(Coordinate point, double dx, double dy, int quadrant) {
+        if (dx == 0 || dy == 0) {
+            return null;
+        }
+        else if (dx < 0 || dy < 0) {
+            throw new IllegalArgumentException("Create operation does not accept negative value");
+        }
+        if (quadrant < 1 || quadrant > 4) {
+            throw new IllegalArgumentException("Quadrant must range in [1,4] interval");
+        }
+        double pLat = point.getY();
+        double pLon = point.getX();
+
+        //Check if the envelope has latitude, longitude coordinates
+        if (!UTMUtils.isValidLatitude((float) pLat)) {
+            throw new IllegalArgumentException("Invalid latitude"+ pLat);
+        }
+        if (!UTMUtils.isValidLatitude((float) pLon)) {
+            throw new IllegalArgumentException("Invalid longitude"+ pLon);
+        }
+        double dLat = computeLatitudeDistance(dy);
+        double dLon = computeLongitudeDistance(dx, pLat);
+
+        switch(quadrant) {
+            case 1:
+                return new Envelope(Math.max(-180, pLon), Math.min(180, pLon + dLon),
+                        Math.max(-90, pLat), Math.min(90, pLat + dLat));
+            case 2:
+                return new Envelope(Math.max(-180, pLon - dLon), Math.min(180, pLon),
+                        Math.max(-90, pLat), Math.min(90, pLat + dLat));
+            case 3:
+                return new Envelope(Math.max(-180, pLon - dLon), Math.min(180, pLon),
+                        Math.max(-90, pLat - dLat), Math.min(90, pLat));
+            case 4:
+                return new Envelope(Math.max(-180, pLon), Math.min(180, pLon + dLon),
+                        Math.max(-90, pLat - dLat), Math.min(90, pLat));
+            default:
+                throw new IllegalArgumentException("Invalid quadrant argument:"+ quadrant);
+        }
+    }
+
+
     /** 
      * This method is used to expand a JTS envelope by a given distance in degrees
      * in all directions.
