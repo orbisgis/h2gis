@@ -34,7 +34,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.UUID;
 import org.h2gis.utilities.GeometryTableUtilities;
 
 import static org.junit.jupiter.api.Assertions.*;
