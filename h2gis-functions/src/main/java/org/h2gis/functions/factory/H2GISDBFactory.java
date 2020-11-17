@@ -38,7 +38,7 @@ import java.util.Properties;
  */
 public class H2GISDBFactory {
 
-    public static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0;DB_CLOSE_DELAY=5";
+    public static final String H2_PARAMETERS = ";DB_CLOSE_ON_EXIT=FALSE";
 
     private H2GISDBFactory() {
         // utility
@@ -113,7 +113,7 @@ public class H2GISDBFactory {
         properties.setProperty(DataSourceFactory.JDBC_PASSWORD, "sa");
         DataSource dataSource = dataSourceFactory.createDataSource(properties);
         // Init spatial ext
-        if(initSpatial) {
+        if(initSpatial) {            
             try (Connection connection = dataSource.getConnection()) {
                 H2GISFunctions.load(connection);
             }

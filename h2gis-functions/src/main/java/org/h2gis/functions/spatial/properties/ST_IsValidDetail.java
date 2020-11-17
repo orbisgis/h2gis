@@ -56,7 +56,7 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
      * @param geometry
      * @return 
      */
-    public static Object[] isValidDetail(Geometry geometry) {
+    public static String[] isValidDetail(Geometry geometry) {
         return isValidDetail(geometry, 0);
     }
     
@@ -73,7 +73,7 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
      * @param flag
      * @return 
      */
-    public static Object[] isValidDetail(Geometry geometry, int flag) {        
+    public static String[] isValidDetail(Geometry geometry, int flag) {
         if (geometry != null) {            
             if (flag == 0) {
                 return detail(geometry, false);
@@ -87,21 +87,21 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
     }
     
     /**
-     *
+     * TODO : change the return of this method when H2 will support row values
      * @param geometry
      * @return
      */
-    private static Object[] detail(Geometry geometry, boolean flag) {    
-        Object[] details = new Object[3];
+    private static String[] detail(Geometry geometry, boolean flag) {
+        String[] details = new String[3];
         IsValidOp validOP = new IsValidOp(geometry);
         validOP.setSelfTouchingRingFormingHoleValid(flag);
         TopologyValidationError error = validOP.getValidationError();
         if (error != null) {
-            details[0] = false ;
+            details[0] = "false" ;
             details[1] = error.getMessage();
-            details[2] = GF.createPoint(error.getCoordinate());
+            details[2] = GF.createPoint(error.getCoordinate()).toString();
         } else {
-            details[0] = true ;
+            details[0] = "true" ;
             details[1] = "Valid Geometry";
         }
         return details;

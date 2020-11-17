@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.topography;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.TriMarkers;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.operation.linemerge.LineMerger;
@@ -67,15 +68,16 @@ public class ST_Drape extends DeterministicScalarFunction{
         for (int i = 0; i < nb; i++) {
             Geometry geom = triangles.getGeometryN(i);
             sTRtree.insert(geom.getEnvelopeInternal(), TINFeatureFactory.createTriangle(geom));
-        }        
+        }
       
-        if (geomToDrape.getDimension() == 0) {
-            return drapePoints(geomToDrape, triangles, sTRtree);
+        if (geomToDrape instanceof Point) {
+            return drapePoint(geomToDrape, triangles, sTRtree);
+        } else if (geomToDrape instanceof MultiPoint) {
+            return drapePoints(geomToDrape, triangles,sTRtree);
         } else if (geomToDrape instanceof MultiLineString) {
             return drapeMultiLineString((MultiLineString) geomToDrape, triangles, sTRtree);
         } else if (geomToDrape instanceof MultiPolygon) {
             return drapeMultiPolygon((MultiPolygon) geomToDrape, triangles, sTRtree);
-
         }
         else if (geomToDrape instanceof Polygon) {
             return drapePolygon((Polygon) geomToDrape, triangles, sTRtree);
@@ -85,19 +87,34 @@ public class ST_Drape extends DeterministicScalarFunction{
             throw new SQLException("Drape " + geomToDrape.getGeometryType() + " is not supported.");
         } 
     }
-    
+
     /**
-     * Drape a point or a multipoint geometry to a set of triangles
+     * Drape a multipoint geometry to a set of triangles
      * @param pts
      * @param triangles
      * @param sTRtree
-     * @return 
+     * @return
      */
     public static Geometry drapePoints(Geometry pts, Geometry triangles, STRtree sTRtree) {
-        Geometry geomDrapped = pts.copy();
-        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
-        geomDrapped.apply(drapeFilter);
-        return geomDrapped;
+        GeometryFactory factory = pts.getFactory();
+        int nbPts = pts.getNumGeometries();
+        Point[] points = new Point[nbPts];
+        for (int i = 0; i < nbPts; i++) {
+            points[i] = factory.createPoint(updateCoordinates(((Point)pts.getGeometryN(i)).getCoordinateSequence(), sTRtree));
+        }
+        return factory.createMultiPoint(points);
+    }
+
+    /**
+     * Drape a point geometry to a set of triangles
+     * @param pts
+     * @param triangles
+     * @param sTRtree
+     * @return
+     */
+    public static Geometry drapePoint(Geometry pts, Geometry triangles, STRtree sTRtree) {
+        GeometryFactory factory = pts.getFactory();
+        return factory.createPoint(updateCoordinates(((Point)pts).getCoordinateSequence(), sTRtree));
     }
     
     
@@ -115,12 +132,9 @@ public class ST_Drape extends DeterministicScalarFunction{
         int nbPolygons = polygons.getNumGeometries();
         Polygon[] polygonsDiff = new Polygon[nbPolygons];
         for (int i = 0; i < nbPolygons; i++) {
-            polygonsDiff[i] = processPolygon((Polygon) polygons.getGeometryN(i), triangleLines, factory);
+            polygonsDiff[i] = processPolygon((Polygon) polygons.getGeometryN(i), triangleLines, factory,sTRtree);
         }
-        Geometry diffExt = factory.createMultiPolygon(polygonsDiff);
-        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
-        diffExt.apply(drapeFilter);
-        return diffExt;
+        return factory.createMultiPolygon(polygonsDiff);
     }
     
     /**
@@ -137,12 +151,10 @@ public class ST_Drape extends DeterministicScalarFunction{
         int nbLines = lines.getNumGeometries();
         LineString[] lineStrings = new LineString[nbLines];
         for (int i = 0; i < nbLines; i++) {
-            lineStrings[i] = (LineString) lineMerge(lines.getGeometryN(i).difference(triangleLines), factory);
+            LineString lineDiff = (LineString) lineMerge(lines.getGeometryN(i).difference(triangleLines), factory);
+            lineStrings[i] = factory.createLineString(updateCoordinates(lineDiff.getCoordinateSequence(), sTRtree));
         }
-        Geometry diffExt = factory.createMultiLineString(lineStrings);
-        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
-        diffExt.apply(drapeFilter);
-        return diffExt;
+        return factory.createMultiLineString(lineStrings);
     }
     
     /**
@@ -156,12 +168,11 @@ public class ST_Drape extends DeterministicScalarFunction{
         GeometryFactory factory = line.getFactory();
         //Split the triangles in lines to perform all intersections
         Geometry triangleLines = LinearComponentExtracter.getGeometry(triangles, true);
-        Geometry diffExt = lineMerge(line.difference(triangleLines), factory);
-        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
-        diffExt.apply(drapeFilter);
-        return diffExt;
+        LineString diffExt = (LineString) lineMerge(line.difference(triangleLines), factory);
+        return factory.createLineString(updateCoordinates(diffExt.getCoordinateSequence(), sTRtree));
     }
-    
+
+
     /**
      * Drape a polygon on a set of triangles
      * @param p
@@ -169,13 +180,11 @@ public class ST_Drape extends DeterministicScalarFunction{
      * @param sTRtree
      * @return 
      */
-    public static Geometry drapePolygon(Polygon p, Geometry triangles, STRtree sTRtree) {
+    public static Polygon drapePolygon(Polygon p, Geometry triangles, STRtree sTRtree) {
         GeometryFactory factory = p.getFactory();
         //Split the triangles in lines to perform all intersections
         Geometry triangleLines = LinearComponentExtracter.getGeometry(triangles, true);        
-        Polygon splittedP = processPolygon(p, triangleLines, factory);
-        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
-        splittedP.apply(drapeFilter);
+        Polygon splittedP = processPolygon(p, triangleLines, factory,sTRtree);
         return splittedP;
     }
     
@@ -186,14 +195,16 @@ public class ST_Drape extends DeterministicScalarFunction{
      * @param factory
      * @return 
      */
-    private static Polygon processPolygon(Polygon p, Geometry triangleLines, GeometryFactory factory) {
+    private static Polygon processPolygon(Polygon p, Geometry triangleLines, GeometryFactory factory,STRtree sTRtree) {
         Geometry diffExt = p.getExteriorRing().difference(triangleLines);
         final int nbOfHoles = p.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
-            holes[i] = factory.createLinearRing(lineMerge(p.getInteriorRingN(i).difference(triangleLines), factory).getCoordinates());
+            LinearRing hole = factory.createLinearRing(lineMerge(p.getInteriorRingN(i).difference(triangleLines), factory).getCoordinates());
+            holes[i] = factory.createLinearRing(updateCoordinates(hole.getCoordinateSequence(),sTRtree));
         }
-        return factory.createPolygon(factory.createLinearRing(lineMerge(diffExt, factory).getCoordinates()), holes);
+        LinearRing shell = factory.createLinearRing(lineMerge(diffExt, factory).getCoordinates());
+        return factory.createPolygon(factory.createLinearRing(updateCoordinates(shell.getCoordinateSequence(),sTRtree)), holes);
 
     }
     
@@ -211,22 +222,21 @@ public class ST_Drape extends DeterministicScalarFunction{
     }
 
     /**
-     * A filter to compute the z value of a coordinate according its location
-     * on a triangle
+     * Update the coordinates and compute the z values
+     * @param cs
+     * @param indexedTriangles
+     * @return
      */
-    private static class DrapeFilter implements CoordinateSequenceFilter {
-
-        private boolean done = false;
-        private final STRtree q;
-       
-        public DrapeFilter(STRtree q) {
-           this.q=q;
+    private static CoordinateArraySequence updateCoordinates(CoordinateSequence cs, STRtree indexedTriangles) {
+        int updateDim = cs.getDimension();
+        if(cs.getDimension()==2){
+            updateDim =3;
         }
-
-        @Override
-        public void filter(CoordinateSequence seq, int i) {            
-            Coordinate coord = seq.getCoordinate(i);
-            List<Triangle> result = q.query(new Envelope(coord));
+        Coordinate[] coords = cs.toCoordinateArray();
+        for (int i = 0; i < coords.length; i++) {
+            Coordinate coord = coords[i];
+            coord = new Coordinate(coord);
+            List<Triangle> result = indexedTriangles.query(new Envelope(coord));
             if (!result.isEmpty()) {
                 double z = 0;
                 for (Triangle triangle : result) {
@@ -235,26 +245,14 @@ public class ST_Drape extends DeterministicScalarFunction{
                         break;
                     }
                 }
-                seq.setOrdinate(i, 2, z );
-
+                coord.z = z;
+                coords[i]=coord;
             }
             else{
-                seq.setOrdinate(i, 2, 0 );
-            }
-            if (i == seq.size()) {
-                done = true;
+                coord.z = 0;
+                coords[i]=coord;
             }
         }
-
-        @Override
-        public boolean isDone() {
-                return done;
-        }
-
-        @Override
-        public boolean isGeometryChanged() {
-            return true;
-        }
+        return new CoordinateArraySequence(coords, updateDim);
     }
-    
 }
