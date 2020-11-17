@@ -46,7 +46,7 @@ public class  JsonDriverFunction implements DriverFunction{
 
     @Override
     public String[] getExportFormats() {
-        return new String[]{"json"};
+        return new String[]{"json", "json.gz"};
     }
 
     @Override

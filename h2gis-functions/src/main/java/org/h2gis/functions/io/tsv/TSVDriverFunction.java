@@ -69,12 +69,12 @@ public class TSVDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"tsv"};
+        return new String[]{"tsv","tsv.gz"};
     }
 
     @Override
     public String[] getExportFormats() {
-        return new String[]{"tsv"};
+        return new String[]{"tsv","tsv.gz"};
     }
 
     @Override

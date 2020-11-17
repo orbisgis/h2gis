@@ -179,12 +179,12 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[] {"dbf"};
+        return new String[] {"dbf", "dbf.gz"};
     }
 
     @Override
     public String[] getExportFormats() {
-        return new String[] {"dbf"};
+        return new String[] {"dbf", "dbf.gz"};
     }
 
     @Override

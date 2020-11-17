@@ -21,6 +21,8 @@ package org.h2gis.functions.utility;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.h2gis.api.DriverFunction;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.*;
 
@@ -41,10 +43,8 @@ import org.h2gis.functions.io.shp.SHPWrite;
 import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
@@ -94,10 +94,11 @@ public class IOMethodsTest {
         st.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         st.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
         // Create a shape file using table area
-        IOMethods.exportToFile(connection, "AREA", "target/area_export.shp", null, true);
+        IOMethods ioMethods = new IOMethods();
+        ioMethods.exportToFile(connection, "AREA", "target/area_export.shp", null, true);
         // Read this shape file to check values
         assertTrue(shpFile.exists());
-        IOMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
+        ioMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
         ResultSet res = st.executeQuery("SELECT * FROM test_table");
         assertTrue(res.next());
         assertEquals(1, res.getInt(1));
@@ -107,25 +108,27 @@ public class IOMethodsTest {
 
     @Test
     public void test_importExportBadFile() throws Exception {
+        IOMethods ioMethods = new IOMethods();
         assertThrows(SQLException.class, () -> {
-            IOMethods.importFile(connection, "", "test_table", null, true);
+            ioMethods.importFile(connection, "", "test_table", null, true);
         });
         assertThrows(SQLException.class, () -> {
-            IOMethods.importFile(connection, "target/area_export.shp", "", null, true);
+            ioMethods.importFile(connection, "target/area_export.shp", "", null, true);
         });
         assertThrows(SQLException.class, () -> {
-            IOMethods.exportToFile(connection, "", "target/area_export.shp", null, true);
+            ioMethods.exportToFile(connection, "", "target/area_export.shp", null, true);
         });
         assertThrows(NullPointerException.class, () -> {
-            IOMethods.exportToFile(null, "", "target/area_export.shp", null, true);
+            ioMethods.exportToFile(null, "", "target/area_export.shp", null, true);
         });
         assertThrows(SQLException.class, () -> {
-            IOMethods.exportToFile(connection, "table_name", "", null, true);
+            ioMethods.exportToFile(connection, "table_name", "", null, true);
         });
     }
 
     @Test
     public void test_importExportFilePOSTGIS(TestInfo testInfo) throws SQLException, IOException {
+        IOMethods ioMethods = new IOMethods();
         String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
         Properties props = new Properties();
         props.setProperty("user", "orbisgis");
@@ -149,16 +152,16 @@ public class IOMethodsTest {
             st.execute("CALL SHPWrite('target/area_export.shp', 'AREA', true)");
             // Read this shape file to check values
             assertTrue(shpFile.exists());
-            IOMethods.importFile(con, shpFile.getAbsolutePath(), "test_table", null, true);
+            ioMethods.importFile(con, shpFile.getAbsolutePath(), "test_table", null, true);
             ResultSet res = con.createStatement().executeQuery("SELECT * FROM test_table");
             assertTrue(res.next());
             assertEquals(1, res.getInt(1));
             assertGeometryEquals("MULTIPOLYGON (((-10 9, -10 109, 90 109, 90 9, -10 9)))", (Geometry) res.getObject(2));
             res.close();
-            IOMethods.exportToFile(con, "test_table", "target/area_export.shp", null, true);
+            ioMethods.exportToFile(con, "test_table", "target/area_export.shp", null, true);
             // Read this shape file to check values
             assertTrue(shpFile.exists());
-            IOMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
+            ioMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
             res = st.executeQuery("SELECT * FROM test_table");
             assertTrue(res.next());
             assertEquals(1, res.getInt(1));
@@ -298,12 +301,13 @@ public class IOMethodsTest {
 
     @Test
     public void test_linkedFile() throws Exception {
+        IOMethods ioMethods = new IOMethods();
         File shpFile = new File("target/area_export.shp");
         st.execute("DROP TABLE IF EXISTS AREA");
         st.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         st.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
         // Create a shape file using table area
-        IOMethods.exportToFile(connection, "AREA", "target/area_export.shp", null, true);
+        ioMethods.exportToFile(connection, "AREA", "target/area_export.shp", null, true);
         // Read this shape file to check values
         assertTrue(shpFile.exists());
         IOMethods.linkedFile(connection, shpFile.getAbsolutePath(), "test_table", true);
@@ -369,5 +373,15 @@ public class IOMethodsTest {
             assertGeometryEquals("POLYGON ((-10 9, -10 109, 90 109, 90 9, -10 9))", (Geometry) res.getObject(2));
             res.close();
         }
+    }
+
+    @Test
+    public void testRemoveAddDriver() {
+        IOMethods ioMethods = new IOMethods();
+        assertTrue(ioMethods.getAllExportDriverSupportedExtensions().contains("shp"));
+        DriverFunction df = ioMethods.getExportDriverFromFile(new File("test.shp"));
+        assertNotNull(df);
+        ioMethods.removeDriver(df);
+        assertFalse(ioMethods.getAllExportDriverSupportedExtensions().contains("shp"));
     }
 }
