@@ -57,6 +57,7 @@ public class Driver extends JtsWrapper {
     /**
      * Mangles the PostGIS URL to return the original PostGreSQL URL.
      *
+     * @param url
      * @return Mangled PostGIS URL
      */
     public static String mangleURL(String url) throws SQLException {
@@ -76,6 +77,7 @@ public class Driver extends JtsWrapper {
      *
      * @return true if this driver accepts the given URL.
      */
+    @Override
     public boolean acceptsURL(String url) {
         try {
             url = mangleURL(url);
