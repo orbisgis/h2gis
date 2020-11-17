@@ -87,13 +87,13 @@ public class GeographyUtilities {
      * @return an envelope
      */
     public static Envelope createEnvelopeByQuadrant(Coordinate point, double dx, double dy, int quadrant) {
-        if (dx == 0 || dy == 0) {
+        if (dx==0 || dy==0) {
             return null;
         }
-        else if (dx < 0 || dy < 0) {
+        else if (dx<0 || dy<0) {
             throw new IllegalArgumentException("Create operation does not accept negative value");
         }
-        if (quadrant < 1 || quadrant > 4) {
+        if (quadrant<1 || quadrant>4) {
             throw new IllegalArgumentException("Quadrant must range in [1,4] interval");
         }
         double pLat = point.getY();

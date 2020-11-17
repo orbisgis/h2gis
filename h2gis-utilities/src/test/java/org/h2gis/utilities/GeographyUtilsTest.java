@@ -34,9 +34,34 @@ import org.locationtech.jts.geom.GeometryFactory;
 public class GeographyUtilsTest {
 
     @Test
-    public void expandEnvelopeByMeters1() throws Exception {
+    public void createEnvelope1() throws Exception {
+        Envelope env = new Envelope(0.0, 0.008983152841195214, 0.0, 0.008983152841195214);
+        assertEquals(env, GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), 1000, 1000));
+    }
+
+    @Test
+    public void createEnvelope2() throws Exception {
         Envelope env = new Envelope(0.0, 2.0, 1.0, 2.0);
-        assertEquals(env, GeographyUtilities.expandEnvelopeByMeters(env, 0));
+        assertThrows(IllegalArgumentException.class, () -> {
+            assertEquals(env, GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), -1, 1));
+        });
+    }
+
+    @Test
+    public void createEnvelopeByQuadrant1() throws Exception {
+        Envelope env = new Envelope(0.0, -0.008983152841195214, 0.0, 0.008983152841195214);
+        assertEquals(env, GeographyUtilities.createEnvelopeByQuadrant(new Coordinate(0.0, 0.0), 1000, 1000, 2));
+    }
+
+    @Test
+    public void createEnvelopeByQuadrant2() throws Exception {
+        assertNull(GeographyUtilities.createEnvelopeByQuadrant(new Coordinate(0.0, 0.0), 0, 1000, 1));
+    }
+
+    @Test
+    public void createEnvelopeByQuadrant3() throws Exception {
+        Envelope env = GeographyUtilities.createEnvelopeByQuadrant(new Coordinate(0.0, 0.0), 1, 1, 1);
+        assertEquals(env, GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), 1, 1));
     }
 
     @Test
