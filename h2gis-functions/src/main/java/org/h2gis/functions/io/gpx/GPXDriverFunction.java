@@ -50,7 +50,7 @@ public class GPXDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"gpx"};
+        return new String[]{"gpx", "gpx.gz"};
     }
 
     @Override

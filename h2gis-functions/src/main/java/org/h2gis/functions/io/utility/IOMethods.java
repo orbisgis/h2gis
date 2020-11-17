@@ -21,16 +21,13 @@ package org.h2gis.functions.io.utility;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.functions.io.asc.AscDriverFunction;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
@@ -59,72 +56,110 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Erwan Bocher, CNRS, 2020
  * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Nicolas Fortin (Univ. Gustave Eiffel 2020)
  */
 public class IOMethods {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IOMethods.class);
+    private List<DriverFunction> driverFunctionList = new ArrayList<>();
 
     private static final String ENCODING_OPTION = "charset=";
     private static final String UTF_ENCODING = "UTF-8";
 
-    private static DriverFunction getDriverFromFile(File file) {
+    /**
+     * Create a new instance of IOMethods in order to be able to use custom file drivers
+     * Add built-in supported drivers
+     */
+    public IOMethods() {
+        driverFunctionList.add(new CSVDriverFunction());
+        driverFunctionList.add(new DBFDriverFunction());
+        driverFunctionList.add(new GeoJsonDriverFunction());
+        driverFunctionList.add(new GPXDriverFunction());
+        driverFunctionList.add(new JsonDriverFunction());
+        driverFunctionList.add(new KMLDriverFunction());
+        driverFunctionList.add(new OSMDriverFunction());
+        driverFunctionList.add(new SHPDriverFunction());
+        driverFunctionList.add(new TSVDriverFunction());
+        driverFunctionList.add(new AscDriverFunction());
+    }
+
+    /**
+     * @return Current list of supported drivers
+     */
+    public List<DriverFunction> getDriverFunctionList() {
+        return Collections.unmodifiableList(driverFunctionList);
+    }
+
+    /**
+     * @param driver Driver to add to supported file drivers
+     */
+    public void addDriver(DriverFunction driver) {
+        driverFunctionList.add(driver);
+    }
+
+    /**
+     * @param driver Driver to remove from the list of supported drivers
+     */
+    public void removeDriver(DriverFunction driver) {
+        driverFunctionList.remove(driver);
+    }
+
+    /**
+     * @return Collect all supported file extensions
+     */
+    public List<String> getAllExportDriverSupportedExtensions() {
+        List<String> extensions = new ArrayList<>();
+        for(DriverFunction f : driverFunctionList) {
+            extensions.addAll(Arrays.asList(f.getExportFormats()));
+        }
+        return extensions;
+    }
+
+    /**
+     * @return Collect all supported file extensions
+     */
+    public List<String> getAllImportDriverSupportedExtensions() {
+        List<String> extensions = new ArrayList<>();
+        for(DriverFunction f : driverFunctionList) {
+            extensions.addAll(Arrays.asList(f.getImportFormats()));
+        }
+        return extensions;
+    }
+
+    /**
+     * @param file File path
+     * @return First compatible driver
+     */
+    public DriverFunction getExportDriverFromFile(File file) {
         String path = file.getAbsolutePath();
-        String extension = "";
-        int i = path.lastIndexOf(".");
-        if (i >= 0) {
-            extension = path.substring(i + 1);
-        }
-        switch (extension.toLowerCase()) {
-            case "shp":
-                return new SHPDriverFunction();
-            case "geojson":
-                return new GeoJsonDriverFunction();
-            case "json":
-                return new JsonDriverFunction();
-            case "tsv":
-                return new TSVDriverFunction();
-            case "csv":
-                return new CSVDriverFunction();
-            case "dbf":
-                return new DBFDriverFunction();
-            case "kml":
-            case "kmz":
-                return new KMLDriverFunction();
-            case "osm":
-                return new OSMDriverFunction();
-            case "gz":
-                //Look for the following path .geojson.gz
-                String sub_extension = path.substring(0, i);
-                int subDot = sub_extension.lastIndexOf(".");
-                String subExtension = "";
-                if (subDot >= 0) {
-                    subExtension = path.substring(subDot + 1, i);
+        for(DriverFunction f : driverFunctionList) {
+            for(String ext : f.getExportFormats()) {
+                if(path.endsWith("." + ext)) {
+                    return f;
                 }
-                switch (subExtension.toLowerCase()) {
-                    case "gpx":
-                        return new GPXDriverFunction();
-                    case "geojson":
-                        return new GeoJsonDriverFunction();
-                    case "json":
-                        return new JsonDriverFunction();
-                    case "tsv":
-                        return new TSVDriverFunction();
-                    case "dbf":
-                        return new DBFDriverFunction();
-                    case "osm":
-                        return new OSMDriverFunction();
-                    default:
-                        LOGGER.error("Unsupported file format.\n"
-                                + "Supported formats are : [ geojson.gz,json.gz, tsv.gz, dbf.gz, osm.gz, gpx.gz].");
-                        return null;
-                }
-            case "gpx":
-                return new GPXDriverFunction();
-            default:
-                LOGGER.error("Unsupported file format.\n"
-                        + "Supported formats are : [shp, geojson,json, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
-                return null;
+            }
         }
+        LOGGER.error("Unsupported file format.\n"
+                + "Supported formats are : ["+String.join(",", getAllExportDriverSupportedExtensions())+"].");
+        return null;
+    }
+
+    /**
+     * @param file File path
+     * @return First compatible driver
+     */
+    public DriverFunction getImportDriverFromFile(File file) {
+        String path = file.getAbsolutePath();
+        for(DriverFunction f : driverFunctionList) {
+            for(String ext : f.getImportFormats()) {
+                if(path.endsWith(ext)) {
+                    return f;
+                }
+            }
+        }
+        LOGGER.error("Unsupported file format.\n"
+                + "Supported formats are : ["+String.join(",", getAllImportDriverSupportedExtensions())+"].");
+        return null;
     }
 
     /**
@@ -137,11 +172,11 @@ public class IOMethods {
      * @param deleteFile true to delete the file if exists
      * @throws java.sql.SQLException
      */
-    public static void exportToFile(Connection connection, String tableName,
+    public void exportToFile(Connection connection, String tableName,
             String filePath, String encoding, boolean deleteFile) throws SQLException {
         String enc = encoding;
         File fileToSave = URIUtilities.fileFromString(filePath);
-        DriverFunction driverFunction = getDriverFromFile(fileToSave);
+        DriverFunction driverFunction = getExportDriverFromFile(fileToSave);
         if (driverFunction == null) {
             throw new SQLException("Cannot find any file driver for the file." + filePath);
         }
@@ -170,10 +205,10 @@ public class IOMethods {
      * @throws java.sql.SQLException
      *
      */
-    public static void importFile(Connection connection, String filePath, String tableName, String encoding,
+    public void importFile(Connection connection, String filePath, String tableName, String encoding,
             boolean deleteTable) throws SQLException {
         File fileToImport = URIUtilities.fileFromString(filePath);
-        DriverFunction driverFunction = getDriverFromFile(fileToImport);
+        DriverFunction driverFunction = getImportDriverFromFile(fileToImport);
         if (driverFunction == null) {
             throw new SQLException("Cannot find any file driver for the file." + filePath);
         }

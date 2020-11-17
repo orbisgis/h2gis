@@ -138,7 +138,7 @@ public class OSMDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"osm","gz","bz2"};
+        return new String[]{"osm","osm.gz","osm.bz2"};
     }
 
 }

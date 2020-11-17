@@ -45,12 +45,12 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"geojson"};
+        return new String[]{"geojson", "geojson.gz"};
     }
 
     @Override
     public String[] getExportFormats() {
-        return new String[]{"geojson"};
+        return new String[]{"geojson", "geojson.gz"};
     }
 
     @Override

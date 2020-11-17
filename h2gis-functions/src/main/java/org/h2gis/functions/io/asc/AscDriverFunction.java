@@ -46,7 +46,7 @@ public class AscDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"asc"};
+        return new String[]{"asc", "asc.gz"};
     }
 
     @Override
