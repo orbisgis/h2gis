@@ -49,8 +49,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Utility methods to :
+ * 
+ * 
+ *   - import, export a file in a database (H2GIS, POSTGIS)
+ *   - export a table from another database (H2GIS, POSTGIS)
+ *   - link a file or table (H2GIS only)
  *
+ * 
  * @author Erwan Bocher, CNRS, 2020
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class IOMethods {
 
@@ -62,7 +70,7 @@ public class IOMethods {
     private static DriverFunction getDriverFromFile(File file) {
         String path = file.getAbsolutePath();
         String extension = "";
-        int i = path.lastIndexOf(46);
+        int i = path.lastIndexOf(".");
         if (i >= 0) {
             extension = path.substring(i + 1);
         }
