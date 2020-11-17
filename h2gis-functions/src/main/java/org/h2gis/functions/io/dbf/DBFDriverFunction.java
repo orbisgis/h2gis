@@ -21,7 +21,8 @@
 package org.h2gis.functions.io.dbf;
 
 import org.h2.table.Column;
-import org.h2.value.Value;
+import org.h2.util.JdbcUtils;
+import org.h2.value.TypeInfo;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
@@ -251,12 +252,10 @@ public class DBFDriverFunction implements DriverFunction {
                     try ( // Build CREATE TABLE sql request
                           Statement st = connection.createStatement()) {
                         List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
-                        for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
-                            otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
-                        }
+                        String types = getSQLColumnTypes(dbfHeader, isH2, otherCols);
                         String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                         st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
-                                getSQLColumnTypes(dbfHeader, isH2)));
+                                types));
                     }
                     try {
                         connection.setAutoCommit(false);
@@ -269,7 +268,7 @@ public class DBFDriverFunction implements DriverFunction {
                             for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
                                 preparedStatement.setObject(1, rowId + 1);
                                 for (int columnId = 0; columnId < columnCount; columnId++) {
-                                    preparedStatement.setObject(columnId + 2, dbfDriver.getField(rowId, columnId).getObject());
+                                    JdbcUtils.set(preparedStatement,columnId + 2, dbfDriver.getField(rowId, columnId), null);
                                 }
                                 preparedStatement.addBatch();
                                 batchSize++;
@@ -334,16 +333,18 @@ public class DBFDriverFunction implements DriverFunction {
      * Return SQL Columns declaration
      * @param header DBAse file header
      * @param isH2Database true if H2 database
+     * @param cols array columns that will be populated
      * @return Array of columns ex: ["id INTEGER", "len DOUBLE"]
      * @throws IOException
      */
-    public static String getSQLColumnTypes(DbaseFileHeader header, boolean isH2Database) throws IOException {
+    public static String getSQLColumnTypes(DbaseFileHeader header, boolean isH2Database, List<Column> cols) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         for(int idColumn = 0; idColumn < header.getNumFields(); idColumn++) {
             if(idColumn > 0) {
                 stringBuilder.append(", ");
             }
-            String fieldName = TableLocation.capsIdentifier(header.getFieldName(idColumn), isH2Database);
+            String columnName = header.getFieldName(idColumn);
+            String fieldName = TableLocation.capsIdentifier(columnName, isH2Database);
             stringBuilder.append(TableLocation.quoteIdentifier(fieldName,isH2Database));
             stringBuilder.append(" ");
             switch (header.getFieldType(idColumn)) {
@@ -351,10 +352,12 @@ public class DBFDriverFunction implements DriverFunction {
                 case 'l':
                 case 'L':
                     stringBuilder.append("BOOLEAN");
+                    cols.add(new Column(columnName, TypeInfo.TYPE_BOOLEAN));
                     break;
                 // (C)character (String)
                 case 'c':
                 case 'C':
+                    cols.add(new Column(columnName, TypeInfo.TYPE_VARCHAR));
                     stringBuilder.append("VARCHAR(");
                     // Append size
                     int length = header.getFieldLength(idColumn);
@@ -364,6 +367,7 @@ public class DBFDriverFunction implements DriverFunction {
                 // (D)date (Date)
                 case 'd':
                 case 'D':
+                    cols.add(new Column(columnName, TypeInfo.TYPE_DATE));
                     stringBuilder.append("DATE");
                     break;
                 // (F)floating (Double)
@@ -373,11 +377,14 @@ public class DBFDriverFunction implements DriverFunction {
                         if ((header.getFieldLength(idColumn) >= 0)
                                 && (header.getFieldLength(idColumn) < 10)) {
                             stringBuilder.append("INT4");
+                            cols.add(new Column(columnName, TypeInfo.TYPE_INTEGER));
                         } else {
                             stringBuilder.append("INT8");
+                            cols.add(new Column(columnName, TypeInfo.TYPE_BIGINT));
                         }
                     } else {
                         stringBuilder.append("FLOAT8");
+                        cols.add(new Column(columnName, TypeInfo.TYPE_DOUBLE));
                     }
                     break;
                 case 'f':
@@ -385,6 +392,7 @@ public class DBFDriverFunction implements DriverFunction {
                 case 'o':
                 case 'O': // floating point number
                     stringBuilder.append("FLOAT8");
+                    cols.add(new Column(columnName, TypeInfo.TYPE_DOUBLE));
                     break;
                 default:
                     throw new IOException("Unknown DBF field type " + header.getFieldType(idColumn));
