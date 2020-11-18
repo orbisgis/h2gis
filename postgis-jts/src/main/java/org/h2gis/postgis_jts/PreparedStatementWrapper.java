@@ -151,8 +151,6 @@ public class PreparedStatementWrapper implements PreparedStatement {
         if(x instanceof Geometry) {
             JtsGeometry geometry = new JtsGeometry((Geometry) x);
             preparedStatement.setObject(parameterIndex, geometry);
-        } else if (x instanceof PGObjectWrapper) {
-            preparedStatement.setObject(parameterIndex, ((PGObjectWrapper) x).getPGobject());
         } else {
             preparedStatement.setObject(parameterIndex, x);
         }

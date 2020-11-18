@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -793,6 +794,33 @@ public class SHPImportExportTest {
             GeometryAsserts.assertGeometryEquals("SRID=4326;MULTIPOLYGON (((0 10.000000000000007, 0.19214719596769747 11.950903220161292, 0.7612046748871375 13.826834323650909, 1.6853038769745545 15.555702330196034, 2.928932188134537 17.071067811865486, 4.444297669803992 18.314696123025463, 6.173165676349122 19.238795325112875, 8.04909677983874 19.807852804032308, 10.000000000000025 20, 11.950903220161308 19.8078528040323, 13.826834323650925 19.238795325112857, 15.555702330196048 18.314696123025435, 17.071067811865497 17.07106781186545, 18.31469612302547 15.555702330195993, 19.238795325112882 13.826834323650862, 19.80785280403231 11.950903220161244, 20 10, 19.807852804032304 8.049096779838717, 19.238795325112868 6.173165676349102, 18.314696123025453 4.444297669803978, 17.071067811865476 2.9289321881345254, 15.555702330196024 1.6853038769745474, 13.826834323650898 0.7612046748871322, 11.950903220161283 0.1921471959676957, 10 0, 8.049096779838719 0.1921471959676957, 6.173165676349103 0.7612046748871322, 4.44429766980398 1.6853038769745474, 2.9289321881345254 2.9289321881345245, 1.6853038769745474 4.444297669803978, 0.7612046748871322 6.173165676349106, 0.19214719596769392 8.049096779838722, 0 10.000000000000007)))", geom);
             res.close();
             stat.execute("DROP TABLE IF EXISTS POINTS");
+        }
+    }
+    
+    
+    @Test
+    public void testWriteReadNullValues() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute(" DROP TABLE IF EXISTS orbisgis;"
+                    + "CREATE TABLE orbisgis (the_geom geometry(point, 4326), id int, name varchar, version REAL, age FLOAT, distance DOUBLE PRECISION );"
+                    + "INSERT INTO orbisgis VALUES ('SRID=4326;POINT(10 10)'::GEOMETRY, null, null, null, null, null); ");
+            
+            stat.execute("CALL SHPWrite('target/orbisgis_null.shp','orbisgis', true);");
+            stat.execute("CALL SHPRead('target/orbisgis_null.shp', 'TABLE_ORBISGIS');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_ORBISGIS;");
+            res.next();
+            //PK field added by the driver
+            assertEquals(1,res.getObject(1));
+            //Geometry field
+            Geometry geom = (Geometry) res.getObject(2);
+            assertEquals(4326, geom.getSRID());
+            GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(10 10)", geom);
+            assertNull(res.getObject(3));
+            assertNull(res.getObject(4));
+            assertNull( res.getObject(5));
+            assertNull( res.getObject(6));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_ORBISGIS");
         }
     }
 
