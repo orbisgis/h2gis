@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
@@ -267,6 +268,18 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        if (connection == null) {
+            throw new SQLException("The connection cannot be null.\n");
+        }
+        if (tableReference == null || tableReference.isEmpty()) {
+            throw new SQLException("The table name cannot be null or empty");
+        }        
+        if (fileName == null) {
+            throw new SQLException("The file name cannot be null.\n");
+        }
+        if(progress==null){
+            progress= new EmptyProgressVisitor();
+        }        
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if (FileUtilities.isFileImportable(fileName, "shp")) {
             if (deleteTables) {
