@@ -86,7 +86,7 @@ public class GeographyUtilities {
      *        (counter-clockwise and starting from the upper right)
      * @return an envelope
      */
-    public static Envelope createEnvelopeByQuadrant(Coordinate point, double dx, double dy, int quadrant) {
+    public static Envelope createEnvelope(Coordinate point, double dx, double dy, int quadrant) {
         if (dx==0 || dy==0) {
             return null;
         }
@@ -101,10 +101,10 @@ public class GeographyUtilities {
 
         //Check if the envelope has latitude, longitude coordinates
         if (!UTMUtils.isValidLatitude((float) pLat)) {
-            throw new IllegalArgumentException("Invalid latitude"+ pLat);
+            throw new IllegalArgumentException("Invalid latitude: "+ pLat);
         }
         if (!UTMUtils.isValidLatitude((float) pLon)) {
-            throw new IllegalArgumentException("Invalid longitude"+ pLon);
+            throw new IllegalArgumentException("Invalid longitude: "+ pLon);
         }
         double dLat = computeLatitudeDistance(dy);
         double dLon = computeLongitudeDistance(dx, pLat);
@@ -123,7 +123,7 @@ public class GeographyUtilities {
                 return new Envelope(Math.max(-180, pLon), Math.min(180, pLon + dLon),
                         Math.max(-90, pLat - dLat), Math.min(90, pLat));
             default:
-                throw new IllegalArgumentException("Invalid quadrant argument:"+ quadrant);
+                throw new IllegalArgumentException("Invalid quadrant argument: "+ quadrant);
         }
     }
 
