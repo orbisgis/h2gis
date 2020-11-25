@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -799,6 +800,33 @@ public class SHPImportExportTest {
             assertGeometryBarelyEquals(geomOutPut.toString(), geom.getGeometryN(0));
             res.close();
             stat.execute("DROP TABLE IF EXISTS POINTS");
+        }
+    }
+    
+    
+    @Test
+    public void testWriteReadNullValues() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute(" DROP TABLE IF EXISTS orbisgis;"
+                    + "CREATE TABLE orbisgis (the_geom geometry(point, 4326), id int, name varchar, version REAL, age FLOAT, distance DOUBLE PRECISION );"
+                    + "INSERT INTO orbisgis VALUES ('SRID=4326;POINT(10 10)'::GEOMETRY, null, null, null, null, null); ");
+            
+            stat.execute("CALL SHPWrite('target/orbisgis_null.shp','orbisgis', true);");
+            stat.execute("CALL SHPRead('target/orbisgis_null.shp', 'TABLE_ORBISGIS');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_ORBISGIS;");
+            res.next();
+            //PK field added by the driver
+            assertEquals(1,res.getObject(1));
+            //Geometry field
+            Geometry geom = (Geometry) res.getObject(2);
+            assertEquals(4326, geom.getSRID());
+            GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(10 10)", geom);
+            assertNull(res.getObject(3));
+            assertNull(res.getObject(4));
+            assertNull( res.getObject(5));
+            assertNull( res.getObject(6));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_ORBISGIS");
         }
     }
 
