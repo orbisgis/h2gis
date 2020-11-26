@@ -877,7 +877,7 @@ public class JDBCUtilities {
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
      */
-    static boolean isIndexed(Connection connection, String tableName, String columnName) throws SQLException {
+    public static boolean isIndexed(Connection connection, String tableName, String columnName) throws SQLException {
         return isIndexed(connection, TableLocation.parse(tableName, isH2DataBase(connection)), columnName);
     }
 
@@ -890,7 +890,7 @@ public class JDBCUtilities {
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
      */
-    static boolean isIndexed(Connection connection, TableLocation table, String columnName) throws SQLException {
+    public static boolean isIndexed(Connection connection, TableLocation table, String columnName) throws SQLException {
         if (connection == null || columnName == null || table == null) {
             throw new SQLException("Unable to find an index");
         }
@@ -931,7 +931,7 @@ public class JDBCUtilities {
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
      */
-    static boolean isSpatialIndexed(Connection connection, String tableName, String columnName) throws SQLException {
+    public static boolean isSpatialIndexed(Connection connection, String tableName, String columnName) throws SQLException {
         return isSpatialIndexed(connection, TableLocation.parse(tableName, isH2DataBase(connection)), columnName);
     }
 
@@ -944,7 +944,7 @@ public class JDBCUtilities {
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
      */
-    static boolean isSpatialIndexed(Connection connection, TableLocation table, String columnName) throws SQLException {
+    public static boolean isSpatialIndexed(Connection connection, TableLocation table, String columnName) throws SQLException {
         if (connection == null || columnName == null || table == null) {
             throw new SQLException("Unable to find an index");
         }
