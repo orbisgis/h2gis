@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.utilities.FileUtilities;
 
 /**
@@ -174,6 +175,18 @@ public class CSVDriverFunction implements DriverFunction{
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        if (connection == null) {
+            throw new SQLException("The connection cannot be null.\n");
+        }
+        if (tableReference == null || tableReference.isEmpty()) {
+            throw new SQLException("The table name cannot be null or empty");
+        }
+        if (fileName == null) {
+            throw new SQLException("The file name cannot be null.\n");
+        }
+        if (progress == null) {
+            progress = new EmptyProgressVisitor();
+        }
         if (FileUtilities.isFileImportable(fileName, "csv")) {
             if(deleteTables) {
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);

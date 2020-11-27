@@ -717,7 +717,7 @@ public class JDBCUtilities {
 
     /**
      * Create table ddl command
-     *
+     * TODO :  It supports only H2GIS and PostGIS databases
      * @param connection
      * @param sourceTableName the name of the source table
      * @param targetTableName the table of the target table used after 

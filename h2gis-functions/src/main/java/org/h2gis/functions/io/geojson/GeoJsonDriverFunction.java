@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  * GeoJSON driver to import a GeoJSON file and export a spatial table in a
@@ -44,12 +45,12 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"geojson"};
+        return new String[]{"geojson", "geojson.gz"};
     }
 
     @Override
     public String[] getExportFormats() {
-        return new String[]{"geojson"};
+        return new String[]{"geojson", "geojson.gz"};
     }
 
     @Override
@@ -90,6 +91,18 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        if (connection == null) {
+            throw new SQLException("The connection cannot be null.\n");
+        }
+        if (tableReference == null || tableReference.isEmpty()) {
+            throw new SQLException("The table name cannot be null or empty");
+        }
+        if (fileName == null) {
+            throw new SQLException("The file name cannot be null.\n");
+        }
+        if (progress == null) {
+            progress = new EmptyProgressVisitor();
+        }
         GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, fileName, options, deleteTables);
         geoJsonReaderDriver.read(progress, tableReference);
     }
