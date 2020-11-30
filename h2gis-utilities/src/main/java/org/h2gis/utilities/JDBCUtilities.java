@@ -996,8 +996,8 @@ public class JDBCUtilities {
             throw new SQLException("Unable to create an index");
         }
         boolean isH2 = isH2DataBase(connection);
-        connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName +
-                " ON " + table.toString(isH2) + " USING BTREE (" + TableLocation.capsIdentifier(columnName, isH2) + ")");
+        connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName +
+                " ON " + table.toString(isH2) + " (" + TableLocation.capsIdentifier(columnName, isH2) + ")");
         return true;
     }
 
@@ -1027,8 +1027,8 @@ public class JDBCUtilities {
         }
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName +
-                    " ON " + table.toString(isH2) + " USING RTREE (" + TableLocation.capsIdentifier(columnName, isH2)  + ")");
+            connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName +
+                    " ON " + table.toString(isH2) + " (" + TableLocation.capsIdentifier(columnName, isH2)  + ")");
         } else {
             connection.createStatement().execute("CREATE INDEX IF NOT EXISTS "+  table.toString(isH2) + "_" + columnName +
                     " ON "  + table.toString(isH2)  + " USING GIST (" + TableLocation.capsIdentifier(columnName, isH2)  + ")");
