@@ -318,7 +318,7 @@ public class JDBCUtilitiesTest {
         st.execute("DROP TABLE IF EXISTS TEST_INDEX");
         st.execute("CREATE TABLE TEST_INDEX(no_idx GEOMETRY, idx GEOMETRY, spatial_idx GEOMETRY)");
         st.execute("CREATE INDEX ON TEST_INDEX(idx)");
-        st.execute("CREATE INDEX ON TEST_INDEX USING RTREE(spatial_idx)");
+        st.execute("CREATE SPATIAL INDEX ON TEST_INDEX(spatial_idx)");
 
         String tableName = "test_index";
         TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
@@ -335,7 +335,7 @@ public class JDBCUtilitiesTest {
         st.execute("DROP TABLE IF EXISTS TEST_INDEX");
         st.execute("CREATE TABLE TEST_INDEX(no_idx GEOMETRY, idx GEOMETRY, spatial_idx GEOMETRY)");
         st.execute("CREATE INDEX ON TEST_INDEX(idx)");
-        st.execute("CREATE INDEX ON TEST_INDEX USING RTREE(spatial_idx)");
+        st.execute("CREATE SPATIAL INDEX ON TEST_INDEX(spatial_idx)");
 
         String tableName = "test_index";
         TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
@@ -385,7 +385,7 @@ public class JDBCUtilitiesTest {
         st.execute("DROP TABLE IF EXISTS TEST_INDEX");
         st.execute("CREATE TABLE TEST_INDEX(no_idx GEOMETRY, idx GEOMETRY, spatial_idx GEOMETRY)");
         st.execute("CREATE INDEX ON TEST_INDEX(idx)");
-        st.execute("CREATE INDEX ON TEST_INDEX USING RTREE(spatial_idx)");
+        st.execute("CREATE SPATIAL INDEX ON TEST_INDEX(spatial_idx)");
 
         String tableName = "test_index";
         TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
@@ -401,7 +401,7 @@ public class JDBCUtilitiesTest {
 
 
         st.execute("CREATE INDEX ON TEST_INDEX(idx)");
-        st.execute("CREATE INDEX ON TEST_INDEX USING RTREE(spatial_idx)");
+        st.execute("CREATE SPATIAL INDEX ON TEST_INDEX(spatial_idx)");
 
         assertTrue(JDBCUtilities.isIndexed(connection, table, "idx"));
         assertTrue(JDBCUtilities.isIndexed(connection, table, "spatial_idx"));
@@ -414,7 +414,7 @@ public class JDBCUtilitiesTest {
 
 
         st.execute("CREATE INDEX ON TEST_INDEX(idx)");
-        st.execute("CREATE INDEX ON TEST_INDEX USING RTREE(spatial_idx)");
+        st.execute("CREATE SPATIAL INDEX ON TEST_INDEX(spatial_idx)");
 
         assertTrue(JDBCUtilities.isIndexed(connection, table, "idx"));
         assertTrue(JDBCUtilities.isIndexed(connection, table, "spatial_idx"));
