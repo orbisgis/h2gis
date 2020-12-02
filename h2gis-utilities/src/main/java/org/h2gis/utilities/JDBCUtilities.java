@@ -868,6 +868,293 @@ public class JDBCUtilities {
             builder.append(")");
         }
         return builder.toString();
-    } 
-  
+    }
+
+    /**
+     * Returns true if the given column name from the given table is indexed, return false otherwise.
+     *
+     * @param connection {@link Connection} containing the table to check.
+     * @param tableName  Name of the table to check.
+     * @param columnName Name of the column to check.
+     * @return True if the given column is indexed, false otherwise.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static boolean isIndexed(Connection connection, String tableName, String columnName) throws SQLException {
+        return isIndexed(connection, TableLocation.parse(tableName, isH2DataBase(connection)), columnName);
+    }
+
+    /**
+     * Returns true if the given column name from the given table is indexed, return false otherwise.
+     *
+     * @param connection {@link Connection} containing the table to check.
+     * @param table      {@link TableLocation} of the table to check.
+     * @param columnName Name of the column to check.
+     * @return True if the given column is indexed, false otherwise.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static boolean isIndexed(Connection connection, TableLocation table, String columnName) throws SQLException {
+        if (connection == null || columnName == null || table == null) {
+            throw new SQLException("Unable to find an index");
+        }
+        boolean isH2 = isH2DataBase(connection);
+        if (isH2) {
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
+            ps.setObject(1, table.getTable());
+            ps.setObject(2, table.getSchema("PUBLIC"));
+            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } else {
+            String query =  "SELECT  cls.relname, am.amname " +
+                    "FROM  pg_class cls " +
+                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                    " where attname = ? and attrelid in " +
+                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
+                    "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setObject(1, columnName);
+            ps.setObject(2, table.getSchema("public"));
+            ps.setObject(3, table.getTable());
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        }
+    }
+
+    /**
+     * Returns true if the given column name from the given table is indexed, return false otherwise.
+     *
+     * @param connection {@link Connection} containing the table to check.
+     * @param tableName  Name of the table to check.
+     * @param columnName Name of the column to check.
+     * @return True if the given column is indexed, false otherwise.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static boolean isSpatialIndexed(Connection connection, String tableName, String columnName) throws SQLException {
+        return isSpatialIndexed(connection, TableLocation.parse(tableName, isH2DataBase(connection)), columnName);
+    }
+
+    /**
+     * Returns true if the given column name from the given table is indexed, return false otherwise.
+     *
+     * @param connection {@link Connection} containing the table to check.
+     * @param table      {@link TableLocation} of the table to check.
+     * @param columnName Name of the column to check.
+     * @return True if the given column is indexed, false otherwise.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static boolean isSpatialIndexed(Connection connection, TableLocation table, String columnName) throws SQLException {
+        if (connection == null || columnName == null || table == null) {
+            throw new SQLException("Unable to find an index");
+        }
+        boolean isH2 = isH2DataBase(connection);
+        if (isH2) {
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
+            ps.setObject(1, table.getTable());
+            ps.setObject(2, table.getSchema("PUBLIC"));
+            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                if(rs.getString("INDEX_TYPE_NAME").contains("SPATIAL")){
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            String query =  "SELECT  cls.relname, am.amname " +
+                    "FROM  pg_class cls " +
+                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                    " where attname = ? and attrelid in " +
+                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
+                    "and a.indexname = b.relname)) and am.amname = 'gist' ;";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setObject(1, columnName);
+            ps.setObject(2, table.getSchema("public"));
+            ps.setObject(3, table.getTable());
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        }
+    }
+
+    /**
+     * Create an index on the given column of the given table on the given connection.
+     * @param connection Connection to access to the desired table.
+     * @param table      Table containing the column to index.
+     * @param columnName Name of the column to index.
+     * @return True if the column have been indexed, false otherwise.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static boolean createIndex(Connection connection, TableLocation table, String columnName) throws SQLException {
+        if(connection == null || table == null || columnName == null){
+            throw new SQLException("Unable to create an index");
+        }
+        boolean isH2 = isH2DataBase(connection);
+        connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName +
+                " ON " + table.toString(isH2) + " (" + TableLocation.capsIdentifier(columnName, isH2) + ")");
+        return true;
+    }
+
+    /**
+     * Create an index on the given column of the given table on the given connection.
+     * @param connection Connection to access to the desired table.
+     * @param table      Name of the table containing the column to index.
+     * @param columnName Name of the column to index.
+     * @return True if the column have been indexed, false otherwise.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static boolean createIndex(Connection connection, String table, String columnName) throws SQLException {
+        return createIndex(connection, TableLocation.parse(table, isH2DataBase(connection)), columnName);
+    }
+
+    /**
+     * Create a spatial index on the given column of the given table on the given connection.
+     * @param connection Connection to access to the desired table.
+     * @param table      Table containing the column to index.
+     * @param columnName Name of the column to index.
+     * @return True if the column have been indexed, false otherwise.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static boolean createSpatialIndex(Connection connection, TableLocation table, String columnName) throws SQLException {
+        if(connection == null || table == null || columnName == null){
+            throw new SQLException("Unable to create a spatial index");
+        }
+        boolean isH2 = isH2DataBase(connection);
+        if (isH2) {
+            connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName +
+                    " ON " + table.toString(isH2) + " (" + TableLocation.capsIdentifier(columnName, isH2)  + ")");
+        } else {
+            connection.createStatement().execute("CREATE INDEX IF NOT EXISTS "+  table.toString(isH2) + "_" + columnName +
+                    " ON "  + table.toString(isH2)  + " USING GIST (" + TableLocation.capsIdentifier(columnName, isH2)  + ")");
+        }
+        return true;
+    }
+
+    /**
+     * Create a spatial index on the given column of the given table on the given connection.
+     * @param connection Connection to access to the desired table.
+     * @param table      Name of the table containing the column to index.
+     * @param columnName Name of the column to index.
+     * @return True if the column have been indexed, false otherwise.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static boolean createSpatialIndex(Connection connection, String table, String columnName) throws SQLException {
+        return createSpatialIndex(connection, TableLocation.parse(table, isH2DataBase(connection)), columnName);
+    }
+
+    /**
+     * Drop the index of the given column of the given table on yhe given connection.
+     * @param connection Connection to access to the desired table.
+     * @param table      Table containing the column to drop index.
+     * @param columnName Name of the column to drop index.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static void dropIndex(Connection connection, TableLocation table, String columnName) throws SQLException {
+        if(connection == null || table == null || columnName == null){
+            throw new SQLException("Unable to drop index");
+        }
+        List<String> indexes = new ArrayList<>();
+        boolean isH2 = isH2DataBase(connection);
+        if (isH2) {
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
+            ps.setObject(1, table.getTable());
+            ps.setObject(2, table.getSchema("PUBLIC"));
+            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                indexes.add(rs.getString("INDEX_NAME"));
+            }
+        }else {
+            PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name " +
+                    "FROM  pg_class cls " +
+                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                    " where attname = ? and attrelid in " +
+                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
+                    "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
+            ps.setObject(1, columnName);
+            ps.setObject(2, table.getSchema("public"));
+            ps.setObject(3, table.getTable());
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                indexes.add(rs.getString("index_name"));
+            }
+        }
+        for (String index : indexes) {
+            connection.createStatement().execute("DROP INDEX IF EXISTS " + index);
+        }
+    }
+
+    /**
+     * Drop the index of the given column of the given table on yhe given connection.
+     * @param connection Connection to access to the desired table.
+     * @param table      Name of the table containing the column to drop index.
+     * @param columnName Name of the column to drop index.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static void dropIndex(Connection connection, String table, String columnName) throws SQLException {
+        dropIndex(connection, TableLocation.parse(table, isH2DataBase(connection)), columnName);
+    }
+
+
+    /**
+     * Drop the all the indexes of the given table on yhe given connection.
+     * @param connection Connection to access to the desired table.
+     * @param table      Table containing the column to drop index.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static void dropIndex(Connection connection, TableLocation table) throws SQLException {
+        if(connection == null || table == null){
+            throw new SQLException("Unable to drop index");
+        }
+        List<String> indexes = new ArrayList<>();
+        boolean isH2 = isH2DataBase(connection);
+        if (isH2) {
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=?;");
+            ps.setObject(1, table.getTable());
+            ps.setObject(2, table.getSchema("PUBLIC"));
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                indexes.add(rs.getString("INDEX_NAME"));
+            }
+        }else {
+            PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name " +
+                    "FROM  pg_class cls " +
+                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                    " where attrelid in " +
+                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
+                    "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
+            ps.setObject(1, table.getSchema("public"));
+            ps.setObject(2, table.getTable());
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                indexes.add(rs.getString("index_name"));
+            }
+        }
+        for (String index : indexes) {
+            connection.createStatement().execute("DROP INDEX IF EXISTS " + index);
+        }
+    }
+
+    /**
+     * Drop the all the indexes of the given table on yhe given connection.
+     * @param connection Connection to access to the desired table.
+     * @param table      Name of the table containing the column to drop index.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    public static void dropIndex(Connection connection, String table) throws SQLException {
+        dropIndex(connection, TableLocation.parse(table, isH2DataBase(connection)));
+    }
 }
