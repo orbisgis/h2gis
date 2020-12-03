@@ -751,7 +751,8 @@ public class JDBCUtilities {
                     int columnType = metadata.getColumnType(i);
                     if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
                         int precision = metadata.getPrecision(i);
-                        if (precision == Integer.MAX_VALUE) {
+                        //POSTGRESQL VARCHAR MAX SIZE
+                        if (precision > 10485760) {
                             builder.append(columnName).append(" ").append(columnTypeName);
                         } else {
                             builder.append(columnName).append(" ").append(columnTypeName);
