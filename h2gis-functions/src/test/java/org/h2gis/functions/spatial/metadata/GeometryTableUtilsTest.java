@@ -884,7 +884,13 @@ public class GeometryTableUtilsTest {
         ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
                 ddl);
-    }
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar("+ Integer.MAX_VALUE+ "))");       
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME VARCHAR)",
+                ddl);
+    }   
+  
 
     @Test
     public void testGetEnvelopeFromGeometryFields() throws SQLException, ParseException {

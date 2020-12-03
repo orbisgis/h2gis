@@ -43,6 +43,7 @@ import org.h2gis.utilities.wrapper.DataSourceWrapper;
 public class JDBCUtilities {
 
     public static final String H2_DRIVER_PACKAGE_NAME = "org.h2.jdbc";
+    public static final int POSTGRES_MAX_VARCHAR= 10485760;
 
     public enum TABLE_TYPE {
         TABLE, VIEW, FOREIGN_TABLE, TEMPORARY, TABLE_LINK, UNKOWN;
@@ -751,7 +752,8 @@ public class JDBCUtilities {
                     int columnType = metadata.getColumnType(i);
                     if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
                         int precision = metadata.getPrecision(i);
-                        if (precision == Integer.MAX_VALUE) {
+                        //POSTGRESQL VARCHAR MAX SIZE
+                        if (precision > POSTGRES_MAX_VARCHAR) {
                             builder.append(columnName).append(" ").append(columnTypeName);
                         } else {
                             builder.append(columnName).append(" ").append(columnTypeName);
