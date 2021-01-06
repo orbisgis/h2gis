@@ -898,13 +898,13 @@ public class JDBCUtilities {
         }
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.INDEX_NAME=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS " +
+                    "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? " +
+                    "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? " +
+                    "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
             ps.setObject(1, table.getTable());
             ps.setObject(2, table.getSchema("PUBLIC"));
-            ps.setObject(3, getIndexName(connection, table, columnName, isH2));
+            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
             ResultSet rs = ps.executeQuery();
             return rs.next();
         } else {
@@ -952,20 +952,24 @@ public class JDBCUtilities {
         }
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.INDEX_NAME=?;");
-            ps.setObject(1, table.getTable());
-            ps.setObject(2, table.getSchema("PUBLIC"));
-            ps.setObject(3, getIndexName(connection, table, columnName, isH2));
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
+                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?"
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.INDEX_NAME "
+                    + "IN (SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES  WHERE "
+                    + "INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? "
+                    + "AND  INFORMATION_SCHEMA.INDEXES.TABLE_NAME= ?  "
+                    + " AND INFORMATION_SCHEMA.INDEXES.INDEX_TYPE_NAME='SPATIAL INDEX')");
+            String tableName = table.getTable();
+            String schemaName = table.getSchema("PUBLIC");
+            ps.setObject(1, tableName);
+            ps.setObject(2, schemaName);
+            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
+            ps.setObject(4, schemaName);
+            ps.setObject(5, tableName);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                if(rs.getString("INDEX_TYPE_NAME").contains("SPATIAL")){
-                    return true;
-                }
-            }
-            return false;
+            return rs.next();
         } else {
             String query =  "SELECT  cls.relname, am.amname " +
                     "FROM  pg_class cls " +
@@ -1156,20 +1160,5 @@ public class JDBCUtilities {
      */
     public static void dropIndex(Connection connection, String table) throws SQLException {
         dropIndex(connection, TableLocation.parse(table, isH2DataBase(connection)));
-    }
-
-    private static String getIndexName(Connection connection, TableLocation table, String columnName, boolean isH2) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS " +
-                "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? " +
-                "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? " +
-                "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
-        ps.setObject(1, table.getTable());
-        ps.setObject(2, table.getSchema("PUBLIC"));
-        ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
-        ResultSet rs = ps.executeQuery();
-        if(rs.next()){
-            return rs.getString("INDEX_NAME");
-        }
-        return null;
     }
 }
