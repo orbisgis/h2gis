@@ -25,9 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.h2.util.StringUtils;
-import org.h2.value.Value;
-import org.h2.value.ValueArray;
-import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.TableLocation;

@@ -23,10 +23,7 @@ package org.h2gis.functions.spatial.convert;
 import org.h2.value.ValueGeometry;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.GeometryMetaData;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKBReader;
 
 import java.io.IOException;
 import java.sql.SQLException;

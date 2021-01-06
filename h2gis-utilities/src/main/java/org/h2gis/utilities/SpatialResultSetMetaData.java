@@ -51,5 +51,5 @@ public interface SpatialResultSetMetaData extends ResultSetMetaData {
      *
      * @throws SQLException
      */
-    public int getFirstGeometryFieldIndex() throws SQLException;
+    int getFirstGeometryFieldIndex() throws SQLException;
 }

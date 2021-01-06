@@ -22,7 +22,6 @@ package org.h2gis.functions.spatial.processing;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.spatial.properties.ST_CoordDim;
 import org.junit.jupiter.api.*;

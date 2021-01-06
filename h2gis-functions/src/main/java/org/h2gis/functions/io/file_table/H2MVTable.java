@@ -39,7 +39,6 @@ import org.h2.table.IndexColumn;
 import org.h2.table.TableType;
 import org.h2.util.MathUtils;
 import org.h2.value.TypeInfo;
-import org.h2.value.Value;
 import org.h2gis.api.FileDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

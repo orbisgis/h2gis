@@ -98,8 +98,8 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
             if (inputSRID == 0) {
                 throw new SQLException("Cannot find a CRS");
             } else {
-                CoordinateReferenceSystem inputCRS = crsf.getCRS(srr.getRegistryName() + ":" + String.valueOf(inputSRID));
-                CoordinateReferenceSystem targetCRS = crsf.getCRS(srr.getRegistryName() + ":" + String.valueOf(codeEpsg));
+                CoordinateReferenceSystem inputCRS = crsf.getCRS(srr.getRegistryName() + ":" + inputSRID);
+                CoordinateReferenceSystem targetCRS = crsf.getCRS(srr.getRegistryName() + ":" + codeEpsg);
                 if (inputCRS.equals(targetCRS)) {
                     return geom;
                 }

@@ -519,7 +519,6 @@ public class GeometryMetaData {
                 geometry_type = "POLYGONZ";
                 hasz_ = true;
                 hasm_ = false;
-                ;
                 break;
             case "MULTIPOINTZ":
                 dimension_ = 3;
