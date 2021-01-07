@@ -1158,6 +1158,16 @@ public class JDBCUtilities {
         dropIndex(connection, TableLocation.parse(table, isH2DataBase(connection)));
     }
 
+    /**
+     * Return the name of the index of the given column of the given table. If there is no index, return null.
+     *
+     * @param connection Connection to the database.
+     * @param table      Table location of the column.
+     * @param columnName Name of the column.
+     * @param isH2       True if the database is H2, false otherwise.
+     * @return           The name of the column index. Null if there is no index.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
     private static String getIndexName(Connection connection, TableLocation table, String columnName, boolean isH2) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS " +
                 "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? " +
