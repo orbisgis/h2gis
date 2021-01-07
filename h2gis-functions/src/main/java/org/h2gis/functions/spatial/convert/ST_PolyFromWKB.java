@@ -66,9 +66,6 @@ public class ST_PolyFromWKB extends DeterministicScalarFunction {
         if(bytes==null) {
             return null;
         }
-        if (bytes == null) {
-            return null;
-        }
         ValueGeometry valueGeometry = ValueGeometry.get(bytes);
         if (valueGeometry.getTypeAndDimensionSystem() != GeometryTypeCodes.POLYGON) {
             throw new SQLException("Provided WKB is not a POINT.");

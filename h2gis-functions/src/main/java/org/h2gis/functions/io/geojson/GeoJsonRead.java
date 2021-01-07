@@ -84,19 +84,17 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
      */
     public static void importTable(Connection connection, String fileName, Value option) throws IOException, SQLException {
         String tableReference = null;
-        boolean deleteTable = false;
         if (option instanceof ValueBoolean) {
-            deleteTable = option.getBoolean();
             final String name = URIUtilities.fileFromString(fileName).getName();
             String tableName = name.substring(0, name.lastIndexOf(".")).replace(".", "_").toUpperCase();
             if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-                importTable(connection, fileName, tableName, null, deleteTable);
+                importTable(connection, fileName, tableName, null, option.getBoolean());
             } else {
                 throw new SQLException("The file name contains unsupported characters");
             }
         } else if (option instanceof ValueVarchar) {
             tableReference = option.getString();
-            importTable(connection, fileName, tableReference, null, deleteTable);
+            importTable(connection, fileName, tableReference, null, false);
         } else if (!(option instanceof ValueNull)) {
             throw new SQLException("Supported optional parameter is boolean or varchar");
         }

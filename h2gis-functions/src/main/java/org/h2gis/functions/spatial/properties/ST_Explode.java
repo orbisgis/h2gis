@@ -32,14 +32,12 @@ import org.locationtech.jts.geom.*;
 import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.utilities.GeometryMetaData;
+
 import org.h2gis.utilities.GeometryTableUtilities;
-import org.h2gis.utilities.Tuple;
 
 /**
  * This table function explode Geometry Collection into multiple geometries

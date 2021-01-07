@@ -856,9 +856,7 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeObjectFieldStart("crs");
             jsonGenerator.writeStringField("type", "name");
             jsonGenerator.writeObjectFieldStart("properties");
-            StringBuilder sb = new StringBuilder("urn:ogc:def:crs:");
-            sb.append(authorityAndSRID[0]).append("::").append(authorityAndSRID[1]);
-            jsonGenerator.writeStringField("name", sb.toString());
+            jsonGenerator.writeStringField("name", "urn:ogc:def:crs:" + authorityAndSRID[0] + "::" + authorityAndSRID[1]);
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }

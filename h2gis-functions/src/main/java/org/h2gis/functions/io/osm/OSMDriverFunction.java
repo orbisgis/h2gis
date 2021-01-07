@@ -22,7 +22,6 @@ package org.h2gis.functions.io.osm;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
 
 import java.io.File;
 import java.io.IOException;

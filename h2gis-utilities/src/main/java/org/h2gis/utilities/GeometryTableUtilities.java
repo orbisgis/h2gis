@@ -28,7 +28,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -633,16 +632,13 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static Geometry getEnvelope(ResultSet resultSet, String geometryColumnName) throws SQLException {
-        Envelope aggregatedEnvelope = null;
-        int firstSRID;
         //First one
         resultSet.next();
         Geometry geom = (Geometry) resultSet.getObject(geometryColumnName);
-        firstSRID = geom.getSRID();
-        if (aggregatedEnvelope != null) {
-            aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
-        } else {
-            aggregatedEnvelope = geom.getEnvelopeInternal();
+        int firstSRID = geom.getSRID();
+        Envelope aggregatedEnvelope  = geom.getEnvelopeInternal();
+        if(aggregatedEnvelope==null){
+            aggregatedEnvelope = new Envelope();
         }
         //Next
         while (resultSet.next()) {
@@ -755,8 +751,7 @@ public class GeometryTableUtilities {
         int srid = 0;
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema(),
                 tableLocation.getTable(), geometryColumnName)) {
-            srid = 0;
-            while (geomResultSet.next()) {
+             while (geomResultSet.next()) {
                 srid = geomResultSet.getInt("srid");
                 break;
             }
@@ -778,7 +773,6 @@ public class GeometryTableUtilities {
         int srid = 0;
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema(),
                 tableLocation.getTable())) {
-            srid = 0;
             while (geomResultSet.next()) {
                 srid = geomResultSet.getInt("srid");
                 break;
@@ -1329,12 +1323,11 @@ public class GeometryTableUtilities {
                     return false;
                 }
                 fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
-                StringBuilder geometrySignature = new StringBuilder("GEOMETRY");
-                geometrySignature.append("(").append(metadata.geometryType);
-                geometrySignature.append(",").append(srid).append(")");
 
                 StringBuilder query = new StringBuilder("ALTER TABLE ").append(tableName).append(" ALTER COLUMN ").append(fieldName);
-                query.append(" TYPE ").append(geometrySignature.toString()).append(" USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(")");
+                String geometrySignature = "GEOMETRY" + "(" + metadata.geometryType +
+                        "," + srid + ")";
+                query.append(" TYPE ").append(geometrySignature).append(" USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(")");
                 connection.createStatement().execute(query.toString());
                 return true;
             }else{

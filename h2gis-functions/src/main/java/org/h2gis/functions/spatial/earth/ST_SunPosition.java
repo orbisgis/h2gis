@@ -26,7 +26,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * Compute the sun position and return a new coordinate with x = azimuth and y = altitude

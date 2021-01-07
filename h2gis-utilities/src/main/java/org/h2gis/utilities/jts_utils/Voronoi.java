@@ -448,7 +448,7 @@ public class Voronoi {
 
     /** Triangle vertex and neighbors information.*/
     public static class Triple {
-        private final int values[] = new int[3];
+        private final int[] values = new int[3];
 
         public Triple() {
             values[0] = -1;

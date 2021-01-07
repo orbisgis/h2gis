@@ -30,7 +30,6 @@ import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableType;
 import org.h2.value.TypeInfo;
-import org.h2.value.Value;
 
 import java.util.ArrayList;
 
