@@ -319,7 +319,6 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE TABLE TEST_INDEX(no_idx GEOMETRY, idx GEOMETRY, spatial_idx GEOMETRY)");
         st.execute("CREATE INDEX ON TEST_INDEX(idx)");
         st.execute("CREATE SPATIAL INDEX ON TEST_INDEX (spatial_idx)");
-
         String tableName = "test_index";
         TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
         assertFalse(JDBCUtilities.isIndexed(connection, tableName, "no_idx"));
