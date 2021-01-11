@@ -23,6 +23,8 @@ package org.h2gis.functions.spatial.topology;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.*;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -241,10 +243,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final TableLocation nodesName = TableUtilities.suffixTableLocation(tableName, NODES_SUFFIX);
         final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX); 
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         if(deleteTables){            
             try (Statement stmt = connection.createStatement()) {
                 StringBuilder sb = new StringBuilder("drop table if exists ");
-                sb.append(nodesName.toString(isH2)).append(",").append(edgesName.toString(isH2));
+                sb.append(nodesName.toString(dbType)).append(",").append(edgesName.toString(dbType));
                 stmt.execute(sb.toString());
             }
         }

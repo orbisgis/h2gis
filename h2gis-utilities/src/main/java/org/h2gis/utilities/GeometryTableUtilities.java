@@ -30,6 +30,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -168,8 +170,9 @@ public class GeometryTableUtilities {
     public static GeometryMetaData getMetaData(Connection connection, TableLocation geometryTable, String geometryColumnName) throws SQLException {
         GeometryMetaData geometryMetaData = null;
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema(),
-                geometryTable.getTable(), TableLocation.quoteIdentifier(geometryColumnName, isH2))) {
+                geometryTable.getTable(), TableLocation.quoteIdentifier(geometryColumnName, dbType))) {
             while (geomResultSet.next()) {
                 if (geometryColumnName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(geometryColumnName)) {
                     int dimension_ = geomResultSet.getInt("COORD_DIMENSION");
@@ -591,8 +594,9 @@ public class GeometryTableUtilities {
      */
     public static boolean hasGeometryColumn(Connection connection, TableLocation tableLocation) throws SQLException {
         Statement statement = connection.createStatement();
+        final DBTypes dbType = DBUtils.getDBType(connection);
         try (ResultSet resultSet = statement.executeQuery(
-                "SELECT * FROM " + tableLocation.toString(JDBCUtilities.isH2DataBase(connection)) + " WHERE 1=0;")) {
+                "SELECT * FROM " + tableLocation.toString(dbType) + " WHERE 1=0;")) {
             ResultSetMetaData meta = resultSet.getMetaData();
             int columnCount = meta.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
@@ -694,6 +698,7 @@ public class GeometryTableUtilities {
         Geometry result;
         int srid = getSRID(connection, tableLocation, geometryColumnName);
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         if (!isH2) {
             StringBuilder query = new StringBuilder("SELECT  ST_EstimatedExtent(");
             if (!tableLocation.getSchema().isEmpty()) {
@@ -714,7 +719,7 @@ public class GeometryTableUtilities {
             }
         } else {
             StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
-            query.append(tableLocation.toString(isH2)).append("','").append(geometryColumnName).append("')");
+            query.append(tableLocation.toString(dbType)).append("','").append(geometryColumnName).append("')");
             try (ResultSet rs = connection.createStatement().executeQuery(query.toString())) {
                 if (rs.next()) {
                     result = (Geometry) rs.getObject(1);
@@ -1025,6 +1030,7 @@ public class GeometryTableUtilities {
                     + "cannot be computed");
         }
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         int columnCount = 0;
         StringBuilder mainSelect = new StringBuilder("SELECT ");
         StringBuilder subSELECT = new StringBuilder("SELECT ");
@@ -1060,7 +1066,7 @@ public class GeometryTableUtilities {
             }
         }
         mainSelect.append(" FROM ");
-        subSELECT.append(" FROM ").append(location.toString(isH2)).append(" ");
+        subSELECT.append(" FROM ").append(location.toString(dbType)).append(" ");
         if (filter != null && !filter.isEmpty()) {
             subSELECT.append(filter);
         }
@@ -1318,7 +1324,8 @@ public class GeometryTableUtilities {
     public static boolean alterSRID(Connection connection, TableLocation tableLocation, String geometryColumnName, int srid) throws SQLException {
         if (srid >= 0) {
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            String tableName = tableLocation.toString(isH2);
+            final DBTypes dbType = DBUtils.getDBType(connection);
+            String tableName = tableLocation.toString(dbType);
             if (tableName.isEmpty()) {
                 throw new SQLException("The table name cannot be empty");
             }
@@ -1328,7 +1335,7 @@ public class GeometryTableUtilities {
                 if(metadata.getSRID()==srid){
                     return false;
                 }
-                fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
+                fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
                 StringBuilder geometrySignature = new StringBuilder("GEOMETRY");
                 geometrySignature.append("(").append(metadata.geometryType);
                 geometrySignature.append(",").append(srid).append(")");
@@ -1366,7 +1373,7 @@ public class GeometryTableUtilities {
                     ,schema.isEmpty()?"PUBLIC":schema,tableName, fieldName, fieldName);
             try (ResultSet rs = connection.createStatement().executeQuery(query)) {
                 if (rs.next()) {
-                    return  rs.getString("INDEX_TYPE_NAME").toString().contains("SPATIAL");
+                    return  rs.getString("INDEX_TYPE_NAME").contains("SPATIAL");
                 }
             }
         }

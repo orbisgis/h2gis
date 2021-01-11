@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.h2gis.utilities.FileUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * @author Erwan Bocher, CNRS
@@ -116,7 +118,8 @@ public class DBFDriverFunction implements DriverFunction {
 
         } else {
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                String tableName = TableLocation.parse(tableReference, isH2).toString(isH2);
+                final DBTypes dbType = DBUtils.getDBType(connection);
+                String tableName = TableLocation.parse(tableReference, isH2).toString(dbType);
                 int recordCount = JDBCUtilities.getRowCount(connection, tableName);                
                 // Read table content
                 Statement st = connection.createStatement();
@@ -234,15 +237,16 @@ public class DBFDriverFunction implements DriverFunction {
         }
         if (FileUtilities.isFileImportable(fileName, "dbf")) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             if (deleteTables) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(isH2));
+                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(dbType));
                 stmt.close();
             }
             DBFDriver dbfDriver = new DBFDriver();
             dbfDriver.initDriverFromFile(fileName, options);
-            String parsedTable = requestedTable.toString(isH2);
+            String parsedTable = requestedTable.toString(dbType);
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             ProgressVisitor copyProgress = progress.subProcess((int) (dbfDriver.getRowCount() / BATCH_MAX_SIZE));
             if (dbfHeader.getNumFields() == 0) {
@@ -252,7 +256,7 @@ public class DBFDriverFunction implements DriverFunction {
                     try ( // Build CREATE TABLE sql request
                           Statement st = connection.createStatement()) {
                         List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
-                        String types = getSQLColumnTypes(dbfHeader, isH2, otherCols);
+                        String types = getSQLColumnTypes(dbfHeader, isH2, DBUtils.getDBType(connection), otherCols);
                         String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                         st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
                                 types));
@@ -337,7 +341,7 @@ public class DBFDriverFunction implements DriverFunction {
      * @return Array of columns ex: ["id INTEGER", "len DOUBLE"]
      * @throws IOException
      */
-    public static String getSQLColumnTypes(DbaseFileHeader header, boolean isH2Database, List<Column> cols) throws IOException {
+    public static String getSQLColumnTypes(DbaseFileHeader header, boolean isH2Database, DBTypes dbTypes, List<Column> cols) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         for(int idColumn = 0; idColumn < header.getNumFields(); idColumn++) {
             if(idColumn > 0) {
@@ -345,7 +349,7 @@ public class DBFDriverFunction implements DriverFunction {
             }
             String columnName = header.getFieldName(idColumn);
             String fieldName = TableLocation.capsIdentifier(columnName, isH2Database);
-            stringBuilder.append(TableLocation.quoteIdentifier(fieldName,isH2Database));
+            stringBuilder.append(TableLocation.quoteIdentifier(fieldName,dbTypes));
             stringBuilder.append(" ");
             switch (header.getFieldType(idColumn)) {
                 // (L)logical (T,t,F,f,Y,y,N,n)
