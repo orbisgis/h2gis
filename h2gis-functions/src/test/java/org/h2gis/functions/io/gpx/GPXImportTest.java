@@ -26,7 +26,6 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
-import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -40,7 +39,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;

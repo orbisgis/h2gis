@@ -97,10 +97,8 @@ public class GeometryFormsTest {
    }
 
 
-    private void checkFormAndResult(String actual, String expected) throws SQLException {    
-        StringBuilder sb =  new StringBuilder("SELECT '");
-        sb.append(actual).append("'::GEOMETRY");
-        ResultSet rs = st.executeQuery(sb.toString());
+    private void checkFormAndResult(String actual, String expected) throws SQLException {
+        ResultSet rs = st.executeQuery("SELECT '" + actual + "'::GEOMETRY");
         rs.next();
         GeometryAsserts.assertGeometryEquals(expected, rs.getObject(1));
     }

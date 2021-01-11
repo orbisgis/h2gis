@@ -21,9 +21,6 @@
 package org.h2gis.functions;
 
 import org.h2.jdbc.JdbcSQLException;
-import org.h2.value.DataType;
-import org.h2.value.Value;
-import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.TableLocation;
@@ -31,8 +28,6 @@ import org.h2gis.utilities.trigger.UpdateTrigger;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 

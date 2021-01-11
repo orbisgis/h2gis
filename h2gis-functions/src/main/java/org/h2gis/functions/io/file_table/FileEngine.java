@@ -28,7 +28,6 @@ import org.h2.table.Column;
 import org.h2.table.TableBase;
 import org.h2.util.StringUtils;
 import org.h2.value.TypeInfo;
-import org.h2.value.Value;
 import org.h2gis.api.FileDriver;
 import org.h2gis.utilities.URIUtilities;
 import org.slf4j.Logger;
@@ -95,7 +94,7 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
                 }
             }
             if(findDuplicate) {
-                cursor = base + Integer.toString(cpt);
+                cursor = base + cpt;
                 cpt++;
             }
         }

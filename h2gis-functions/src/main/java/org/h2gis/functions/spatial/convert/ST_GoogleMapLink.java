@@ -103,7 +103,7 @@ public class ST_GoogleMapLink extends DeterministicScalarFunction{
         m,//– normal  map
         k,//– satellite
         h,//– hybrid
-        p;//– terrain
+        p//– terrain
     }
 
 }

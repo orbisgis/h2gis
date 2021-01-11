@@ -23,7 +23,6 @@ package org.h2gis.functions.spatial.mesh;
 import org.h2gis.functions.spatial.aggregate.ST_Accum;
 import org.h2gis.functions.spatial.convert.ST_ToMultiLine;
 import org.h2gis.utilities.GeometryMetaData;
-import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 import org.locationtech.jts.geom.*;
 import org.poly2tri.Poly2Tri;
 import org.poly2tri.geometry.polygon.PolygonPoint;

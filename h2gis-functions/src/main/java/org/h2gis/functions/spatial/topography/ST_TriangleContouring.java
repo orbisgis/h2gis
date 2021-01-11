@@ -39,7 +39,6 @@ import org.locationtech.jts.geom.Polygon;
 import java.sql.*;
 import java.util.*;
 import org.h2gis.utilities.GeometryTableUtilities;
-import org.h2gis.utilities.Tuple;
 
 /**
  * Split triangle into area within the specified range values.

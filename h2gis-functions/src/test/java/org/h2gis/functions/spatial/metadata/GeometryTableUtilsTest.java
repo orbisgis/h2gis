@@ -287,7 +287,6 @@ public class GeometryTableUtilsTest {
         st.execute("CREATE SCHEMA ORBISGIS;");
         st.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
         assertTrue(GeometryTableUtilities.hasGeometryColumn(connection, TableLocation.parse("ORBISGIS.POINT3D")));
-
     }
 
     @Test
@@ -307,6 +306,7 @@ public class GeometryTableUtilsTest {
         stat.execute("CREATE SCHEMA ORBISGIS;");
         stat.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
         assertTrue(GeometryTableUtilities.hasGeometryColumn(conPost, TableLocation.parse("orbisgis.point3d")));
+        stat.execute("DROP SCHEMA IF EXISTS ORBISGIS CASCADE");        
     }
 
     @Test
@@ -882,12 +882,23 @@ public class GeometryTableUtilsTest {
         assertEquals("CREATE TABLE orbisgis (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
-        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name CHARACTER VARYING, city CHARACTER VARYING(12), "
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
-    }
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar(26))");       
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(26))",
+                ddl);
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar("+ Integer.MAX_VALUE+ "))");       
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME VARCHAR)",
+                ddl);
+    }   
+  
 
     @Test
     public void testGetEnvelopeFromGeometryFields() throws SQLException, ParseException {

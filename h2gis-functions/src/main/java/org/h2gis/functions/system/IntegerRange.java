@@ -20,9 +20,6 @@
 
 package org.h2gis.functions.system;
 
-import org.h2.value.Value;
-import org.h2.value.ValueArray;
-import org.h2.value.ValueInteger;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

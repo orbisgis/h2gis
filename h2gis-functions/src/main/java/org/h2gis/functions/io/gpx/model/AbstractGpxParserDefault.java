@@ -162,8 +162,6 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
                 } catch (IOException ex) {
                     throw new SQLException(ex);
                 }
-                StringBuilder tableNames = new StringBuilder();
-
                 // We create the tables to store all gpx data in the database
                 if (gpxPreparser.getTotalWpt() > 0) {
                     String wptTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.WAYPOINT, isH2);
@@ -171,7 +169,6 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
                         throw new SQLException("The table " + wptTableName + " already exists.");
                     }
                     setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName, isH2));
-                    tableNames.append(wptTableName).append(",");
                 }
                 if (gpxPreparser.getTotalRte() > 0 && gpxPreparser.getTotalRtept() > 0) {
                     String routeTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.ROUTE, isH2);
@@ -184,7 +181,6 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
                     }
                     setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName, isH2));
                     setRteptPreparedStmt(GPXTablesFactory.createRoutePointsTable(connection, routePointsTableName, isH2));
-                    tableNames.append(routeTableName).append(",").append(routePointsTableName).append(",");
                 }
 
                 if (gpxPreparser.getTotalTrk() > 0 && gpxPreparser.getTotalTrkseg() > 0
@@ -206,7 +202,6 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
                     setTrkPreparedStmt(GPXTablesFactory.createTrackTable(connection, trackTableName, isH2));
                     setTrkSegmentsPreparedStmt(GPXTablesFactory.createTrackSegmentsTable(connection, trackSegmentsTableName, isH2));
                     setTrkPointsPreparedStmt(GPXTablesFactory.createTrackPointsTable(connection, trackPointsTableName, isH2));
-                    tableNames.append(trackTableName).append(",").append(trackSegmentsTableName).append(",").append(trackPointsTableName).append(",");
                 }
 
                 // Initialisation of the contentHandler by default

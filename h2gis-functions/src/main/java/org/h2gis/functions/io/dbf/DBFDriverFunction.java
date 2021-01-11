@@ -365,7 +365,7 @@ public class DBFDriverFunction implements DriverFunction {
                     stringBuilder.append("VARCHAR(");
                     // Append size
                     int length = header.getFieldLength(idColumn);
-                    stringBuilder.append(String.valueOf(length));
+                    stringBuilder.append(length);
                     stringBuilder.append(")");
                     break;
                 // (D)date (Date)

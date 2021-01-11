@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -41,10 +41,12 @@ import org.h2gis.utilities.wrapper.DataSourceWrapper;
  * @author Nicolas Fortin
  * @author Erwan Bocher
  * @author Adam Gouge
+ * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 public class JDBCUtilities {
 
     public static final String H2_DRIVER_PACKAGE_NAME = "org.h2.jdbc";
+    public static final int POSTGRES_MAX_VARCHAR = 10485760;
 
     public enum TABLE_TYPE {
         TABLE, VIEW, FOREIGN_TABLE, TEMPORARY, TABLE_LINK, UNKOWN;
@@ -681,10 +683,9 @@ public class JDBCUtilities {
                     String storage = rs.getString("STORAGE_TYPE");
                     if (storage.contains("TEMPORARY")) {
                         return TABLE_TYPE.TEMPORARY;
-                    }
-                    else if(storage.equals("TABLE LINK")) {
+                    } else if (storage.equals("TABLE LINK")) {
                         return TABLE_TYPE.TABLE_LINK;
-                    }else{
+                    } else {
                         return TABLE_TYPE.fromString(rs.getString("TABLE_TYPE"));
                     }
                 } else {
@@ -708,7 +709,7 @@ public class JDBCUtilities {
      * @return a create table ddl command
      * @throws SQLException
      */
-    public static String createTableDDL(Connection connection, TableLocation location, String outputTableName) throws SQLException {        
+    public static String createTableDDL(Connection connection, TableLocation location, String outputTableName) throws SQLException {
         if (JDBCUtilities.tableExists(connection, location)) {
             final DBTypes dbType = DBUtils.getDBType(connection);
             String tableName = location.toString(dbType);
@@ -719,12 +720,13 @@ public class JDBCUtilities {
     }
 
     /**
-     * Create table ddl command
-     * TODO :  It supports only H2GIS and PostGIS databases
+     * Create table ddl command TODO : It supports only H2GIS and PostGIS
+     * databases
+     *
      * @param connection
      * @param sourceTableName the name of the source table
-     * @param targetTableName the table of the target table used after 
-     * the CREATE TABLE <targetTableName>
+     * @param targetTableName the table of the target table used after the
+     * CREATE TABLE <targetTableName>
      * @return
      * @throws SQLException
      */
@@ -756,7 +758,8 @@ public class JDBCUtilities {
                     int columnType = metadata.getColumnType(i);
                     if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
                         int precision = metadata.getPrecision(i);
-                        if (precision == Integer.MAX_VALUE) {
+                        //POSTGRESQL VARCHAR MAX SIZE
+                        if (precision > POSTGRES_MAX_VARCHAR) {
                             builder.append(columnName).append(" ").append(columnTypeName);
                         } else {
                             builder.append(columnName).append(" ").append(columnTypeName);
@@ -827,7 +830,7 @@ public class JDBCUtilities {
      * @return a create table ddl command
      * @throws SQLException
      */
-    public static String createTableDDL(ResultSet resultSet, String outputTableName) throws SQLException {       
+    public static String createTableDDL(ResultSet resultSet, String outputTableName) throws SQLException {
         if (outputTableName == null || outputTableName.isEmpty()) {
             throw new SQLException("The target table name cannot be null or empty");
         }
@@ -847,7 +850,8 @@ public class JDBCUtilities {
             int columnType = metadata.getColumnType(i);
             if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
                 int precision = metadata.getPrecision(i);
-                if (precision == Integer.MAX_VALUE) {
+                //POSTGRESQL VARCHAR MAX SIZE
+                if (precision > POSTGRES_MAX_VARCHAR) {
                     builder.append(columnName).append(" ").append(columnTypeName);
                 } else {
                     builder.append(columnName).append(" ").append(columnTypeName);
@@ -874,10 +878,11 @@ public class JDBCUtilities {
     }
 
     /**
-     * Returns true if the given column name from the given table is indexed, return false otherwise.
+     * Returns true if the given column name from the given table is indexed,
+     * return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
-     * @param tableName  Name of the table to check.
+     * @param tableName Name of the table to check.
      * @param columnName Name of the column to check.
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -887,10 +892,11 @@ public class JDBCUtilities {
     }
 
     /**
-     * Returns true if the given column name from the given table is indexed, return false otherwise.
+     * Returns true if the given column name from the given table is indexed,
+     * return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
-     * @param table      {@link TableLocation} of the table to check.
+     * @param table {@link TableLocation} of the table to check.
      * @param columnName Name of the column to check.
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -901,23 +907,23 @@ public class JDBCUtilities {
         }
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.INDEX_NAME=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
+                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
             ps.setObject(1, table.getTable());
             ps.setObject(2, table.getSchema("PUBLIC"));
-            ps.setObject(3, getIndexName(connection, table, columnName, isH2));
+            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
             ResultSet rs = ps.executeQuery();
             return rs.next();
         } else {
-            String query =  "SELECT  cls.relname, am.amname " +
-                    "FROM  pg_class cls " +
-                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                    " where attname = ? and attrelid in " +
-                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                    "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
+            String query = "SELECT  cls.relname, am.amname "
+                    + "FROM  pg_class cls "
+                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
+                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
+                    + " where attname = ? and attrelid in "
+                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
+                    + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setObject(1, columnName);
             ps.setObject(2, table.getSchema("public"));
@@ -928,10 +934,11 @@ public class JDBCUtilities {
     }
 
     /**
-     * Returns true if the given column name from the given table is indexed, return false otherwise.
+     * Returns true if the given column name from the given table is indexed,
+     * return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
-     * @param tableName  Name of the table to check.
+     * @param tableName Name of the table to check.
      * @param columnName Name of the column to check.
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -941,10 +948,11 @@ public class JDBCUtilities {
     }
 
     /**
-     * Returns true if the given column name from the given table is indexed, return false otherwise.
+     * Returns true if the given column name from the given table is indexed,
+     * return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
-     * @param table      {@link TableLocation} of the table to check.
+     * @param table {@link TableLocation} of the table to check.
      * @param columnName Name of the column to check.
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -955,28 +963,32 @@ public class JDBCUtilities {
         }
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.INDEX_NAME=?;");
-            ps.setObject(1, table.getTable());
-            ps.setObject(2, table.getSchema("PUBLIC"));
-            ps.setObject(3, getIndexName(connection, table, columnName, isH2));
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
+                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?"
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.INDEX_NAME "
+                    + "IN (SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES  WHERE "
+                    + "INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? "
+                    + "AND  INFORMATION_SCHEMA.INDEXES.TABLE_NAME= ?  "
+                    + " AND INFORMATION_SCHEMA.INDEXES.INDEX_TYPE_NAME='SPATIAL INDEX')");
+            String tableName = table.getTable();
+            String schemaName = table.getSchema("PUBLIC");
+            ps.setObject(1, tableName);
+            ps.setObject(2, schemaName);
+            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
+            ps.setObject(4, schemaName);
+            ps.setObject(5, tableName);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                if(rs.getString("INDEX_TYPE_NAME").contains("SPATIAL")){
-                    return true;
-                }
-            }
-            return false;
+            return rs.next();
         } else {
-            String query =  "SELECT  cls.relname, am.amname " +
-                    "FROM  pg_class cls " +
-                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                    " where attname = ? and attrelid in " +
-                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                    "and a.indexname = b.relname)) and am.amname = 'gist' ;";
+            String query = "SELECT  cls.relname, am.amname "
+                    + "FROM  pg_class cls "
+                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
+                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
+                    + " where attname = ? and attrelid in "
+                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
+                    + "and a.indexname = b.relname)) and am.amname = 'gist' ;";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setObject(1, columnName);
             ps.setObject(2, table.getSchema("public"));
@@ -987,15 +999,17 @@ public class JDBCUtilities {
     }
 
     /**
-     * Create an index on the given column of the given table on the given connection.
+     * Create an index on the given column of the given table on the given
+     * connection.
+     *
      * @param connection Connection to access to the desired table.
-     * @param table      Table containing the column to index.
+     * @param table Table containing the column to index.
      * @param columnName Name of the column to index.
      * @return True if the column have been indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static boolean createIndex(Connection connection, TableLocation table, String columnName) throws SQLException {
-        if(connection == null || table == null || columnName == null){
+        if (connection == null || table == null || columnName == null) {
             throw new SQLException("Unable to create an index");
         }
         boolean isH2 = isH2DataBase(connection);
@@ -1006,9 +1020,11 @@ public class JDBCUtilities {
     }
 
     /**
-     * Create an index on the given column of the given table on the given connection.
+     * Create an index on the given column of the given table on the given
+     * connection.
+     *
      * @param connection Connection to access to the desired table.
-     * @param table      Name of the table containing the column to index.
+     * @param table Name of the table containing the column to index.
      * @param columnName Name of the column to index.
      * @return True if the column have been indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1018,15 +1034,17 @@ public class JDBCUtilities {
     }
 
     /**
-     * Create a spatial index on the given column of the given table on the given connection.
+     * Create a spatial index on the given column of the given table on the
+     * given connection.
+     *
      * @param connection Connection to access to the desired table.
-     * @param table      Table containing the column to index.
+     * @param table Table containing the column to index.
      * @param columnName Name of the column to index.
      * @return True if the column have been indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static boolean createSpatialIndex(Connection connection, TableLocation table, String columnName) throws SQLException {
-        if(connection == null || table == null || columnName == null){
+        if (connection == null || table == null || columnName == null) {
             throw new SQLException("Unable to create a spatial index");
         }
         boolean isH2 = isH2DataBase(connection);
@@ -1042,9 +1060,11 @@ public class JDBCUtilities {
     }
 
     /**
-     * Create a spatial index on the given column of the given table on the given connection.
+     * Create a spatial index on the given column of the given table on the
+     * given connection.
+     *
      * @param connection Connection to access to the desired table.
-     * @param table      Name of the table containing the column to index.
+     * @param table Name of the table containing the column to index.
      * @param columnName Name of the column to index.
      * @return True if the column have been indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1054,43 +1074,45 @@ public class JDBCUtilities {
     }
 
     /**
-     * Drop the index of the given column of the given table on yhe given connection.
+     * Drop the index of the given column of the given table on yhe given
+     * connection.
+     *
      * @param connection Connection to access to the desired table.
-     * @param table      Table containing the column to drop index.
+     * @param table Table containing the column to drop index.
      * @param columnName Name of the column to drop index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, TableLocation table, String columnName) throws SQLException {
-        if(connection == null || table == null || columnName == null){
+        if (connection == null || table == null || columnName == null) {
             throw new SQLException("Unable to drop index");
         }
         List<String> indexes = new ArrayList<>();
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS " +
-                    "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
+                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
+                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
             ps.setObject(1, table.getTable());
             ps.setObject(2, table.getSchema("PUBLIC"));
             ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 indexes.add(rs.getString("INDEX_NAME"));
             }
-        }else {
-            PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name " +
-                    "FROM  pg_class cls " +
-                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                    " where attname = ? and attrelid in " +
-                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                    "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
+        } else {
+            PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name "
+                    + "FROM  pg_class cls "
+                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
+                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
+                    + " where attname = ? and attrelid in "
+                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
+                    + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
             ps.setObject(1, columnName);
             ps.setObject(2, table.getSchema("public"));
             ps.setObject(3, table.getTable());
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 indexes.add(rs.getString("index_name"));
             }
         }
@@ -1100,9 +1122,11 @@ public class JDBCUtilities {
     }
 
     /**
-     * Drop the index of the given column of the given table on yhe given connection.
+     * Drop the index of the given column of the given table on yhe given
+     * connection.
+     *
      * @param connection Connection to access to the desired table.
-     * @param table      Name of the table containing the column to drop index.
+     * @param table Name of the table containing the column to drop index.
      * @param columnName Name of the column to drop index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
@@ -1113,38 +1137,39 @@ public class JDBCUtilities {
 
     /**
      * Drop the all the indexes of the given table on yhe given connection.
+     *
      * @param connection Connection to access to the desired table.
-     * @param table      Table containing the column to drop index.
+     * @param table Table containing the column to drop index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, TableLocation table) throws SQLException {
-        if(connection == null || table == null){
+        if (connection == null || table == null) {
             throw new SQLException("Unable to drop index");
         }
         List<String> indexes = new ArrayList<>();
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES "
+                    + "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? "
+                    + "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=?;");
             ps.setObject(1, table.getTable());
             ps.setObject(2, table.getSchema("PUBLIC"));
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 indexes.add(rs.getString("INDEX_NAME"));
             }
-        }else {
-            PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name " +
-                    "FROM  pg_class cls " +
-                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                    " where attrelid in " +
-                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                    "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
+        } else {
+            PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name "
+                    + "FROM  pg_class cls "
+                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
+                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
+                    + " where attrelid in "
+                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
+                    + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
             ps.setObject(1, table.getSchema("public"));
             ps.setObject(2, table.getTable());
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 indexes.add(rs.getString("index_name"));
             }
         }
@@ -1155,8 +1180,9 @@ public class JDBCUtilities {
 
     /**
      * Drop the all the indexes of the given table on yhe given connection.
+     *
      * @param connection Connection to access to the desired table.
-     * @param table      Name of the table containing the column to drop index.
+     * @param table Name of the table containing the column to drop index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, String table) throws SQLException {

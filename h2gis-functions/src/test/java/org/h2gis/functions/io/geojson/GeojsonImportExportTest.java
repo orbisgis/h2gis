@@ -47,7 +47,6 @@ import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 /**
  *
@@ -253,7 +252,7 @@ public class GeojsonImportExportTest {
             res.next();
             assertEquals(3,((Geometry) res.getObject(1)).getCoordinate().getZ());
             res.next();
-            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());;
+            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
@@ -1208,7 +1207,7 @@ public class GeojsonImportExportTest {
             res.next();
             assertEquals(3,((Geometry) res.getObject(1)).getCoordinate().getZ());
             res.next();
-            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());;
+            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }

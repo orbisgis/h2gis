@@ -24,7 +24,6 @@ import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.geom.*;
 
 import java.util.ArrayList;
-import org.locationtech.jts.algorithm.Orientation;
 
 /**
  * This class is used to extrude a polygon or a linestring to a set of walls,

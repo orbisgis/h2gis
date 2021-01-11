@@ -104,7 +104,7 @@ public class H2TableIndex extends Index {
 
     @Override
     public void remove(SessionLocal session, Row row) {
-        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"remove in Shape files");
+        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"remove in file");
     }
 
     @Override

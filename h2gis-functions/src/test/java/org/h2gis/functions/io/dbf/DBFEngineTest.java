@@ -27,14 +27,12 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.sql.*;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

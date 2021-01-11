@@ -24,7 +24,6 @@ import org.h2.command.ddl.CreateTableData;
 import org.h2.table.Column;
 import org.h2.value.TypeInfo;
 import org.h2.value.Value;
-import org.h2.value.ValueNull;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.h2gis.functions.io.file_table.FileEngine;
