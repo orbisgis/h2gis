@@ -71,7 +71,7 @@ public class ST_GraphTest {
     private void checkNode(ResultSet nodesResult, int nodeID, String nodeGeom) throws SQLException {
         assertTrue(nodesResult.next());
         assertEquals(nodeID, nodesResult.getInt("NODE_ID"));
-        assertGeometryEquals(nodeGeom, nodesResult.getBytes("THE_GEOM"));
+        assertGeometryEquals(nodeGeom, nodesResult.getObject("THE_GEOM"));
     }
 
     private void checkEdge(ResultSet edgesResult, int gid, int startNode, int endNode) throws SQLException {

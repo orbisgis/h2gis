@@ -34,7 +34,7 @@ import java.sql.Statement;
 import org.h2.value.ValueGeometry;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.GeographyUtilities;
 import static org.junit.jupiter.api.Assertions.*;
@@ -237,7 +237,7 @@ public class CRSFunctionTest {
     private void check(ResultSet rs, String expectedGeom) throws SQLException {
         try {
             assertTrue(rs.next());
-            assertGeometryEquals(expectedGeom, rs.getObject(1));
+            assertGeometryBarelyEquals(expectedGeom, rs.getObject(1));
             assertFalse(rs.next());
         } finally {
             rs.close();

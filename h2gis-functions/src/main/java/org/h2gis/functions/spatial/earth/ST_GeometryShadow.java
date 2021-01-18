@@ -21,7 +21,7 @@
 package org.h2gis.functions.spatial.earth;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.functions.spatial.edit.ST_UpdateZ.UpdateZCoordinateSequenceFilter;
+import org.h2gis.functions.spatial.convert.GeometryCoordinateDimension;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 
@@ -140,8 +140,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
             if (!shadows.isEmpty()) {
                 CascadedPolygonUnion union = new CascadedPolygonUnion(shadows);
                 Geometry result = union.union();
-                result.apply(new UpdateZCoordinateSequenceFilter(0));
-                return result;
+                return GeometryCoordinateDimension.force(result,3);
             }
             return null;
         }
@@ -165,8 +164,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
         }
         if (!doUnion) {
             Geometry geom = factory.buildGeometry(shadows);
-            geom.apply(new UpdateZCoordinateSequenceFilter(0));
-            return geom;
+            return GeometryCoordinateDimension.force(geom,3);
         } else {
             if (!shadows.isEmpty()) {
                 Collection<Geometry> shadowParts = new ArrayList<>();
@@ -175,8 +173,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
                 }
                 Geometry allShadowParts = factory.buildGeometry(shadowParts);
                 Geometry union = allShadowParts.buffer(0);
-                union.apply(new UpdateZCoordinateSequenceFilter(0));
-                return union;
+                return GeometryCoordinateDimension.force(union,3);
             }
             return null;
         }
@@ -198,8 +195,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
             return point;
         } else {
             Geometry result = factory.createLineString(new Coordinate[]{startCoord, offset});
-            result.apply(new UpdateZCoordinateSequenceFilter(0));
-            return result;
+            return GeometryCoordinateDimension.force(result,3);
         }
     }
 

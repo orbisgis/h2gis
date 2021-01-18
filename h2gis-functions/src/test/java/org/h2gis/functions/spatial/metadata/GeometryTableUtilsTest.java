@@ -19,7 +19,10 @@
  */
 package org.h2gis.functions.spatial.metadata;
 
+import org.h2.util.StringUtils;
+import org.h2gis.functions.TestUtilities;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.io.shp.SHPEngineTest;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.junit.jupiter.api.*;
 
@@ -125,17 +128,17 @@ public class GeometryTableUtilsTest {
                 + " f_table_name, "
                 + " f_geometry_column, "
                 + "1 storage_type, "
-                + "t[1] as geometry_type, "
-                + "t[2] as coord_dimension, "
-                + "t[3] as srid, "
+                + "CAST(t[1] as INTEGER) as geometry_type, "
+                + "CAST(t[2]as INTEGER) as coord_dimension, "
+                + "CAST(t[3]as INTEGER) as srid, "
                 + "t[4] as type "
                 + "FROM (SELECT TABLE_CATALOG f_table_catalog, "
                 + "TABLE_SCHEMA f_table_schema, "
                 + "TABLE_NAME f_table_name, "
                 + "COLUMN_NAME f_geometry_column, "
-                + "1 storage_type, FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, "
-                + " COLUMN_NAME, COLUMN_TYPE) as t FROM INFORMATION_SCHEMA.COLUMNS"
-                + " WHERE TYPE_NAME = 'GEOMETRY'); ");
+                + "1 storage_type, FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME, DATA_TYPE, GEOMETRY_TYPE,GEOMETRY_SRID "
+                + ") as t FROM INFORMATION_SCHEMA.COLUMNS"
+                + " WHERE DATA_TYPE = 'GEOMETRY'); ");
         ResultSet rs = st.executeQuery("SELECT * FROM geo_cols");
         rs.next();
         assertEquals("DBH2GEOMETRYTABLEUTILSTEST", rs.getString("f_table_catalog"));
@@ -284,7 +287,6 @@ public class GeometryTableUtilsTest {
         st.execute("CREATE SCHEMA ORBISGIS;");
         st.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
         assertTrue(GeometryTableUtilities.hasGeometryColumn(connection, TableLocation.parse("ORBISGIS.POINT3D")));
-
     }
 
     @Test
@@ -304,6 +306,7 @@ public class GeometryTableUtilsTest {
         stat.execute("CREATE SCHEMA ORBISGIS;");
         stat.execute("CREATE TABLE ORBISGIS.POINT3D (gid int , the_geom GEOMETRY)");
         assertTrue(GeometryTableUtilities.hasGeometryColumn(conPost, TableLocation.parse("orbisgis.point3d")));
+        stat.execute("DROP SCHEMA IF EXISTS ORBISGIS CASCADE");        
     }
 
     @Test
@@ -824,7 +827,7 @@ public class GeometryTableUtilsTest {
         String ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"));
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute(ddl);
-        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
@@ -876,13 +879,18 @@ public class GeometryTableUtilsTest {
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         String ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "orbisgis");
-        assertEquals("CREATE TABLE orbisgis (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
+        assertEquals("CREATE TABLE orbisgis (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
+                ddl);
+        st.execute("DROP TABLE IF EXISTS perstable");
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar(26))");       
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(26))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar("+ Integer.MAX_VALUE+ "))");       
@@ -1218,4 +1226,50 @@ public class GeometryTableUtilsTest {
         assertNull(GeometryTableUtilities.getAuthorityAndSRID(connection, -9999));
     }
 
+    @Test
+    public void testIsSpatialIndexed() throws Exception {
+        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (id int, the_geom GEOMETRY)");
+        st.execute("INSERT INTO geo_point VALUES(1, 'POINT(1 2)')");
+        st.execute("create spatial index geotable_sp_index on geo_point(the_geom)");
+        assertTrue(GeometryTableUtilities.isSpatialIndexed(connection, TableLocation.parse("GEO_POINT"), "the_geom"));
+        st.execute("drop index geotable_sp_index ");
+        assertFalse(GeometryTableUtilities.isSpatialIndexed(connection, TableLocation.parse("GEO_POINT"), "the_geom"));
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void testPostGISIsSpatialIndexed() throws Exception {
+        Statement stat = conPost.createStatement();
+        stat.execute("drop table if exists geo_point; CREATE TABLE geo_point (id int, the_geom GEOMETRY)");
+        stat.execute("INSERT INTO geo_point VALUES(1, 'POINT(1 2)')");
+        stat.execute("create index geotable_sp_index on geo_point  USING GIST (the_geom);");
+        assertTrue(GeometryTableUtilities.isSpatialIndexed(conPost, TableLocation.parse("geo_point"), "the_geom"));
+        stat.execute("drop index geotable_sp_index ");
+        assertFalse(GeometryTableUtilities.isSpatialIndexed(conPost, TableLocation.parse("geo_point"), "the_geom"));
+    }
+
+    @Test
+    public void checkIndexes() throws SQLException {
+        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (id int, the_geom GEOMETRY)");
+        st.execute("INSERT INTO geo_point VALUES(1, 'POINT(1 2)')");
+        st.execute("create spatial index geotable_sp_index on geo_point(the_geom)");
+        String query  = String.format("SELECT I.*,C.* FROM INFORMATION_SCHEMA.INDEXES AS I , " +
+                "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
+                "INFORMATION_SCHEMA.INDEX_COLUMNS WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
+                "WHERE I.TABLE_SCHEMA=C.TABLE_SCHEMA AND I.TABLE_NAME=C.TABLE_NAME and C.COLUMN_NAME='%s'", "PUBLIC", "GEO_POINT", "THE_GEOM","THE_GEOM");
+        ResultSet rs = st.executeQuery(query);
+        rs.next();
+        TestUtilities.printValues(rs);
+        st.execute("DROP TABLE IF EXISTS shptable");
+        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
+        System.out.println("The table exists "+ JDBCUtilities.tableExists(connection, TableLocation.parse("SHPTABLE")));
+        st.execute("create spatial index on shptable(the_geom)");
+        query  = String.format("SELECT I.*,C.* FROM INFORMATION_SCHEMA.INDEXES AS I , " +
+                "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
+                "INFORMATION_SCHEMA.INDEX_COLUMNS WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
+                "WHERE I.TABLE_SCHEMA=C.TABLE_SCHEMA AND I.TABLE_NAME=C.TABLE_NAME and C.COLUMN_NAME='%s'", "PUBLIC", "SHPTABLE", "THE_GEOM","THE_GEOM");
+        rs = st.executeQuery(query);
+        rs.next();
+        TestUtilities.printValues(rs);
+    }
 }

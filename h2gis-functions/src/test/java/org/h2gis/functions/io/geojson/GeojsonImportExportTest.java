@@ -44,10 +44,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.h2gis.utilities.URIUtilities;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 /**
  *
  * @author Erwan Bocher
@@ -252,7 +252,7 @@ public class GeojsonImportExportTest {
             res.next();
             assertEquals(3,((Geometry) res.getObject(1)).getCoordinate().getZ());
             res.next();
-            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());;
+            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
@@ -606,20 +606,20 @@ public class GeojsonImportExportTest {
             ResultSetMetaData metadata = res.getMetaData();
             assertEquals(15, metadata.getColumnCount());
             assertEquals("GEOMETRY", metadata.getColumnTypeName(1));
-            assertEquals("DOUBLE", metadata.getColumnTypeName(2));
-            assertEquals("DOUBLE", metadata.getColumnTypeName(3));
+            assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(2));
+            assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(3));
             assertEquals("BIGINT", metadata.getColumnTypeName(4));
             assertEquals("BIGINT", metadata.getColumnTypeName(5));
             assertEquals("BIGINT", metadata.getColumnTypeName(6));
-            assertEquals("VARCHAR", metadata.getColumnTypeName(7));
-            assertEquals("DOUBLE", metadata.getColumnTypeName(8));
-            assertEquals("DOUBLE", metadata.getColumnTypeName(9));
-            assertEquals("VARCHAR", metadata.getColumnTypeName(10));
+            assertEquals("CHARACTER VARYING", metadata.getColumnTypeName(7));
+            assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(8));
+            assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(9));
+            assertEquals("CHARACTER VARYING", metadata.getColumnTypeName(10));
             assertEquals("BOOLEAN", metadata.getColumnTypeName(11));
-            assertEquals("VARCHAR", metadata.getColumnTypeName(12));
-            assertEquals("DOUBLE", metadata.getColumnTypeName(13));
-            assertEquals("DOUBLE", metadata.getColumnTypeName(14));
-            assertEquals("DOUBLE", metadata.getColumnTypeName(15));
+            assertEquals("CHARACTER VARYING", metadata.getColumnTypeName(12));
+            assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(13));
+            assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(14));
+            assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(15));
             res.next();
             assertNull(res.getObject(1));
             assertEquals(79.04200463708992, res.getDouble(2));
@@ -662,14 +662,9 @@ public class GeojsonImportExportTest {
             assertEquals("1484846966000", res.getBigDecimal(10).toString());
             assertEquals("2017-01-19T18:29:27+01:00", res.getString(11));
             assertEquals("1484846967000", res.getBigDecimal(12).toString());
-            assertEquals("{}", res.getString(13));
-            Object[] tinyArray = {13, "string", "{}"};
-            Object[] expectedResult = {49, 40.0, "{}", "string", tinyArray};
-            Object[] result = (Object[]) res.getObject(14);
-            assertArrayEquals(expectedResult, result);
-            expectedResult = new Object[]{58, 47, 58, 57, 58, 49, 58, 51, 58, 58, 49, 57, 58, 58, 49, 58, 57, 56, 57, 58, 59, 58, 57, 58, 49, 47, 48, 57, 48, 58, 57, 57, 51, 56, 52, 57, 51, 57, 49, 58, 55, 58, 50, 48, 48, 52, 56, 57, 48, 58, 52, 48, 53, 50, 57, 54, 57, 47, 58, 57, 54, 54, 53, 56, 57, 55, 58, 58, 57, 58, 57, 57};
-            result = (Object[]) res.getObject(15);
-            assertArrayEquals(expectedResult, result);
+            assertEquals("{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}}", res.getString(13));
+            assertEquals("[49,40.0,{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}},\"string\",[13,\"string\",{\"member3\":3,\"member4\":4}]]", res.getString(14));
+            assertEquals("[58,47,58,57,58,49,58,51,58,58,49,57,58,58,49,58,57,56,57,58,59,58,57,58,49,47,48,57,48,58,57,57,51,56,52,57,51,57,49,58,55,58,50,48,48,52,56,57,48,58,52,48,53,50,57,54,57,47,58,57,54,54,53,56,57,55,58,58,57,58,57,57]", res.getString(15));
             res.next();
             res.close();
         }
@@ -697,14 +692,9 @@ public class GeojsonImportExportTest {
             assertEquals("1484846966000", res.getBigDecimal(10).toString());
             assertEquals("2017-01-19T18:29:27+01:00", res.getString(11));
             assertEquals("1484846967000", res.getBigDecimal(12).toString());
-            assertEquals("{}", res.getString(13));
-            Object[] tinyArray = {13, "string", "{}"};
-            Object[] expectedResult = {49, 40.0, "{}", "string", tinyArray};
-            Object[] result = (Object[]) res.getObject(14);
-            assertArrayEquals(expectedResult, result);
-            expectedResult = new Object[]{58, 47, 58, 57, 58, 49, 58, 51, 58, 58, 49, 57, 58, 58, 49, 58, 57, 56, 57, 58, 59, 58, 57, 58, 49, 47, 48, 57, 48, 58, 57, 57, 51, 56, 52, 57, 51, 57, 49, 58, 55, 58, 50, 48, 48, 52, 56, 57, 48, 58, 52, 48, 53, 50, 57, 54, 57, 47, 58, 57, 54, 54, 53, 56, 57, 55, 58, 58, 57, 58, 57, 57};
-            result = (Object[]) res.getObject(15);
-            assertArrayEquals(expectedResult, result);
+            assertEquals("{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}}", res.getString(13));
+            assertEquals("[49,40.0,{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}},\"string\",[13,\"string\",{\"member3\":3,\"member4\":4}]]", res.getString(14));
+            assertEquals("[58,47,58,57,58,49,58,51,58,58,49,57,58,58,49,58,57,56,57,58,59,58,57,58,49,47,48,57,48,58,57,57,51,56,52,57,51,57,49,58,55,58,50,48,48,52,56,57,48,58,52,48,53,50,57,54,57,47,58,57,54,54,53,56,57,55,58,58,57,58,57,57]", res.getString(15));
             res.next();
             res.close();
         }
@@ -722,46 +712,33 @@ public class GeojsonImportExportTest {
             res.next();
             assertNull((res.getObject(1)));
             assertEquals("string", res.getString(2));
-            assertEquals("{}", res.getString(3));
-            Object[] tinyArray1 = {13, "string", "{}", "null"};
-            Object[] expectedResult1 = {49, 40.0, "{}", "string", tinyArray1};
-            Object[] result1 = (Object[]) res.getObject(4);
-            assertArrayEquals(expectedResult1, result1);
+            assertEquals("{\"member1\":1,\"member2\":{\"member21\":null,\"member22\":22},\"member3\":null}", res.getString(3));
+            assertEquals("[49,40.0,{\"member1\":null,\"member2\":{\"member21\":null,\"member22\":22}},\"string\",[13,\"string\",{\"member3\":null,\"member4\":4},null]]", res.getString(4));
             res.next();
             assertNull((res.getObject(1)));
             assertTrue(res.getBoolean(2));
-            assertEquals("{}", res.getString(3));
-            Object[] expectedResult2 = {1, 2};
-            Object[] result2 = (Object[]) res.getObject(4);
-            assertArrayEquals(expectedResult2, result2);
+            assertEquals("{\"member\":1}", res.getString(3));
+            assertEquals("[1,2]", res.getString(4));            
             res.next();
             assertNull((res.getObject(1)));
             assertEquals(2, res.getInt(2), 0);
-            assertEquals("{}", res.getString(3));
-            Object[] expectedResult3 = {1, 2};
-            Object[] result3 = (Object[]) res.getObject(4);
-            assertArrayEquals(expectedResult3, result3);
+            assertEquals("{\"member\":1}", res.getString(3));
+            assertEquals("[1,2]", res.getString(4)); 
             res.next();
             assertNull((res.getObject(1)));
-            assertEquals("{}", res.getString(2));
-            assertEquals("{}", res.getString(3));
-            Object[] expectedResult4 = {1, 2};
-            Object[] result4 = (Object[]) res.getObject(4);
-            assertArrayEquals(expectedResult4, result4);
+            assertEquals("{\"member3\":4}", res.getString(2));
+            assertEquals("{\"member\":1}", res.getString(3));
+            assertEquals("[1,2]", res.getString(4)); 
             res.next();
             assertNull((res.getObject(1)));
-            assertEquals("[5, 6, 6]", res.getString(2));
-            assertEquals("{}", res.getString(3));
-            Object[] expectedResult5 = {1, 2};
-            Object[] result5 = (Object[]) res.getObject(4);
-            assertArrayEquals(expectedResult5, result5);
+            assertEquals("[5,6,6]", res.getString(2));
+            assertEquals("{\"member\":1}", res.getString(3));
+            assertEquals("[1,2]", res.getString(4)); 
             res.next();
             assertNull((res.getObject(1)));
             assertNull(res.getString(2));
-            assertEquals("{}", res.getString(3));
-            Object[] expectedResult6 = {1, 2};
-            Object[] result6 = (Object[]) res.getObject(4);
-            assertArrayEquals(expectedResult6, result6);
+            assertEquals("{\"member\":1}", res.getString(3));
+            assertEquals("[1,2]", res.getString(4)); 
             res.close();
         }
     }
@@ -813,7 +790,6 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_PROPS_READ");
         }
     }
-
 
     @Test
     public void exportImportFile() throws SQLException, IOException {
@@ -1043,7 +1019,7 @@ public class GeojsonImportExportTest {
         stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("urn_crs84.geojson").getPath()) + ")");
         ResultSet res = stat.executeQuery("SELECT * FROM URN_CRS84;");
         res.next();
-        GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(7.49587624983838 48.5342070572556)", res.getObject(1));
+        assertGeometryEquals("SRID=4326;POINT(7.49587624983838 48.5342070572556)", (Geometry) res.getObject(1));
         res.close();
         stat.execute("DROP TABLE IF EXISTS URN_CRS84");
     }
@@ -1231,7 +1207,7 @@ public class GeojsonImportExportTest {
             res.next();
             assertEquals(3,((Geometry) res.getObject(1)).getCoordinate().getZ());
             res.next();
-            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());;
+            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }

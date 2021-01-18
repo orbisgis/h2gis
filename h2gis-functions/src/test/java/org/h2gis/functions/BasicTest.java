@@ -21,8 +21,6 @@
 package org.h2gis.functions;
 
 import org.h2.jdbc.JdbcSQLException;
-import org.h2.value.DataType;
-import org.h2.value.Value;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.TableLocation;
@@ -30,7 +28,6 @@ import org.h2gis.utilities.trigger.UpdateTrigger;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
@@ -102,17 +99,6 @@ public class BasicTest {
                }
         }
 
-        /**
-         * Test if H2 recognize the Geometry class used by h2gis
-         */
-        @Test
-        public void testSameClass() {
-            GeometryFactory geometryFactory = new GeometryFactory();
-            Geometry geometry = geometryFactory.createPoint(new Coordinate(0,0));
-            assertEquals(Value.GEOMETRY, DataType.getTypeFromClass(geometry.getClass()), "H2 does not use the same " +
-                    "JTS ! Expected:\n" + Geometry.class.getName() + "\n but got:\n"
-                    + DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass()), true) + "\n");
-        }
 
         @Test
         public void testGeometryType() throws Exception {

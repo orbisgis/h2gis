@@ -72,7 +72,7 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
             if (srid <= 0) {
                 srid = 4326;
             }
-            CoordinateReferenceSystem crs = crsf.getCRS(srr.getRegistryName() + ":" + String.valueOf(srid));
+            CoordinateReferenceSystem crs = crsf.getCRS(srr.getRegistryName() + ":" + srid);
 
             if (!CoordinateReferenceSystem.Type.GEOGRAPHIC2D.equals(crs.getType())) {
                 throw new SQLException("ERROR: only lon/lag coordinate system are supported in geography");

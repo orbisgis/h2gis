@@ -25,7 +25,7 @@ import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 /**
  * This class is used to force the coordinate dimension of a geometry
  * 
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS, 2020
  */
 public class GeometryCoordinateDimension {
     
@@ -40,24 +40,47 @@ public class GeometryCoordinateDimension {
      * @return 
      */
      public static Geometry force(Geometry geom, int dimension) {
-        Geometry g = geom;
-        if (geom instanceof Point) {
-            g = gf.createPoint(convertSequence(geom.getCoordinates(),dimension));
-        } else if (geom instanceof LineString) {
-            g = gf.createLineString(convertSequence(geom.getCoordinates(),dimension));
-        } else if (geom instanceof Polygon) {
-            g = GeometryCoordinateDimension.convert((Polygon) geom,dimension);
-        } else if (geom instanceof MultiPoint) {
-            g = gf.createMultiPoint(convertSequence(geom.getCoordinates(),dimension));
-        } else if (geom instanceof MultiLineString) {
-            g = GeometryCoordinateDimension.convert((MultiLineString) geom,dimension);
-        } else if (geom instanceof MultiPolygon) {
-            g = GeometryCoordinateDimension.convert((MultiPolygon) geom,dimension);
-        } else if (geom instanceof GeometryCollection) {
-            g = GeometryCoordinateDimension.convert((GeometryCollection)geom,dimension);
+         Geometry g = geom;
+         if (geom instanceof Point) {
+             g = gf.createPoint(convertSequence(((Point) geom).getCoordinateSequence(), dimension));
+             g.setSRID(geom.getSRID());
+         } else if (geom instanceof LineString) {
+             g = gf.createLineString(convertSequence(((LineString) geom).getCoordinateSequence(), dimension));
+             g.setSRID(geom.getSRID());
+         } else if (geom instanceof Polygon) {
+             g = GeometryCoordinateDimension.convert((Polygon) geom, dimension);
+             g.setSRID(geom.getSRID());
+         } else if (geom instanceof MultiPoint) {
+             g = GeometryCoordinateDimension.convert((MultiPoint) geom,dimension);
+             g.setSRID(geom.getSRID());
+         } else if (geom instanceof MultiLineString) {
+             g = GeometryCoordinateDimension.convert((MultiLineString) geom,dimension);
+             g.setSRID(geom.getSRID());
+         } else if (geom instanceof MultiPolygon) {
+             g = GeometryCoordinateDimension.convert((MultiPolygon) geom,dimension);
+             g.setSRID(geom.getSRID());
+         } else if (geom instanceof GeometryCollection) {
+             g = GeometryCoordinateDimension.convert((GeometryCollection)geom,dimension);
+             g.setSRID(geom.getSRID());
+         }
+         return g;
+    }
+    
+     /**
+     * Force the dimension of the MultiPoint and update correctly the coordinate
+     * dimension
+     *
+     * @param mp
+     * @param dimension
+     * @return
+     */
+    public static MultiPoint convert(MultiPoint mp, int dimension) {
+        int nb = mp.getNumGeometries();
+        final Point[] geometries = new Point[nb];
+        for (int i = 0; i < nb; i++) {
+            geometries[i] = (Point) force(mp.getGeometryN(i), dimension);
         }
-        g.setSRID(geom.getSRID());
-        return g;
+        return gf.createMultiPoint(geometries);
     }
     
      /**
@@ -116,14 +139,14 @@ public class GeometryCoordinateDimension {
      * @return 
      */
     public static Polygon convert(Polygon polygon, int dimension) {
-        LinearRing shell = gf.createLinearRing(convertSequence(polygon.getExteriorRing().getCoordinates(),dimension));
+        LinearRing shell = gf.createLinearRing(convertSequence(polygon.getExteriorRing().getCoordinateSequence(),dimension));
         int nbOfHoles = polygon.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
-            holes[i] =  gf.createLinearRing(convertSequence(polygon.getInteriorRingN(i).getCoordinates(),dimension));
+            holes[i] = gf.createLinearRing(convertSequence(polygon.getInteriorRingN(i).getCoordinateSequence(), dimension));
         }
-        return gf.createPolygon(shell, holes);
-    }   
+        return  gf.createPolygon(shell, holes);
+    }
     
     
 
@@ -135,7 +158,7 @@ public class GeometryCoordinateDimension {
      * @return 
      */
     public static LineString convert(LineString lineString,int dimension) {
-        return gf.createLineString(convertSequence(lineString.getCoordinates(),dimension));
+        return gf.createLineString(convertSequence(lineString.getCoordinateSequence(),dimension));
     }
 
     /**
@@ -146,7 +169,7 @@ public class GeometryCoordinateDimension {
      * @return 
      */
     public static LinearRing convert(LinearRing linearRing,int dimension) {
-        return gf.createLinearRing(convertSequence(linearRing.getCoordinates(),dimension));
+        return gf.createLinearRing(convertSequence(linearRing.getCoordinateSequence(),dimension));
     }
 
     /**
@@ -155,27 +178,60 @@ public class GeometryCoordinateDimension {
      * @param cs a coordinate array
      * @return a new CoordinateArraySequence
      */
-    private static CoordinateArraySequence convertSequence(Coordinate[] cs,int dimension) {        
-        for (int i = 0; i < cs.length; i++) { 
-            Coordinate coord = cs[i];
+    private static CoordinateArraySequence convertSequence(CoordinateSequence cs,int dimension) {
+        if(dimension==4){
+            return convertXYZMSequence(cs, dimension);
+        }
+        Coordinate[] coords = new Coordinate[cs.size()];
+        for (int i = 0; i < cs.size(); i++) {
+            Coordinate coord = cs.getCoordinate(i);
             switch (dimension) {
                 case 2:
                     coord.z = Double.NaN;
-                    cs[i]=coord;
+                    coords[i]=coord;
                     break;
                 case 3: {
                     coord = new Coordinate(coord);
                     double z = coord.z;
                     if (Double.isNaN(z)) {
                         coord.z = 0;
-                        cs[i]=coord;
                     }
+                    coords[i]=coord;
                     break;
-                }                
+                }
                 default:
                     break;
             }
         }        
-        return new CoordinateArraySequence(cs, dimension);        
+        return new CoordinateArraySequence(coords, dimension);
+    }
+
+    /**
+     * Create a new CoordinateArraySequence with XYZM
+     *
+     * @param cs a coordinate array
+     * @return a new CoordinateArraySequence
+     */
+    private static CoordinateArraySequence convertXYZMSequence(CoordinateSequence cs,int dimension) {
+        boolean hasM=false;
+        if(cs.getMeasures()==1){
+            hasM =true;
+        }
+        CoordinateXYZM[] coordsXYZM = new CoordinateXYZM[cs.size()];
+        for (int i = 0; i < cs.size(); i++) {
+            Coordinate coordTmp = cs.getCoordinate(i);
+            CoordinateXYZM coord = new CoordinateXYZM(coordTmp);
+            if(hasM){
+                coord.setM(coordTmp.getM());
+                coord.setZ(0);
+            }else {
+                double z = coord.z;
+                if (Double.isNaN(z)) {
+                    coord.z = 0;
+                }
+            }
+            coordsXYZM[i]=coord;
+        }
+        return new CoordinateArraySequence(coordsXYZM, dimension);
     }
 }

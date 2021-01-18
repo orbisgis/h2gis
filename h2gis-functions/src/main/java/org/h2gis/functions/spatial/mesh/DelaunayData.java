@@ -22,7 +22,7 @@ package org.h2gis.functions.spatial.mesh;
 
 import org.h2gis.functions.spatial.aggregate.ST_Accum;
 import org.h2gis.functions.spatial.convert.ST_ToMultiLine;
-import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
+import org.h2gis.utilities.GeometryMetaData;
 import org.locationtech.jts.geom.*;
 import org.poly2tri.Poly2Tri;
 import org.poly2tri.geometry.polygon.PolygonPoint;
@@ -160,8 +160,8 @@ public class DelaunayData {
             }
         }
         // end workaround
-        CoordinateSequenceDimensionFilter info = CoordinateSequenceDimensionFilter.apply(geom);
-        isInput2D = info.is2D();
+        int dim = GeometryMetaData.getMetaData(geom).dimension;
+        isInput2D = dim==2?true:false;
         convertedInput = null;
         if(mode == MODE.TESSELLATION) {
             if(geom instanceof Polygon) {

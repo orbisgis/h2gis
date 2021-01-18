@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -631,16 +632,13 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static Geometry getEnvelope(ResultSet resultSet, String geometryColumnName) throws SQLException {
-        Envelope aggregatedEnvelope = null;
-        int firstSRID;
         //First one
         resultSet.next();
         Geometry geom = (Geometry) resultSet.getObject(geometryColumnName);
-        firstSRID = geom.getSRID();
-        if (aggregatedEnvelope != null) {
-            aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
-        } else {
-            aggregatedEnvelope = geom.getEnvelopeInternal();
+        int firstSRID = geom.getSRID();
+        Envelope aggregatedEnvelope  = geom.getEnvelopeInternal();
+        if(aggregatedEnvelope==null){
+            aggregatedEnvelope = new Envelope();
         }
         //Next
         while (resultSet.next()) {
@@ -753,8 +751,7 @@ public class GeometryTableUtilities {
         int srid = 0;
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema(),
                 tableLocation.getTable(), geometryColumnName)) {
-            srid = 0;
-            while (geomResultSet.next()) {
+             while (geomResultSet.next()) {
                 srid = geomResultSet.getInt("srid");
                 break;
             }
@@ -776,7 +773,6 @@ public class GeometryTableUtilities {
         int srid = 0;
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema(),
                 tableLocation.getTable())) {
-            srid = 0;
             while (geomResultSet.next()) {
                 srid = geomResultSet.getInt("srid");
                 break;
@@ -1327,12 +1323,11 @@ public class GeometryTableUtilities {
                     return false;
                 }
                 fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
-                StringBuilder geometrySignature = new StringBuilder("GEOMETRY");
-                geometrySignature.append("(").append(metadata.geometryType);
-                geometrySignature.append(",").append(srid).append(")");
 
                 StringBuilder query = new StringBuilder("ALTER TABLE ").append(tableName).append(" ALTER COLUMN ").append(fieldName);
-                query.append(" TYPE ").append(geometrySignature.toString()).append(" USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(")");
+                String geometrySignature = "GEOMETRY" + "(" + metadata.geometryType +
+                        "," + srid + ")";
+                query.append(" TYPE ").append(geometrySignature).append(" USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(")");
                 connection.createStatement().execute(query.toString());
                 return true;
             }else{
@@ -1340,5 +1335,46 @@ public class GeometryTableUtilities {
             }
         }
         throw new SQLException("The SRID value must be greater or equal than 0");
+    }
+
+    /**
+     * Check if the geometry column has a spatial index
+     *
+     * @param connection Active connection
+     * @param tableLocation Table name
+     * @param geometryColumnName geometry column name
+     * @return true if query is well executed
+     * @throws SQLException
+     */
+    public static boolean isSpatialIndexed(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        String schema = tableLocation.getSchema();
+        String tableName = tableLocation.getTable();
+        String fieldName = TableLocation.capsIdentifier(geometryColumnName, isH2);
+        if(isH2) {
+            String query  = String.format("SELECT I.INDEX_TYPE_NAME, I.INDEX_CLASS FROM INFORMATION_SCHEMA.INDEXES AS I , " +
+                            "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
+                            "INFORMATION_SCHEMA.INDEX_COLUMNS WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
+                            "WHERE I.TABLE_SCHEMA=C.TABLE_SCHEMA AND I.TABLE_NAME=C.TABLE_NAME and C.COLUMN_NAME='%s'"
+                    ,schema.isEmpty()?"PUBLIC":schema,tableName, fieldName, fieldName);
+            try (ResultSet rs = connection.createStatement().executeQuery(query)) {
+                if (rs.next()) {
+                    return  rs.getString("INDEX_TYPE_NAME").toString().contains("SPATIAL");
+                }
+            }
+        }
+        else { //POSTGIS CASE
+            String query = String.format("SELECT  cls.relname, am.amname " +
+                    "FROM  pg_class cls " +
+                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                    " where attname = '%s' and attrelid in " +
+                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname ='%s' and a.tablename ='%s' " +
+                    "and a.indexname = b.relname)) and am.amname = 'gist' ;" ,fieldName,schema.isEmpty()?"public":schema,tableName);
+            try (ResultSet rs = connection.createStatement().executeQuery(query)) {
+                return rs.next();
+            }
+        }
+        return false;
     }
 }

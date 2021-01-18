@@ -62,8 +62,10 @@ import org.h2gis.utilities.Tuple;
 public class GeoJsonWriteDriver {
 
     private final Connection connection;
-    private Map<String, Integer> cachedColumnNames;
+    private Map<String, String> cachedSpecificColumns;
+    private LinkedHashMap<String, Integer> cachedColumnIndex;
     private int columnCountProperties = -1;
+    private  boolean isH2;
 
     /**
      * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -87,6 +89,7 @@ public class GeoJsonWriteDriver {
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
+            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -94,6 +97,7 @@ public class GeoJsonWriteDriver {
             }
             geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
         } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
+            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -114,6 +118,7 @@ public class GeoJsonWriteDriver {
                 }
             }
         } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
+            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -511,12 +516,14 @@ public class GeoJsonWriteDriver {
      * @throws SQLException
      */
     private void cacheMetadata(ResultSetMetaData resultSetMetaData) throws SQLException {
-        cachedColumnNames = new LinkedHashMap<String, Integer>();
+        cachedColumnIndex = new LinkedHashMap<String, Integer>();
+        cachedSpecificColumns = new LinkedHashMap<String, String>();
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             final String fieldTypeName = resultSetMetaData.getColumnTypeName(i);
+            String columnName = resultSetMetaData.getColumnName(i);
             if (!fieldTypeName.equalsIgnoreCase("geometry")
-                    && isSupportedPropertyType(resultSetMetaData.getColumnType(i), fieldTypeName)) {
-                cachedColumnNames.put(resultSetMetaData.getColumnName(i).toUpperCase(), i);
+                    && isSupportedPropertyType(columnName, resultSetMetaData.getColumnType(i), fieldTypeName)) {
+                cachedColumnIndex.put(columnName, i);
                 columnCountProperties++;
             }
         }
@@ -771,23 +778,29 @@ public class GeoJsonWriteDriver {
     private void writeProperties(JsonGenerator jsonGenerator, ResultSet rs) throws IOException, SQLException {
         if (columnCountProperties != -1) {
             jsonGenerator.writeObjectFieldStart("properties");
-            for (Map.Entry<String, Integer> entry : cachedColumnNames.entrySet()) {
-                String string = entry.getKey();
-                string = string.toLowerCase();
+            for (Map.Entry<String, Integer> entry : cachedColumnIndex.entrySet()) {
+                String columnName = entry.getKey();
                 Integer fieldId = entry.getValue();
-                if (rs.getObject(fieldId) instanceof Object[]) {
+                if(cachedSpecificColumns.containsKey(columnName)){
+                    String specificType = cachedSpecificColumns.get(columnName);
+                    if(specificType.equalsIgnoreCase("JSON")) {
+                        jsonGenerator.writeFieldName(columnName);
+                        jsonGenerator.writeString(rs.getString(fieldId));
+                    }
+                }
+                else if (rs.getObject(fieldId) instanceof Object[]) {
                     Object[] array = (Object[]) rs.getObject(fieldId);
-                    jsonGenerator.writeArrayFieldStart(string);
+                    jsonGenerator.writeArrayFieldStart(columnName);
                     writeArray(jsonGenerator, array, true);
                     jsonGenerator.writeEndArray();
                 } else if (rs.getObject(fieldId) != null && rs.getObject(fieldId).equals("{}")) {
-                    jsonGenerator.writeObjectFieldStart(string);
+                    jsonGenerator.writeObjectFieldStart(columnName);
                     jsonGenerator.writeEndObject();
                 } else if (rs.getObject(fieldId) == "null") {
-                    jsonGenerator.writeFieldName(string);
+                    jsonGenerator.writeFieldName(columnName);
                     jsonGenerator.writeNull();
                 } else {
-                    jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
+                    jsonGenerator.writeObjectField(columnName, rs.getObject(fieldId));
                 }
             }
             jsonGenerator.writeEndObject();
@@ -802,7 +815,7 @@ public class GeoJsonWriteDriver {
      * @return
      * @throws SQLException
      */
-    public boolean isSupportedPropertyType(int sqlTypeId, String sqlTypeName) throws SQLException {
+    public boolean isSupportedPropertyType(String columnName, int sqlTypeId, String sqlTypeName) throws SQLException {
         switch (sqlTypeId) {
             case Types.BOOLEAN:
             case Types.DOUBLE:
@@ -816,6 +829,10 @@ public class GeoJsonWriteDriver {
             case Types.CHAR:
             case Types.ARRAY:
             case Types.OTHER:
+                if(sqlTypeName.equalsIgnoreCase("JSON")){
+                    cachedSpecificColumns.put(columnName, "JSON");
+                    return true;
+                }
             case Types.DECIMAL:
             case Types.REAL:
             case Types.TINYINT:
@@ -839,9 +856,7 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeObjectFieldStart("crs");
             jsonGenerator.writeStringField("type", "name");
             jsonGenerator.writeObjectFieldStart("properties");
-            StringBuilder sb = new StringBuilder("urn:ogc:def:crs:");
-            sb.append(authorityAndSRID[0]).append("::").append(authorityAndSRID[1]);
-            jsonGenerator.writeStringField("name", sb.toString());
+            jsonGenerator.writeStringField("name", "urn:ogc:def:crs:" + authorityAndSRID[0] + "::" + authorityAndSRID[1]);
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }

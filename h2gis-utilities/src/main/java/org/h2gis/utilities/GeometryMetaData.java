@@ -413,7 +413,7 @@ public class GeometryMetaData {
      * @param type : geometry type
      * @return GeometryMetaData
      */
-    private static GeometryMetaData createMetadataFromGeometryType(String type) {
+    public static GeometryMetaData createMetadataFromGeometryType(String type) {
         return createMetadataFromGeometryType(type, 0);
     }
 
@@ -426,13 +426,13 @@ public class GeometryMetaData {
      * @param srid : srid value
      * @return GeometryMetaData
      */
-    private static GeometryMetaData createMetadataFromGeometryType(String type, int srid) {
+    public static GeometryMetaData createMetadataFromGeometryType(String type, int srid) {
         GeometryMetaData geometryMetaData = new GeometryMetaData();
         geometryMetaData.setSRID(srid);
         if (type == null) {
             return geometryMetaData;
         }
-        int dimension_ = 0;
+        int dimension_ = 2;
         int geometry_code = GeometryTypeCodes.GEOMETRY;
         String sfs_geometry_type = "GEOMETRY";
         String geometry_type = "GEOMETRY";
@@ -519,7 +519,6 @@ public class GeometryMetaData {
                 geometry_type = "POLYGONZ";
                 hasz_ = true;
                 hasm_ = false;
-                ;
                 break;
             case "MULTIPOINTZ":
                 dimension_ = 3;
@@ -676,4 +675,11 @@ public class GeometryMetaData {
         return geometryMetaData;
     }
 
+    /**
+     * Return the SFS geometry type code
+     * @return
+     */
+    public int getSfs_geometryTypeCode() {
+        return sfs_geometryTypeCode;
+    }
 }
