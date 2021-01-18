@@ -30,10 +30,23 @@ import java.sql.SQLException;
  * @author Sylvain Palominos (UBS Chaire GEOTERA 2021)
  */
 public class DBUtils {
+
+    /**
+     * Return the {@link DBTypes} deduced from the database URL.
+     *
+     * @param url Url of the database.
+     * @return The database {@link DBTypes}.
+     */
     public static DBTypes getDBType(String url) {
         return getDBType(URI.create(url));
     }
 
+    /**
+     * Return the {@link DBTypes} deduced from the database URI.
+     *
+     * @param uri URI of the database.
+     * @return The database {@link DBTypes}.
+     */
     public static DBTypes getDBType(URI uri) {
         String scheme = uri.getScheme();
         if(scheme.equals("jdbc")) {
@@ -43,10 +56,21 @@ public class DBUtils {
         if(scheme.startsWith("jdbc:")) {
             scheme = scheme.substring(5);
         }
-        return Constants.schemeDBTypeMap.get(scheme.toLowerCase());
+        return Constants.SCHEME_DBTYPE_MAP.get(scheme.toLowerCase());
     }
 
-    public static DBTypes getDBType(Connection connection) {
-        return Constants.driverDBTypeMap.get(connection.getClass().getName());
+    /**
+     * Return the {@link DBTypes} of a {@link Connection}. First, check the connection class. If no type can be
+     * asserted, read the metadata to get the database type.
+     *
+     * @param connection Connection to check.
+     * @return The database {@link DBTypes}.
+     */
+    public static DBTypes getDBType(Connection connection) throws SQLException {
+         DBTypes type = Constants.driverDBTypeMap.get(connection.getClass().getName());
+         if(type == null) {
+             type = Constants.DB_NAME_TYPE_MAP.get(connection.getMetaData().getDriverName());
+         }
+         return type;
     }
 }

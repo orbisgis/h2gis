@@ -32,7 +32,10 @@ import java.util.regex.Pattern;
 public enum DBTypes {
     POSTGRESQL, POSTGIS, H2, H2GIS;
 
-
+    /**
+     * Return the list of the reserved keywords.
+     * @return The list of reserved keywords.
+     */
     public Set<String> getReservedWords() {
         switch(this) {
             case H2:
@@ -46,6 +49,10 @@ public enum DBTypes {
         }
     }
 
+    /**
+     * Return the special name pattern.
+     * @return The spacial name pattern.
+     */
     public Pattern specialNamePattern() {
         switch(this) {
             case H2:

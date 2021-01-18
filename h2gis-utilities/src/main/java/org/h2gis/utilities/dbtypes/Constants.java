@@ -40,15 +40,30 @@ public abstract class Constants {
     /** PostGIS JDBC protocol. */
     public static final String POSTGIS_JDBC_PROTOCOL = "postgresql_postGIS";
 
+    /** H2 JDBC driver name. */
+    public static final String H2_JDBC_NAME = "H2 JDBC Driver";
+    /** POSTGRESQL JDBC driver name. */
+    public static final String POSTGRESQL_JDBC_NAME = "PostgreSQL JDBC Driver";
+
     /**
      * Map used to convert URI scheme to DBType
      */
-    public static final Map<String, DBTypes> schemeDBTypeMap = new HashMap<>();
+    public static final Map<String, DBTypes> SCHEME_DBTYPE_MAP = new HashMap<>();
 
     static {
-        schemeDBTypeMap.put(H2_JDBC_PROTOCOL, H2);
-        schemeDBTypeMap.put(POSTGRESQL_JDBC_PROTOCOL, POSTGRESQL);
-        schemeDBTypeMap.put(POSTGIS_JDBC_PROTOCOL, POSTGIS);
+        SCHEME_DBTYPE_MAP.put(H2_JDBC_PROTOCOL, H2);
+        SCHEME_DBTYPE_MAP.put(POSTGRESQL_JDBC_PROTOCOL, POSTGRESQL);
+        SCHEME_DBTYPE_MAP.put(POSTGIS_JDBC_PROTOCOL, POSTGIS);
+    }
+
+    /**
+     * Map used to convert URI scheme to DBType
+     */
+    public static final Map<String, DBTypes> DB_NAME_TYPE_MAP = new HashMap<>();
+
+    static {
+        DB_NAME_TYPE_MAP.put(H2_JDBC_NAME, H2);
+        DB_NAME_TYPE_MAP.put(POSTGRESQL_JDBC_NAME, POSTGRESQL);
     }
 
     /**

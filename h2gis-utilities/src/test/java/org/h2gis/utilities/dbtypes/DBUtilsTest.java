@@ -19,10 +19,19 @@
  */
 package org.h2gis.utilities.dbtypes;
 
-import org.junit.jupiter.api.Test;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+import org.osgi.service.jdbc.DataSourceFactory;
 
-import java.net.MalformedURLException;
+import javax.sql.DataSource;
+import java.io.File;
 import java.net.URI;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,8 +43,67 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class DBUtilsTest {
 
+    private static Connection h2Conn;
+    private static Connection postConn;
+    private static Statement h2St;
+
+    @BeforeAll
+    public static void init() throws Exception {
+        String dataBaseLocation = new File("target/DBUtilsTest").getAbsolutePath();
+        String databasePath = "jdbc:h2:" + dataBaseLocation;
+        File dbFile = new File(dataBaseLocation + ".mv.db");
+        Class.forName("org.h2.Driver");
+        if (dbFile.exists()) {
+            dbFile.delete();
+        }
+        // Keep a connection alive to not close the DataBase on each unit test
+        h2Conn = DriverManager.getConnection(databasePath,
+                "sa", "");
+
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+
+        DataSource ds = dataSourceFactory.createDataSource(props);
+        postConn = ds.getConnection();
+        if (postConn == null) {
+            System.setProperty("postgresql", "false");
+        } else {
+            System.setProperty("postgresql", "true");
+        }
+    }
+
+    @BeforeEach
+    public void setUpStatement() throws Exception {
+        h2St = h2Conn.createStatement();
+    }
+
+    @AfterEach
+    public void tearDownStatement() throws Exception {
+        h2St.close();
+    }
+
+    @AfterAll
+    public static void dispose() throws Exception {
+        h2Conn.close();
+    }
+
     @Test
-    public void getDTypeTest() throws MalformedURLException {
+    public void getDBTypeFromConnection() throws SQLException {
+        assertEquals(DBTypes.H2, DBUtils.getDBType(h2Conn));
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void getDBTypeFromConnection2() throws SQLException {
+        assertEquals(DBTypes.POSTGIS, DBUtils.getDBType(postConn));
+    }
+
+    @Test
+    public void getDBTypeFromURILTest() {
         String str1 = "jdbc:postgresql://localhost/test";
         String str2 = "postgresql://localhost/test";
 

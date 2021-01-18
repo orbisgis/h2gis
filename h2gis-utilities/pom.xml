@@ -88,6 +88,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>postgis-jts-osgi</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <!-- Build Settings -->
