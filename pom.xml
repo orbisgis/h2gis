@@ -11,7 +11,7 @@
         <version>1.0.3-SNAPSHOT</version>
     </parent>
     <artifactId>h2gis-parent</artifactId>
-    <version>2.0.0-RC1</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <modules>
         <module>h2gis-api</module>
@@ -32,6 +32,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
         <site.basedir>${project.basedir}</site.basedir>
+        <revision>2.0.0-RC1</revision>
     </properties>
     
     <dependencyManagement>
