@@ -44,17 +44,17 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-osgi</artifactId>
-            <version>${project.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-network</artifactId>
-            <version>${project.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
-            <version>${project.version}</version>
+            <version>${revision}</version>
             <exclusions>
                 <exclusion>
                     <groupId>net.postgis</groupId>

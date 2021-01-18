@@ -67,12 +67,12 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-api</artifactId>
-            <version>${project.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
-            <version>${project.version}</version>
+            <version>${revision}</version>
         </dependency>
 
         <!-- Provided dependencies -->
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-test-utilities</artifactId>
-            <version>${project.version}</version>
+            <version>${revision}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -116,26 +116,9 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
+            <version>${revision}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <scope>test</scope>
-            <version>2.44.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.opera</groupId>
-            <artifactId>operadriver</artifactId>
-            <scope>test</scope>
-            <version>1.5</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-remote-driver</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -151,6 +134,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven-bundle-version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>

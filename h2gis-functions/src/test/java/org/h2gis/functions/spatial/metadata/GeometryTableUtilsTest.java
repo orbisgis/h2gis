@@ -893,9 +893,9 @@ public class GeometryTableUtilsTest {
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(26))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
-        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar("+ Integer.MAX_VALUE+ "))");       
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar)");       
         ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME VARCHAR)",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(1048576))",
                 ddl);
     }   
   
