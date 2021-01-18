@@ -42,6 +42,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                 <version>${maven-bundle-version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -55,6 +56,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-version}</version>
             </plugin>
         </plugins>
     </build>

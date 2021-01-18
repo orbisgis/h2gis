@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 
