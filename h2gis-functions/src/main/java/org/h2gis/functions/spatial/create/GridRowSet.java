@@ -3,21 +3,20 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
+ * This code is part of the H2GIS project. H2GIS is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation; version 3.0 of
+ * the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details <http://www.gnu.org/licenses/>.
  *
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
 package org.h2gis.functions.spatial.create;
 
 import org.h2.tools.SimpleResultSet;
@@ -27,6 +26,9 @@ import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
 
 import java.sql.*;
+import org.cts.util.UTMUtils;
+import org.h2gis.utilities.GeographyUtilities;
+import static org.h2gis.utilities.GeographyUtilities.computeLongitudeDistance;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
@@ -76,13 +78,13 @@ public class GridRowSet implements SimpleRowSource {
      * @param connection
      * @param deltaX
      * @param deltaY
-     * @param geometry 
+     * @param geometry
      */
     public GridRowSet(Connection connection, double deltaX, double deltaY, Geometry geometry) {
         this.connection = connection;
         this.deltaX = deltaX;
         this.deltaY = deltaY;
-        srid = geometry.getSRID();        
+        this.srid = geometry.getSRID();
         this.envelope = geometry.getEnvelopeInternal();
         this.isTable = false;
     }
@@ -121,7 +123,7 @@ public class GridRowSet implements SimpleRowSource {
             //Find the SRID
             Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
             srid = geomMetadata.second().SRID;
-             try (ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
+            try (ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
                 if (geomExtend == null) {
@@ -133,9 +135,10 @@ public class GridRowSet implements SimpleRowSource {
 
             }
         } else {
-            if (envelope == null) {
+            if (envelope == null || envelope.isNull()) {
                 throw new SQLException("The input geometry used to compute the grid cannot be null.");
-            } else {
+            }
+            else {
                 initParameters();
             }
         }
@@ -195,7 +198,6 @@ public class GridRowSet implements SimpleRowSource {
     public void setCenterCell(boolean isCenterCell) {
         this.isCenterCell = isCenterCell;
     }
-   
 
     /**
      * Compute the parameters need to create each cells
@@ -204,12 +206,36 @@ public class GridRowSet implements SimpleRowSource {
     private void initParameters() {
         this.minX = envelope.getMinX();
         this.minY = envelope.getMinY();
-        double cellWidth = envelope.getWidth();
-        double cellHeight = envelope.getHeight();
-        this.maxI = (int) Math.ceil(cellWidth
-                / deltaX);
-        this.maxJ = (int) Math.ceil(cellHeight
-                / deltaY);
+        if (this.srid == 4326) {
+            double maxLon = envelope.getMaxX();
+            double maxLat = envelope.getMaxY();
+            //Check if the envelope has latitude, longitude co-ordinates        
+            if (!UTMUtils.isValidLatitude((float) minY)) {
+                throw new IllegalArgumentException("Invalid min latitude");
+            }
+            if (!UTMUtils.isValidLatitude((float) maxLat)) {
+                throw new IllegalArgumentException("Invalid max latitude");
+            }
+            if (!UTMUtils.isValidLongitude((float) minX)) {
+                throw new IllegalArgumentException("Invalid min longitude");
+            }
+            if (!UTMUtils.isValidLongitude((float) maxLon)) {
+                throw new IllegalArgumentException("Invalid max longitude");
+            }
+            deltaY = GeographyUtilities.computeLatitudeDistance(deltaY);
+            deltaX = computeLongitudeDistance(deltaX, maxLat);
+            double cellWidth = envelope.getWidth();
+            double cellHeight = envelope.getHeight();
+            this.maxI = (int) Math.ceil(cellWidth/ deltaX);
+            this.maxJ = (int) Math.ceil(cellHeight / deltaY);
+        } else {
+            double cellWidth = envelope.getWidth();
+            double cellHeight = envelope.getHeight();
+            this.maxI = (int) Math.ceil(cellWidth
+                    / deltaX);
+            this.maxJ = (int) Math.ceil(cellHeight
+                    / deltaY);
+        }
     }
 
     /**
