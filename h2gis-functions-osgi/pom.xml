@@ -36,12 +36,12 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
-             <version>${parent.version}</version>
+             <version>${project.parent.version}</version>
         </dependency>
 
         <!-- Provided dependencies -->

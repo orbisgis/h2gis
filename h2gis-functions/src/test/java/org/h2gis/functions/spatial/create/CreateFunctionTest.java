@@ -35,6 +35,7 @@ import java.sql.Statement;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import org.h2gis.utilities.GeographyUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -457,6 +458,56 @@ public class CreateFunctionTest {
         st.execute("DROP TABLE grid;");
     }
     
+    @Test
+    public void testST_MakeGridFromGeometryLatLon1() throws Exception {
+        Envelope env = new Envelope(0.0, 0.008983152841195214, 0.0, 0.008983152841195214);
+        Envelope outPutEnv = GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), 1000, 1000);
+        assertEquals(env, outPutEnv);
+        Geometry geom = FACTORY.toGeometry(outPutEnv);
+        st.execute(String.format("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 1000, 1000);", "4326",geom.toString()));
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 1);
+        rs.close();
+        rs = st.executeQuery("select * from grid;");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((0 0, 0 0.008983152841195214, 0.0089831529516059 0.008983152841195214, 0.0089831529516059 0, 0 0))",rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    @Test
+    public void testST_MakeGridFromGeometryLatLon2() throws Exception {
+        Envelope env = new Envelope(0.0, 0.0008983152841195214, 0.0, 0.0008983152841195214);
+        Envelope outPutEnv = GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), 100, 100);
+        assertEquals(env, outPutEnv);
+        Geometry geom = FACTORY.toGeometry(outPutEnv);
+        st.execute(String.format("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 1000, 1000);", "4326",geom.toString()));
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 1);
+        rs.close();
+        rs = st.executeQuery("select * from grid;");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((0 0, 0 0.008983152841195214, 0.00898315284229932 0.008983152841195214, 0.00898315284229932 0, 0 0))",rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    @Test
+    public void testST_MakeGridFromGeometryLatLon3() throws Exception {
+        Envelope env = new Envelope(0.0, 0.008983152841195214, 0.0, 0.008983152841195214);
+        Envelope outPutEnv = GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), 1000, 1000);
+        assertEquals(env, outPutEnv);
+        Geometry geom = FACTORY.toGeometry(outPutEnv);
+        st.execute(String.format("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 100, 100);", "4326",geom.toString()));
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 100);
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+    
      /**
      * Test to create a regular square grid from a subquery
      *
@@ -525,11 +576,11 @@ public class CreateFunctionTest {
     @Test
     public void test_ST_MakeGridSRID() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom Geometry(POLYGON, 4326));"
+                + "CREATE TABLE input_table(the_geom Geometry(POLYGON, 2154));"
                 + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))', 4326));");
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))', 2154));");
         st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
-        assertEquals(4326,GeometryTableUtilities.getSRID(connection, TableLocation.parse("GRID")));
+        assertEquals(2154,GeometryTableUtilities.getSRID(connection, TableLocation.parse("GRID")));
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 4);
@@ -537,13 +588,13 @@ public class CreateFunctionTest {
         rs = st.executeQuery("select * from grid;");
         assertEquals(1111, rs.getMetaData().getColumnType(1));
         rs.next();
-        assertGeometryEquals("SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
+        assertGeometryEquals("SRID=2154;POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
         rs.next();
-        assertGeometryEquals("SRID=4326;POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
+        assertGeometryEquals("SRID=2154;POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
         rs.next();
-        assertGeometryEquals("SRID=4326;POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
+        assertGeometryEquals("SRID=2154;POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
         rs.next();
-        assertGeometryEquals("SRID=4326;POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
+        assertGeometryEquals("SRID=2154;POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
