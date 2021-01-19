@@ -8,7 +8,7 @@
     <parent>
         <artifactId>h2gis-parent</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>${revision}</version>
+        <version>2.0.0-RC1</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-api</artifactId>
-            <version>${project.version}</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-test-utilities</artifactId>
-            <version>${project.version}</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
