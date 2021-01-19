@@ -576,11 +576,11 @@ public class CreateFunctionTest {
     @Test
     public void test_ST_MakeGridSRID() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom Geometry(POLYGON, 4326));"
+                + "CREATE TABLE input_table(the_geom Geometry(POLYGON, 2154));"
                 + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))', 4326));");
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))', 2154));");
         st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
-        assertEquals(4326,GeometryTableUtilities.getSRID(connection, TableLocation.parse("GRID")));
+        assertEquals(2154,GeometryTableUtilities.getSRID(connection, TableLocation.parse("GRID")));
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 4);
@@ -588,13 +588,13 @@ public class CreateFunctionTest {
         rs = st.executeQuery("select * from grid;");
         assertEquals(1111, rs.getMetaData().getColumnType(1));
         rs.next();
-        assertGeometryEquals("SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
+        assertGeometryEquals("SRID=2154;POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
         rs.next();
-        assertGeometryEquals("SRID=4326;POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
+        assertGeometryEquals("SRID=2154;POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
         rs.next();
-        assertGeometryEquals("SRID=4326;POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
+        assertGeometryEquals("SRID=2154;POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
         rs.next();
-        assertGeometryEquals("SRID=4326;POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
+        assertGeometryEquals("SRID=2154;POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
