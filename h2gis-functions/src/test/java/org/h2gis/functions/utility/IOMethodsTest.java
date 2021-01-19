@@ -229,6 +229,38 @@ public class IOMethodsTest {
             res.close();
         }
     }
+    
+    @Test
+    public void testExportPOSTGISQueryToH2GIS(TestInfo testInfo) throws SQLException, IOException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            Statement postgisST = con.createStatement();
+            postgisST.execute("DROP TABLE IF EXISTS AREA");
+            postgisST.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+            postgisST.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
+            postgisST.execute("insert into area values(2, 'POLYGON ((-10 200, 90 109, 90 9, -10 20, -10 200))')");
+
+            IOMethods.exportToDataBase(con, "(SELECT * FROM area where idarea=2)", connection, "area_h2gis", -1, 2);
+            ResultSet res = st.executeQuery("SELECT * FROM area_h2gis");
+            assertTrue(res.next());
+            assertEquals(2, res.getInt(1));
+            assertGeometryEquals("POLYGON ((-10 20, -10 200, 90 109, 90 9, -10 20))", (Geometry) res.getObject(2));
+            res.close();
+        }
+    }
 
     @Test
     public void testExportH2GISTableToPOSTGISInsert(TestInfo testInfo) throws SQLException, IOException {
