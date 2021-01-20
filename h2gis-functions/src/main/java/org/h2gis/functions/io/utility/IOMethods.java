@@ -235,8 +235,9 @@ public class IOMethods {
      * @param targetTable The name of the table in the H2GIS database
      * @param delete True to delete the table if exists
      * @throws java.sql.SQLException
+     * @return  the name of the linked table
      */
-    public static void linkedTable(Connection targetConnection, Map<String, String> databaseProperties, String sourceTable, String targetTable,
+    public static String linkedTable(Connection targetConnection, Map<String, String> databaseProperties, String sourceTable, String targetTable,
             boolean delete) throws SQLException {
         if (targetConnection == null) {
             throw new SQLException("The connection to the output database cannot be null.\n");
@@ -308,6 +309,7 @@ public class IOMethods {
                         }
                         throw new SQLException("Cannot linked the table", e);
                     }
+                    return ouputTableName;
                 } else {
                     throw new SQLException("This database is not yet supported");
                 }
@@ -379,8 +381,9 @@ public class IOMethods {
      * @param batch_size batch size value before sending the data
      *
      * @throws java.sql.SQLException
+     * @return name of the export table formatted according the database target
      */
-    public static void exportToDataBase(Connection sourceConnection, String sourceTable,
+    public static String exportToDataBase(Connection sourceConnection, String sourceTable,
             Connection targetConnection, String targetTable, int mode, int batch_size) throws SQLException {
         if (sourceConnection == null) {
             throw new SQLException("The connection to the source database cannot be null.\n");
@@ -550,5 +553,6 @@ public class IOMethods {
             throw new SQLException("Cannot save the table " + sourceTable + " to the " + targetTable + "\n", e);
 
         }
+        return ouputTableName;
     }
 }
