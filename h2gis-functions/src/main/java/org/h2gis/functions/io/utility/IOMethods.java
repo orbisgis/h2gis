@@ -481,6 +481,7 @@ public class IOMethods {
                 String ddlCommand = JDBCUtilities.createTableDDL(inputMetadata, ouputTableName);
                 if (!ddlCommand.isEmpty()) {
                     try (Statement outputST = targetConnection.createStatement()) {
+                        targetConnection.rollback();
                         outputST.execute(ddlCommand);
                         targetConnection.commit();
 
