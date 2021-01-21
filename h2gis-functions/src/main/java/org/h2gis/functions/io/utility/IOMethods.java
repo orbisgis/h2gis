@@ -41,6 +41,7 @@ import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
+import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -505,6 +506,7 @@ public class IOMethods {
             PreparedStatement preparedStatement = null;
             try {
                 int columnsCount = inputMetadata.getColumnCount();
+                HashMap<String, Integer> geomColumnAndSRID = new HashMap<>();
                 StringBuilder insertTable = new StringBuilder("INSERT INTO ");
                 insertTable.append(ouputTableName).append(" VALUES(?");
                 for (int i = 1; i < columnsCount; i++) {
@@ -516,13 +518,29 @@ public class IOMethods {
                 //Check the first row in order to limit the batch size if the query doesn't work
                 inputRes.next();
                 for (int i = 0; i < columnsCount; i++) {
-                    preparedStatement.setObject(i + 1, inputRes.getObject(i + 1));
+                    int index = i + 1;
+                    Object value = inputRes.getObject(index);
+                    if(inputMetadata.getColumnTypeName(index).equalsIgnoreCase("GEOMETRY")) {
+                        geomColumnAndSRID.put(inputMetadata.getColumnName(index), ((Geometry) value).getSRID());
+                    }
+                    preparedStatement.setObject(index, value);
                 }
                 preparedStatement.execute();
                 long batchSize = 0;
                 while (inputRes.next()) {
                     for (int i = 0; i < columnsCount; i++) {
-                        preparedStatement.setObject(i + 1, inputRes.getObject(i + 1));
+                        int index = i + 1;
+                        Object value = inputRes.getObject(index);
+                        String columnName = inputMetadata.getColumnName(index);
+                         if(geomColumnAndSRID.containsKey(columnName)) {
+                             Geometry geometry = (Geometry) value;
+                             int currentSRID = geometry.getSRID();
+                             Integer tmpSRID = geomColumnAndSRID.get(columnName);
+                             if (tmpSRID != currentSRID) {
+                                 geomColumnAndSRID.remove(inputMetadata.getColumnName(index));
+                             }
+                         }
+                       preparedStatement.setObject(index, value);
                     }
                     preparedStatement.addBatch();
                     batchSize++;
@@ -534,6 +552,29 @@ public class IOMethods {
                 }
                 if (batchSize > 0) {
                     preparedStatement.executeBatch();
+                }
+                //Alter SRID
+                if(!geomColumnAndSRID.isEmpty()){
+                    StringBuilder querySRID = new StringBuilder();
+                    for (Map.Entry<String, Integer> entry : geomColumnAndSRID.entrySet()) {
+                        String fieldName = TableLocation.capsIdentifier(entry.getKey(), targetDBTypeIsH2);
+                        Integer srid = entry.getValue();
+                        querySRID.append("ALTER TABLE ").append(ouputTableName).append(" ALTER COLUMN ").append(fieldName);
+                        querySRID.append(" TYPE GEOMETRY(GEOMETRY, ").append(srid).append(") USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(");\n");
+                    }
+
+                    try (Statement outputST = targetConnection.createStatement()) {
+                        outputST.execute(querySRID.toString());
+                        targetConnection.commit();
+                    } catch (SQLException e) {
+                        try {
+                            targetConnection.rollback();
+                        } catch (SQLException e1) {
+                            LOGGER.error("Unable to rollback.", e1);
+                        }
+                        throw new SQLException("Cannot alter the table with the SRID", e);
+                    }
+
                 }
             } catch (SQLException e) {
                 try {
