@@ -696,7 +696,8 @@ public class GeoJsonReaderDriver {
     private void parsePropertiesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
+            String fieldName = TableLocation.capsIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
+            fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
             JsonToken value = jp.nextToken();
             if (null != value) {
                 Integer dataType = cachedColumnNames.get(fieldName);
@@ -899,7 +900,8 @@ public class GeoJsonReaderDriver {
     private void parseProperties(JsonParser jp, Object[] values) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
+            String fieldName = TableLocation.capsIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
+            fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
             JsonToken value = jp.nextToken();
             if (null == value) {
                 //ignore other value
