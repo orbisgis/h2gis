@@ -68,7 +68,7 @@ public class GeoJsonReaderDriver {
     private static final Logger log = LoggerFactory.getLogger(GeoJsonReaderDriver.class);
     private int parsedSRID = 0;
     private boolean isH2;
-    private TableLocation tableLocation;
+    private String tableLocation;
     private LinkedHashMap<String, Integer> cachedColumnNames;
     private LinkedHashMap<String, Integer> cachedColumnIndex;
     private static final int BATCH_MAX_SIZE = 100;
@@ -100,13 +100,13 @@ public class GeoJsonReaderDriver {
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
-    public void read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
+    public String read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
         if (fileName != null && fileName.getName().toLowerCase().endsWith(".geojson")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
-            this.tableLocation = TableLocation.parse(tableReference, isH2);
+            this.tableLocation = TableLocation.parse(tableReference, isH2).toString(isH2);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
@@ -114,18 +114,20 @@ public class GeoJsonReaderDriver {
             }
             if (fileName.length() > 0) {
                 parseGeoJson(progress);
+                return tableLocation;
             } else {
-                JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
+                JDBCUtilities.createEmptyTable(connection, tableLocation);
+                return tableLocation;
             }
         } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
-            this.tableLocation = TableLocation.parse(tableReference, isH2);
+            this.tableLocation = TableLocation.parse(tableReference, isH2).toString(isH2);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + tableLocation.toString(isH2));
+                stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
                 stmt.close();
             }
 
@@ -139,11 +141,13 @@ public class GeoJsonReaderDriver {
                     fis = new FileInputStream(fileName);
                     parseData(new GZIPInputStream(fis));
                     connection.setAutoCommit(true);
+                    return tableLocation;
                 } else {
                     throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
                 }
             } else {
-                JDBCUtilities.createEmptyTable(connection, tableLocation.toString(isH2));
+                JDBCUtilities.createEmptyTable(connection, tableLocation);
+                return tableLocation;
             }
         } else {
             throw new SQLException("The geojson read driver supports only geojson or gz extensions");
@@ -228,7 +232,7 @@ public class GeoJsonReaderDriver {
         if (hasGeometryField) {
             StringBuilder createTable = new StringBuilder();
             createTable.append("CREATE TABLE ");
-            createTable.append(tableLocation.toString(isH2));
+            createTable.append(tableLocation);
             createTable.append(" (");
             //Add the geometry column
             String finalGeometryType = GeoJsonField.GEOMETRY;
@@ -241,7 +245,7 @@ public class GeoJsonReaderDriver {
             }
             cachedColumnIndex = new LinkedHashMap<>();
             StringBuilder insertTable = new StringBuilder("INSERT INTO ");
-            insertTable.append(tableLocation.toString(isH2)).append(" VALUES(ST_GeomFromWKB(?, ").append(parsedSRID).append(")");
+            insertTable.append(tableLocation).append(" VALUES(ST_GeomFromWKB(?, ").append(parsedSRID).append(")");
             int i = 1;
             for (Map.Entry<String, Integer> columns : cachedColumnNames.entrySet()) {
                 String columnName = columns.getKey();

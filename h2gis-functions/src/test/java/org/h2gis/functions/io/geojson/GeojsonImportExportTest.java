@@ -21,6 +21,7 @@
 package org.h2gis.functions.io.geojson;
 
 import org.h2.jdbc.JdbcSQLDataException;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -1186,7 +1187,7 @@ public class GeojsonImportExportTest {
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
             stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)', true);");
-            assertThrows(JdbcSQLNonTransientException.class, () -> {
+            assertThrows(JdbcSQLException.class, () -> {
                 stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             });
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");

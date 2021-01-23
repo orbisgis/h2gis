@@ -22,10 +22,14 @@ package org.h2gis.functions.io.asc;
 import org.h2.value.*;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.io.DriverManager;
+import org.h2gis.functions.io.utility.PRJUtil;
 import org.h2gis.utilities.URIUtilities;
 import org.locationtech.jts.geom.Geometry;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -103,8 +107,9 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         } else if (!(option instanceof ValueNull)) {
             throw new SQLException("Supported optional parameter is integer for z type or varchar for table name");
         }
+        File outputFile = URIUtilities.fileFromString(fileName);
         if (tableReference == null) {
-            final String name = URIUtilities.fileFromString(fileName).getName();
+            final String name = outputFile.getName();
             String tableName = name.substring(0, name.lastIndexOf(".")).replace(".", "_").toUpperCase();
             if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
                 tableReference = tableName;
@@ -112,15 +117,13 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
                 throw new SQLException("The file name contains unsupported characters");
             }
         }
-        AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
         if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
         }
-
         ascReaderDriver.setZType(zType);
         ascReaderDriver.setDeleteTable(deletTable);
-        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
+        importFile(connection, tableReference, outputFile, new EmptyProgressVisitor(), ascReaderDriver);
     }
 
     /**
@@ -149,7 +152,6 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         } else if (!(option instanceof ValueNull)) {
             throw new SQLException("Supported optional parameter is integer for z type or varchar for table name");
         }
-        AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
         if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
@@ -157,7 +159,29 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         ascReaderDriver.setAs3DPoint(true);
         ascReaderDriver.setZType(zType);
         ascReaderDriver.setDeleteTable(deletTable);
-        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
+        importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
+    }
+
+    /**
+     * Import the file
+     * @param connection
+     * @param tableReference
+     * @param outputFile
+     * @param progress
+     * @param ascReaderDriver
+     * @throws IOException
+     * @throws SQLException
+     */
+    private static void importFile(Connection connection, String tableReference, File outputFile, ProgressVisitor progress, AscReaderDriver ascReaderDriver) throws IOException, SQLException {
+        int srid = 0;
+        String filePath = outputFile.getAbsolutePath();
+        final int dotIndex = filePath.lastIndexOf('.');
+        final String fileNamePrefix = filePath.substring(0, dotIndex);
+        File prjFile = new File(fileNamePrefix + ".prj");
+        if (prjFile.exists()) {
+            srid = PRJUtil.getSRID(prjFile);
+        }
+        ascReaderDriver.read(connection, outputFile, progress, tableReference, srid);
     }
 
     /**
@@ -176,7 +200,6 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons) throws IOException, SQLException {
-        AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
         if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
@@ -185,7 +208,7 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
             ascReaderDriver.setDownScale(downScale);
         }
         ascReaderDriver.setAs3DPoint(!extractAsPolygons);
-        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
+        importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
     }
 
     /**
@@ -204,7 +227,6 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons, boolean deleteTable) throws IOException, SQLException {
-        AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
         if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
@@ -212,12 +234,9 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         if (downScale > 1) {
             ascReaderDriver.setDownScale(downScale);
         }
-
         ascReaderDriver.setAs3DPoint(!extractAsPolygons);
-
         ascReaderDriver.setDeleteTable(deleteTable);
-
-        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
+        importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
     }
 
     /**
@@ -236,7 +255,6 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons, boolean deleteTable, String encoding, int zType) throws IOException, SQLException {
-        AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
         if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
@@ -248,7 +266,6 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
         ascReaderDriver.setEncoding(encoding);
         ascReaderDriver.setZType(zType);
         ascReaderDriver.setDeleteTable(deleteTable);
-
-        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
+        importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
     }
 }

@@ -118,23 +118,21 @@ public class OSMParser extends DefaultHandler {
      * @return
      * @throws SQLException
      */
-    public boolean read(String tableName, ProgressVisitor progress) throws SQLException {
+    public String[] read(String tableName, ProgressVisitor progress) throws SQLException {
         if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
             throw new SQLException(new IllegalArgumentException("This driver handle only .osm, .osm.gz and .osm.bz2 files"));
         }
-
         this.progress = progress.subProcess(100);
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        boolean success = false;
         connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, isH2);
+        String osmTableName = requestedTable.toString(isH2);
         if(deleteTable){
-            OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection), requestedTable.toString());
+            OSMTablesFactory.dropOSMTables(connection, isH2, osmTableName);
         }
-        String osmTableName = requestedTable.getTable();
         checkOSMTables(connection, isH2, requestedTable, osmTableName);
-        createOSMDatabaseModel(connection, isH2, requestedTable, osmTableName);
+        String[] outputOSMTableNames = createOSMDatabaseModel(connection, isH2, requestedTable, osmTableName);
 
         FileInputStream fs = null;
         try {
@@ -155,23 +153,25 @@ public class OSMParser extends DefaultHandler {
                         is.setEncoding(encoding);
                     }
                     parser.parse(is);
+                    return outputOSMTableNames;
                 } else if (fileName.getName().endsWith(".osm.gz")) {
                     InputSource is = new InputSource(new GZIPInputStream(fs));
                     if(encoding!=null && !encoding.isEmpty()){
                         is.setEncoding(encoding);
                     }
                     parser.parse(is);
+                    return outputOSMTableNames;
                 } else if (fileName.getName().endsWith(".osm.bz2")) {
                     InputSource is = new InputSource(new BZip2CompressorInputStream(fs));
                     if(encoding!=null && !encoding.isEmpty()){
                         is.setEncoding(encoding);
                     }
                     parser.parse(is);
+                    return outputOSMTableNames;
                 } else {
                     throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
                 }
             }
-            success = true;
         } catch (SAXException ex) {
             throw new SQLException(ex);
         } catch (IOException ex) {
@@ -217,8 +217,7 @@ public class OSMParser extends DefaultHandler {
             }            
             connection.setAutoCommit(true);
         }
-
-        return success;
+        return null;
     }
 
     /**
@@ -253,7 +252,7 @@ public class OSMParser extends DefaultHandler {
      * @param osmTableName
      * @throws SQLException
      */
-    private void createOSMDatabaseModel(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
+    private String[] createOSMDatabaseModel(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
         String nodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE, isH2);
         nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName, isH2);
         String nodeTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE_TAG, isH2);
@@ -274,6 +273,8 @@ public class OSMParser extends DefaultHandler {
         wayMemberPreparedStmt = OSMTablesFactory.createWayMemberTable(connection, wayMemberTableName);
         String relationMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION_MEMBER, isH2);
         relationMemberPreparedStmt = OSMTablesFactory.createRelationMemberTable(connection, relationMemberTableName);
+        return new String[]{nodeTableName,nodeTagTableName,wayTableName,wayTagTableName, wayNodeTableName, relationTableName, relationTagTableName,
+        nodeMemberTableName, wayMemberTableName, relationMemberTableName};
     }
 
     @Override

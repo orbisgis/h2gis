@@ -26,6 +26,7 @@ import org.h2.value.TypeInfo;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.dbf.internal.DbaseFileException;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
@@ -55,17 +56,18 @@ public class DBFDriverFunction implements DriverFunction {
     private static final int BATCH_MAX_SIZE = 200;
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName,  null,false,progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName,  null,false,progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName,  null, deleteFiles,progress);
+    public String[]  exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName,  null, deleteFiles,progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[]  exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection, tableReference, fileName, progress);
         if (!FileUtilities.isExtensionWellFormated(fileName, "dbf")) {
             throw new SQLException("Only .dbf extension is supported");
         }
@@ -109,6 +111,7 @@ public class DBFDriverFunction implements DriverFunction {
                         }
                     }
                     dbfDriver.close();
+                    return new String[]{tableReference};
 
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
@@ -116,21 +119,21 @@ public class DBFDriverFunction implements DriverFunction {
 
         } else {
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                String tableName = TableLocation.parse(tableReference, isH2).toString(isH2);
-                int recordCount = JDBCUtilities.getRowCount(connection, tableName);                
+                String outputTable = TableLocation.parse(tableReference, isH2).toString(isH2);
+                int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
                 // Read table content
                 Statement st = connection.createStatement();
                 JDBCUtilities.attachCancelResultSet(st, progress);
                 ProgressVisitor lineProgress = null;
                 if (!(progress instanceof EmptyProgressVisitor)) {
-                    try (ResultSet rs = st.executeQuery(String.format("select count(*) from %s", tableName))) {
+                    try (ResultSet rs = st.executeQuery(String.format("select count(*) from %s", outputTable))) {
                         if (rs.next()) {
                             lineProgress = progress.subProcess(rs.getInt(1));
                         }
                     }
                 }
                 try {
-                    try (ResultSet rs = st.executeQuery(String.format("select * from %s", tableName))) {
+                    try (ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable))) {
                         ResultSetMetaData resultSetMetaData = rs.getMetaData();
                         ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
                         DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
@@ -152,6 +155,7 @@ public class DBFDriverFunction implements DriverFunction {
                             }
                         }
                         dbfDriver.close();
+                        return new String[]{outputTable};
                     }
                 } finally {
                     st.close();
@@ -160,8 +164,8 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName,String encoding, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName,  encoding, false,progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName,String encoding, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName,  encoding, false,progress);
     }
 
     @Override
@@ -194,59 +198,39 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, progress);
-    }
-
-    /**
-     * @param connection Active connection, do not close this connection.
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path to read
-     * @param forceFileEncoding File encoding to use, null will use the provided file encoding in file header.
-     * @param progress monitor
-     * @throws SQLException Table write error
-     * @throws IOException File read error
-     */
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName,String forceFileEncoding, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName,forceFileEncoding, false, progress);
+    public String[] importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+       return importFile(connection, tableReference, fileName, null, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,
+    public  String[]  importFile(Connection connection, String tableReference, File fileName,String forceFileEncoding, ProgressVisitor progress) throws SQLException, IOException {
+        return importFile(connection, tableReference, fileName,forceFileEncoding, false, progress);
+    }
+
+    @Override
+    public  String[]  importFile(Connection connection, String tableReference, File fileName,
                            boolean deleteTables,ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName,null, deleteTables, progress);
+        return importFile(connection, tableReference, fileName,null, deleteTables, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (connection == null) {
-            throw new SQLException("The connection cannot be null.\n");
-        }
-        if (tableReference == null || tableReference.isEmpty()) {
-            throw new SQLException("The table name cannot be null or empty");
-        }
-        if (fileName == null) {
-            throw new SQLException("The file name cannot be null.\n");
-        }
-        if (progress == null) {
-            progress = new EmptyProgressVisitor();
-        }
+    public  String[]  importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection, tableReference,fileName,progress);
         if (FileUtilities.isFileImportable(fileName, "dbf")) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String outputTable = requestedTable.toString(isH2);
             if (deleteTables) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(isH2));
+                stmt.execute("DROP TABLE IF EXISTS " + outputTable);
                 stmt.close();
             }
             DBFDriver dbfDriver = new DBFDriver();
             dbfDriver.initDriverFromFile(fileName, options);
-            String parsedTable = requestedTable.toString(isH2);
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             ProgressVisitor copyProgress = progress.subProcess((int) (dbfDriver.getRowCount() / BATCH_MAX_SIZE));
             if (dbfHeader.getNumFields() == 0) {
-                JDBCUtilities.createEmptyTable(connection, parsedTable);
+                JDBCUtilities.createEmptyTable(connection, outputTable);
             } else {
                 try {
                     try ( // Build CREATE TABLE sql request
@@ -254,14 +238,14 @@ public class DBFDriverFunction implements DriverFunction {
                         List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
                         String types = getSQLColumnTypes(dbfHeader, isH2, otherCols);
                         String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
-                        st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
+                        st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", outputTable,
                                 types));
                     }
                     try {
                         connection.setAutoCommit(false);
                         int columnCount = dbfDriver.getFieldCount();
                         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                                String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
+                                String.format("INSERT INTO %s VALUES ( %s )", outputTable,
                                         getQuestionMark(dbfHeader.getNumFields() + 1)))) {
                             JDBCUtilities.attachCancelResultSet(preparedStatement, progress);
                             long batchSize = 0;
@@ -288,15 +272,17 @@ public class DBFDriverFunction implements DriverFunction {
                             connection.setAutoCommit(true);
                         }
                     } catch (Exception ex) {
-                        connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);
+                        connection.createStatement().execute("DROP TABLE IF EXISTS " + outputTable);
                         throw new SQLException(ex.getLocalizedMessage(), ex);
                     }
                 } finally {
                     dbfDriver.close();
                     copyProgress.endOfProgress();
                 }
+                return new String[]{outputTable};
             }
         }
+        return null;
     }
 
     private static class DBFType {

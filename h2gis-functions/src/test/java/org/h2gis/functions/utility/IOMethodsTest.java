@@ -100,7 +100,8 @@ public class IOMethodsTest {
         ioMethods.exportToFile(connection, "AREA", "target/area_export.shp", null, true);
         // Read this shape file to check values
         assertTrue(shpFile.exists());
-        ioMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
+        String[] tableNames = ioMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
+        assertEquals("TEST_TABLE", tableNames[0]);
         ResultSet res = st.executeQuery("SELECT * FROM test_table");
         assertTrue(res.next());
         assertEquals(1, res.getInt(1));
@@ -120,7 +121,7 @@ public class IOMethodsTest {
         assertThrows(SQLException.class, () -> {
             ioMethods.exportToFile(connection, "", "target/area_export.shp", null, true);
         });
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(SQLException.class, () -> {
             ioMethods.exportToFile(null, "", "target/area_export.shp", null, true);
         });
         assertThrows(SQLException.class, () -> {
@@ -154,7 +155,8 @@ public class IOMethodsTest {
             st.execute("CALL SHPWrite('target/area_export.shp', 'AREA', true)");
             // Read this shape file to check values
             assertTrue(shpFile.exists());
-            ioMethods.importFile(con, shpFile.getAbsolutePath(), "test_table", null, true);
+            String[] tableName = ioMethods.importFile(con, shpFile.getAbsolutePath(), "test_table", null, true);
+            assertEquals("test_table", tableName[0]);
             ResultSet res = con.createStatement().executeQuery("SELECT * FROM test_table");
             assertTrue(res.next());
             assertEquals(1, res.getInt(1));

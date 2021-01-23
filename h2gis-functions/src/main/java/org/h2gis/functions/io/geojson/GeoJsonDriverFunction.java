@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.functions.io.DriverManager;
 
 /**
  * GeoJSON driver to import a GeoJSON file and export a spatial table in a
@@ -68,62 +68,59 @@ public class GeoJsonDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
-        exportTable(connection,tableReference, fileName, null, false, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
+        return exportTable(connection,tableReference, fileName, null, false, progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection,tableReference, fileName, null, deleteFiles, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection,tableReference, fileName, null, deleteFiles, progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, boolean deleteFiles, ProgressVisitor progress) throws SQLException {
+        progress  = DriverManager.check(connection, tableReference, fileName, progress);
         GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection);
-        geoJsonDriver.write(progress,tableReference, fileName, encoding, deleteFiles);
+        try {
+            geoJsonDriver.write(progress, tableReference, fileName, encoding, deleteFiles);
+            return new String[]{fileName.getAbsolutePath()};
+        }catch (SQLException|IOException ex){
+            throw new SQLException(ex);
+        }
     }
 
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException{
-        exportTable(connection,tableReference, fileName, encoding, false, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException{
+        return exportTable(connection,tableReference, fileName, encoding, false, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (connection == null) {
-            throw new SQLException("The connection cannot be null.\n");
-        }
-        if (tableReference == null || tableReference.isEmpty()) {
-            throw new SQLException("The table name cannot be null or empty");
-        }
-        if (fileName == null) {
-            throw new SQLException("The file name cannot be null.\n");
-        }
-        if (progress == null) {
-            progress = new EmptyProgressVisitor();
-        }
+    public String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        DriverManager.check(connection,tableReference,fileName,progress);
         GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, fileName, options, deleteTables);
-        geoJsonReaderDriver.read(progress, tableReference);
+        String outputTable =  geoJsonReaderDriver.read(progress, tableReference);
+        if(outputTable==null){
+            return null;
+        }
+        return new String[]{outputTable};
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    public String[] importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        importFile(connection,  tableReference,  fileName, null, false,  progress);
+        return importFile(connection,  tableReference,  fileName, null, false,  progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,  String options,ProgressVisitor progress
+    public String[] importFile(Connection connection, String tableReference, File fileName,  String options,ProgressVisitor progress
                           ) throws SQLException, IOException {
-        importFile(connection,  tableReference,  fileName, options, false,  progress);
+        return importFile(connection,  tableReference,  fileName, options, false,  progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,
+    public String[] importFile(Connection connection, String tableReference, File fileName,
                            boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection,  tableReference,  fileName, null, deleteTables,  progress);
+        return importFile(connection,  tableReference,  fileName, null, deleteTables,  progress);
     }
-
-
 }

@@ -120,7 +120,6 @@ public class JsonWriteDriver {
      * @param fileName        Destination file.
      * @param deleteFile  True if the destination files should be deleted, false otherwise.
      * @param encoding    Encoding of the destination file.
-     * @param connection  Connection to the database.
      * @throws SQLException Exception thrown when an SQL error occurs.
      * @throws IOException  Exception when a file writing error occurs.
      */
@@ -262,8 +261,10 @@ public class JsonWriteDriver {
     private void jsonWrite(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding =  getEncoding(encoding);
         try {
-            final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
-            int recordCount = JDBCUtilities.getRowCount(connection, parse);
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            final TableLocation parse = TableLocation.parse(tableName, isH2);
+            String outputTable = parse.toString(isH2);
+            int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
             if (recordCount > 0) {
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
 
@@ -271,7 +272,7 @@ public class JsonWriteDriver {
                       Statement st = connection.createStatement()) {
                     JsonFactory jsonFactory = new JsonFactory();
                     JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
-                    ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
+                    ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
                     try {
                         ResultSetMetaData rsmd = rs.getMetaData();
                         int numColumns = rsmd.getColumnCount();
@@ -288,7 +289,6 @@ public class JsonWriteDriver {
                         copyProgress.endOfProgress();
                         jsonGenerator.flush();
                         jsonGenerator.close();
-
                     } finally {
                         rs.close();
                     }
