@@ -347,8 +347,8 @@ public class JDBCUtilities {
         boolean isLinked;
         try {
             if (rs.next()) {
-                String tableType = rs.getString("STORAGE_TYPE");
-                isLinked = tableType.equals("TABLE LINK");
+                String tableType = rs.getString("TABLE_TYPE");
+                isLinked = tableType.contains("TABLE LINK");
             } else {
                 throw new SQLException("The table " + location + " does not exists");
             }
@@ -921,10 +921,10 @@ public class JDBCUtilities {
         }
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
-                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
             ps.setObject(1, table.getTable());
             ps.setObject(2, table.getSchema("PUBLIC"));
             ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
@@ -977,32 +977,28 @@ public class JDBCUtilities {
         }
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
-                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?"
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.INDEX_NAME "
-                    + "IN (SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES  WHERE "
-                    + "INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? "
-                    + "AND  INFORMATION_SCHEMA.INDEXES.TABLE_NAME= ?  "
-                    + " AND INFORMATION_SCHEMA.INDEXES.INDEX_TYPE_NAME='SPATIAL INDEX')");
-            String tableName = table.getTable();
-            String schemaName = table.getSchema("PUBLIC");
-            ps.setObject(1, tableName);
-            ps.setObject(2, schemaName);
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
+            ps.setObject(1, table.getTable());
+            ps.setObject(2, table.getSchema("PUBLIC"));
             ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
-            ps.setObject(4, schemaName);
-            ps.setObject(5, tableName);
             ResultSet rs = ps.executeQuery();
-            return rs.next();
+            while(rs.next()) {
+                if(rs.getString("INDEX_TYPE_NAME").contains("SPATIAL")){
+                    return true;
+                }
+            }
+            return false;
         } else {
-            String query = "SELECT  cls.relname, am.amname "
-                    + "FROM  pg_class cls "
-                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
-                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
-                    + " where attname = ? and attrelid in "
-                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
-                    + "and a.indexname = b.relname)) and am.amname = 'gist' ;";
+            String query =  "SELECT  cls.relname, am.amname " +
+                    "FROM  pg_class cls " +
+                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                    " where attname = ? and attrelid in " +
+                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
+                    "and a.indexname = b.relname)) and am.amname = 'gist' ;";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setObject(1, columnName);
             ps.setObject(2, table.getSchema("public"));
@@ -1103,10 +1099,10 @@ public class JDBCUtilities {
         List<String> indexes = new ArrayList<>();
         boolean isH2 = isH2DataBase(connection);
         if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
-                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
             ps.setObject(1, table.getTable());
             ps.setObject(2, table.getSchema("PUBLIC"));
             ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));

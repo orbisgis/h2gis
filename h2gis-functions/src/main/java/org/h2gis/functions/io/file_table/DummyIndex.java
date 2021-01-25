@@ -21,9 +21,9 @@
 package org.h2gis.functions.io.file_table;
 
 
-import org.h2.command.query.AllColumnsForPlan;
-import org.h2.engine.SessionLocal;
-import org.h2.index.Index;
+import org.h2.command.dml.AllColumnsForPlan;
+import org.h2.engine.Session;
+import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
 import org.h2.index.IndexType;
 import org.h2.result.Row;
@@ -37,7 +37,7 @@ import org.h2.table.TableFilter;
  * When linked files are not available, this table index defines an empty table
  * @author Nicolas Fortin
  */
-public class DummyIndex extends Index {
+public class DummyIndex extends BaseIndex {
    
         
     public DummyIndex(Table table,int id, IndexColumn indexColumn) {
@@ -50,33 +50,33 @@ public class DummyIndex extends Index {
     }
 
     @Override
-    public void close(SessionLocal session) {
+    public void close(Session session) {
     }
 
     @Override
-    public void add(SessionLocal session, Row row) {
+    public void add(Session session, Row row) {
     }
 
     @Override
-    public void remove(SessionLocal session, Row row) {
+    public void remove(Session session, Row row) {
     }
 
     @Override
-    public Cursor find(SessionLocal session, SearchRow first, SearchRow last) {
+    public Cursor find(Session session, SearchRow first, SearchRow last) {
         return new DummyCursor();
     }
 
     @Override
-    public double getCost(SessionLocal session, int[] ints, TableFilter[] tableFilters, int i, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan) {
+    public double getCost(Session session, int[] ints, TableFilter[] tableFilters, int i, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan) {
         return 0;
     }
 
     @Override
-    public void remove(SessionLocal session) {
+    public void remove(Session session) {
     }
 
     @Override
-    public void truncate(SessionLocal session) {
+    public void truncate(Session session) {
     }
 
     @Override
@@ -85,7 +85,7 @@ public class DummyIndex extends Index {
     }
 
     @Override
-    public Cursor findFirstOrLast(SessionLocal session, boolean first) {
+    public Cursor findFirstOrLast(Session session, boolean first) {
         return new DummyCursor();
     }
 
@@ -95,12 +95,12 @@ public class DummyIndex extends Index {
     }
 
     @Override
-    public long getRowCount(SessionLocal session) {
+    public long getRowCount(Session session) {
         return 0;
     }
 
     @Override
-    public long getRowCountApproximation(SessionLocal session) {
+    public long getRowCountApproximation() {
         return 0;
     }
 
