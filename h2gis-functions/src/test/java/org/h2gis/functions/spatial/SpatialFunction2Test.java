@@ -127,7 +127,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON Z((10 10 1, 10 5 0, 8 5 10, 8 10 0, 10 10 0))'::GEOMETRY, "
                 + "radians(225),radians(45), 2 );");
         assertTrue(rs.next());
-        assertGeometryEquals("POLYGON ((8 10 0, 9.414213562373096 11.414213562373096 0, 11.414213562373096 11.414213562373096 0, 11.414213562373096 6.414213562373096 0, 10 5 0, 10 6.414213562373096 0.14142135623730961, 10 10 0, 9.414213562373096 10 0, 8 10 0))", rs.getBytes(1));
+        assertGeometryEquals("POLYGON ((8 10 0, 9.414213562373096 11.414213562373096 0, 11.414213562373096 11.414213562373096 0, 11.414213562373096 6.414213562373096 0, 10 5 0, 10 6.414213562373096 0, 10 10 0, 9.414213562373096 10 0, 8 10 0))", rs.getBytes(1));
         rs.close();
     }
 
@@ -453,7 +453,7 @@ public class SpatialFunction2Test {
                 + "</gml:coordinates>"
                 + "</gml:LineString>');");
         rs.next();
-        assertGeometryEquals("SRID=4269;LINESTRING (-71.16028 42.258729, -71.160837 42.259112, -71.161143 42.25932)", rs.getString(1));
+        assertGeometryEquals("LINESTRING (-71.16028 42.258729, -71.160837 42.259112, -71.161143 42.25932)", rs.getString(1));
         rs.close();
     }    
     

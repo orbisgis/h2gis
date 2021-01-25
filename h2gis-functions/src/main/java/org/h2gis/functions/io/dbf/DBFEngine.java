@@ -97,13 +97,13 @@ public class DBFEngine extends FileEngine<DBFDriver> {
                         return TypeInfo.TYPE_BIGINT;
                     }
                 } else {
-                   return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, null);
+                   return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, 0, null);
                 }
             case 'f':
             case 'F': // floating point number
             case 'o':
             case 'O': // floating point number
-                return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, null);
+                return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, 0, null);
             default:
                 throw new IOException("Unknown DBF field type "+header.getFieldType(i));
         }
