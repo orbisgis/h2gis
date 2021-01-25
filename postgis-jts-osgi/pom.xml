@@ -62,13 +62,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.orbisgis.postgis_jts_osgi.*</Public-Package>
-                        <Bundle-Activator>org.orbisgis.postgis_jts_osgi.Activator</Bundle-Activator>
+                        <Public-Package>org.h2gis.postgis_jts_osgi.*</Public-Package>
+                        <Bundle-Activator>org.h2gis.postgis_jts_osgi.Activator</Bundle-Activator>
                         <Bundle-Icon>postgis.png;size=32</Bundle-Icon>
                         <Embed-Dependency>postgresql;postgis-jdbc;postgis-jdbc-jtsparser;scope=compile;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
-                        <_exportcontents>org.postgresql.*;org.postgis.*;org.orbisgis.*</_exportcontents>
-                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
+                        <_exportcontents>org.postgresql.*;org.postgis.*;org.h2gis.*</_exportcontents>
                     </instructions>
                 </configuration>
             </plugin>

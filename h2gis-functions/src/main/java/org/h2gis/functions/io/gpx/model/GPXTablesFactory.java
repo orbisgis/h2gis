@@ -22,6 +22,8 @@ package org.h2gis.functions.io.gpx.model;
 
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -308,7 +310,8 @@ public class GPXTablesFactory {
      * @throws SQLException
      */
     public static void dropOSMTables(Connection connection, boolean isH2, TableLocation tablePrefix) throws SQLException {
-        String gpxTableName = tablePrefix.toString(isH2);
+        final DBTypes dbType = DBUtils.getDBType(connection);
+        String gpxTableName = tablePrefix.toString(dbType);
         String[] gpxTables = new String[]{WAYPOINT,ROUTE,ROUTEPOINT, TRACK, TRACKPOINT, TRACKSEGMENT};
         StringBuilder sb =  new StringBuilder("drop table if exists ");     
         String gpxTableSuffix = gpxTables[0];

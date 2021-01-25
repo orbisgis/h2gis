@@ -23,6 +23,8 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -221,10 +223,11 @@ public class AscReaderDriver {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(isH2));
+                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(dbType));
                 stmt.close();
             }
             try (FileInputStream inputStream = new FileInputStream(fileName)) {
@@ -235,10 +238,11 @@ public class AscReaderDriver {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(isH2));
+                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(dbType));
                 stmt.close();
             }
             FileInputStream fis = new FileInputStream(fileName);
@@ -262,6 +266,7 @@ public class AscReaderDriver {
      */
     private void readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, TableLocation requestedTable, boolean isH2,
             int srid) throws UnsupportedEncodingException, SQLException {
+        final DBTypes dbType = DBUtils.getDBType(connection);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream, BUFFER_SIZE), encoding));
         try {
             Scanner scanner = new Scanner(reader);
@@ -272,19 +277,19 @@ public class AscReaderDriver {
             PreparedStatement preparedStatement;
             if (as3DPoint) {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
+                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
                 } else {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
+                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
                 }
-                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(isH2)
+                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(dbType)
                         + "(the_geom, Z) VALUES (?, ?)");
             } else {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
+                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
                 } else {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
+                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
                 }
-                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(isH2)
+                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(dbType)
                         + "(the_geom, Z) VALUES (?, ?)");
             }
             // Read data

@@ -52,7 +52,7 @@ public class ST_PrecisionReducer extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static Geometry precisionReducer(Geometry geometry, int nbDec) throws SQLException {
-        if(geometry == null){
+        if (geometry == null) {
             return null;
         }
         if (nbDec < 0) {
@@ -60,7 +60,11 @@ public class ST_PrecisionReducer extends DeterministicScalarFunction {
         }
         PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(nbDec));
         GeometryPrecisionReducer geometryPrecisionReducer = new GeometryPrecisionReducer(pm);
-        return geometryPrecisionReducer.reduce(geometry);
+        try {
+            return geometryPrecisionReducer.reduce(geometry);
+        } catch (IllegalArgumentException ex) {
+            return geometry;
+        }
     }
 
     /**
