@@ -702,7 +702,7 @@ public class GeoJsonReaderDriver {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = TableLocation.capsIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
-            fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
+            fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
             JsonToken value = jp.nextToken();
             if (null != value) {
                 Integer dataType = cachedColumnNames.get(fieldName);
@@ -906,7 +906,7 @@ public class GeoJsonReaderDriver {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = TableLocation.capsIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
-            fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
+            fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
             JsonToken value = jp.nextToken();
             if (null == value) {
                 //ignore other value

@@ -420,11 +420,6 @@ public class IOMethods {
         boolean targetDBTypeIsH2 = JDBCUtilities.isH2DataBase(targetConnection);
         final DBTypes targetDBType = DBUtils.getDBType(targetConnection);
 
-        TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBTypeIsH2);
-        String inputTableName = sourceTableLocation.toString(sourceDBType);
-        if (!JDBCUtilities.tableExists(sourceConnection, sourceTableLocation)) {
-            throw new SQLException("The source table doesn't exist.\n");
-        }
         TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBTypeIsH2);
         String ouputTableName = targetTableLocation.toString(targetDBType);
 
@@ -444,7 +439,7 @@ public class IOMethods {
             if (!JDBCUtilities.tableExists(sourceConnection, sourceTableLocation)) {
                 throw new SQLException("The source table doesn't exist.\n");
             }
-            query = "SELECT * FROM " + sourceTableLocation.toString(sourceDBTypeIsH2);
+            query = "SELECT * FROM " + sourceTableLocation.toString(sourceDBType);
         }
 
         try {
