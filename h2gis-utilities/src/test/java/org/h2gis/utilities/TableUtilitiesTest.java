@@ -21,6 +21,8 @@
 package org.h2gis.utilities;
 
 import org.h2.tools.SimpleResultSet;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -79,14 +81,15 @@ public class TableUtilitiesTest {
     @Test
     public void columnParseInputTableTest() throws Exception {
         assertEquals("TATA", TableUtilities.parseInputTable(connection, "TATA")
-                .toString(JDBCUtilities.isH2DataBase(connection)));
+                .toString(DBUtils.getDBType(connection)));
     }
 
     @Test
     public void suffixTableLocationTest() throws Exception {
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         TableLocation tableLocation = TableLocation.parse("TATA", isH2);
-        assertEquals("TATA_SUFF", TableUtilities.suffixTableLocation(tableLocation, "_SUFF").toString(isH2));
+        assertEquals("TATA_SUFF",
+                TableUtilities.suffixTableLocation(tableLocation, "_SUFF").toString(DBUtils.getDBType(connection)));
     }
 
     @Test

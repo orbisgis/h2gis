@@ -41,6 +41,8 @@ import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
@@ -275,10 +277,11 @@ public class IOMethods {
                 }
                 if (!driverName.isEmpty()) {
                     boolean targetDBTypeIsH2 = JDBCUtilities.isH2DataBase(targetConnection);
+                    final DBTypes dbType = DBUtils.getDBType(targetConnection);
                     TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBTypeIsH2);
-                    String ouputTableName = targetTableLocation.toString(targetDBTypeIsH2);
+                    String ouputTableName = targetTableLocation.toString(dbType);
                     TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBTypeIsH2);
-                    String inputTableName = sourceTableLocation.toString(sourceDBTypeIsH2);
+                    String inputTableName = sourceTableLocation.toString(dbType);
                     if (delete) {
                         try ( //Drop table if exists
                                 Statement stmt = targetConnection.createStatement()) {
@@ -413,10 +416,12 @@ public class IOMethods {
         }
 
         boolean sourceDBTypeIsH2 = JDBCUtilities.isH2DataBase(sourceConnection);
+        final DBTypes sourceDBType = DBUtils.getDBType(sourceConnection);
         boolean targetDBTypeIsH2 = JDBCUtilities.isH2DataBase(targetConnection);
+        final DBTypes targetDBType = DBUtils.getDBType(targetConnection);
 
         TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBTypeIsH2);
-        String ouputTableName = targetTableLocation.toString(targetDBTypeIsH2);
+        String ouputTableName = targetTableLocation.toString(targetDBType);
 
         String query;
         //Check if the source table is a query
@@ -434,7 +439,7 @@ public class IOMethods {
             if (!JDBCUtilities.tableExists(sourceConnection, sourceTableLocation)) {
                 throw new SQLException("The source table doesn't exist.\n");
             }
-            query = "SELECT * FROM " + sourceTableLocation.toString(sourceDBTypeIsH2);
+            query = "SELECT * FROM " + sourceTableLocation.toString(sourceDBType);
         }
 
         try {
