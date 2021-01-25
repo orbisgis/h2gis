@@ -831,12 +831,26 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static String createTableDDL(ResultSet resultSet, String outputTableName) throws SQLException {
+        return createTableDDL(resultSet.getMetaData(), outputTableName);
+    }
+    
+    /**
+     * A simple method to generate a DDL create table command from 
+     * ResultSetMetaData
+     *
+     * Takes into account only data types
+     *
+     * @param outputTableName
+     * @param metadata
+     * @return a create table ddl command
+     * @throws SQLException
+     */
+    public static String createTableDDL(ResultSetMetaData metadata, String outputTableName) throws SQLException {
         if (outputTableName == null || outputTableName.isEmpty()) {
             throw new SQLException("The target table name cannot be null or empty");
         }
         final StringBuilder builder = new StringBuilder(256);
         builder.append("CREATE TABLE ").append(outputTableName);
-        ResultSetMetaData metadata = resultSet.getMetaData();
         int columnCount = metadata.getColumnCount();
         if (columnCount > 0) {
             builder.append(" (");

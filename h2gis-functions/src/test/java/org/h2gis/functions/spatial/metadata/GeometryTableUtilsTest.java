@@ -893,9 +893,9 @@ public class GeometryTableUtilsTest {
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(26))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
-        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar("+ Integer.MAX_VALUE+ "))");       
+        st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar)");       
         ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME VARCHAR)",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(1048576))",
                 ddl);
     }   
   
@@ -1271,5 +1271,23 @@ public class GeometryTableUtilsTest {
         rs = st.executeQuery(query);
         rs.next();
         TestUtilities.printValues(rs);
+    }
+    
+    @Test
+    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    public void testGetSRIDSameTableNames() throws SQLException {
+        Statement statement = conPost.createStatement();
+        statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; "
+                + "DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; "
+                + "CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
+        TableLocation tableLocation = TableLocation.parse("myschema.geomtable");        
+        assertEquals(4326, GeometryTableUtilities.getSRID(conPost, tableLocation));
+
+        statement.execute("DROP TABLE IF EXISTS GEOMTABLE; "
+                + "CREATE TABLE GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 2154));");
+        tableLocation = TableLocation.parse("geomtable");
+        assertEquals(2154, GeometryTableUtilities.getSRID(conPost, tableLocation));
+
+        statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
     }
 }

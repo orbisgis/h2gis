@@ -754,7 +754,7 @@ public class GeometryTableUtilities {
      */
     public static int getSRID(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
         int srid = 0;
-        try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema(),
+        try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema("PUBLIC"),
                 tableLocation.getTable(), geometryColumnName)) {
              while (geomResultSet.next()) {
                 srid = geomResultSet.getInt("srid");
@@ -776,7 +776,7 @@ public class GeometryTableUtilities {
      */
     public static int getSRID(Connection connection, TableLocation tableLocation) throws SQLException {
         int srid = 0;
-        try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema(),
+        try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema("PUBLIC"),
                 tableLocation.getTable())) {
             while (geomResultSet.next()) {
                 srid = geomResultSet.getInt("srid");

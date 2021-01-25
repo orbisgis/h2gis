@@ -3,15 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <!-- The Basics -->
-    <parent>
-        <groupId>org.orbisgis</groupId>
-        <artifactId>orbisparent</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
-    </parent>
+    <groupId>org.orbisgis</groupId>
     <artifactId>h2gis-parent</artifactId>
-    <version>${revision}</version>
+    <version>2.0.0-RC1</version>
     <packaging>pom</packaging>
     <modules>
         <module>h2gis-api</module>
@@ -31,35 +25,327 @@
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
-        <site.basedir>${project.basedir}</site.basedir>
-        <revision>2.0.0-RC1</revision>
+        
+        <maven-version>3.5.0</maven-version>
+        <java-version>1.8</java-version>
+
+        <!-- Dependencies versions -->
+        <commons-compress-version>1.20</commons-compress-version>
+        <commons-io-version>2.7</commons-io-version>
+        <cts-version>1.6.0-SNAPSHOT</cts-version>
+        <h2-version>2.0.201-SNAPSHOT</h2-version>
+        <jackson-core-version>2.11.0</jackson-core-version>
+        <java-network-analyzer-version>0.1.8-SNAPSHOT</java-network-analyzer-version>
+        <jts-core-version>1.18.0</jts-core-version>
+        <junit-version>5.7.0-M1</junit-version>
+        <osgi-compendium-version>5.0.0</osgi-compendium-version>
+        <osgi-core-version>6.0.0</osgi-core-version>
+        <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
+        <osgi-service-jdbc-version>1.0.0</osgi-service-jdbc-version>
+        <poly2tri-version>0.1.2</poly2tri-version>
+        <postgis-jdbc-version>2.5.0</postgis-jdbc-version>
+        <slf4j-version>1.7.30</slf4j-version>
+
+         <!-- Plugins versions -->
+        <exec-maven-version>3.0.0</exec-maven-version>
+        <gmaven-version>1.9.0</gmaven-version>
+        <jacoco-maven-version>0.8.6</jacoco-maven-version>
+        <maven-archetype-plugin-version>3.1.2</maven-archetype-plugin-version>
+        <maven-assembly-version>3.3.0</maven-assembly-version>
+        <maven-bundle-version>4.2.1</maven-bundle-version>
+        <maven-clean-version>3.1.0</maven-clean-version>
+        <maven-compiler-version>3.8.1</maven-compiler-version>
+        <maven-deploy-version>3.0.0-M1</maven-deploy-version>
+        <maven-enforcer-version>3.0.0-M3</maven-enforcer-version>
+        <maven-install-version>3.0.0-M1</maven-install-version>
+        <maven-jar-version>3.2.0</maven-jar-version>
+        <maven-javadoc-version>3.2.0</maven-javadoc-version>
+        <maven-resources-version>3.1.0</maven-resources-version>
+        <maven-site-version>3.9.0</maven-site-version>
+        <maven-surefire-version>3.0.0-M4</maven-surefire-version>
+        <version-maven>2.7</version-maven>
     </properties>
     
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io-version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>2.0.201-SNAPSHOT</version>
+                <version>${h2-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson-core-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.locationtech.jts</groupId>
                 <artifactId>jts-core</artifactId>
-                <version>1.18.0</version>
+                <version>${jts-core-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.postgis</groupId>
+                <artifactId>postgis-jdbc</artifactId>
+                <version>${postgis-jdbc-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>${osgi-compendium-version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi-core-version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.enterprise</artifactId>
+                <version>${osgi-enterprise-version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>poly2tri-core</artifactId>
+                <version>${poly2tri-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>poly2tri</artifactId>
+                <version>${poly2tri-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>java-network-analyzer</artifactId>
+                <version>${java-network-analyzer-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>cts</artifactId>
+                <version>${cts-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.service.jdbc</artifactId>
+                <version>${osgi-service-jdbc-version}</version>
+            </dependency>
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <!-- Build Settings -->
     <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Clean -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-version}</version>
+                </plugin>
+                <!-- Compilation -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-version}</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                    </configuration>
+                </plugin>
+                <!-- Test -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-version}</version>
+                    <configuration>
+                        <useSystemClassLoader>false</useSystemClassLoader>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>${maven-surefire-report-plugin-version}</version>
+                </plugin>
+                <!-- Generation of the OSGI bundle -->
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${maven-bundle-version}</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <instructions>
+                            <Bundle-Vendor>Lab-STICC - CNRS UMR 6285</Bundle-Vendor>
+                        </instructions>
+                    </configuration>
+                </plugin>
+                <!-- Deploy -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-version}</version>
+                </plugin>
+                <!-- Install -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven-install-version}</version>
+                </plugin>
+                <!-- Tool version check -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-version}</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-versions</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <bannedPlugins>
+                                        <!-- Will only display a warning but does not fail the build. -->
+                                        <level>WARN</level>
+                                        <excludes>
+                                            <exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
+                                        </excludes>
+                                    </bannedPlugins>
+                                    <requireMavenVersion>
+                                        <version>${maven-version}</version>
+                                    </requireMavenVersion>
+                                    <requireJavaVersion>
+                                        <version>${java-version}</version>
+                                    </requireJavaVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Versions check -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${version-maven}</version>
+                    <configuration>
+                        <rulesUri>
+                            https://raw.githubusercontent.com/orbisgis/orbisgis-parents/master/orbisparent/maven-version-rules.xml
+                        </rulesUri>
+                    </configuration>
+                </plugin>
+                <!-- Resources management -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-version}</version>
+                    <executions>
+                        <execution>
+                            <id>copy-sitedescriptor</id>
+                            <phase>pre-site</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${basedir}/src/site/</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>${site.basedir}/src/site/</directory>
+                                        <includes>
+                                            <include>**/site.xml</include>
+                                        </includes>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Test coverage -->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Javadoc generation -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-version}</version>
+                </plugin>
+                <!-- Assemble the project with dependencies -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven-assembly-version}</version>
+                </plugin>
+                <!-- Package the project into a JAR file -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -75,30 +361,66 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-version}</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
+                <version>${version-maven}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-version}</version>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-version}</version>
+                    <executions>
+                        <execution>
+                            <id>copy-sitedescriptor</id>
+                            <phase>pre-site</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${basedir}/src/site/</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>${site.basedir}/src/site/</directory>
+                                        <includes>
+                                            <include>**/site.xml</include>
+                                        </includes>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-version}</version>
             </plugin>
         </plugins>
     </build>
@@ -147,7 +469,7 @@
         <connection>scm:git:git://github.com/orbisgis/H2GIS</connection>
     </scm>
 
-    <repositories>
+     <repositories>
         <repository>
             <id>orbisgis-release</id>
             <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release</url>
@@ -170,20 +492,40 @@
         </repository>
     </repositories>
 
-    <distributionManagement>
-        <site>
-            <id>orbisgis-devs-website</id>
-            <name>Devs Website</name>
-            <url>file:/var/www/html/${project.artifactId}</url>
-        </site>
-    </distributionManagement>
-
     <profiles>
         <profile>
             <id>standalone</id>
             <modules>
                 <module>h2gis-dist</module>
             </modules>
+        </profile>
+             <profile>
+            <id>h2gis-deploy</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>h2gis-deploy-snapshots</id>
+                    <name>Internal Snaphots</name>
+                    <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>h2gis-deploy-release</id>
+                    <name>Internal Releases</name>
+                    <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>maven-deploy</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>sonatype-nexus-snapshots</id>
+                    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>sonatype-nexus-staging</id>
+                    <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
         </profile>
     </profiles>
 </project>

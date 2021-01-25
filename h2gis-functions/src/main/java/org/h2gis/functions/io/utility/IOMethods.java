@@ -43,19 +43,19 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
+import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods to :
- * 
- * 
- *   - import, export a file in a database (H2GIS, POSTGIS)
- *   - export a table from another database (H2GIS, POSTGIS)
- *   - link a file or table (H2GIS only)
  *
- * 
+ *
+ * - import, export a file in a database (H2GIS, POSTGIS) - export a table from
+ * another database (H2GIS, POSTGIS) - link a file or table (H2GIS only)
+ *
+ *
  * @author Erwan Bocher, CNRS, 2020
  * @author Sylvain PALOMINOS (UBS 2019)
  * @author Nicolas Fortin (Univ. Gustave Eiffel 2020)
@@ -69,8 +69,8 @@ public class IOMethods {
     private static final String UTF_ENCODING = "UTF-8";
 
     /**
-     * Create a new instance of IOMethods in order to be able to use custom file drivers
-     * Add built-in supported drivers
+     * Create a new instance of IOMethods in order to be able to use custom file
+     * drivers Add built-in supported drivers
      */
     public IOMethods() {
         driverFunctionList.add(new CSVDriverFunction());
@@ -111,7 +111,7 @@ public class IOMethods {
      */
     public List<String> getAllExportDriverSupportedExtensions() {
         List<String> extensions = new ArrayList<>();
-        for(DriverFunction f : driverFunctionList) {
+        for (DriverFunction f : driverFunctionList) {
             extensions.addAll(Arrays.asList(f.getExportFormats()));
         }
         return extensions;
@@ -122,7 +122,7 @@ public class IOMethods {
      */
     public List<String> getAllImportDriverSupportedExtensions() {
         List<String> extensions = new ArrayList<>();
-        for(DriverFunction f : driverFunctionList) {
+        for (DriverFunction f : driverFunctionList) {
             extensions.addAll(Arrays.asList(f.getImportFormats()));
         }
         return extensions;
@@ -134,15 +134,15 @@ public class IOMethods {
      */
     public DriverFunction getExportDriverFromFile(File file) {
         String path = file.getAbsolutePath();
-        for(DriverFunction f : driverFunctionList) {
-            for(String ext : f.getExportFormats()) {
-                if(path.endsWith("." + ext)) {
+        for (DriverFunction f : driverFunctionList) {
+            for (String ext : f.getExportFormats()) {
+                if (path.endsWith("." + ext)) {
                     return f;
                 }
             }
         }
         LOGGER.error("Unsupported file format.\n"
-                + "Supported formats are : ["+String.join(",", getAllExportDriverSupportedExtensions())+"].");
+                + "Supported formats are : [" + String.join(",", getAllExportDriverSupportedExtensions()) + "].");
         return null;
     }
 
@@ -152,15 +152,15 @@ public class IOMethods {
      */
     public DriverFunction getImportDriverFromFile(File file) {
         String path = file.getAbsolutePath();
-        for(DriverFunction f : driverFunctionList) {
-            for(String ext : f.getImportFormats()) {
-                if(path.endsWith(ext)) {
+        for (DriverFunction f : driverFunctionList) {
+            for (String ext : f.getImportFormats()) {
+                if (path.endsWith(ext)) {
                     return f;
                 }
             }
         }
         LOGGER.error("Unsupported file format.\n"
-                + "Supported formats are : ["+String.join(",", getAllImportDriverSupportedExtensions())+"].");
+                + "Supported formats are : [" + String.join(",", getAllImportDriverSupportedExtensions()) + "].");
         return null;
     }
 
@@ -192,7 +192,7 @@ public class IOMethods {
                     enc, deleteFile, new EmptyProgressVisitor());
 
         } catch (SQLException | IOException e) {
-           throw new SQLException("Cannot save the table.\n", e);
+            throw new SQLException("Cannot save the table.\n", e);
         }
     }
 
@@ -223,7 +223,7 @@ public class IOMethods {
             } catch (SQLException e1) {
                 throw new SQLException("Unable to rollback.", e1);
             }
-            throw new SQLException("Cannot import the file.", e);            
+            throw new SQLException("Cannot import the file.", e);
         }
     }
 
@@ -238,12 +238,13 @@ public class IOMethods {
      * @param targetTable The name of the table in the H2GIS database
      * @param delete True to delete the table if exists
      * @throws java.sql.SQLException
+     * @return  the name of the linked table
      */
-    public static void linkedTable(Connection targetConnection,Map<String, String> databaseProperties, String sourceTable, String targetTable,
-            boolean delete ) throws SQLException {       
+    public static String linkedTable(Connection targetConnection, Map<String, String> databaseProperties, String sourceTable, String targetTable,
+            boolean delete) throws SQLException {
         if (targetConnection == null) {
             throw new SQLException("The connection to the output database cannot be null.\n");
-        }        
+        }
         if (sourceTable == null || sourceTable.isEmpty()) {
             throw new SQLException("The source table cannot be null or empty.\n");
         }
@@ -270,9 +271,9 @@ public class IOMethods {
                     sourceDBTypeIsH2 = true;
                 } else if (url.startsWith("postgresql_h2")) {
                     driverName = "org.h2gis.postgis_jts.Driver";
-                }else if (url.startsWith("postgresql")) {
+                } else if (url.startsWith("postgresql")) {
                     driverName = "org.h2gis.postgis_jts.Driver";
-                    jdbc_url ="jdbc:postgresql_h2"+jdbc_url.substring("jdbc:postgresql".length());
+                    jdbc_url = "jdbc:postgresql_h2" + jdbc_url.substring("jdbc:postgresql".length());
                 }
                 if (!driverName.isEmpty()) {
                     boolean targetDBTypeIsH2 = JDBCUtilities.isH2DataBase(targetConnection);
@@ -293,7 +294,7 @@ public class IOMethods {
                                 targetConnection.rollback();
                             } catch (SQLException e1) {
                                 throw new SQLException("Unable to rollback.", e1);
-                            }                            
+                            }
                             throw new SQLException("Cannot drop the table", e);
                         }
                     }
@@ -312,6 +313,7 @@ public class IOMethods {
                         }
                         throw new SQLException("Cannot linked the table", e);
                     }
+                    return ouputTableName;
                 } else {
                     throw new SQLException("This database is not yet supported");
                 }
@@ -319,7 +321,7 @@ public class IOMethods {
                 throw new SQLException("JDBC URL must start with jdbc:");
             }
         } else {
-           throw new SQLException("The URL of the external database cannot be null");
+            throw new SQLException("The URL of the external database cannot be null");
         }
     }
 
@@ -365,7 +367,7 @@ public class IOMethods {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-               throw new SQLException("Unable to rollback.", e1);
+                throw new SQLException("Unable to rollback.", e1);
             }
             throw new SQLException("Cannot link the file", e);
         }
@@ -383,8 +385,9 @@ public class IOMethods {
      * @param batch_size batch size value before sending the data
      *
      * @throws java.sql.SQLException
+     * @return name of the export table formatted according the database target
      */
-    public static void exportToDataBase(Connection sourceConnection, String sourceTable,
+    public static String exportToDataBase(Connection sourceConnection, String sourceTable,
             Connection targetConnection, String targetTable, int mode, int batch_size) throws SQLException {
         if (sourceConnection == null) {
             throw new SQLException("The connection to the source database cannot be null.\n");
@@ -425,7 +428,7 @@ public class IOMethods {
         TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBTypeIsH2);
         String ouputTableName = targetTableLocation.toString(targetDBType);
 
-        String query = "SELECT * FROM " + inputTableName;
+        String query;
         //Check if the source table is a query
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
@@ -437,6 +440,18 @@ public class IOMethods {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM MYTATBLE)'.");
             }
         } else {
+            TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBTypeIsH2);
+            if (!JDBCUtilities.tableExists(sourceConnection, sourceTableLocation)) {
+                throw new SQLException("The source table doesn't exist.\n");
+            }
+            query = "SELECT * FROM " + sourceTableLocation.toString(sourceDBTypeIsH2);
+        }
+
+        try {
+            Statement inputStat = sourceConnection.createStatement();
+            ResultSet inputRes = inputStat.executeQuery(query);
+            ResultSetMetaData inputMetadata = inputRes.getMetaData();
+
             boolean isTargetAutoCommit = targetConnection.getAutoCommit();
             targetConnection.setAutoCommit(false);
             if (mode == -1) {
@@ -454,8 +469,7 @@ public class IOMethods {
                     throw new SQLException("Cannot drop the table", e);
                 }
                 //Re-create the table
-                String ddlCommand = JDBCUtilities.createTableDDL(sourceConnection,
-                        inputTableName, ouputTableName);
+                String ddlCommand = JDBCUtilities.createTableDDL(inputMetadata, ouputTableName);
                 if (!ddlCommand.isEmpty()) {
                     try (Statement outputST = targetConnection.createStatement()) {
                         outputST.execute(ddlCommand);
@@ -475,8 +489,7 @@ public class IOMethods {
                     throw new SQLException("The target table already exists.\n" + ""
                             + "Please use a -1 (delete) or 2 (insert) mode to export the table");
                 }
-                String ddlCommand = JDBCUtilities.createTableDDL(sourceConnection,
-                        inputTableName, ouputTableName);
+                String ddlCommand = JDBCUtilities.createTableDDL(inputMetadata, ouputTableName);
                 if (!ddlCommand.isEmpty()) {
                     try (Statement outputST = targetConnection.createStatement()) {
                         outputST.execute(ddlCommand);
@@ -500,64 +513,97 @@ public class IOMethods {
                     }
                 }
             }
-
+            PreparedStatement preparedStatement = null;
             try {
-                PreparedStatement preparedStatement = null;
-                ResultSet inputRes = null;
-                try {
-                    Statement inputStat = sourceConnection.createStatement();
-                    inputRes = inputStat.executeQuery(query);
-                    int columnsCount = inputRes.getMetaData().getColumnCount();
-                    StringBuilder insertTable = new StringBuilder("INSERT INTO ");
-                    insertTable.append(ouputTableName).append(" VALUES(?");
-                    for (int i = 1; i < columnsCount; i++) {
-                        insertTable.append(",").append("?");
-                    }
-                    insertTable.append(")");
+                int columnsCount = inputMetadata.getColumnCount();
+                HashMap<String, Integer> geomColumnAndSRID = new HashMap<>();
+                StringBuilder insertTable = new StringBuilder("INSERT INTO ");
+                insertTable.append(ouputTableName).append(" VALUES(?");
+                for (int i = 1; i < columnsCount; i++) {
+                    insertTable.append(",").append("?");
+                }
+                insertTable.append(")");
 
-                    preparedStatement = targetConnection.prepareStatement(insertTable.toString());
-                    //Check the first row in order to limit the batch size if the query doesn't work
-                    inputRes.next();
+                preparedStatement = targetConnection.prepareStatement(insertTable.toString());
+                //Check the first row in order to limit the batch size if the query doesn't work
+                inputRes.next();
+                for (int i = 0; i < columnsCount; i++) {
+                    int index = i + 1;
+                    Object value = inputRes.getObject(index);
+                    if(inputMetadata.getColumnTypeName(index).equalsIgnoreCase("GEOMETRY")) {
+                        geomColumnAndSRID.put(inputMetadata.getColumnName(index), ((Geometry) value).getSRID());
+                    }
+                    preparedStatement.setObject(index, value);
+                }
+                preparedStatement.execute();
+                long batchSize = 0;
+                while (inputRes.next()) {
                     for (int i = 0; i < columnsCount; i++) {
-                        preparedStatement.setObject(i + 1, inputRes.getObject(i + 1));
+                        int index = i + 1;
+                        Object value = inputRes.getObject(index);
+                        String columnName = inputMetadata.getColumnName(index);
+                         if(geomColumnAndSRID.containsKey(columnName)) {
+                             Geometry geometry = (Geometry) value;
+                             int currentSRID = geometry.getSRID();
+                             Integer tmpSRID = geomColumnAndSRID.get(columnName);
+                             if (tmpSRID != currentSRID) {
+                                 geomColumnAndSRID.remove(inputMetadata.getColumnName(index));
+                             }
+                         }
+                       preparedStatement.setObject(index, value);
                     }
-                    preparedStatement.execute();
-                    long batchSize = 0;
-                    while (inputRes.next()) {
-                        for (int i = 0; i < columnsCount; i++) {
-                            preparedStatement.setObject(i + 1, inputRes.getObject(i + 1));
-                        }
-                        preparedStatement.addBatch();
-                        batchSize++;
-                        if (batchSize >= batch_size) {
-                            preparedStatement.executeBatch();
-                            preparedStatement.clearBatch();
-                            batchSize = 0;
-                        }
-                    }
-                    if (batchSize > 0) {
+                    preparedStatement.addBatch();
+                    batchSize++;
+                    if (batchSize >= batch_size) {
                         preparedStatement.executeBatch();
+                        preparedStatement.clearBatch();
+                        batchSize = 0;
                     }
-                } catch (SQLException e) {
-                    try {
-                        targetConnection.rollback();
-                    } catch (SQLException e1) {
-                        throw new SQLException("Unable to rollback.", e1);
+                }
+                if (batchSize > 0) {
+                    preparedStatement.executeBatch();
+                }
+                //Alter SRID
+                if(!geomColumnAndSRID.isEmpty()){
+                    StringBuilder querySRID = new StringBuilder();
+                    for (Map.Entry<String, Integer> entry : geomColumnAndSRID.entrySet()) {
+                        String fieldName = TableLocation.capsIdentifier(entry.getKey(), targetDBTypeIsH2);
+                        Integer srid = entry.getValue();
+                        querySRID.append("ALTER TABLE ").append(ouputTableName).append(" ALTER COLUMN ").append(fieldName);
+                        querySRID.append(" TYPE GEOMETRY(GEOMETRY, ").append(srid).append(") USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(");\n");
                     }
-                    throw new SQLException("Cannot insert the data in the table", e);
-                } finally {
-                    if (preparedStatement != null) {
-                        preparedStatement.close();
+
+                    try (Statement outputST = targetConnection.createStatement()) {
+                        outputST.execute(querySRID.toString());
+                        targetConnection.commit();
+                    } catch (SQLException e) {
+                        try {
+                            targetConnection.rollback();
+                        } catch (SQLException e1) {
+                            LOGGER.error("Unable to rollback.", e1);
+                        }
+                        throw new SQLException("Cannot alter the table with the SRID", e);
                     }
-                    if (inputRes != null) {
-                        inputRes.close();
-                    }
-                    targetConnection.setAutoCommit(isTargetAutoCommit);
 
                 }
             } catch (SQLException e) {
-                throw new SQLException("Cannot save the table " + sourceTable + " to the " + targetTable + "\n", e);
+                try {
+                    targetConnection.rollback();
+                } catch (SQLException e1) {
+                    throw new SQLException("Unable to rollback.", e1);
+                }
+                throw new SQLException("Cannot insert the data in the table", e);
+            } finally {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                targetConnection.setAutoCommit(isTargetAutoCommit);
+
             }
+        } catch (SQLException e) {
+            throw new SQLException("Cannot save the table " + sourceTable + " to the " + targetTable + "\n", e);
+
         }
+        return ouputTableName;
     }
 }
