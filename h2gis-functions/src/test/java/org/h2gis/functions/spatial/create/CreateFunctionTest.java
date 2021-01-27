@@ -697,6 +697,60 @@ public class CreateFunctionTest {
     }
 
     @Test
+    public void testST_MakeGridColumnsRows() throws Exception {
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 2, true);");
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select * from grid;");
+        rs.next();
+        assertGeometryEquals("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    @Test
+    public void testST_MakeGridColumnsRows2() throws Exception {
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 2, true);");
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 2);
+        rs.close();
+        rs = st.executeQuery("select * from grid;");
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 0, 0 1, 2 1, 2 0, 0 0))",rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 1, 0 2, 2 2, 2 1, 0 1)) ",rs.getObject(1));
+        rs.next();
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    @Test
+    public void testST_MakeGridColumnsRows3() throws Exception {
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 1, true);");
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 2);
+        rs.close();
+        rs = st.executeQuery("select * from grid;");
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 0, 0 2, 1 2, 1 0, 0 0))",rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 0, 1 2, 2 2, 2 0, 1 0))",rs.getObject(1));
+        rs.next();
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    @Test
     public void test_ST_MakePolygon1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY );");
         rs.next();
