@@ -21,6 +21,8 @@ package org.h2gis.utilities;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.junit.jupiter.api.*;
 
 import java.beans.PropertyChangeListener;
@@ -170,8 +172,8 @@ public class JDBCUtilitiesTest {
 
     @Test
     public void isH2() throws SQLException {
-        assertTrue(JDBCUtilities.isH2DataBase(connection));
-        assertTrue(JDBCUtilities.isH2DataBase(new ConnectionWrapper(connection)));
+        assertNotNull(DBUtils.getDBType(connection));
+        assertNotNull(DBUtils.getDBType(new ConnectionWrapper(connection)));
     }
 
     @Test
@@ -320,7 +322,7 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE INDEX ON TEST_INDEX(idx)");
         st.execute("CREATE SPATIAL INDEX ON TEST_INDEX (spatial_idx)");
         String tableName = "test_index";
-        TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+        TableLocation table = TableLocation.parse(tableName, DBUtils.getDBType(connection));
         assertFalse(JDBCUtilities.isIndexed(connection, tableName, "no_idx"));
         assertFalse(JDBCUtilities.isIndexed(connection, table, "no_idx"));
         assertTrue(JDBCUtilities.isIndexed(connection, tableName, "idx"));
@@ -337,7 +339,7 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE SPATIAL INDEX ON TEST_INDEX (spatial_idx)");
 
         String tableName = "test_index";
-        TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+        TableLocation table = TableLocation.parse(tableName, DBUtils.getDBType(connection));
 
         assertFalse(JDBCUtilities.isSpatialIndexed(connection, tableName, "no_idx"));
         assertFalse(JDBCUtilities.isSpatialIndexed(connection, table, "no_idx"));
@@ -353,7 +355,7 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE TABLE TEST_INDEX(no_idx GEOMETRY, idx GEOMETRY, spatial_idx GEOMETRY)");
 
         String tableName = "test_index";
-        TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+        TableLocation table = TableLocation.parse(tableName, DBUtils.getDBType(connection));
 
         assertTrue(JDBCUtilities.createIndex(connection, table, "idx"));
         assertTrue(JDBCUtilities.isIndexed(connection, table, "idx"));
@@ -369,7 +371,7 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE TABLE TEST_INDEX(no_idx GEOMETRY, idx GEOMETRY, spatial_idx GEOMETRY)");
 
         String tableName = "test_index";
-        TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+        TableLocation table = TableLocation.parse(tableName, DBUtils.getDBType(connection));
 
         assertTrue(JDBCUtilities.createSpatialIndex(connection, table, "idx"));
         assertTrue(JDBCUtilities.isSpatialIndexed(connection, table, "idx"));
@@ -387,7 +389,7 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE SPATIAL INDEX ON TEST_INDEX (spatial_idx)");
 
         String tableName = "test_index";
-        TableLocation table = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+        TableLocation table = TableLocation.parse(tableName, DBUtils.getDBType(connection));
 
         assertTrue(JDBCUtilities.isIndexed(connection, table, "idx"));
         assertTrue(JDBCUtilities.isIndexed(connection, table, "spatial_idx"));

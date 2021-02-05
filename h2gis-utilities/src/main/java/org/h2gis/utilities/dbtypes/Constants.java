@@ -37,6 +37,8 @@ public abstract class Constants {
     public static final String H2_JDBC_PROTOCOL = "h2";
     /** PostgreSQL JDBC protocol. */
     public static final String POSTGRESQL_JDBC_PROTOCOL = "postgresql";
+    /** PostgreSQL_H2 JDBC protocol. */
+    public static final String POSTGRESQL_H2_JDBC_PROTOCOL = "postgresql_h2";
     /** PostGIS JDBC protocol. */
     public static final String POSTGIS_JDBC_PROTOCOL = "postgresql_postGIS";
 
@@ -52,6 +54,7 @@ public abstract class Constants {
 
     static {
         SCHEME_DBTYPE_MAP.put(H2_JDBC_PROTOCOL, H2);
+        SCHEME_DBTYPE_MAP.put(POSTGRESQL_H2_JDBC_PROTOCOL, H2);
         SCHEME_DBTYPE_MAP.put(POSTGRESQL_JDBC_PROTOCOL, POSTGRESQL);
         SCHEME_DBTYPE_MAP.put(POSTGIS_JDBC_PROTOCOL, POSTGIS);
     }

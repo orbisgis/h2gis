@@ -24,6 +24,7 @@ import org.h2gis.functions.TestUtilities;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
@@ -497,7 +498,7 @@ public class GeometryTableUtilsTest {
         st.execute("drop schema if exists blah");
         st.execute("create schema blah");
         st.execute("create table blah.testSFSUtilities(id integer, the_geom GEOMETRY(point))");
-        LinkedHashMap<String, Integer> geomFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, TableLocation.parse("blah.testSFSUtilities", true));
+        LinkedHashMap<String, Integer> geomFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, TableLocation.parse("blah.testSFSUtilities", DBTypes.H2GIS));
         assertEquals(1, geomFields.size());
         Map.Entry<String, Integer> entry = geomFields.entrySet().iterator().next();
         assertEquals("THE_GEOM", entry.getKey());
@@ -554,7 +555,7 @@ public class GeometryTableUtilsTest {
 
     @Test
     public void testGeometryType() throws SQLException {
-        TableLocation tableLocation = TableLocation.parse("GEOMTABLE", true);
+        TableLocation tableLocation = TableLocation.parse("GEOMTABLE", DBTypes.H2);
         assertEquals(GeometryTypeCodes.GEOMETRY,
                 GeometryTableUtilities.getMetaData(connection, tableLocation, "GEOM").geometryTypeCode);
         assertEquals(GeometryTypeCodes.POINTZM,
@@ -680,7 +681,7 @@ public class GeometryTableUtilsTest {
         st.execute("insert into geo_point VALUES('POINT(0 0)')");
         GeometryMetaData geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals(0, geomMetadata.getSRID());
-        GeometryTableUtilities.alterSRID(connection, TableLocation.parse("GEO_POINT", true), "THE_GEOM", 4326);
+        GeometryTableUtilities.alterSRID(connection, TableLocation.parse("GEO_POINT", DBTypes.H2), "THE_GEOM", 4326);
         geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals("GEOMETRY(POINT,4326)", geomMetadata.getSQL());
         assertEquals(4326, geomMetadata.getSRID());
@@ -916,7 +917,7 @@ public class GeometryTableUtilsTest {
                 + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
 
         st.execute(sqlData);
-        TableLocation location = TableLocation.parse("public.building_indicators", true);
+        TableLocation location = TableLocation.parse("public.building_indicators", DBTypes.H2);
         Geometry env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"the_geom"});
         WKTReader reader = new WKTReader();
         Geometry expectedGeom = reader.read("POLYGON ((576555.1334797409 5384506.127270323, 576555.1334797409 5384648.519150911, 576646.7754414822 5384648.519150911, 576646.7754414822 5384506.127270323, 576555.1334797409 5384506.127270323))");
@@ -1016,7 +1017,7 @@ public class GeometryTableUtilsTest {
                 + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
 
         st.execute(sqlData);
-        TableLocation location = TableLocation.parse("public.building_indicators", true);
+        TableLocation location = TableLocation.parse("public.building_indicators", DBTypes.H2);
         Geometry env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"the_geom"}, "WHERE id_build=1164");
         WKTReader reader = new WKTReader();
         Geometry expectedGeom = reader.read("POLYGON ((576569.6799396832 5384553.281278896, 576569.6799396832 5384560.202691146, 576584.3405324102 5384560.202691146, 576584.3405324102 5384553.281278896, 576569.6799396832 5384553.281278896))");

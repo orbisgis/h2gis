@@ -69,7 +69,6 @@ public class GeoJsonReaderDriver {
     boolean hasGeometryField = false;
     private static final Logger log = LoggerFactory.getLogger(GeoJsonReaderDriver.class);
     private int parsedSRID = 0;
-    private boolean isH2;
     private DBTypes dbType;
     private TableLocation tableLocation;
     private LinkedHashMap<String, Integer> cachedColumnNames;
@@ -108,9 +107,8 @@ public class GeoJsonReaderDriver {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.dbType = DBUtils.getDBType(connection);
-            this.tableLocation = TableLocation.parse(tableReference, isH2);
+            this.tableLocation = TableLocation.parse(tableReference, dbType);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
@@ -125,9 +123,8 @@ public class GeoJsonReaderDriver {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.dbType = DBUtils.getDBType(connection);
-            this.tableLocation = TableLocation.parse(tableReference, isH2);
+            this.tableLocation = TableLocation.parse(tableReference, dbType);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation.toString(dbType));
@@ -254,7 +251,7 @@ public class GeoJsonReaderDriver {
                 cachedColumnIndex.put(columnName, i++);
                 createTable.append(",").append(columns.getKey()).append(" ").append(getSQLTypeName(columnType));
                 if(columnType==Types.ARRAY){
-                    if(isH2){
+                    if(dbType == DBTypes.H2 || dbType == DBTypes.H2GIS){
                         insertTable.append(",").append(" ? FORMAT json");
                     }else {
                         insertTable.append(",").append("cast(? as json)");
@@ -701,7 +698,7 @@ public class GeoJsonReaderDriver {
     private void parsePropertiesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.capsIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
+            String fieldName = TableLocation.capsIdentifier(jp.getText(), dbType); //FIELD_NAME columnName
             fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
             JsonToken value = jp.nextToken();
             if (null != value) {
@@ -905,7 +902,7 @@ public class GeoJsonReaderDriver {
     private void parseProperties(JsonParser jp, Object[] values) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.capsIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
+            String fieldName = TableLocation.capsIdentifier(jp.getText(), dbType); //FIELD_NAME columnName
             fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
             JsonToken value = jp.nextToken();
             if (null == value) {

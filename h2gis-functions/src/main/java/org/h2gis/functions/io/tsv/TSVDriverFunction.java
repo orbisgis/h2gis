@@ -128,9 +128,8 @@ public class TSVDriverFunction implements DriverFunction {
                     } else if (fileName.exists()) {
                         throw new IOException("The gz file already exist.");
                     }
-                    final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                     final DBTypes dbType = DBUtils.getDBType(connection);
-                    TableLocation location = TableLocation.parse(tableReference, isH2);                    
+                    TableLocation location = TableLocation.parse(tableReference, dbType);
                     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                             new GZIPOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
@@ -147,7 +146,7 @@ public class TSVDriverFunction implements DriverFunction {
                     }
                     final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                     final DBTypes dbType = DBUtils.getDBType(connection);
-                    TableLocation location = TableLocation.parse(tableReference, isH2);
+                    TableLocation location = TableLocation.parse(tableReference, dbType);
                     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                             new ZipOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
@@ -169,9 +168,8 @@ public class TSVDriverFunction implements DriverFunction {
                 } else if (fileName.exists()) {
                     throw new IOException("The tsv file already exist.");
                 }
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 final DBTypes dbType = DBUtils.getDBType(connection);
-                TableLocation location = TableLocation.parse(tableReference, isH2);
+                TableLocation location = TableLocation.parse(tableReference, dbType);
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
@@ -184,9 +182,8 @@ public class TSVDriverFunction implements DriverFunction {
                 }else if (fileName.exists()) {
                     throw new IOException("The gz file already exist.");
                 }
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 final DBTypes dbType = DBUtils.getDBType(connection);
-                TableLocation location = TableLocation.parse(tableReference, isH2);
+                TableLocation location = TableLocation.parse(tableReference, dbType);
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                         new GZIPOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
@@ -200,9 +197,8 @@ public class TSVDriverFunction implements DriverFunction {
                 }else if (fileName.exists()) {
                     throw new IOException("The zip file already exist.");
                 }
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 final DBTypes dbType = DBUtils.getDBType(connection);
-                TableLocation location = TableLocation.parse(tableReference, isH2);
+                TableLocation location = TableLocation.parse(tableReference, dbType);
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                         new ZipOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
@@ -280,9 +276,8 @@ public class TSVDriverFunction implements DriverFunction {
         if (progress == null) {
             progress = new EmptyProgressVisitor();
         }
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         final DBTypes dbType = DBUtils.getDBType(connection);
-        TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+        TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
         if (fileName != null && fileName.getName().toLowerCase().endsWith(".tsv")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + requestedTable + " doesn't exist ");

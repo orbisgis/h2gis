@@ -53,11 +53,10 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param wayPointsTableName
-     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayPointsTable(Connection connection, String wayPointsTableName, boolean isH2) throws SQLException {
+    public static PreparedStatement createWayPointsTable(Connection connection, String wayPointsTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(wayPointsTableName).append(" (");
@@ -101,11 +100,10 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param routeTableName
-     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createRouteTable(Connection connection, String routeTableName, boolean isH2) throws SQLException {
+    public static PreparedStatement createRouteTable(Connection connection, String routeTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(routeTableName).append(" (");
@@ -137,11 +135,10 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param routePointsTable
-     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createRoutePointsTable(Connection connection, String routePointsTable,boolean isH2) throws SQLException {
+    public static PreparedStatement createRoutePointsTable(Connection connection, String routePointsTable) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(routePointsTable).append(" (");
@@ -187,19 +184,14 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param trackTableName
-     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createTrackTable(Connection connection, String trackTableName,boolean isH2) throws SQLException {
+    public static PreparedStatement createTrackTable(Connection connection, String trackTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(trackTableName).append(" (");
-            if (isH2) {
-                sb.append("the_geom GEOMETRY(MULTILINESTRING) CHECK ST_SRID(THE_GEOM) = 4326,");
-            } else {
-                sb.append("the_geom GEOMETRY(MULTILINESTRING, 4326),");
-            }
+            sb.append("the_geom GEOMETRY(MULTILINESTRING, 4326),");
             sb.append(" id INT,");
             sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
             sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
@@ -227,11 +219,10 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param trackSegementsTableName
-     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createTrackSegmentsTable(Connection connection, String trackSegementsTableName,boolean isH2) throws SQLException {
+    public static PreparedStatement createTrackSegmentsTable(Connection connection, String trackSegementsTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(trackSegementsTableName).append(" (");
@@ -256,11 +247,10 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param trackPointsTableName
-     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createTrackPointsTable(Connection connection, String trackPointsTableName,boolean isH2) throws SQLException {
+    public static PreparedStatement createTrackPointsTable(Connection connection, String trackPointsTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(trackPointsTableName).append(" (");
@@ -305,21 +295,20 @@ public class GPXTablesFactory {
      * Drop the existing GPX tables used to store the imported OSM GPX 
      *
      * @param connection
-     * @param isH2
      * @param tablePrefix
      * @throws SQLException
      */
-    public static void dropOSMTables(Connection connection, boolean isH2, TableLocation tablePrefix) throws SQLException {
+    public static void dropOSMTables(Connection connection, TableLocation tablePrefix) throws SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
         String gpxTableName = tablePrefix.toString(dbType);
         String[] gpxTables = new String[]{WAYPOINT,ROUTE,ROUTEPOINT, TRACK, TRACKPOINT, TRACKSEGMENT};
         StringBuilder sb =  new StringBuilder("drop table if exists ");     
         String gpxTableSuffix = gpxTables[0];
-        String gpxTable = TableUtilities.caseIdentifier(tablePrefix, gpxTableName + gpxTableSuffix, isH2);
+        String gpxTable = TableUtilities.caseIdentifier(tablePrefix, gpxTableName + gpxTableSuffix, dbType);
         sb.append(gpxTable);
         for (int i = 1; i < gpxTables.length; i++) {
             gpxTableSuffix = gpxTables[i];
-            gpxTable = TableUtilities.caseIdentifier(tablePrefix, gpxTableName + gpxTableSuffix, isH2);
+            gpxTable = TableUtilities.caseIdentifier(tablePrefix, gpxTableName + gpxTableSuffix, dbType);
             sb.append(",").append(gpxTable);
         }        
         try (Statement stmt = connection.createStatement()) {

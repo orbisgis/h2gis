@@ -22,6 +22,8 @@ package org.h2gis.functions.io.osm;
 
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,11 +78,10 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param nodeTableName
-     * @param isH2
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createNodeTable(Connection connection, String nodeTableName, boolean isH2) throws SQLException {
+    public static PreparedStatement createNodeTable(Connection connection, String nodeTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(nodeTableName);
@@ -133,7 +134,7 @@ public class OSMTablesFactory {
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayTable(Connection connection, String wayTableName, boolean isH2) throws SQLException {
+    public static PreparedStatement createWayTable(Connection connection, String wayTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(wayTableName);
@@ -288,21 +289,21 @@ public class OSMTablesFactory {
      * Drop the existing OSM tables used to store the imported OSM data 
      *
      * @param connection
-     * @param isH2
      * @param tablePrefix
      * @throws SQLException
      */
-    public static void dropOSMTables(Connection connection, boolean isH2, String tablePrefix) throws SQLException {
-        TableLocation requestedTable = TableLocation.parse(tablePrefix, isH2);
+    public static void dropOSMTables(Connection connection, String tablePrefix) throws SQLException {
+        final DBTypes dbType = DBUtils.getDBType(connection);
+        TableLocation requestedTable = TableLocation.parse(tablePrefix, dbType);
         String osmTableName = requestedTable.getTable();        
         String[] omsTables = new String[]{NODE, NODE_TAG, WAY, WAY_NODE, WAY_TAG, RELATION, RELATION_TAG, NODE_MEMBER, WAY_MEMBER, RELATION_MEMBER};
         StringBuilder sb =  new StringBuilder("drop table if exists ");     
         String omsTableSuffix = omsTables[0];
-        String osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);           
+        String osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, dbType);
         sb.append(osmTable);
         for (int i = 1; i < omsTables.length; i++) {
             omsTableSuffix = omsTables[i];
-            osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);
+            osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, dbType);
             sb.append(",").append(osmTable);
         }        
         try (Statement stmt = connection.createStatement()) {

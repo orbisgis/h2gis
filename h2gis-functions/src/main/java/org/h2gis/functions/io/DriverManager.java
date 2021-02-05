@@ -89,14 +89,13 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
      * @param tableName [[catalog.]schema.]table reference
      */
     public static void openFile(Connection connection, String fileName, String tableName) throws SQLException {
-        String ext = fileName.substring(fileName.lastIndexOf('.') + 1,fileName.length());
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
         final DBTypes dbType = DBUtils.getDBType(connection);
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 try (Statement st = connection.createStatement()) {
                     st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
-                            TableLocation.parse(tableName, isH2).toString(dbType),StringUtils.quoteStringSQL(fileName),
+                            TableLocation.parse(tableName, dbType).toString(dbType),StringUtils.quoteStringSQL(fileName),
                             StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
                 }
                 return;

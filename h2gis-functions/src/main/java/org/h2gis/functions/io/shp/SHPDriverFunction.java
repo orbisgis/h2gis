@@ -122,7 +122,7 @@ public class SHPDriverFunction implements DriverFunction {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            TableLocation tableLocation = TableLocation.parse(tableReference, isH2);
+            TableLocation tableLocation = TableLocation.parse(tableReference, dbType);
             String location = tableLocation.toString(dbType);
             int recordCount = JDBCUtilities.getRowCount(connection, location);
             ProgressVisitor copyProgress = progress.subProcess(recordCount);
@@ -285,10 +285,10 @@ public class SHPDriverFunction implements DriverFunction {
         if(progress==null){
             progress= new EmptyProgressVisitor();
         }        
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         if (FileUtilities.isFileImportable(fileName, "shp")) {
             if (deleteTables) {
-                TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+                TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
                 String table = requestedTable.getTable();
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + table);
@@ -309,15 +309,15 @@ public class SHPDriverFunction implements DriverFunction {
                     Statement st = connection.createStatement()) {
                     List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
                     otherCols.add(new Column("THE_GEOM", TypeInfo.TYPE_GEOMETRY));
-                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2, DBUtils.getDBType(connection), otherCols);
+                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, DBUtils.getDBType(connection), otherCols);
                     if (!types.isEmpty()) {
                         types = ", " + types;
                     }
-                    parse = TableLocation.parse(tableReference, isH2);
+                    parse = TableLocation.parse(tableReference, dbType);
                     String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                     srid = PRJUtil.getSRID(shpDriver.prjFile);
                     shpDriver.setSRID(srid);
-                    if (isH2) {
+                    if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
                         //H2 Syntax
                         st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL , the_geom GEOMETRY(%s, %d) %s)", parse,
                                 getSFSGeometryType(shpHeader), srid, types));

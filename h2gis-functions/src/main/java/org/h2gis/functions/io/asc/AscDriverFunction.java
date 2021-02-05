@@ -31,6 +31,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * Asc driver to import ESRI ASCII Raster file as polygons
@@ -119,8 +121,8 @@ public class AscDriverFunction implements DriverFunction {
     public void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
     ) throws SQLException, IOException {
         if (deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            final DBTypes dbTypes = DBUtils.getDBType(connection);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbTypes);
             Statement stmt = connection.createStatement();
             stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
             stmt.close();

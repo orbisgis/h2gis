@@ -95,7 +95,7 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
         File file = URIUtilities.fileFromString(fileName);
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
         final DBTypes dbType = DBUtils.getDBType(connection);
-        shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(dbType),
+        shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, dbType).toString(dbType),
                 file,  forceEncoding,deleteTables, new EmptyProgressVisitor());
     }
 

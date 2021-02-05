@@ -21,8 +21,8 @@ package org.h2gis.functions.spatial.create;
 
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.*;
 
 import java.sql.*;
@@ -122,7 +122,7 @@ public class GridRowSet implements SimpleRowSource {
         if (isTable) {
             Statement statement = connection.createStatement();
             //Find the SRID
-            Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
+            Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
             srid = geomMetadata.second().SRID;
             try (ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
                 rs.next();

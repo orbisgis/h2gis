@@ -21,6 +21,7 @@
 package org.h2gis.functions.osgi;
 
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -61,7 +62,7 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
                     return null;
                 }
                 // Check if the database has been properly initialised by the DataSource service provider
-                if (!JDBCUtilities.tableExists(connection, TableLocation.parse("PUBLIC.GEOMETRY_COLUMNS", true))) {
+                if (!JDBCUtilities.tableExists(connection, TableLocation.parse("PUBLIC.GEOMETRY_COLUMNS", DBTypes.H2))) {
                     return null;
                 }
             }

@@ -35,6 +35,10 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
+import static org.h2gis.utilities.dbtypes.DBTypes.H2;
+import static org.h2gis.utilities.dbtypes.DBTypes.H2GIS;
+import static org.h2gis.utilities.dbtypes.DBUtils.getDBType;
+
 /**
  *
  * Utilities to get geometry metadata from a table that contains at least one
@@ -1317,13 +1321,12 @@ public class GeometryTableUtilities {
      */
     public static boolean alterSRID(Connection connection, TableLocation tableLocation, String geometryColumnName, int srid) throws SQLException {
         if (srid >= 0) {
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
             String tableName = tableLocation.toString(dbType);
             if (tableName.isEmpty()) {
                 throw new SQLException("The table name cannot be empty");
             }
-            String fieldName = TableLocation.capsIdentifier(geometryColumnName, isH2);
+            String fieldName = TableLocation.capsIdentifier(geometryColumnName, dbType);
             GeometryMetaData metadata = GeometryTableUtilities.getMetaData(connection, tableLocation, fieldName);
             if (metadata != null) {
                 if(metadata.getSRID()==srid){
@@ -1352,11 +1355,11 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static boolean isSpatialIndexed(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        DBTypes dbType = getDBType(connection);
         String schema = tableLocation.getSchema();
         String tableName = tableLocation.getTable();
-        String fieldName = TableLocation.capsIdentifier(geometryColumnName, isH2);
-        if(isH2) {
+        String fieldName = TableLocation.capsIdentifier(geometryColumnName, dbType);
+        if (dbType==H2||dbType==H2GIS) {
             String query  = String.format("SELECT I.INDEX_TYPE_NAME, I.INDEX_CLASS FROM INFORMATION_SCHEMA.INDEXES AS I , " +
                             "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
                             "INFORMATION_SCHEMA.INDEXES WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +

@@ -254,7 +254,8 @@ public class IOMethods {
         if (databaseProperties == null || databaseProperties.isEmpty()) {
             throw new SQLException("The external database connection properties cannot be null or empty.\n");
         }
-        if (!JDBCUtilities.isH2DataBase(targetConnection)) {
+        final DBTypes targetDBType = DBUtils.getDBType(targetConnection);
+        if (targetDBType != DBTypes.H2 && targetDBType != DBTypes.H2GIS) {
             throw new SQLException("Link file is only supported with an H2GIS database");
         }
 
@@ -262,26 +263,23 @@ public class IOMethods {
         String password = databaseProperties.getOrDefault(DataSourceFactory.JDBC_PASSWORD, "");
         String driverName = "";
         String jdbc_url = databaseProperties.get("url");
-        boolean sourceDBTypeIsH2 = false;
         if (jdbc_url != null) {
             if (jdbc_url.startsWith("jdbc:")) {
                 String url = jdbc_url.substring("jdbc:".length());
                 if (url.startsWith("h2")) {
                     driverName = "org.h2.Driver";
-                    sourceDBTypeIsH2 = true;
                 } else if (url.startsWith("postgresql_h2")) {
                     driverName = "org.h2gis.postgis_jts.Driver";
                 } else if (url.startsWith("postgresql")) {
                     driverName = "org.h2gis.postgis_jts.Driver";
                     jdbc_url = "jdbc:postgresql_h2" + jdbc_url.substring("jdbc:postgresql".length());
                 }
+                DBTypes sourceDBType = DBUtils.getDBType(jdbc_url);
                 if (!driverName.isEmpty()) {
-                    boolean targetDBTypeIsH2 = JDBCUtilities.isH2DataBase(targetConnection);
-                    final DBTypes dbType = DBUtils.getDBType(targetConnection);
-                    TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBTypeIsH2);
-                    String ouputTableName = targetTableLocation.toString(dbType);
-                    TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBTypeIsH2);
-                    String inputTableName = sourceTableLocation.toString(dbType);
+                    TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBType);
+                    String ouputTableName = targetTableLocation.toString(targetDBType);
+                    TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBType);
+                    String inputTableName = sourceTableLocation.toString(sourceDBType);
                     if (delete) {
                         try ( //Drop table if exists
                                 Statement stmt = targetConnection.createStatement()) {
@@ -335,7 +333,8 @@ public class IOMethods {
      * @throws java.sql.SQLException
      */
     public static void linkedFile(Connection connection, String filePath, String tableName, boolean delete) throws SQLException {
-        if (!JDBCUtilities.isH2DataBase(connection)) {
+        final DBTypes dbType = DBUtils.getDBType(connection);
+        if (dbType != DBTypes.H2 && dbType != DBTypes.H2GIS) {
             throw new SQLException("Link file is only supported with an H2GIS database");
         }
         if (delete) {
@@ -415,12 +414,10 @@ public class IOMethods {
             throw new SQLException("The target table cannot be null or empty.\n");
         }
 
-        boolean sourceDBTypeIsH2 = JDBCUtilities.isH2DataBase(sourceConnection);
         final DBTypes sourceDBType = DBUtils.getDBType(sourceConnection);
-        boolean targetDBTypeIsH2 = JDBCUtilities.isH2DataBase(targetConnection);
         final DBTypes targetDBType = DBUtils.getDBType(targetConnection);
 
-        TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBTypeIsH2);
+        TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBType);
         String ouputTableName = targetTableLocation.toString(targetDBType);
 
         String query;
@@ -435,7 +432,7 @@ public class IOMethods {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM MYTATBLE)'.");
             }
         } else {
-            TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBTypeIsH2);
+            TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBType);
             if (!JDBCUtilities.tableExists(sourceConnection, sourceTableLocation)) {
                 throw new SQLException("The source table doesn't exist.\n");
             }
@@ -563,7 +560,7 @@ public class IOMethods {
                 if(!geomColumnAndSRID.isEmpty()){
                     StringBuilder querySRID = new StringBuilder();
                     for (Map.Entry<String, Integer> entry : geomColumnAndSRID.entrySet()) {
-                        String fieldName = TableLocation.capsIdentifier(entry.getKey(), targetDBTypeIsH2);
+                        String fieldName = TableLocation.capsIdentifier(entry.getKey(), targetDBType);
                         Integer srid = entry.getValue();
                         querySRID.append("ALTER TABLE ").append(ouputTableName).append(" ALTER COLUMN ").append(fieldName);
                         querySRID.append(" TYPE GEOMETRY(GEOMETRY, ").append(srid).append(") USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(");\n");

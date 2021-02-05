@@ -174,10 +174,10 @@ public class TableLocation {
      * string.
      *
      * @param concatenatedTableLocation Table location [[Catalog.]Schema.]Table
-     * @param isH2Database              True if H2, False if PostGreSQL, null if unknown
+     * @param dbTypes                   Database type.
      * @return Java beans for table location
      */
-    public static TableLocation parse(String concatenatedTableLocation, Boolean isH2Database) {
+    public static TableLocation parse(String concatenatedTableLocation, DBTypes dbTypes) {
         List<String> parts = new LinkedList<String>();
         String catalog,schema,table;
         catalog = table = schema = "";
@@ -198,8 +198,8 @@ public class TableLocation {
                     sb = new StringBuilder();
                 }
             } else {
-                if(!openQuote && isH2Database != null) {
-                    token = capsIdentifier(token, isH2Database);
+                if(!openQuote && dbTypes != null) {
+                    token = capsIdentifier(token, dbTypes);
                 }
                 sb.append(token);
             }
@@ -228,12 +228,12 @@ public class TableLocation {
      * Change case of parameters to make it more user-friendly.
      *
      * @param identifier   Table, Catalog, Schema, or column name
-     * @param isH2Database True if H2, False if PostGreSQL, null if unknown
+     * @param dbTypes      Database type.
      * @return Upper or lower case version of identifier
      */
-    public static String capsIdentifier(String identifier, Boolean isH2Database) {
-        if(isH2Database != null) {
-            if(isH2Database) {
+    public static String capsIdentifier(String identifier, DBTypes dbTypes) {
+        if(dbTypes != null) {
+            if(dbTypes == DBTypes.H2 || dbTypes == DBTypes.H2GIS) {
                 return identifier.toUpperCase();
             } else {
                 return identifier.toLowerCase();

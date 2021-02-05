@@ -27,6 +27,7 @@ import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.*;
 
 import java.sql.*;
@@ -89,7 +90,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
      */
     public static ResultSet explode(Connection connection, String tableName, String fieldName) throws SQLException {
         ExplodeResultSet rowSource = new ExplodeResultSet(connection,
-                TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)).toString(),fieldName);
+                TableLocation.parse(tableName, DBUtils.getDBType(connection)).toString(),fieldName);
         return rowSource.getResultSet();
     }
 
@@ -111,7 +112,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
         
         public ExplodeResultSet(Connection connection, String tableName, String spatialFieldName) throws SQLException {
             this.tableName = tableName;
-            this.tableLocation=TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+            this.tableLocation=TableLocation.parse(tableName, DBUtils.getDBType(connection));
             this.spatialFieldName = spatialFieldName;
             this.connection = connection;
         }

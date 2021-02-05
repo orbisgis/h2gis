@@ -27,6 +27,7 @@ import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
 
@@ -349,7 +350,7 @@ public class SHPEngineTest {
     private static boolean hasIndex(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
         String schema = tableLocation.getSchema();
         String tableName = tableLocation.getTable();
-        String fieldName = TableLocation.capsIdentifier(geometryColumnName, true);
+        String fieldName = TableLocation.capsIdentifier(geometryColumnName, DBTypes.H2GIS);
 
         String query  = String.format("SELECT I.INDEX_TYPE_NAME, I.INDEX_CLASS FROM INFORMATION_SCHEMA.INDEXES AS I , " +
                         "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +

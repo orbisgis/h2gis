@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.*;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +121,6 @@ public class JsonWriteDriver {
      * @param fileName        Destination file.
      * @param deleteFile  True if the destination files should be deleted, false otherwise.
      * @param encoding    Encoding of the destination file.
-     * @param connection  Connection to the database.
      * @throws SQLException Exception thrown when an SQL error occurs.
      * @throws IOException  Exception when a file writing error occurs.
      */
@@ -262,7 +262,7 @@ public class JsonWriteDriver {
     private void jsonWrite(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding =  getEncoding(encoding);
         try {
-            final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+            final TableLocation parse = TableLocation.parse(tableName, DBUtils.getDBType(connection));
             int recordCount = JDBCUtilities.getRowCount(connection, parse);
             if (recordCount > 0) {
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);

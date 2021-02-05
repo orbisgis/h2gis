@@ -103,26 +103,26 @@ public class TableLocationTest {
 
     @Test
     public void testTableLocationDataBaseType() {
-        check("MyTable", true,
+        check("MyTable", DBTypes.H2,
                 "", "", "MYTABLE",
                 "\"MYTABLE\"",
                 "MYTABLE",
                 "\"MYTABLE\"");
-        check("\"MyTable\"", true,
+        check("\"MyTable\"", DBTypes.H2GIS,
                 "", "", "MyTable",
                 "\"MyTable\"",
                 "\"MyTable\"",
                 "\"MyTable\"");
-        check("\"MyTable\"", false,
+        check("\"MyTable\"", DBTypes.POSTGRESQL,
                 "", "", "MyTable",
                 "\"MyTable\"",
                 "\"MyTable\"",
                 "\"MyTable\"");
     }
 
-    private void check(String input, Boolean isH2, String catalog, String schema, String table,
+    private void check(String input, DBTypes dbTypes, String catalog, String schema, String table,
                        String toString, String toStringTrue, String toStringFalse) {
-        TableLocation location = isH2 == null ? TableLocation.parse(input) : TableLocation.parse(input, isH2);
+        TableLocation location = dbTypes == null ? TableLocation.parse(input) : TableLocation.parse(input, dbTypes);
         assertEquals(catalog,location.getCatalog());
         assertEquals(schema,location.getSchema());
         assertEquals(table, location.getTable());
@@ -188,8 +188,8 @@ public class TableLocationTest {
 
     @Test
     public void testCapsIdentifier(){
-        assertEquals("IDENTIFIER", TableLocation.capsIdentifier("identifier", true));
-        assertEquals("identifier", TableLocation.capsIdentifier("identifier", false));
+        assertEquals("IDENTIFIER", TableLocation.capsIdentifier("identifier", DBTypes.H2GIS));
+        assertEquals("identifier", TableLocation.capsIdentifier("identifier", DBTypes.POSTGRESQL));
         assertEquals("identifier", TableLocation.capsIdentifier("identifier", null));
     }
 

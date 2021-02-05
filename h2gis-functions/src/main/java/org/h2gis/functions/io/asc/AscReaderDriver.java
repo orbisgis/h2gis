@@ -222,31 +222,29 @@ public class AscReaderDriver {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(dbType));
                 stmt.close();
             }
             try (FileInputStream inputStream = new FileInputStream(fileName)) {
-                readAsc(connection, inputStream, progress, requestedTable, isH2, srid);
+                readAsc(connection, inputStream, progress, requestedTable, srid);
             }
         } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(dbType));
                 stmt.close();
             }
             FileInputStream fis = new FileInputStream(fileName);
-            readAsc(connection, new GZIPInputStream(fis), progress, requestedTable, isH2, srid);
+            readAsc(connection, new GZIPInputStream(fis), progress, requestedTable, srid);
         } else {
             throw new SQLException("The asc read driver supports only asc or gz extensions");
         }
@@ -259,12 +257,11 @@ public class AscReaderDriver {
      * @param inputStream
      * @param progress
      * @param requestedTable
-     * @param isH2
      * @param srid
      * @throws UnsupportedEncodingException
      * @throws SQLException
      */
-    private void readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, TableLocation requestedTable, boolean isH2,
+    private void readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, TableLocation requestedTable,
             int srid) throws UnsupportedEncodingException, SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream, BUFFER_SIZE), encoding));

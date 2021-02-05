@@ -34,6 +34,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.utilities.FileUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * Basic CSV importer and exporter
@@ -116,8 +118,8 @@ public class CSVDriverFunction implements DriverFunction{
             }
 
         } else {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation location = TableLocation.parse(tableReference, isH2);
+            final DBTypes dbType = DBUtils.getDBType(connection);
+            TableLocation location = TableLocation.parse(tableReference, dbType);
             try (Statement st = connection.createStatement()) {
                 JDBCUtilities.attachCancelResultSet(st, progress);
                 Csv csv = new Csv();
@@ -188,15 +190,14 @@ public class CSVDriverFunction implements DriverFunction{
             progress = new EmptyProgressVisitor();
         }
         if (FileUtilities.isFileImportable(fileName, "csv")) {
+            final DBTypes dbType = DBUtils.getDBType(connection);
             if(deleteTables) {
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+                TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
                 stmt.close();
             }
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
             String table = requestedTable.getTable();
             FileInputStream fis = new FileInputStream(fileName);
             FileChannel fc = fis.getChannel();

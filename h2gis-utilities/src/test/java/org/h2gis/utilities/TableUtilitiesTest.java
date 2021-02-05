@@ -67,7 +67,7 @@ public class TableUtilitiesTest {
         SimpleResultSet rs = new SimpleResultSet();
         // Feed with fields
         TableUtilities.copyFields(connection, rs, TableLocation.parse("TATA",
-                JDBCUtilities.isH2DataBase(connection)));
+                DBUtils.getDBType(connection)));
         assertEquals(2, rs.getColumnCount());
         assertEquals(1, rs.findColumn("id"));
         assertEquals(2, rs.findColumn("str"));
@@ -86,16 +86,15 @@ public class TableUtilitiesTest {
 
     @Test
     public void suffixTableLocationTest() throws Exception {
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        TableLocation tableLocation = TableLocation.parse("TATA", isH2);
+        TableLocation tableLocation = TableLocation.parse("TATA", DBUtils.getDBType(connection));
         assertEquals("TATA_SUFF",
                 TableUtilities.suffixTableLocation(tableLocation, "_SUFF").toString(DBUtils.getDBType(connection)));
     }
 
     @Test
     public void caseIdentifierTest() throws Exception {
-        TableLocation tableLocation = TableLocation.parse("TATA", true);
-        assertEquals("\"TATA\"", TableUtilities.caseIdentifier(tableLocation, "TATA", true));
-        assertEquals("\"tata\"", TableUtilities.caseIdentifier(tableLocation, "TATA", false));
+        TableLocation tableLocation = TableLocation.parse("TATA", DBTypes.H2GIS);
+        assertEquals("\"TATA\"", TableUtilities.caseIdentifier(tableLocation, "TATA", DBTypes.H2));
+        assertEquals("\"tata\"", TableUtilities.caseIdentifier(tableLocation, "TATA", DBTypes.POSTGIS));
     }
 }
