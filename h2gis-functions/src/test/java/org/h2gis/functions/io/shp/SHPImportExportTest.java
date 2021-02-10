@@ -156,20 +156,20 @@ public class SHPImportExportTest {
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
         assertEquals(H2TableIndex.PK_COLUMN_NAME, rs.getString("COLUMN_NAME"));
-        assertEquals("INTEGER", rs.getString("DATA_TYPE"));
+        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("THE_GEOM", rs.getString("COLUMN_NAME"));
-        assertEquals("GEOMETRY", rs.getString("DATA_TYPE"));
+        assertEquals("GEOMETRY", rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE", rs.getString("COLUMN_NAME"));
-        assertEquals("CHARACTER VARYING", rs.getString("DATA_TYPE"));
+        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID", rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT", rs.getString("DATA_TYPE"));
+        assertEquals("BIGINT", rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("LENGTH", rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE PRECISION", rs.getString("DATA_TYPE"));
+        assertEquals("DOUBLE", rs.getString("TYPE_NAME"));
         rs.close();
         // Check content
         rs = st.executeQuery("SELECT * FROM WATERNETWORK");

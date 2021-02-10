@@ -70,22 +70,22 @@ public class SHPEngineTest {
                 ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'")) {
             assertTrue(rs.next());
             assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
+            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
             assertTrue(rs.next());
             assertEquals("THE_GEOM",rs.getString("COLUMN_NAME"));
-            assertEquals("GEOMETRY",rs.getString("DATA_TYPE"));
+            assertEquals("GEOMETRY",rs.getString("TYPE_NAME"));
             assertTrue(rs.next());
             assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-            assertEquals("CHARACTER",rs.getString("DATA_TYPE"));
+            assertEquals("CHAR",rs.getString("TYPE_NAME"));
             assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
             assertTrue(rs.next());
             assertEquals("GID",rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
-            assertEquals(64,rs.getInt("NUMERIC_PRECISION"));
+            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals(19,rs.getInt("NUMERIC_PRECISION"));
             assertTrue(rs.next());
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-            assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
-            assertEquals(20,rs.getInt("DECLARED_NUMERIC_PRECISION"));
+            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+            assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         }
         st.execute("drop table shptable");
     }
@@ -407,7 +407,7 @@ public class SHPEngineTest {
         //
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM shptable where PK >=4 order by PK limit 5");
         assertTrue(rs.next());
-        assertTrue(rs.getString(1).contains("PUBLIC.\"SHPTABLE.PK_INDEX_1") && rs.getString(1).contains("\": PK >= CAST(4 AS BIGINT)"));
+        assertTrue(rs.getString(1).contains("PUBLIC.\"SHPTABLE.PK_INDEX_1") && rs.getString(1).contains("\": PK >= 4"));
         rs.close();
         // Query declared Table columns
         rs = st.executeQuery("SELECT * FROM shptable where PK >=4 order by PK limit 5");

@@ -55,6 +55,7 @@ public class GridRowSet implements SimpleRowSource {
     private String tableName;
     private boolean isCenterCell = false;
     private int srid;
+    private boolean isRowColumnNumber =false;
 
     /**
      * The grid will be computed according a table stored in the database
@@ -199,42 +200,80 @@ public class GridRowSet implements SimpleRowSource {
         this.isCenterCell = isCenterCell;
     }
 
+
+    /**
+     * Set true to define the delta x and y as number of columns and rows
+     * @param isRowColumnNumber
+     */
+    public void setIsRowColumnNumber(boolean isRowColumnNumber){
+        this.isRowColumnNumber =isRowColumnNumber;
+    }
+
+    /**
+     * Return if the delta x and y must be expressed as number of columns and rows
+     * @return
+     */
+    public boolean isRowColumnNumber(){
+        return this.isRowColumnNumber;
+    }
+
     /**
      * Compute the parameters need to create each cells
      *
      */
-    private void initParameters() {
+    private void initParameters() throws SQLException {
         this.minX = envelope.getMinX();
         this.minY = envelope.getMinY();
-        if (this.srid == 4326) {
-            double maxLon = envelope.getMaxX();
-            double maxLat = envelope.getMaxY();
-            //Check if the envelope has latitude, longitude co-ordinates        
-            if (!UTMUtils.isValidLatitude((float) minY)) {
-                throw new IllegalArgumentException("Invalid min latitude");
+        if(isRowColumnNumber()){
+            if(deltaX<1 || deltaY<1){
+                throw new SQLException("The number of columns and rows must be greater or equals than 1.");
             }
-            if (!UTMUtils.isValidLatitude((float) maxLat)) {
-                throw new IllegalArgumentException("Invalid max latitude");
+            this.minX = envelope.getMinX();
+            this.minY = envelope.getMinY();
+            double dx = envelope.getMaxX()-minX;
+            double dy = envelope.getMaxY()-minY;
+            this.maxI = (int) deltaX;
+            this.maxJ = (int) deltaY;
+            deltaX = dx/deltaX;
+            deltaY = dy/deltaY;
+        }
+        else {
+            if (this.srid == 4326) {
+                if(deltaX<=0 || deltaY<=0){
+                    throw new SQLException("The delta x and y of cell size must be greater than 0.");
+                }
+                double maxLon = envelope.getMaxX();
+                double maxLat = envelope.getMaxY();
+                //Check if the envelope has latitude, longitude co-ordinates
+                if (!UTMUtils.isValidLatitude((float) minY)) {
+                    throw new IllegalArgumentException("Invalid min latitude");
+                }
+                if (!UTMUtils.isValidLatitude((float) maxLat)) {
+                    throw new IllegalArgumentException("Invalid max latitude");
+                }
+                if (!UTMUtils.isValidLongitude((float) minX)) {
+                    throw new IllegalArgumentException("Invalid min longitude");
+                }
+                if (!UTMUtils.isValidLongitude((float) maxLon)) {
+                    throw new IllegalArgumentException("Invalid max longitude");
+                }
+                deltaY = GeographyUtilities.computeLatitudeDistance(deltaY);
+                deltaX = computeLongitudeDistance(deltaX, maxLat);
+                double cellWidth = envelope.getWidth();
+                double cellHeight = envelope.getHeight();
+                this.maxI = (int) Math.ceil(cellWidth / deltaX);
+                this.maxJ = (int) Math.ceil(cellHeight / deltaY);
+            } else {
+                if(deltaX<=0 || deltaY<=0){
+                    throw new SQLException("The delta x and y of cell size must be greater than 0.");
+                }
+                double cellWidth = envelope.getWidth();
+                double cellHeight = envelope.getHeight();
+                this.maxI = (int) Math.ceil(cellWidth
+                        / deltaX);
+                this.maxJ = (int) Math.ceil(cellHeight
+                        / deltaY);
             }
-            if (!UTMUtils.isValidLongitude((float) minX)) {
-                throw new IllegalArgumentException("Invalid min longitude");
-            }
-            if (!UTMUtils.isValidLongitude((float) maxLon)) {
-                throw new IllegalArgumentException("Invalid max longitude");
-            }
-            deltaY = GeographyUtilities.computeLatitudeDistance(deltaY);
-            deltaX = computeLongitudeDistance(deltaX, maxLat);
-            double cellWidth = envelope.getWidth();
-            double cellHeight = envelope.getHeight();
-            this.maxI = (int) Math.ceil(cellWidth/ deltaX);
-            this.maxJ = (int) Math.ceil(cellHeight / deltaY);
-        } else {
-            double cellWidth = envelope.getWidth();
-            double cellHeight = envelope.getHeight();
-            this.maxI = (int) Math.ceil(cellWidth
-                    / deltaX);
-            this.maxJ = (int) Math.ceil(cellHeight
-                    / deltaY);
         }
     }
 

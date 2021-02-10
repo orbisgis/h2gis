@@ -24,6 +24,8 @@ import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -142,6 +144,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
             // Initialisation
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             ArrayList<String> tableNames = new ArrayList<>();
+
             TableLocation requestedTable = TableLocation.parse(tableName, isH2);
             if (deleteTable) {
                 GPXTablesFactory.dropOSMTables(connection, isH2, requestedTable);

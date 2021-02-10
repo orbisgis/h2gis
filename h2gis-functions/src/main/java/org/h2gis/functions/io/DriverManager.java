@@ -28,6 +28,8 @@ import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.shp.SHPEngine;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,6 +89,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     public static String[] openFile(Connection connection, String fileName, String tableName) throws SQLException {
         String ext = fileName.substring(fileName.lastIndexOf('.') + 1,fileName.length());
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 try (Statement st = connection.createStatement()) {

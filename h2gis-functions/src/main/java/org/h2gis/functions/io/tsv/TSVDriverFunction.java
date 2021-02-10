@@ -37,6 +37,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 import org.h2gis.utilities.FileUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * This driver allow to import and export the Tab Separated Values (TSV): a
@@ -130,6 +132,7 @@ public class TSVDriverFunction implements DriverFunction {
                         throw new IOException("The gz file already exist.");
                     }
                     final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                    final DBTypes dbType = DBUtils.getDBType(connection);
                     TableLocation location = TableLocation.parse(tableReference, isH2);                    
                     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                             new GZIPOutputStream(new FileOutputStream(fileName))))) {
@@ -137,6 +140,7 @@ public class TSVDriverFunction implements DriverFunction {
                             JDBCUtilities.attachCancelResultSet(st, progress);
                             exportFromResultSet(connection, st.executeQuery(location.toString(isH2)), bw, encoding, progress);
                             return new String[]{fileName.getAbsolutePath()};
+
                         }
                     }
                 } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
@@ -147,6 +151,7 @@ public class TSVDriverFunction implements DriverFunction {
                         throw new IOException("The zip file already exist.");
                     }
                     final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                    final DBTypes dbType = DBUtils.getDBType(connection);
                     TableLocation location = TableLocation.parse(tableReference, isH2);
                     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                             new ZipOutputStream(new FileOutputStream(fileName))))) {
@@ -154,6 +159,7 @@ public class TSVDriverFunction implements DriverFunction {
                             JDBCUtilities.attachCancelResultSet(st, progress);
                             exportFromResultSet(connection, st.executeQuery(location.toString(isH2)), bw, encoding, progress);
                             return new String[]{fileName.getAbsolutePath()};
+
                         }
                     }
                 } else {
@@ -171,12 +177,14 @@ public class TSVDriverFunction implements DriverFunction {
                     throw new IOException("The tsv file already exist.");
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                final DBTypes dbType = DBUtils.getDBType(connection);
                 TableLocation location = TableLocation.parse(tableReference, isH2);
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
                         exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, progress);
                         return new String[]{fileName.getAbsolutePath()};
+
                     }
                 }
             } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
@@ -186,6 +194,7 @@ public class TSVDriverFunction implements DriverFunction {
                     throw new IOException("The gz file already exist.");
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                final DBTypes dbType = DBUtils.getDBType(connection);
                 TableLocation location = TableLocation.parse(tableReference, isH2);
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                         new GZIPOutputStream(new FileOutputStream(fileName))))) {
@@ -202,6 +211,7 @@ public class TSVDriverFunction implements DriverFunction {
                     throw new IOException("The zip file already exist.");
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                final DBTypes dbType = DBUtils.getDBType(connection);
                 TableLocation location = TableLocation.parse(tableReference, isH2);
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                         new ZipOutputStream(new FileOutputStream(fileName))))) {
@@ -274,6 +284,7 @@ public class TSVDriverFunction implements DriverFunction {
     public String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         progress = DriverManager.check(connection,tableReference, fileName,progress);
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
         if (fileName != null && fileName.getName().toLowerCase().endsWith(".tsv")) {
             if (!fileName.exists()) {
@@ -284,7 +295,7 @@ public class TSVDriverFunction implements DriverFunction {
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
                 stmt.close();
             }
-            String table = requestedTable.toString(isH2);
+            String table = requestedTable.toString(dbType);
 
             int AVERAGE_NODE_SIZE = 500;
             FileInputStream fis = new FileInputStream(fileName);
@@ -368,7 +379,7 @@ public class TSVDriverFunction implements DriverFunction {
             }
             try (BufferedReader br = new BufferedReader(new InputStreamReader(
                     new GZIPInputStream(new FileInputStream(fileName))))) {
-                String table = requestedTable.toString(isH2);
+                String table = requestedTable.toString(dbType);
                 Csv csv = new Csv();
                 csv.setFieldDelimiter('\t');
                 csv.setFieldSeparatorRead('\t');

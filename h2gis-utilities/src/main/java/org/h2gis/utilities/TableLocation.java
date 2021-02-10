@@ -20,10 +20,15 @@
 
 package org.h2gis.utilities;
 
+import org.h2gis.utilities.dbtypes.Constants;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -35,8 +40,6 @@ public class TableLocation {
     private String catalog,schema,table;
     /** Recognized by H2 and Postgres */
     private static final String QUOTE_CHAR = "\"";
-    private static final Pattern POSTGRE_SPECIAL_NAME_PATTERN = Pattern.compile("^[a-z]{1,1}[a-z0-9_]*$");
-    private static final Pattern H2_SPECIAL_NAME_PATTERN = Pattern.compile("^[A-Z]{1,1}[A-Z0-9_]*$");
     private String defaultSchema = "PUBLIC";
 
     /**
@@ -89,15 +92,13 @@ public class TableLocation {
 
     /**
      * Quote identifier only if necessary. Require database knowledge.
-     * @param identifier Catalog,Schema,Table or Field name
-     * @param isH2DataBase True if the quote is for H2, false if for POSTGRE
-     * @return Quoted Identifier
+     * @param identifier Catalog,Schema,Table or Field name.
+     * @param dbTypes    Type of the database.
+     * @return Quoted identifier.
      */
-    public static String quoteIdentifier(String identifier, boolean isH2DataBase) {
-        if((isH2DataBase && (Constants.H2_RESERVED_WORDS.contains(identifier.toUpperCase())
-                        || !H2_SPECIAL_NAME_PATTERN.matcher(identifier).find())) ||
-                (!isH2DataBase && (Constants.POSTGIS_RESERVED_WORDS.contains(identifier.toUpperCase())
-                        || !POSTGRE_SPECIAL_NAME_PATTERN.matcher(identifier).find()))) {
+    public static String quoteIdentifier(String identifier, DBTypes dbTypes) {
+        if(dbTypes.getReservedWords().contains(identifier.toUpperCase()) ||
+                !Objects.requireNonNull(dbTypes.specialNamePattern()).matcher(identifier).find()) {
             return quoteIdentifier(identifier);
         } else {
             return identifier;
@@ -122,20 +123,20 @@ public class TableLocation {
     /**
      * String representation of Table location, for insertion in SQL statement.
      * This function try to do not quote unnecessary components; require database type.
-     * @param isH2 True if H2, false if
+     * @param dbTypes Database type.
      * @return String representation of Table location
      */
-    public String toString(boolean isH2) {
+    public String toString(DBTypes dbTypes) {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            sb.append(quoteIdentifier(catalog, isH2));
+            sb.append(quoteIdentifier(catalog, dbTypes));
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            sb.append(quoteIdentifier(schema, isH2));
+            sb.append(quoteIdentifier(schema, dbTypes));
             sb.append(".");
         }
-        sb.append(quoteIdentifier(table, isH2));
+        sb.append(quoteIdentifier(table, dbTypes));
         return sb.toString();
     }
 

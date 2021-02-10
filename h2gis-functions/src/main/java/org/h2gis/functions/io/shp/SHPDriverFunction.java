@@ -50,6 +50,8 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -98,6 +100,7 @@ public class SHPDriverFunction implements DriverFunction {
             }
         }
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableReference);
@@ -120,7 +123,7 @@ public class SHPDriverFunction implements DriverFunction {
             }
         } else {
             TableLocation tableLocation = TableLocation.parse(tableReference, isH2);
-            String location = tableLocation.toString(isH2);
+            String location = tableLocation.toString(dbType);
             int recordCount = JDBCUtilities.getRowCount(connection, location);
             ProgressVisitor copyProgress = progress.subProcess(recordCount);
             // Read Geometry Index and type
@@ -301,7 +304,7 @@ public class SHPDriverFunction implements DriverFunction {
                     Statement st = connection.createStatement()) {
                     List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
                     otherCols.add(new Column("THE_GEOM", TypeInfo.TYPE_GEOMETRY));
-                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2, otherCols);
+                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2, DBUtils.getDBType(connection), otherCols);
                     if (!types.isEmpty()) {
                         types = ", " + types;
                     }

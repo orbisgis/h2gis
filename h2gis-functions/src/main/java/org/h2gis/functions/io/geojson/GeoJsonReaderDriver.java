@@ -28,6 +28,8 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +109,7 @@ public class GeoJsonReaderDriver {
             }
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.tableLocation = TableLocation.parse(tableReference, isH2).toString(isH2);
+
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
@@ -128,6 +131,7 @@ public class GeoJsonReaderDriver {
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
+
                 stmt.close();
             }
 
@@ -246,6 +250,7 @@ public class GeoJsonReaderDriver {
             cachedColumnIndex = new LinkedHashMap<>();
             StringBuilder insertTable = new StringBuilder("INSERT INTO ");
             insertTable.append(tableLocation).append(" VALUES(ST_GeomFromWKB(?, ").append(parsedSRID).append(")");
+
             int i = 1;
             for (Map.Entry<String, Integer> columns : cachedColumnNames.entrySet()) {
                 String columnName = columns.getKey();
@@ -701,7 +706,7 @@ public class GeoJsonReaderDriver {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = TableLocation.capsIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
-            fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
+            fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
             JsonToken value = jp.nextToken();
             if (null != value) {
                 Integer dataType = cachedColumnNames.get(fieldName);
@@ -905,7 +910,7 @@ public class GeoJsonReaderDriver {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = TableLocation.capsIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
-            fieldName = TableLocation.quoteIdentifier(fieldName,isH2);
+            fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
             JsonToken value = jp.nextToken();
             if (null == value) {
                 //ignore other value

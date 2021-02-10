@@ -23,6 +23,8 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -221,6 +223,7 @@ public class AscReaderDriver {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String outputTableName = requestedTable.toString(isH2);
             if (deleteTable) {
@@ -237,6 +240,7 @@ public class AscReaderDriver {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String outputTableName = requestedTable.toString(isH2);
             if (deleteTable) {
@@ -266,6 +270,7 @@ public class AscReaderDriver {
      */
     private String readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, String outputTable,
             int srid) throws UnsupportedEncodingException, SQLException {
+        final DBTypes dbType = DBUtils.getDBType(connection);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream, BUFFER_SIZE), encoding));
         try {
             Scanner scanner = new Scanner(reader);

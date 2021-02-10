@@ -20,6 +20,7 @@
 
 package org.h2gis.utilities;
 
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -126,8 +127,8 @@ public class TableLocationTest {
         assertEquals(schema,location.getSchema());
         assertEquals(table, location.getTable());
         assertEquals(toString, location.toString());
-        assertEquals(toStringTrue, location.toString(true));
-        assertEquals(toStringFalse, location.toString(false));
+        assertEquals(toStringTrue, location.toString(DBTypes.H2));
+        assertEquals(toStringFalse, location.toString(DBTypes.POSTGRESQL));
     }
 
     @Test
@@ -143,10 +144,10 @@ public class TableLocationTest {
     @Test
     public void testNumber() {
         assertEquals("\"2015MyTable\"", new TableLocation("2015MyTable").toString());
-        assertEquals("\"2015MYTABLE\"", new TableLocation("2015MYTABLE").toString(true));
-        assertEquals("\"2015mytable\"", new TableLocation("2015mytable").toString(false));
-        assertEquals("MY2015TABLE", new TableLocation("MY2015TABLE").toString(true));
-        assertEquals("my2015table", new TableLocation("my2015table").toString(false));
+        assertEquals("\"2015MYTABLE\"", new TableLocation("2015MYTABLE").toString(DBTypes.H2));
+        assertEquals("\"2015mytable\"", new TableLocation("2015mytable").toString(DBTypes.POSTGRESQL));
+        assertEquals("MY2015TABLE", new TableLocation("MY2015TABLE").toString(DBTypes.H2));
+        assertEquals("my2015table", new TableLocation("my2015table").toString(DBTypes.POSTGRESQL));
     }
 
     @Test

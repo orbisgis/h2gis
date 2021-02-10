@@ -21,7 +21,7 @@
 package org.h2gis.functions.io.file_table;
 
 import org.h2.command.ddl.CreateTableData;
-import org.h2.engine.SessionLocal;
+import org.h2.engine.Session;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.mvstore.db.MVTable;
@@ -46,43 +46,42 @@ public class DummyMVTable extends MVTable {
     }
 
     @Override
-    public void removeChildrenAndResources(SessionLocal session) {
+    public void removeChildrenAndResources(Session session) {
         super.removeChildrenAndResources(session);
     }
 
     @Override
-    public Index addIndex(SessionLocal session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
+    public Index addIndex(Session session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
         return null;
     }
 
     @Override
-    public boolean lock(SessionLocal session, boolean exclusive, boolean force) {
+    public boolean lock(Session session, boolean exclusive, boolean force) {
         return false;
     }
 
     @Override
-    public void close(SessionLocal session) {
+    public void close(Session session) {
         //Nothing to do
     }
 
     @Override
-    public void unlock(SessionLocal s) {
+    public void unlock(Session s) {
         //Nothing to do
     }
 
     @Override
-    public void removeRow(SessionLocal session, Row row) {
+    public void removeRow(Session session, Row row) {
         //Nothing to do
     }
 
     @Override
-    public long truncate(SessionLocal session) {
+    public void truncate(Session session) {
         //Nothing to do
-        return 0;
     }
 
     @Override
-    public void addRow(SessionLocal session, Row row) {
+    public void addRow(Session session, Row row) {
         //Nothing to do
     }
 
@@ -97,7 +96,7 @@ public class DummyMVTable extends MVTable {
     }
 
     @Override
-    public Index getScanIndex(SessionLocal session) {
+    public Index getScanIndex(Session session) {
         return createIndex();
     }
 
@@ -138,12 +137,12 @@ public class DummyMVTable extends MVTable {
     }
 
     @Override
-    public long getRowCount(SessionLocal session) {
+    public long getRowCount(Session session) {
         return 0;
     }
 
     @Override
-    public long getRowCountApproximation(SessionLocal sessionLocal) {
+    public long getRowCountApproximation() {
         return 0;
     }
 
