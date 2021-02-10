@@ -138,7 +138,7 @@ public class TSVDriverFunction implements DriverFunction {
                             new GZIPOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(location.toString(isH2)), bw, encoding, progress);
+                            exportFromResultSet(connection, st.executeQuery(location.toString(dbType)), bw, encoding, progress);
                             return new String[]{fileName.getAbsolutePath()};
 
                         }
@@ -157,7 +157,7 @@ public class TSVDriverFunction implements DriverFunction {
                             new ZipOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(location.toString(isH2)), bw, encoding, progress);
+                            exportFromResultSet(connection, st.executeQuery(location.toString(dbType)), bw, encoding, progress);
                             return new String[]{fileName.getAbsolutePath()};
 
                         }
@@ -182,7 +182,7 @@ public class TSVDriverFunction implements DriverFunction {
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, progress);
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
                         return new String[]{fileName.getAbsolutePath()};
 
                     }
@@ -200,7 +200,7 @@ public class TSVDriverFunction implements DriverFunction {
                         new GZIPOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, progress);
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
                         return new String[]{fileName.getAbsolutePath()};
                     }
                 }
@@ -217,7 +217,7 @@ public class TSVDriverFunction implements DriverFunction {
                         new ZipOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(isH2)), bw, encoding, progress);
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
                         return new String[]{fileName.getAbsolutePath()};
                     }
                 }

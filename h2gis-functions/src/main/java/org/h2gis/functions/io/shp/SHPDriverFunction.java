@@ -282,8 +282,9 @@ public class SHPDriverFunction implements DriverFunction {
         progress = DriverManager.check(connection,tableReference,fileName, progress);
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if (FileUtilities.isFileImportable(fileName, "shp")) {
+            final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTableName = requestedTable.toString(isH2);
+            String outputTableName = requestedTable.toString(dbType);
             if (deleteTables) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);

@@ -225,7 +225,7 @@ public class AscReaderDriver {
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTableName = requestedTable.toString(isH2);
+            String outputTableName = requestedTable.toString(dbType);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
@@ -242,7 +242,7 @@ public class AscReaderDriver {
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTableName = requestedTable.toString(isH2);
+            String outputTableName = requestedTable.toString(dbType);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);

@@ -34,6 +34,8 @@ import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.h2gis.utilities.FileUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * Basic CSV importer and exporter
@@ -118,9 +120,10 @@ public class CSVDriverFunction implements DriverFunction{
             }
 
         } else {
+            final DBTypes dbType = DBUtils.getDBType(connection);
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTable = requestedTable.toString(isH2);
+            String outputTable = requestedTable.toString(dbType);
             try (Statement st = connection.createStatement()) {
                 JDBCUtilities.attachCancelResultSet(st, progress);
                 Csv csv = new Csv();
@@ -188,9 +191,10 @@ public class CSVDriverFunction implements DriverFunction{
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
                 stmt.close();
             }
+            final DBTypes dbType = DBUtils.getDBType(connection);
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTable = requestedTable.toString(isH2);
+            String outputTable = requestedTable.toString(dbType);
             FileInputStream fis = new FileInputStream(fileName);
             FileChannel fc = fis.getChannel();
             long fileSize = fc.size();

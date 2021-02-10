@@ -50,6 +50,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * Parse an OSM file and store the elements into a database. The database model
@@ -124,10 +126,11 @@ public class OSMParser extends DefaultHandler {
         }
         this.progress = progress.subProcess(100);
         // Initialisation
+        final DBTypes dbType = DBUtils.getDBType(connection);
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, isH2);
-        String osmTableName = requestedTable.toString(isH2);
+        String osmTableName = requestedTable.toString(dbType);
         if(deleteTable){
             OSMTablesFactory.dropOSMTables(connection, isH2, osmTableName);
         }

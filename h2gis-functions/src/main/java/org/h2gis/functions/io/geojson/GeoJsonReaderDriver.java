@@ -78,6 +78,7 @@ public class GeoJsonReaderDriver {
     private Set finalGeometryTypes;
     private JsonEncoding jsonEncoding;
     private boolean hasZ =false;
+    private DBTypes dbType = DBTypes.H2GIS;
 
     /**
      * Driver to import a GeoJSON file into a spatial table.
@@ -99,6 +100,7 @@ public class GeoJsonReaderDriver {
      *
      * @param progress
      * @param tableReference
+     * @return 
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
@@ -107,8 +109,9 @@ public class GeoJsonReaderDriver {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
+            this.dbType = DBUtils.getDBType(connection);
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
-            this.tableLocation = TableLocation.parse(tableReference, isH2).toString(isH2);
+            this.tableLocation = TableLocation.parse(tableReference, isH2).toString(dbType);
 
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
@@ -127,7 +130,7 @@ public class GeoJsonReaderDriver {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
-            this.tableLocation = TableLocation.parse(tableReference, isH2).toString(isH2);
+            this.tableLocation = TableLocation.parse(tableReference, isH2).toString(dbType);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);

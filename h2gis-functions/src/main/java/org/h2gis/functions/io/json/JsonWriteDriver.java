@@ -36,6 +36,8 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * JSON class to write a table or a resultset to a file
@@ -261,9 +263,10 @@ public class JsonWriteDriver {
     private void jsonWrite(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding =  getEncoding(encoding);
         try {
+            final DBTypes dbType = DBUtils.getDBType(connection);
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final TableLocation parse = TableLocation.parse(tableName, isH2);
-            String outputTable = parse.toString(isH2);
+            String outputTable = parse.toString(dbType);
             int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
             if (recordCount > 0) {
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);

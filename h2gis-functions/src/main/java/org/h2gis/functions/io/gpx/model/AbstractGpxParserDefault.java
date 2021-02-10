@@ -150,7 +150,8 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
                 GPXTablesFactory.dropOSMTables(connection, isH2, requestedTable);
             }
             if (fileName.length() == 0) {
-                String outputEmptyTable = requestedTable.toString(isH2);
+                final DBTypes dbType = DBUtils.getDBType(connection);
+                String outputEmptyTable = requestedTable.toString(dbType);
                 JDBCUtilities.createEmptyTable(connection, outputEmptyTable);
                 tableNames.add(outputEmptyTable);
             }

@@ -120,8 +120,9 @@ public class DBFDriverFunction implements DriverFunction {
             }
 
         } else {
+                final DBTypes dbType = DBUtils.getDBType(connection);
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                String outputTable = TableLocation.parse(tableReference, isH2).toString(isH2);
+                String outputTable = TableLocation.parse(tableReference, isH2).toString(dbType);
                 int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
                 // Read table content
                 Statement st = connection.createStatement();
@@ -222,7 +223,7 @@ public class DBFDriverFunction implements DriverFunction {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTable = requestedTable.toString(isH2);
+            String outputTable = requestedTable.toString(dbType);
             if (deleteTables) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTable);
