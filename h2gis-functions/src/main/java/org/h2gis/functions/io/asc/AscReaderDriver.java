@@ -216,7 +216,7 @@ public class AscReaderDriver {
      * @throws SQLException
      * @throws IOException
      */
-    public void read(Connection connection, File fileName, ProgressVisitor progress, String tableReference,
+    public String[] read(Connection connection, File fileName, ProgressVisitor progress, String tableReference,
             int srid) throws SQLException, IOException {
         if (fileName != null && fileName.getName().toLowerCase().endsWith(".asc")) {
             if (!fileName.exists()) {
@@ -224,27 +224,31 @@ public class AscReaderDriver {
             }
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(dbType));
+                stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
                 stmt.close();
             }
             try (FileInputStream inputStream = new FileInputStream(fileName)) {
-                readAsc(connection, inputStream, progress, requestedTable, srid);
+                outputTableName = readAsc(connection, inputStream, progress, outputTableName, srid);
             }
+            return new String[]{outputTableName};
         } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+            String outputTableName = requestedTable.toString(dbType);
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(dbType));
+                stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
                 stmt.close();
             }
             FileInputStream fis = new FileInputStream(fileName);
-            readAsc(connection, new GZIPInputStream(fis), progress, requestedTable, srid);
+            outputTableName = readAsc(connection, new GZIPInputStream(fis), progress, outputTableName, srid);
+            return new String[]{outputTableName};
         } else {
             throw new SQLException("The asc read driver supports only asc or gz extensions");
         }
@@ -256,12 +260,14 @@ public class AscReaderDriver {
      * @param connection
      * @param inputStream
      * @param progress
-     * @param requestedTable
+     * @param outputTable
      * @param srid
      * @throws UnsupportedEncodingException
      * @throws SQLException
+     * @return output table name
      */
-    private void readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, TableLocation requestedTable,
+
+    private String readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, String outputTable,
             int srid) throws UnsupportedEncodingException, SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream, BUFFER_SIZE), encoding));
@@ -274,19 +280,19 @@ public class AscReaderDriver {
             PreparedStatement preparedStatement;
             if (as3DPoint) {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
+                    st.execute("CREATE TABLE " + outputTable + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
                 } else {
-                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
+                    st.execute("CREATE TABLE " + outputTable + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
                 }
-                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(dbType)
+                preparedStatement = connection.prepareStatement("INSERT INTO " + outputTable
                         + "(the_geom, Z) VALUES (?, ?)");
             } else {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
+                    st.execute("CREATE TABLE " + outputTable + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
                 } else {
-                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
+                    st.execute("CREATE TABLE " + outputTable + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
                 }
-                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(dbType)
+                preparedStatement = connection.prepareStatement("INSERT INTO " + outputTable
                         + "(the_geom, Z) VALUES (?, ?)");
             }
             // Read data
@@ -363,6 +369,7 @@ public class AscReaderDriver {
             if (batchSize > 0) {
                 preparedStatement.executeBatch();
             }
+            return outputTable;
         } catch (NoSuchElementException | NumberFormatException | IOException | SQLException ex) {
             throw new SQLException("Unexpected word " + lastWord, ex);
         }

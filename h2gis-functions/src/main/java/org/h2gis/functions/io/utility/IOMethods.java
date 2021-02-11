@@ -173,8 +173,9 @@ public class IOMethods {
      * @param encoding Encoding of the file. Can be null
      * @param deleteFile true to delete the file if exists
      * @throws java.sql.SQLException
+     * @return The absolute path of the exported files
      */
-    public void exportToFile(Connection connection, String tableName,
+    public String[] exportToFile(Connection connection, String tableName,
             String filePath, String encoding, boolean deleteFile) throws SQLException {
         String enc = encoding;
         File fileToSave = URIUtilities.fileFromString(filePath);
@@ -188,7 +189,7 @@ public class IOMethods {
                     enc = ENCODING_OPTION + UTF_ENCODING;
                 }
             }
-            driverFunction.exportTable(connection, tableName.toUpperCase(), fileToSave,
+            return driverFunction.exportTable(connection, tableName.toUpperCase(), fileToSave,
                     enc, deleteFile, new EmptyProgressVisitor());
 
         } catch (SQLException | IOException e) {
@@ -205,9 +206,10 @@ public class IOMethods {
      * @param encoding An encoding value to read the file. Can be null
      * @param deleteTable True to delete the table if exists
      * @throws java.sql.SQLException
+     * @return the name of table imported and formated according the database rules
      *
      */
-    public void importFile(Connection connection, String filePath, String tableName, String encoding,
+    public String[] importFile(Connection connection, String filePath, String tableName, String encoding,
             boolean deleteTable) throws SQLException {
         File fileToImport = URIUtilities.fileFromString(filePath);
         DriverFunction driverFunction = getImportDriverFromFile(fileToImport);
@@ -215,7 +217,7 @@ public class IOMethods {
             throw new SQLException("Cannot find any file driver for the file." + filePath);
         }
         try {
-            driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable,
+            return driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable,
                     new EmptyProgressVisitor());
         } catch (SQLException | IOException e) {
             try {
@@ -335,6 +337,7 @@ public class IOMethods {
     public static void linkedFile(Connection connection, String filePath, String tableName, boolean delete) throws SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
         if (dbType != DBTypes.H2 && dbType != DBTypes.H2GIS) {
+
             throw new SQLException("Link file is only supported with an H2GIS database");
         }
         if (delete) {
@@ -370,6 +373,7 @@ public class IOMethods {
             }
             throw new SQLException("Cannot link the file", e);
         }
+        return tableName;
     }
 
     /**

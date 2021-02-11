@@ -23,6 +23,7 @@ package org.h2gis.functions.io.csv;
 import org.h2.tools.Csv;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.DriverManager;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -32,7 +33,6 @@ import java.nio.file.Files;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
@@ -79,18 +79,19 @@ public class CSVDriverFunction implements DriverFunction{
     }
     
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
              throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName,  null,  false,  progress);
+        return exportTable( connection,  tableReference,  fileName,  null,  false,  progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-            exportTable( connection,  tableReference,  fileName,  null,  deleteFiles,  progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+            return exportTable( connection,  tableReference,  fileName,  null,  deleteFiles,  progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection, tableReference,fileName,progress);
         if (!FileUtilities.isExtensionWellFormated(fileName, "csv")) {
             throw new SQLException("Only .csv extension is supported");
         }
@@ -112,6 +113,7 @@ public class CSVDriverFunction implements DriverFunction{
                         csv.setOptions(csvOptions);
                     }
                     csv.write(fileName.getPath(), st.executeQuery(tableReference), null);
+                    return new String[]{tableReference};
                 }
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
@@ -119,14 +121,17 @@ public class CSVDriverFunction implements DriverFunction{
 
         } else {
             final DBTypes dbType = DBUtils.getDBType(connection);
-            TableLocation location = TableLocation.parse(tableReference, dbType);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+            String outputTable = requestedTable.toString(dbType);
+   
             try (Statement st = connection.createStatement()) {
                 JDBCUtilities.attachCancelResultSet(st, progress);
                 Csv csv = new Csv();
                 if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
                     csv.setOptions(csvOptions);
                 }
-                csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
+                csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + outputTable), null);
+                return new String[]{outputTable};
             }
         }
     }
@@ -143,14 +148,14 @@ public class CSVDriverFunction implements DriverFunction{
      * @throws IOException 
      */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String csvOptions, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName,  csvOptions,  false,  progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String csvOptions, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable( connection,  tableReference,  fileName,  csvOptions,  false,  progress);
     }
     
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    public String[] importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, false,progress);
+        return importFile(connection, tableReference, fileName, null, false,progress);
     }
 
     /**
@@ -164,31 +169,20 @@ public class CSVDriverFunction implements DriverFunction{
      * @throws IOException 
      */
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,
+    public String[] importFile(Connection connection, String tableReference, File fileName,
                            String csvOptions, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, csvOptions, false,progress);
+        return importFile(connection, tableReference, fileName, csvOptions, false,progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,
+    public String[] importFile(Connection connection, String tableReference, File fileName,
                            boolean deleteTables,ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, deleteTables,progress);
+        return importFile(connection, tableReference, fileName, null, deleteTables,progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (connection == null) {
-            throw new SQLException("The connection cannot be null.\n");
-        }
-        if (tableReference == null || tableReference.isEmpty()) {
-            throw new SQLException("The table name cannot be null or empty");
-        }
-        if (fileName == null) {
-            throw new SQLException("The file name cannot be null.\n");
-        }
-        if (progress == null) {
-            progress = new EmptyProgressVisitor();
-        }
+    public String[] importFile(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection,tableReference,fileName,progress);
         if (FileUtilities.isFileImportable(fileName, "csv")) {
             final DBTypes dbType = DBUtils.getDBType(connection);
             if(deleteTables) {
@@ -198,7 +192,7 @@ public class CSVDriverFunction implements DriverFunction{
                 stmt.close();
             }
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-            String table = requestedTable.getTable();
+            String outputTable = requestedTable.getTable();
             FileInputStream fis = new FileInputStream(fileName);
             FileChannel fc = fis.getChannel();
             long fileSize = fc.size();
@@ -216,10 +210,10 @@ public class CSVDriverFunction implements DriverFunction{
             int columnCount = metadata.getColumnCount();
 
             StringBuilder createTable = new StringBuilder("CREATE TABLE ");
-            createTable.append(table).append("(");
+            createTable.append(outputTable).append("(");
 
             StringBuilder insertTable = new StringBuilder("INSERT INTO ");
-            insertTable.append(table).append(" VALUES(");
+            insertTable.append(outputTable).append(" VALUES(");
 
             for (int i = 0; i < columnCount; i++) {
                 if(i>0){
@@ -273,6 +267,8 @@ public class CSVDriverFunction implements DriverFunction{
                 pst.close();
                 connection.setAutoCommit(true);
             }
+            return new String[]{outputTable};
         }
+        return null;
     }
 }

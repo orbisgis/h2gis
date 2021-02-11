@@ -52,6 +52,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * Parse an OSM file and store the elements into a database. The database model
@@ -120,23 +122,22 @@ public class OSMParser extends DefaultHandler {
      * @return
      * @throws SQLException
      */
-    public boolean read(String tableName, ProgressVisitor progress) throws SQLException {
+    public String[] read(String tableName, ProgressVisitor progress) throws SQLException {
         if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
             throw new SQLException(new IllegalArgumentException("This driver handle only .osm, .osm.gz and .osm.bz2 files"));
         }
-
         this.progress = progress.subProcess(100);
         // Initialisation
-        boolean success = false;
-        connection.setAutoCommit(false);
         final DBTypes dbType = DBUtils.getDBType(connection);
+        connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, dbType);
+        String osmTableName = requestedTable.toString(dbType);
         if(deleteTable){
             OSMTablesFactory.dropOSMTables(connection, requestedTable.toString());
         }
-        String osmTableName = requestedTable.getTable();
         checkOSMTables(connection, dbType, requestedTable, osmTableName);
-        createOSMDatabaseModel(connection, dbType, requestedTable, osmTableName);
+        String[] outputOSMTableNames = createOSMDatabaseModel(connection, dbType, requestedTable, osmTableName);
+
 
         FileInputStream fs = null;
         try {
@@ -157,23 +158,25 @@ public class OSMParser extends DefaultHandler {
                         is.setEncoding(encoding);
                     }
                     parser.parse(is);
+                    return outputOSMTableNames;
                 } else if (fileName.getName().endsWith(".osm.gz")) {
                     InputSource is = new InputSource(new GZIPInputStream(fs));
                     if(encoding!=null && !encoding.isEmpty()){
                         is.setEncoding(encoding);
                     }
                     parser.parse(is);
+                    return outputOSMTableNames;
                 } else if (fileName.getName().endsWith(".osm.bz2")) {
                     InputSource is = new InputSource(new BZip2CompressorInputStream(fs));
                     if(encoding!=null && !encoding.isEmpty()){
                         is.setEncoding(encoding);
                     }
                     parser.parse(is);
+                    return outputOSMTableNames;
                 } else {
                     throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
                 }
             }
-            success = true;
         } catch (SAXException ex) {
             throw new SQLException(ex);
         } catch (IOException ex) {
@@ -219,8 +222,7 @@ public class OSMParser extends DefaultHandler {
             }            
             connection.setAutoCommit(true);
         }
-
-        return success;
+        return null;
     }
 
     /**
@@ -276,6 +278,8 @@ public class OSMParser extends DefaultHandler {
         wayMemberPreparedStmt = OSMTablesFactory.createWayMemberTable(connection, wayMemberTableName);
         String relationMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION_MEMBER, dbType);
         relationMemberPreparedStmt = OSMTablesFactory.createRelationMemberTable(connection, relationMemberTableName);
+        return new String[]{nodeTableName,nodeTagTableName,wayTableName,wayTagTableName, wayNodeTableName, relationTableName, relationTagTableName,
+        nodeMemberTableName, wayMemberTableName, relationMemberTableName};
     }
 
     @Override
