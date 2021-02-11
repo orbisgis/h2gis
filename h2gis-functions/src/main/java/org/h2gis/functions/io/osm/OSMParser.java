@@ -131,7 +131,7 @@ public class OSMParser extends DefaultHandler {
         final DBTypes dbType = DBUtils.getDBType(connection);
         connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, dbType);
-        String osmTableName = requestedTable.toString(dbType);
+        String osmTableName = requestedTable.toString();
         if(deleteTable){
             OSMTablesFactory.dropOSMTables(connection, requestedTable.toString());
         }
@@ -257,7 +257,7 @@ public class OSMParser extends DefaultHandler {
      * @param osmTableName
      * @throws SQLException
      */
-    private void createOSMDatabaseModel(Connection connection, DBTypes dbType, TableLocation requestedTable, String osmTableName) throws SQLException {
+    private String[] createOSMDatabaseModel(Connection connection, DBTypes dbType, TableLocation requestedTable, String osmTableName) throws SQLException {
         String nodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE, dbType);
         nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName);
         String nodeTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE_TAG, dbType);

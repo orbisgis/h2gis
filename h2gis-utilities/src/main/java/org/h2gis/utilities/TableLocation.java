@@ -41,6 +41,7 @@ public class TableLocation {
     /** Recognized by H2 and Postgres */
     private static final String QUOTE_CHAR = "\"";
     private String defaultSchema = "PUBLIC";
+    private DBTypes dbTypes = DBTypes.H2;
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -48,6 +49,25 @@ public class TableLocation {
      */
     public TableLocation(ResultSet rs) throws SQLException {
         this(rs.getString("TABLE_CAT"),rs.getString("TABLE_SCHEM"),rs.getString("TABLE_NAME"));
+    }
+
+    /**
+     *
+     * @param catalog Catalog name without quotes
+     * @param schema Schema name without quotes
+     * @param table Table name without quotes
+     */
+    public TableLocation(String catalog, String schema, String table, DBTypes dbTypes) {
+        if(table == null) {
+            throw new IllegalArgumentException("Cannot construct table location with null table");
+        }
+        if(dbTypes==null){
+            throw new IllegalArgumentException("The db type cannot be null");
+        }
+        this.catalog = catalog == null ? "" : catalog;
+        this.schema = schema  == null || schema.isEmpty() ? "" : schema;
+        this.table = table;
+        this.dbTypes=dbTypes;
     }
 
     /**
@@ -109,14 +129,14 @@ public class TableLocation {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            sb.append(quoteIdentifier(catalog));
+            sb.append(quoteIdentifier(catalog,getDbTypes()));
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            sb.append(quoteIdentifier(schema));
+            sb.append(quoteIdentifier(schema,getDbTypes()));
             sb.append(".");
         }
-        sb.append(quoteIdentifier(table));
+        sb.append(quoteIdentifier(table, getDbTypes()));
         return sb.toString();
     }
 
@@ -165,7 +185,7 @@ public class TableLocation {
      * @return Java beans for table location
      */
     public static TableLocation parse(String concatenatedTableLocation) {
-        return parse(concatenatedTableLocation, null);
+        return parse(concatenatedTableLocation, DBTypes.H2);
     }
 
     /**
@@ -221,7 +241,7 @@ public class TableLocation {
                 schema = values[1].trim();
                 table = values[2].trim();
         }
-        return new TableLocation(catalog,schema,table);
+        return new TableLocation(catalog,schema,table, dbTypes);
     }
 
     /**
@@ -290,5 +310,15 @@ public class TableLocation {
      */
     public void setDefaultSchema(String defaultSchema) {
         this.defaultSchema = defaultSchema;
+    }
+
+
+    /**
+     * Return the dbtype used by tablelocation.
+     * Default is H2
+     * @return
+     */
+    public DBTypes getDbTypes() {
+        return dbTypes;
     }
 }

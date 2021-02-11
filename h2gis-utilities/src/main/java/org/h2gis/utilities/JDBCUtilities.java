@@ -267,6 +267,7 @@ public class JDBCUtilities {
     /**
      * Fetch the row count of a table.
      *
+     *
      * @param connection Active connection.
      * @param location Table location
      * @return Row count
@@ -285,11 +286,10 @@ public class JDBCUtilities {
      * @throws SQLException If the table does not exists, or sql request fail.
      */
     public static int getRowCount(Connection connection, String tableReference) throws SQLException {
-        final DBTypes dbType = getDBType(connection);
         Statement st = connection.createStatement();
         int rowCount = 0;
         try {
-            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", TableLocation.parse(tableReference).toString(dbType)));
+            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", tableReference));
             try {
                 if (rs.next()) {
                     rowCount = rs.getInt(1);

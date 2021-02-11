@@ -265,9 +265,8 @@ public class JsonWriteDriver {
         JsonEncoding jsonEncoding =  getEncoding(encoding);
         try {
             final DBTypes dbType = DBUtils.getDBType(connection);
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            final TableLocation parse = TableLocation.parse(tableName, isH2);
-            String outputTable = parse.toString(dbType);
+            final TableLocation parse = TableLocation.parse(tableName, dbType);
+            String outputTable = parse.toString();
             int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
             if (recordCount > 0) {
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);

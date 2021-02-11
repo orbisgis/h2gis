@@ -137,7 +137,7 @@ public class TSVDriverFunction implements DriverFunction {
                             new GZIPOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(location.toString(dbType)), bw, encoding, progress);
+                            exportFromResultSet(connection, st.executeQuery(location.toString()), bw, encoding, progress);
                             return new String[]{fileName.getAbsolutePath()};
 
                         }
@@ -156,7 +156,7 @@ public class TSVDriverFunction implements DriverFunction {
                             new ZipOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(location.toString(dbType)), bw, encoding, progress);
+                            exportFromResultSet(connection, st.executeQuery(location.toString()), bw, encoding, progress);
                             return new String[]{fileName.getAbsolutePath()};
 
                         }
@@ -180,7 +180,7 @@ public class TSVDriverFunction implements DriverFunction {
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, progress);
                         return new String[]{fileName.getAbsolutePath()};
 
                     }
@@ -197,7 +197,7 @@ public class TSVDriverFunction implements DriverFunction {
                         new GZIPOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, progress);
                         return new String[]{fileName.getAbsolutePath()};
                     }
                 }
@@ -213,7 +213,7 @@ public class TSVDriverFunction implements DriverFunction {
                         new ZipOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, progress);
                         return new String[]{fileName.getAbsolutePath()};
                     }
                 }
@@ -290,7 +290,7 @@ public class TSVDriverFunction implements DriverFunction {
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
                 stmt.close();
             }
-            String table = requestedTable.toString(dbType);
+            String table = requestedTable.toString();
 
             int AVERAGE_NODE_SIZE = 500;
             FileInputStream fis = new FileInputStream(fileName);
@@ -374,7 +374,7 @@ public class TSVDriverFunction implements DriverFunction {
             }
             try (BufferedReader br = new BufferedReader(new InputStreamReader(
                     new GZIPInputStream(new FileInputStream(fileName))))) {
-                String table = requestedTable.toString(dbType);
+                String table = requestedTable.toString();
                 Csv csv = new Csv();
                 csv.setFieldDelimiter('\t');
                 csv.setFieldSeparatorRead('\t');

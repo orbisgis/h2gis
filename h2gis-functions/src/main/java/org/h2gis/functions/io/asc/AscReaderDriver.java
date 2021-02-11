@@ -224,7 +224,7 @@ public class AscReaderDriver {
             }
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-
+            String outputTableName = requestedTable.toString();
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
@@ -240,7 +240,7 @@ public class AscReaderDriver {
             }
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-            String outputTableName = requestedTable.toString(dbType);
+            String outputTableName = requestedTable.toString();
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
