@@ -94,7 +94,7 @@ public class TableUtilitiesTest {
     @Test
     public void caseIdentifierTest() throws Exception {
         TableLocation tableLocation = TableLocation.parse("TATA", DBTypes.H2GIS);
-        assertEquals("\"TATA\"", TableUtilities.caseIdentifier(tableLocation, "TATA", DBTypes.H2));
+        assertEquals("TATA", TableUtilities.caseIdentifier(tableLocation, "TATA", DBTypes.H2));
         assertEquals("\"tata\"", TableUtilities.caseIdentifier(tableLocation, "TATA", DBTypes.POSTGIS));
     }
 }

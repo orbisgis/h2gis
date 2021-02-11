@@ -220,7 +220,6 @@ public class DBFDriverFunction implements DriverFunction {
     public  String[]  importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         progress = DriverManager.check(connection, tableReference,fileName,progress);
         if (FileUtilities.isFileImportable(fileName, "dbf")) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
             String outputTable = requestedTable.toString();

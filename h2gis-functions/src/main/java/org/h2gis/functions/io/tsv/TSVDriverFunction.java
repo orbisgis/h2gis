@@ -149,7 +149,6 @@ public class TSVDriverFunction implements DriverFunction {
                     else if (fileName.exists()) {
                         throw new IOException("The zip file already exist.");
                     }
-                    final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                     final DBTypes dbType = DBUtils.getDBType(connection);
                     TableLocation location = TableLocation.parse(tableReference, dbType);
                     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(

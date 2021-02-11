@@ -256,7 +256,7 @@ public class GeoJsonWriteDriver {
         }
         try {
             final TableLocation parse = TableLocation.parse(tableName, DBUtils.getDBType(connection));
-            int recordCount = JDBCUtilities.getRowCount(connection, parse);
+            int recordCount = JDBCUtilities.getRowCount(connection, parse.toString());
             if (recordCount > 0) {
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
                 // Read Geometry Index and type
