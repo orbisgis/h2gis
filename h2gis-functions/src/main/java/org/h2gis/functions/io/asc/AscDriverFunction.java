@@ -21,6 +21,7 @@ package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.utility.PRJUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -69,34 +70,49 @@ public class AscDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    public String[] importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
+        return importFile(connection, tableReference, fileName, null,false, progress);
+    }
+
+    @Override
+    public String[] importFile(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress
+    ) throws SQLException, IOException {
+        return importFile(connection, tableReference, fileName, progress);
+    }
+
+    @Override
+    public String[] importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
+    ) throws SQLException, IOException {
+        return importFile(connection, tableReference, fileName, null,deleteTables, progress);
+    }
+
+    @Override
+    public String[] importFile(Connection connection, String tableReference, File fileName, String encoding, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        DriverManager.check(connection,tableReference,fileName,progress);
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
-        importFile(connection, tableReference, fileName, progress, ascReaderDriver);
-    }
-
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, AscReaderDriver ascReaderDriver)
-            throws SQLException, IOException {
+        ascReaderDriver.setDeleteTable(deleteTables);
+        ascReaderDriver.setEncoding(encoding);
         int srid = 0;
         String filePath = fileName.getAbsolutePath();
         final int dotIndex = filePath.lastIndexOf('.');
@@ -105,46 +121,6 @@ public class AscDriverFunction implements DriverFunction {
         if (prjFile.exists()) {
             srid = PRJUtil.getSRID(prjFile);
         }
-        ascReaderDriver.read(connection, fileName, progress, tableReference, srid);
-
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress
-    ) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress);
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
-    ) throws SQLException, IOException {
-        if (deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            Statement stmt = connection.createStatement();
-            stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
-            stmt.close();
-        }
-        importFile(connection, tableReference, fileName, progress);
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String encoding, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (connection == null) {
-            throw new SQLException("The connection cannot be null.\n");
-        }
-        if (tableReference == null || tableReference.isEmpty()) {
-            throw new SQLException("The table cannot be null or empty");
-        }
-        if (fileName == null) {
-            throw new SQLException("The file name cannot be null.\n");
-        }
-        if (progress == null) {
-            progress = new EmptyProgressVisitor();
-        }
-        AscReaderDriver ascReaderDriver = new AscReaderDriver();
-        ascReaderDriver.setDeleteTable(deleteTables);
-        ascReaderDriver.setEncoding(encoding);
-        importFile(connection, tableReference, fileName, progress, ascReaderDriver);
+        return ascReaderDriver.read(connection, fileName, progress, tableReference, srid);
     }
 }

@@ -48,9 +48,9 @@ import java.nio.file.Path;
  */
 public class SHPDriver implements FileDriver {
     private DBFDriver dbfDriver = new DBFDriver();
-    private File shpFile;
-    private File shxFile;
-    private File dbfFile ;
+    public File shpFile;
+    public File shxFile;
+    public File dbfFile ;
     private ShapefileReader shapefileReader;
     private ShapefileWriter shapefileWriter;
     private IndexFile shxFileReader;

@@ -94,8 +94,9 @@ public interface DriverFunction {
      * @param progress Progress visitor following the execution.
      * @throws SQLException Table read error.
      * @throws IOException File write error.
+     * @return the path of the file(s) used to store the table
      */
-    void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException;
 
     /**
@@ -109,8 +110,9 @@ public interface DriverFunction {
      * @param progress Progress visitor following the execution.
      * @throws SQLException Table read error.
      * @throws IOException File write error.
+     * @return the path of the file(s) used to store the table
      */
-    void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress)
+    String[] exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress)
             throws SQLException, IOException;
 
     /**
@@ -125,9 +127,10 @@ public interface DriverFunction {
      * @param deleteFiles True to delete the files if exist
      * @param progress Progress visitor following the execution.
      * @throws SQLException Table read error.
-     * @throws IOException File write error.
+     * @throws IOException File write error.     *
+     * @return the path of the file(s) used to store the table
      */
-    void exportTable(Connection connection, String tableReference, File fileName,
+    String[] exportTable(Connection connection, String tableReference, File fileName,
             String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException;
 
     /**
@@ -141,9 +144,10 @@ public interface DriverFunction {
      * @param options Options to use for the export like encoding, separator ...
      * The options are different from a format to another.
      * @throws SQLException Table read error.
-     * @throws IOException File write error.
+     * @throws IOException File write error.     *
+     * @return the path of the file(s) used to store the table
      */
-    void exportTable(Connection connection, String tableReference, File fileName,
+    String[] exportTable(Connection connection, String tableReference, File fileName,
             String options, ProgressVisitor progress) throws SQLException, IOException;
 
     /**
@@ -156,8 +160,10 @@ public interface DriverFunction {
      * @param progress Progress visitor following the execution.
      * @throws SQLException Table write error.
      * @throws IOException File read error.
+     * @return The name of table formatted according the database rules
+     * if the the user set a subquery e.g : "(SELECT * FROM H2GIS LIMIT 1)" it will return the query
      */
-    void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    String[] importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException;
 
     /**
@@ -172,8 +178,10 @@ public interface DriverFunction {
      * @param progress Progress visitor following the execution.
      * @throws SQLException Table write error.
      * @throws IOException File read error.
+     * @return The name of table formatted according the database rules
+     * if the the user set a subquery e.g : "(SELECT * FROM H2GIS LIMIT 1)" it will return the query
      */
-    void importFile(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress)
+    String[] importFile(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress)
             throws SQLException, IOException;
 
     /**
@@ -188,8 +196,10 @@ public interface DriverFunction {
      * @param progress Progress visitor following the execution.
      * @throws SQLException Table write error.
      * @throws IOException File read error.
+     * @return The name of table formatted according the database rules
+     * if the the user set a subquery e.g : "(SELECT * FROM H2GIS LIMIT 1)" it will return the query
      */
-    void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
+    String[] importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
     ) throws SQLException, IOException;
 
     /**
@@ -206,8 +216,10 @@ public interface DriverFunction {
      * @param progress Progress visitor following the execution.
      * @throws SQLException Table write error.
      * @throws IOException File read error.
+     * @return The name of table formatted according the database rules
+     * if the the user set a subquery e.g : "(SELECT * FROM H2GIS LIMIT 1)" it will return the query
      */
-    void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress
+    String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress
     ) throws SQLException, IOException;
 
 }

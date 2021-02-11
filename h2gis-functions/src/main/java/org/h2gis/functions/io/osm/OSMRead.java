@@ -139,5 +139,4 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
             throw new SQLException("The file name contains unsupported characters");
         }
     }
-
 }

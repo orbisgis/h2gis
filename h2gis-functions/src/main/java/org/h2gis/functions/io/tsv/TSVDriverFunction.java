@@ -23,6 +23,7 @@ import org.h2.tools.Csv;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.DriverManager;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -94,17 +95,18 @@ public class TSVDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, null, false, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName, null, false, progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, null, deleteFiles, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName, null, deleteFiles, progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        progress =DriverManager.check(connection,tableReference, fileName, progress);
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableReference);
@@ -119,7 +121,8 @@ public class TSVDriverFunction implements DriverFunction {
                     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, new EmptyProgressVisitor());
+                            exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, progress);
+                            return new String[]{fileName.getAbsolutePath()};
                         }
                     }
                 } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
@@ -135,7 +138,9 @@ public class TSVDriverFunction implements DriverFunction {
                             new GZIPOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(location.toString(dbType)), bw, encoding, new EmptyProgressVisitor());
+                            exportFromResultSet(connection, st.executeQuery(location.toString(dbType)), bw, encoding, progress);
+                            return new String[]{fileName.getAbsolutePath()};
+
                         }
                     }
                 } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
@@ -152,7 +157,9 @@ public class TSVDriverFunction implements DriverFunction {
                             new ZipOutputStream(new FileOutputStream(fileName))))) {
                         try (Statement st = connection.createStatement()) {
                             JDBCUtilities.attachCancelResultSet(st, progress);
-                            exportFromResultSet(connection, st.executeQuery(location.toString(dbType)), bw, encoding, new EmptyProgressVisitor());
+                            exportFromResultSet(connection, st.executeQuery(location.toString(dbType)), bw, encoding, progress);
+                            return new String[]{fileName.getAbsolutePath()};
+
                         }
                     }
                 } else {
@@ -175,7 +182,9 @@ public class TSVDriverFunction implements DriverFunction {
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, new EmptyProgressVisitor());
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
+                        return new String[]{fileName.getAbsolutePath()};
+
                     }
                 }
             } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
@@ -191,7 +200,8 @@ public class TSVDriverFunction implements DriverFunction {
                         new GZIPOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, new EmptyProgressVisitor());
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
+                        return new String[]{fileName.getAbsolutePath()};
                     }
                 }
             } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
@@ -207,7 +217,8 @@ public class TSVDriverFunction implements DriverFunction {
                         new ZipOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, new EmptyProgressVisitor());
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString(dbType)), bw, encoding, progress);
+                        return new String[]{fileName.getAbsolutePath()};
                     }
                 }
             } else {
@@ -228,8 +239,8 @@ public class TSVDriverFunction implements DriverFunction {
      * @throws IOException
      */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, encoding, false, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName, encoding, false, progress);
     }
 
     /**
@@ -253,33 +264,25 @@ public class TSVDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, false, progress);
+    public String[] importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        return importFile(connection, tableReference, fileName, null, false, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,
+    public String[] importFile(Connection connection, String tableReference, File fileName,
             String options, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, options, false, progress);
+        return importFile(connection, tableReference, fileName, options, false, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,
+    public String[] importFile(Connection connection, String tableReference, File fileName,
             boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, deleteTables, progress);
+        return importFile(connection, tableReference, fileName, null, deleteTables, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (connection == null) {
-            throw new SQLException("The connection cannot be null.\n");
-        }
-        if (tableReference == null || tableReference.isEmpty()) {
-            throw new SQLException("The table name cannot be null or empty");
-        }
-        if (progress == null) {
-            progress = new EmptyProgressVisitor();
-        }
+    public String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection,tableReference, fileName,progress);
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         final DBTypes dbType = DBUtils.getDBType(connection);
         TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
@@ -361,6 +364,7 @@ public class TSVDriverFunction implements DriverFunction {
                 if (batchSize > 0) {
                     pst.executeBatch();
                 }
+                return new String[]{table};
             } finally {
                 pst.close();
             }
@@ -424,6 +428,7 @@ public class TSVDriverFunction implements DriverFunction {
                     if (batchSize > 0) {
                         pst.executeBatch();
                     }
+                    return new String[]{table};
                 } finally {
                     pst.close();
                 }
