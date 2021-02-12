@@ -26,7 +26,6 @@ import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.dbf.DBFEngine;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.shp.SHPEngine;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
@@ -86,15 +85,15 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
      * @param tableName [[catalog.]schema.]table reference
      * @return The name of table formatted according the database rules
      */
-    public static void openFile(Connection connection, String fileName, String tableName) throws SQLException {
+    public static String[] openFile(Connection connection, String fileName, String tableName) throws SQLException {
         String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
         final DBTypes dbType = DBUtils.getDBType(connection);
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 try (Statement st = connection.createStatement()) {
-                    String tableName_ = TableLocation.parse(tableName, isH2).toString(dbType);
+                    String tableName_ = TableLocation.parse(tableName, dbType).toString();
                     st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
-                            TableLocation.parse(tableName, dbType).toString(dbType),StringUtils.quoteStringSQL(fileName),
+                            TableLocation.parse(tableName, dbType).toString(),StringUtils.quoteStringSQL(fileName),
                             StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
                     return new String[]{tableName_};
                 }

@@ -359,7 +359,7 @@ public class SHPEngineTest {
                 ,schema.isEmpty()?"PUBLIC":schema,tableName, fieldName, fieldName);
         try (ResultSet rs = connection.createStatement().executeQuery(query)) {
             if (rs.next()) {
-                return  rs.getString("INDEX_TYPE_NAME").toString().contains("INDEX");
+                return  rs.getString("INDEX_TYPE_NAME").contains("INDEX");
             }
         }
         return false;

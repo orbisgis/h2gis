@@ -334,7 +334,7 @@ public class IOMethods {
      * @param delete True to delete the table if exists
      * @throws java.sql.SQLException
      */
-    public static void linkedFile(Connection connection, String filePath, String tableName, boolean delete) throws SQLException {
+    public static String linkedFile(Connection connection, String filePath, String tableName, boolean delete) throws SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
         if (dbType != DBTypes.H2 && dbType != DBTypes.H2GIS) {
 

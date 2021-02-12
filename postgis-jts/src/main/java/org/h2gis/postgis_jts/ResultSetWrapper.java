@@ -914,7 +914,7 @@ public class ResultSetWrapper implements ResultSet {
     public static PGobject longToTid(long value) throws SQLException {
         PGobject pGobject = new PGobject();
         pGobject.setType("tid");
-        pGobject.setValue("(" + Long.toString(value >> 32)+","+Long.toString(value << 32 >> 32)+ ")");
+        pGobject.setValue("(" + (value >> 32) +","+ (value << 32 >> 32) + ")");
         return pGobject;
     }
 

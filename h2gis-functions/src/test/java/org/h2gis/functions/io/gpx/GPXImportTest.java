@@ -142,7 +142,7 @@ public class GPXImportTest {
         try {
             st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("route.gpx").getPath()) + ", 'GPXDATA');");
         } catch (JdbcSQLException e) {
-            assertTrue(e.getCause().getMessage().equals("The table " + "\"GPXDATA_ROUTE\"" + " already exists."));
+            assertTrue(e.getCause().getMessage().equals("The table " + "GPXDATA_ROUTE" + " already exists."));
         }
     }
 

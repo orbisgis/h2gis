@@ -300,7 +300,7 @@ public class GPXTablesFactory {
      */
     public static void dropOSMTables(Connection connection, TableLocation tablePrefix) throws SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
-        String gpxTableName = tablePrefix.toString(dbType);
+        String gpxTableName = tablePrefix.toString();
         String[] gpxTables = new String[]{WAYPOINT,ROUTE,ROUTEPOINT, TRACK, TRACKPOINT, TRACKSEGMENT};
         StringBuilder sb =  new StringBuilder("drop table if exists ");     
         String gpxTableSuffix = gpxTables[0];

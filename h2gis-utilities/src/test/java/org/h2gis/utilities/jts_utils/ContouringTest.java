@@ -318,7 +318,7 @@ public class ContouringTest {
         );
         //Split the triangle into multiple triangles
         Map<Short,Deque<TriMarkers>> triangleToDriver = Contouring.processTriangle(triangleData,
-                Arrays.asList(5.));
+                Collections.singletonList(5.));
         for(Map.Entry<Short,Deque<TriMarkers>> entry : triangleToDriver.entrySet()) {
             subdividedTri+=entry.getValue().size();
         }

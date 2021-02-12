@@ -21,7 +21,6 @@ package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
@@ -224,7 +223,7 @@ public class AscReaderDriver {
             }
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-
+            String outputTableName = requestedTable.toString();
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
@@ -240,7 +239,7 @@ public class AscReaderDriver {
             }
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-            String outputTableName = requestedTable.toString(dbType);
+            String outputTableName = requestedTable.toString();
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);

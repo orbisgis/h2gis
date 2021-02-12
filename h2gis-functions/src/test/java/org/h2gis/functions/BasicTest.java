@@ -76,7 +76,7 @@ public class BasicTest {
 
                 Coordinate coord = geom.getCoordinates()[0];
 
-                assertTrue(3 == coord.z);
+                assertTrue(3 == coord.getZ());
 
         }
 
@@ -121,9 +121,9 @@ public class BasicTest {
                         if (columnTypeName.equalsIgnoreCase(H2GISFunctions.GEOMETRY_BASE_TYPE)) {
                                 geom = (Geometry)rs.getObject("the_geom");
                                 Coordinate coord = geom.getCoordinates()[0];
-                                assertTrue(coord.x == 0);
-                                assertTrue(coord.y == 12);
-                                assertTrue(Double.isNaN(coord.z));
+                                assertTrue(coord.getX() == 0);
+                                assertTrue(coord.getY() == 12);
+                                assertTrue(Double.isNaN(coord.getZ()));
                                 hasGeometryColumn = true;
                         }
 

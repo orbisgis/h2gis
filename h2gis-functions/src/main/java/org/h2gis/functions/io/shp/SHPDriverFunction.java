@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.EmptyProgressVisitor;
+
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
@@ -99,7 +99,6 @@ public class SHPDriverFunction implements DriverFunction {
                 throw new IOException("The file already exist.");
             }
         }
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         final DBTypes dbType = DBUtils.getDBType(connection);
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
@@ -123,7 +122,7 @@ public class SHPDriverFunction implements DriverFunction {
             }
         } else {
             TableLocation tableLocation = TableLocation.parse(tableReference, dbType);
-            String location = tableLocation.toString(dbType);
+            String location = tableLocation.toString();
             int recordCount = JDBCUtilities.getRowCount(connection, location);
             ProgressVisitor copyProgress = progress.subProcess(recordCount);
             // Read Geometry Index and type
@@ -282,9 +281,8 @@ public class SHPDriverFunction implements DriverFunction {
         progress = DriverManager.check(connection,tableReference,fileName, progress);
         final DBTypes dbType = DBUtils.getDBType(connection);
         if (FileUtilities.isFileImportable(fileName, "shp")) {
-            final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-            String outputTableName = requestedTable.toString(dbType);
+            String outputTableName = requestedTable.toString();
             if (deleteTables) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);

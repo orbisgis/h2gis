@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.shp.internal;
 
-import org.h2gis.drivers.utility.CoordinatesUtils;
+import org.h2gis.functions.io.utility.CoordinatesUtils;
 import org.h2gis.functions.io.utility.ReadBufferManager;
 import org.h2gis.functions.io.utility.WriteBufferManager;
 import org.locationtech.jts.geom.*;
@@ -149,7 +149,6 @@ public class MultiPointHandler implements ShapeHandler {
                                 buffer.putDouble(zExtreame[0]);
                                 buffer.putDouble(zExtreame[1]);
                         }
-
 
                         for (int t = 0; t < mp.getNumGeometries(); t++) {
                                 Coordinate c = (mp.getGeometryN(t)).getCoordinate();

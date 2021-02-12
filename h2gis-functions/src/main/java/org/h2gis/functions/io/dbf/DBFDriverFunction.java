@@ -121,8 +121,8 @@ public class DBFDriverFunction implements DriverFunction {
 
         } else {
                 final DBTypes dbType = DBUtils.getDBType(connection);
-                String outputTable = TableLocation.parse(tableReference, dbType).toString(dbType);
-                int recordCount = JDBCUtilities.getRowCount(connection, tableName);                
+                String outputTable = TableLocation.parse(tableReference, dbType).toString();
+                int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
 
                 // Read table content
                 Statement st = connection.createStatement();
@@ -220,10 +220,9 @@ public class DBFDriverFunction implements DriverFunction {
     public  String[]  importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         progress = DriverManager.check(connection, tableReference,fileName,progress);
         if (FileUtilities.isFileImportable(fileName, "dbf")) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-            String outputTable = requestedTable.toString(dbType);
+            String outputTable = requestedTable.toString();
 
             if (deleteTables) {
                 Statement stmt = connection.createStatement();

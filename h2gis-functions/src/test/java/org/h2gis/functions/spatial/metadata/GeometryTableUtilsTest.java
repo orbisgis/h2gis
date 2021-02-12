@@ -576,7 +576,8 @@ public class GeometryTableUtilsTest {
 
     @Test
     public void testGeometryTypeNoGeomTableEmptyField() throws SQLException {
-        assertNull(GeometryTableUtilities.getMetaData(connection, TableLocation.parse("NOGEOM"), ""));
+        assertThrows(SQLException.class, ()
+                -> GeometryTableUtilities.getMetaData(connection, TableLocation.parse("NOGEOM"), ""));
     }
 
     @Test
@@ -754,7 +755,7 @@ public class GeometryTableUtilsTest {
         statement.execute("DROP TABLE IF EXISTS PUBLIC.GEOMTABLE; CREATE TABLE PUBLIC.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
         statement.execute("INSERT INTO PUBLIC.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
         statement.execute("ANALYZE PUBLIC.GEOMTABLE");
-        TableLocation tableLocation = TableLocation.parse("geomtable");
+        TableLocation tableLocation = TableLocation.parse("geomtable", DBTypes.POSTGIS);
         Geometry geom = GeometryTableUtilities.getEstimatedExtent(conPost, tableLocation, "the_geom");
         assertNotNull(geom);
         assertEquals(4326, geom.getSRID());        
@@ -768,7 +769,7 @@ public class GeometryTableUtilsTest {
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
         statement.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
         statement.execute("ANALYZE MYSCHEMA.GEOMTABLE");
-        TableLocation tableLocation = TableLocation.parse("myschema.geomtable");
+        TableLocation tableLocation = TableLocation.parse("myschema.geomtable", DBTypes.POSTGIS);
         Geometry geom = GeometryTableUtilities.getEstimatedExtent(conPost, tableLocation, "the_geom");
         assertNotNull(geom);
         assertEquals(4326, geom.getSRID());
@@ -781,7 +782,7 @@ public class GeometryTableUtilsTest {
         Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
         statement.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
-        TableLocation tableLocation = TableLocation.parse("myschema.geomtable");
+        TableLocation tableLocation = TableLocation.parse("myschema.geomtable", DBTypes.POSTGIS);
         Geometry geom = GeometryTableUtilities.getEnvelope(conPost, tableLocation, "the_geom");
         assertNotNull(geom);
         assertTrue(geom.getArea() > 0);
@@ -853,23 +854,23 @@ public class GeometryTableUtilsTest {
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
-        String ddl = JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable"));
+        String ddl = JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable", DBTypes.POSTGIS));
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute(ddl);
         assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY,type int4,name varchar,city varchar(12),temperature DOUBLE PRECISION,location GEOMETRY(POINTZ,4326),wind varchar(64))",
                 ddl);
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
-        ddl = JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable"));
+        ddl = JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable", DBTypes.POSTGIS));
         assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY(POINTZ,4326))", ddl);
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 0))");
         assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY(POINTZ,0))",
-                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));
+                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable", DBTypes.POSTGIS)));
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(GEOMETRY, 0))");
         assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY)",
-                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable")));
+                JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable", DBTypes.POSTGIS)));
         assertEquals("CREATE TABLE mytable (the_geom GEOMETRY)",
                 JDBCUtilities.createTableDDL(stat.executeQuery("SELECT the_geom from PERSTABLE"), "mytable"));
     }
@@ -879,23 +880,23 @@ public class GeometryTableUtilsTest {
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
-        String ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "orbisgis");
-        assertEquals("CREATE TABLE orbisgis (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
+        String ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), TableLocation.parse("orbisgis"));
+        assertEquals("CREATE TABLE ORBISGIS (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
-        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), TableLocation.parse("\"OrbisGIS\""));
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar(26))");       
-        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), TableLocation.parse("\"OrbisGIS\""));
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME VARCHAR(26))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar)");       
-        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), TableLocation.parse("\"OrbisGIS\""));
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME VARCHAR)",
                 ddl);
     }   
@@ -929,7 +930,7 @@ public class GeometryTableUtilsTest {
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
         
-        env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)", "the_geom"});
+        env = GeometryTableUtilities.getEnvelope(connection, location, "st_buffer(the_geom,0)", "the_geom");
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
         
@@ -943,7 +944,7 @@ public class GeometryTableUtilsTest {
         
         assertThrows(SQLException.class, () -> {
             try {
-                GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"});
+                GeometryTableUtilities.getEnvelope(connection, location, "st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)");
             } catch (JdbcSQLException e) {
                 throw e.getCause();
             }
@@ -967,7 +968,7 @@ public class GeometryTableUtilsTest {
                 + "('SRID=32630;POLYGON ((576584.2490658457 5384555.728703618, 576588.6010553383 5384555.565564131, 576588.5919809027 5384556.232496579, 576593.4894335563 5384556.076782604, 576593.6731186393 5384562.082785434, 576584.3794601331 5384562.401036767, 576584.3405324102 5384559.843459481, 576584.2490658457 5384555.728703618))', 1169);";
         Statement stat = conPost.createStatement();
         stat.execute(sqlData);
-        TableLocation location = TableLocation.parse("public.buildings");
+        TableLocation location = TableLocation.parse("public.buildings", DBTypes.POSTGIS);
         Geometry env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"the_geom"});
         WKTReader reader = new WKTReader();
         Geometry expectedGeom = reader.read("POLYGON ((576555.1334797409 5384506.127270323, 576555.1334797409 5384648.519150911, 576646.7754414822 5384648.519150911, 576646.7754414822 5384506.127270323, 576555.1334797409 5384506.127270323))");
@@ -979,7 +980,7 @@ public class GeometryTableUtilsTest {
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
         
-        env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)", "the_geom"});
+        env = GeometryTableUtilities.getEnvelope(conPost, location, "st_buffer(the_geom,0)", "the_geom");
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
         
@@ -993,7 +994,7 @@ public class GeometryTableUtilsTest {
         
         assertThrows(SQLException.class, () -> {
             try {
-                GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"});
+                GeometryTableUtilities.getEnvelope(conPost, location, "st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)");
             } catch (JdbcSQLException e) {
                 throw e.getCause();
             }
@@ -1068,7 +1069,7 @@ public class GeometryTableUtilsTest {
 
         Statement stat = conPost.createStatement();
         stat.execute(sqlData);
-        TableLocation location = TableLocation.parse("public.buildings");
+        TableLocation location = TableLocation.parse("public.buildings", DBTypes.POSTGIS);
         Geometry env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"the_geom"}, "WHERE id_build=1164");
         WKTReader reader = new WKTReader();
         Geometry expectedGeom = reader.read("POLYGON ((576569.6799396832 5384553.281278896, 576569.6799396832 5384560.202691146, 576584.3405324102 5384560.202691146, 576584.3405324102 5384553.281278896, 576569.6799396832 5384553.281278896))");
@@ -1244,9 +1245,9 @@ public class GeometryTableUtilsTest {
         stat.execute("drop table if exists geo_point; CREATE TABLE geo_point (id int, the_geom GEOMETRY)");
         stat.execute("INSERT INTO geo_point VALUES(1, 'POINT(1 2)')");
         stat.execute("create index geotable_sp_index on geo_point  USING GIST (the_geom);");
-        assertTrue(GeometryTableUtilities.isSpatialIndexed(conPost, TableLocation.parse("geo_point"), "the_geom"));
+        assertTrue(GeometryTableUtilities.isSpatialIndexed(conPost, TableLocation.parse("geo_point",DBTypes.POSTGIS), "the_geom"));
         stat.execute("drop index geotable_sp_index ");
-        assertFalse(GeometryTableUtilities.isSpatialIndexed(conPost, TableLocation.parse("geo_point"), "the_geom"));
+        assertFalse(GeometryTableUtilities.isSpatialIndexed(conPost, TableLocation.parse("geo_point", DBTypes.POSTGIS), "the_geom"));
     }
 
     @Test

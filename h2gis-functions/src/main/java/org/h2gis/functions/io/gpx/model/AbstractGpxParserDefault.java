@@ -144,14 +144,12 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
             // Initialisation
             final DBTypes dbType = DBUtils.getDBType(connection);
             ArrayList<String> tableNames = new ArrayList<>();
-
             TableLocation requestedTable = TableLocation.parse(tableName, dbType);
             if (deleteTable) {
                 GPXTablesFactory.dropOSMTables(connection, requestedTable);
             }
             if (fileName.length() == 0) {
-                final DBTypes dbType = DBUtils.getDBType(connection);
-                String outputEmptyTable = requestedTable.toString(dbType);
+                String outputEmptyTable = requestedTable.toString();
                 JDBCUtilities.createEmptyTable(connection, outputEmptyTable);
                 tableNames.add(outputEmptyTable);
             }

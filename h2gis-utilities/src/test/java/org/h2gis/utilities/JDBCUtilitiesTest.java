@@ -21,7 +21,6 @@ package org.h2gis.utilities;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
 import org.junit.jupiter.api.*;
 
@@ -140,8 +139,8 @@ public class JDBCUtilitiesTest {
     public void testGetFieldNameFromIndex() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         st.execute("CREATE TABLE TEMPTABLE(id integer, name varchar)");
-        assertEquals("ID", JDBCUtilities.getColumnName(connection, TableLocation.parse("TEMPTABLE"), 1));
-        assertEquals("NAME", JDBCUtilities.getColumnName(connection, TableLocation.parse("TEMPTABLE"), 2));
+        assertEquals("ID", JDBCUtilities.getColumnName(connection, TableLocation.parse("TEMPTABLE").toString(), 1));
+        assertEquals("NAME", JDBCUtilities.getColumnName(connection, TableLocation.parse("TEMPTABLE").toString(), 2));
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
     }
 
@@ -151,21 +150,21 @@ public class JDBCUtilitiesTest {
         st.execute("DROP TABLE IF EXISTS temptable");
         st.execute("CREATE TABLE temptable(id integer, name varchar)");
         assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("TEMPTABLE")));
-        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
-        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
+        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
+        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
         assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("\"teMpTAbLE\"")));
         st.execute("DROP TABLE IF EXISTS teMpTAbLE");
         st.execute("CREATE TABLE teMpTAbLE(id integer, name varchar)");
         assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("TEMPTABLE")));
-        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
-        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
+        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
+        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
         assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("\"teMpTAbLE\"")));
         // Use quotes
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         st.execute("DROP TABLE IF EXISTS \"teMpTAbLE\"");
         st.execute("CREATE TABLE \"teMpTAbLE\"(id integer, name varchar)");
         assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("\"teMpTAbLE\"")));
-        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
         assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
         assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("TEMPTABLE")));
     }
@@ -180,7 +179,7 @@ public class JDBCUtilitiesTest {
     public void testGetColumnNamesAndIndexes() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         st.execute("CREATE TABLE TEMPTABLE(id integer, name varchar)");
-        List<Tuple<String, Integer>> fields = JDBCUtilities.getColumnNamesAndIndexes(connection, TableLocation.parse("TEMPTABLE"));
+        List<Tuple<String, Integer>> fields = JDBCUtilities.getColumnNamesAndIndexes(connection, TableLocation.parse("TEMPTABLE").toString());
         assertEquals(2, fields.size());
         assertNotNull(fields.stream()
                 .filter(tuple -> ("ID".equals(tuple.first()) || "NAME".equals(tuple.first())))
@@ -197,7 +196,7 @@ public class JDBCUtilitiesTest {
         // The field name does not necessarily need to be capitalized.
         assertTrue(JDBCUtilities.hasField(connection, "TEMPTABLE", "id"));
         // The table name needs to be capitalized
-        assertFalse(JDBCUtilities.hasField(connection, "temptable", "id"));
+        assertTrue(JDBCUtilities.hasField(connection, "temptable", "id"));
         assertFalse(JDBCUtilities.hasField(connection, "TEMPTABLE", "some_other_field"));
     }
 
@@ -427,7 +426,7 @@ public class JDBCUtilitiesTest {
         assertFalse(JDBCUtilities.isIndexed(connection, table, "spatial_idx"));
     }
 
-    private class CustomDataSource implements DataSource {
+    private static class CustomDataSource implements DataSource {
 
         @Override
         public Connection getConnection() throws SQLException {
@@ -489,7 +488,7 @@ public class JDBCUtilitiesTest {
         }
     }
 
-    private class CustomConnection1 extends ConnectionWrapper {
+    private static class CustomConnection1 extends ConnectionWrapper {
 
         public CustomConnection1(Connection connection) {
             super(connection);
@@ -501,7 +500,7 @@ public class JDBCUtilitiesTest {
         }
     }
 
-    private class CustomConnection extends ConnectionWrapper {
+    private static class CustomConnection extends ConnectionWrapper {
 
         public CustomConnection(Connection connection) {
             super(connection);

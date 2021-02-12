@@ -116,11 +116,7 @@ public class OSMTablesFactory {
             sb.append("(ID_NODE BIGINT, TAG_KEY VARCHAR,TAG_VALUE VARCHAR); ");
             stmt.execute(sb.toString());
         }
-        //We return the preparedstatement of the tag table
-        StringBuilder insert = new StringBuilder("INSERT INTO ");
-        insert.append(nodeTagTableName);
-        insert.append("VALUES ( ?, ?, ?);");
-        return connection.prepareStatement(insert.toString());
+        return connection.prepareStatement("INSERT INTO " + nodeTagTableName + " VALUES ( ?, ?,?);");
     }
 
     /**
@@ -159,11 +155,7 @@ public class OSMTablesFactory {
             sb.append("(ID_WAY BIGINT, TAG_KEY VARCHAR,TAG_VALUE VARCHAR);");
             stmt.execute(sb.toString());
         }
-        //We return the preparedstatement of the way tag table
-        StringBuilder insert = new StringBuilder("INSERT INTO ");
-        insert.append(wayTagTableName);
-        insert.append("VALUES ( ?, ?, ?);");
-        return connection.prepareStatement(insert.toString());
+        return connection.prepareStatement("INSERT INTO " + wayTagTableName + " VALUES ( ?, ?,?);");
     }
 
     /**
@@ -223,11 +215,7 @@ public class OSMTablesFactory {
             sb.append("(ID_RELATION BIGINT, TAG_KEY VARCHAR,TAG_VALUE VARCHAR);");
             stmt.execute(sb.toString());
         }
-        //We return the preparedstatement of the way tag table
-        StringBuilder insert = new StringBuilder("INSERT INTO ");
-        insert.append(relationTagTable);
-        insert.append("VALUES ( ?, ?, ?);");
-        return connection.prepareStatement(insert.toString());
+        return connection.prepareStatement("INSERT INTO " + relationTagTable + " VALUES ( ?, ?,?);");
     }
 
     /**

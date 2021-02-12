@@ -122,7 +122,7 @@ public class CSVDriverFunction implements DriverFunction{
         } else {
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-            String outputTable = requestedTable.toString(dbType);
+            String outputTable = requestedTable.toString();
    
             try (Statement st = connection.createStatement()) {
                 JDBCUtilities.attachCancelResultSet(st, progress);

@@ -245,7 +245,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         if(deleteTables){            
             try (Statement stmt = connection.createStatement()) {
                 StringBuilder sb = new StringBuilder("drop table if exists ");
-                sb.append(nodesName.toString(dbType)).append(",").append(edgesName.toString(dbType));
+                sb.append(nodesName.toString()).append(",").append(edgesName.toString());
                 stmt.execute(sb.toString());
             }
         }
