@@ -29,7 +29,6 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.URIUtilities;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -61,7 +60,7 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
 
 
 
-    public static void importTable(Connection connection, String fileName, Value option) throws SQLException, FileNotFoundException, IOException {
+    public static void importTable(Connection connection, String fileName, Value option) throws SQLException, IOException {
         String tableReference =null;
         boolean deleteTable =  false;
         if(option instanceof ValueBoolean){
@@ -79,7 +78,7 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
         importTable( connection,  fileName,  tableReference,null,  deleteTable);
     }
 
-    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws SQLException, FileNotFoundException, IOException {
+    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws SQLException, IOException {
         String encoding =null;
         boolean deleteTable =  false;
         if(option instanceof ValueBoolean){

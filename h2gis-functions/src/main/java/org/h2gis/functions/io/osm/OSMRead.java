@@ -68,7 +68,7 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws FileNotFoundException
      * @throws SQLException
      */
-    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws FileNotFoundException, SQLException, IOException {
+    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws SQLException, IOException {
         String encoding = null;
         boolean deleteTable = false;
         if (option instanceof ValueBoolean) {
@@ -89,7 +89,7 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws FileNotFoundException
      * @throws SQLException
      */
-    public static void importTable(Connection connection, String fileName, Value option) throws FileNotFoundException, SQLException, IOException {
+    public static void importTable(Connection connection, String fileName, Value option) throws SQLException, IOException {
         String tableReference = null;
         boolean deleteTable = false;
         if (option instanceof ValueBoolean) {
@@ -130,7 +130,7 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws FileNotFoundException
      * @throws SQLException
      */
-    public static void importTable(Connection connection, String fileName) throws FileNotFoundException, SQLException, IOException {
+    public static void importTable(Connection connection, String fileName) throws SQLException, IOException {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase().replace(".", "_");
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {

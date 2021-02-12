@@ -861,7 +861,7 @@ public class GeometryTableUtilsTest {
                 ddl);
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
-        ddl = JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable"));
+        ddl = JDBCUtilities.createTableDDL(conPost, TableLocation.parse("perstable", DBTypes.POSTGIS));
         assertEquals("CREATE TABLE perstable (id int4,the_geom GEOMETRY(POINTZ,4326))", ddl);
         stat.execute("DROP TABLE IF EXISTS perstable");
         stat.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 0))");
@@ -880,23 +880,23 @@ public class GeometryTableUtilsTest {
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
-        String ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "orbisgis");
-        assertEquals("CREATE TABLE orbisgis (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
+        String ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), TableLocation.parse("orbisgis"));
+        assertEquals("CREATE TABLE ORBISGIS (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
-        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), TableLocation.parse("\"OrbisGIS\""));
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar(26))");       
-        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), TableLocation.parse("\"OrbisGIS\""));
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME VARCHAR(26))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar)");       
-        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), "\"OrbisGIS\"");
+        ddl = JDBCUtilities.createTableDDL(connection, TableLocation.parse("PERSTABLE"), TableLocation.parse("\"OrbisGIS\""));
         assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME VARCHAR)",
                 ddl);
     }   
@@ -930,7 +930,7 @@ public class GeometryTableUtilsTest {
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
         
-        env = GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)", "the_geom"});
+        env = GeometryTableUtilities.getEnvelope(connection, location, "st_buffer(the_geom,0)", "the_geom");
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
         
@@ -944,7 +944,7 @@ public class GeometryTableUtilsTest {
         
         assertThrows(SQLException.class, () -> {
             try {
-                GeometryTableUtilities.getEnvelope(connection, location, new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"});
+                GeometryTableUtilities.getEnvelope(connection, location, "st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)");
             } catch (JdbcSQLException e) {
                 throw e.getCause();
             }
@@ -980,7 +980,7 @@ public class GeometryTableUtilsTest {
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
         
-        env = GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)", "the_geom"});
+        env = GeometryTableUtilities.getEnvelope(conPost, location, "st_buffer(the_geom,0)", "the_geom");
         assertEquals(expectedGeom.getSRID(), env.getSRID());
         assertEquals(expectedGeom.getEnvelopeInternal(),env.getEnvelopeInternal());
         
@@ -994,7 +994,7 @@ public class GeometryTableUtilsTest {
         
         assertThrows(SQLException.class, () -> {
             try {
-                GeometryTableUtilities.getEnvelope(conPost, location, new String[]{"st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)"});
+                GeometryTableUtilities.getEnvelope(conPost, location, "st_buffer(the_geom,0)", "st_setsrid(the_geom, 2154)");
             } catch (JdbcSQLException e) {
                 throw e.getCause();
             }

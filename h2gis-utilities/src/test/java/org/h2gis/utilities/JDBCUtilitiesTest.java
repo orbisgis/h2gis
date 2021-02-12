@@ -21,7 +21,6 @@ package org.h2gis.utilities;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
 import org.junit.jupiter.api.*;
 
@@ -427,7 +426,7 @@ public class JDBCUtilitiesTest {
         assertFalse(JDBCUtilities.isIndexed(connection, table, "spatial_idx"));
     }
 
-    private class CustomDataSource implements DataSource {
+    private static class CustomDataSource implements DataSource {
 
         @Override
         public Connection getConnection() throws SQLException {
@@ -489,7 +488,7 @@ public class JDBCUtilitiesTest {
         }
     }
 
-    private class CustomConnection1 extends ConnectionWrapper {
+    private static class CustomConnection1 extends ConnectionWrapper {
 
         public CustomConnection1(Connection connection) {
             super(connection);
@@ -501,7 +500,7 @@ public class JDBCUtilitiesTest {
         }
     }
 
-    private class CustomConnection extends ConnectionWrapper {
+    private static class CustomConnection extends ConnectionWrapper {
 
         public CustomConnection(Connection connection) {
             super(connection);

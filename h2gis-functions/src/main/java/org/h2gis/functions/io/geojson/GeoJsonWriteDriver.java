@@ -67,7 +67,6 @@ public class GeoJsonWriteDriver {
     private Map<String, String> cachedSpecificColumns;
     private LinkedHashMap<String, Integer> cachedColumnIndex;
     private int columnCountProperties = -1;
-    private DBTypes dbType;
 
     /**
      * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -90,8 +89,9 @@ public class GeoJsonWriteDriver {
      * @throws java.io.IOException
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
+        DBTypes dbType;
         if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
-            this.dbType = DBUtils.getDBType(connection);
+            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -99,7 +99,7 @@ public class GeoJsonWriteDriver {
             }
             geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
         } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
-            this.dbType = DBUtils.getDBType(connection);
+            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -120,7 +120,7 @@ public class GeoJsonWriteDriver {
                 }
             }
         } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
-            this.dbType = DBUtils.getDBType(connection);
+            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -749,8 +749,8 @@ public class GeoJsonWriteDriver {
         gen.writeStartArray();
         gen.writeNumber(coordinate.x);
         gen.writeNumber(coordinate.y);
-        if (!Double.isNaN(coordinate.z)) {
-            gen.writeNumber(coordinate.z);
+        if (!Double.isNaN(coordinate.getZ())) {
+            gen.writeNumber(coordinate.getZ());
         }
         gen.writeEndArray();
     }

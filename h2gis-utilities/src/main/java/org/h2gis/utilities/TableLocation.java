@@ -20,9 +20,7 @@
 
 package org.h2gis.utilities;
 
-import org.h2gis.utilities.dbtypes.Constants;
 import org.h2gis.utilities.dbtypes.DBTypes;
-import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
 /**
  * Just a class used to split Catalog Schema and Table. Theses components are a unique table identifier.

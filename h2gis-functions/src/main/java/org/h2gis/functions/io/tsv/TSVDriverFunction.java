@@ -21,7 +21,6 @@ package org.h2gis.functions.io.tsv;
 
 import org.h2.tools.Csv;
 import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.utilities.JDBCUtilities;

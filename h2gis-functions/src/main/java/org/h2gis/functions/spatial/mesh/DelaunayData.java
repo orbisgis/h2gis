@@ -73,7 +73,7 @@ public class DelaunayData {
         PolygonPoint[] points = new PolygonPoint[lineString.getNumPoints() - 1];
         for(int idPoint=0; idPoint < points.length; idPoint++) {
             Coordinate point = lineString.getCoordinateN(idPoint);
-            points[idPoint] = new PolygonPoint(r(point.x), r(point.y), Double.isNaN(point.z) ? 0 : r(point.z));
+            points[idPoint] = new PolygonPoint(r(point.x), r(point.y), Double.isNaN(point.getZ()) ? 0 : r(point.getZ()));
         }
         return new org.poly2tri.geometry.polygon.Polygon(points);
     }
@@ -161,7 +161,7 @@ public class DelaunayData {
         }
         // end workaround
         int dim = GeometryMetaData.getMetaData(geom).dimension;
-        isInput2D = dim==2?true:false;
+        isInput2D = dim == 2;
         convertedInput = null;
         if(mode == MODE.TESSELLATION) {
             if(geom instanceof Polygon) {
@@ -344,7 +344,7 @@ public class DelaunayData {
 
         protected int addPt(Coordinate coordinate) {
             TPoint pt = new TPoint(delaunayData.r(coordinate.x), delaunayData.r(coordinate.y),
-                    Double.isNaN(coordinate.z) ? 0 : delaunayData.r(coordinate.z));
+                    Double.isNaN(coordinate.getZ()) ? 0 : delaunayData.r(coordinate.getZ()));
             Integer index = pts.get(pt);
             if(index == null) {
                 index = maxIndex.getAndAdd(1);

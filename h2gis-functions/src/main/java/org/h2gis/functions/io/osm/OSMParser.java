@@ -27,8 +27,6 @@ import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
-import org.h2gis.utilities.dbtypes.DBTypes;
-import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.xml.sax.Attributes;

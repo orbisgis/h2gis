@@ -26,7 +26,6 @@ import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.dbf.DBFEngine;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.shp.SHPEngine;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;

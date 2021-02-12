@@ -34,7 +34,6 @@ import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
 
 import static org.h2gis.utilities.dbtypes.DBTypes.*;
-import static org.h2gis.utilities.dbtypes.DBTypes.POSTGRESQL;
 import static org.h2gis.utilities.dbtypes.DBUtils.getDBType;
 
 /**
@@ -311,7 +310,7 @@ public class JDBCUtilities {
                 }
                 isTemporary = tableType.contains("TEMPORARY");
             } else {
-                throw new SQLException("The table " + location + " does not exists");
+                throw new SQLException("The table " + tableReference + " does not exists");
             }
         } finally {
             rs.close();
@@ -337,7 +336,7 @@ public class JDBCUtilities {
                 String tableType = rs.getString("TABLE_TYPE");
                 isLinked = tableType.contains("TABLE LINK");
             } else {
-                throw new SQLException("The table " + location + " does not exists");
+                throw new SQLException("The table " + tableReference + " does not exists");
             }
         } finally {
             rs.close();
@@ -712,101 +711,87 @@ public class JDBCUtilities {
     /**
      * A simple method to generate a DDL create table command from a table name
      *
+     *
      * Takes into account only data types
      *
      * @param connection
-     * @param location
-     * @param outputTableName
+     * @param sourceTable
+     * @param targetTable
      * @return a create table ddl command
      * @throws SQLException
      */
-    public static String createTableDDL(Connection connection, TableLocation location, String outputTableName) throws SQLException {
-        if (JDBCUtilities.tableExists(connection, location)) {
-            String tableName = location.toString();
-            return createTableDDL(connection, tableName, outputTableName);
-        } else {
-            throw new SQLException("The table " + location + " doesn't exist");
-        }
-    }
-
-    /**
-     * Create table ddl command TODO : It supports only H2GIS and PostGIS
-     * databases
-     *
-     * @param connection
-     * @param sourceTableName the name of the source table
-     * @param targetTableName the table of the target table used after the
-     * CREATE TABLE <targetTableName>
-     * @return
-     * @throws SQLException
-     */
-    public static String createTableDDL(Connection connection, String sourceTableName, String targetTableName) throws SQLException {
-        if (sourceTableName == null || sourceTableName.isEmpty()) {
+    public static String createTableDDL(Connection connection, TableLocation sourceTable, TableLocation targetTable) throws SQLException {
+        if (sourceTable == null) {
             throw new SQLException("The source table name cannot be null or empty");
         }
-        if (targetTableName == null || targetTableName.isEmpty()) {
+        if (targetTable == null) {
             throw new SQLException("The target table name cannot be null or empty");
         }
-        final StringBuilder builder = new StringBuilder(256);
-        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse(sourceTableName));
-        builder.append("CREATE TABLE ").append(targetTableName);
-        final Statement statement = connection.createStatement();
-        try {
-            final ResultSet resultSet = statement.executeQuery("SELECT * FROM " + sourceTableName + " LIMIT 0;");
+        if (JDBCUtilities.tableExists(connection, sourceTable)) {
+            final StringBuilder builder = new StringBuilder(256);
+            LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, sourceTable);
+            builder.append("CREATE TABLE ").append(targetTable);
+            final Statement statement = connection.createStatement();
             try {
-                ResultSetMetaData metadata = resultSet.getMetaData();
-                int columnCount = metadata.getColumnCount();
-                if (columnCount > 0) {
-                    builder.append(" (");
-                }
-                for (int i = 1; i <= columnCount; i++) {
-                    if (i > 1) {
-                        builder.append(",");
+                final ResultSet resultSet = statement.executeQuery("SELECT * FROM " + sourceTable.toString() + " LIMIT 0;");
+                try {
+                    ResultSetMetaData metadata = resultSet.getMetaData();
+                    int columnCount = metadata.getColumnCount();
+                    if (columnCount > 0) {
+                        builder.append(" (");
                     }
-                    String columnName = metadata.getColumnName(i);
-                    String columnTypeName = metadata.getColumnTypeName(i);
-                    int columnType = metadata.getColumnType(i);
-                    if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
-                        int precision = metadata.getPrecision(i);
-                        //POSTGRESQL VARCHAR MAX SIZE
-                        if (precision > POSTGRES_MAX_VARCHAR) {
-                            builder.append(columnName).append(" ").append(columnTypeName);
-                        } else {
-                            builder.append(columnName).append(" ").append(columnTypeName);
-                            builder.append("(").append(precision).append(")");
+                    for (int i = 1; i <= columnCount; i++) {
+                        if (i > 1) {
+                            builder.append(",");
                         }
-                    } else {
-                        if (columnType == Types.CHAR) {
-                            builder.append(columnName).append(" ").append(columnTypeName);
-                            builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
-                        } else if (columnType == Types.DOUBLE) {
-                            builder.append(columnName).append(" ").append("DOUBLE PRECISION");
-                        } else if (columnTypeName.equalsIgnoreCase("geometry")) {
-                            if (geomMetadatas.isEmpty()) {
+                        String columnName = metadata.getColumnName(i);
+                        String columnTypeName = metadata.getColumnTypeName(i);
+                        int columnType = metadata.getColumnType(i);
+                        if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
+                            int precision = metadata.getPrecision(i);
+                            //POSTGRESQL VARCHAR MAX SIZE
+                            if (precision > POSTGRES_MAX_VARCHAR) {
                                 builder.append(columnName).append(" ").append(columnTypeName);
                             } else {
-                                GeometryMetaData geomMetadata = geomMetadatas.get(columnName);
-                                if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
-                                    builder.append(columnName).append(" ").append(columnTypeName);
-                                } else {
-                                    builder.append(columnName).append(" ").append(columnTypeName)
-                                            .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
-                                }
+                                builder.append(columnName).append(" ").append(columnTypeName);
+                                builder.append("(").append(precision).append(")");
                             }
                         } else {
-                            builder.append(columnName).append(" ").append(columnTypeName);
+                            if (columnType == Types.CHAR) {
+                                builder.append(columnName).append(" ").append(columnTypeName);
+                                builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
+                            } else if (columnType == Types.DOUBLE) {
+                                builder.append(columnName).append(" ").append("DOUBLE PRECISION");
+                            } else if (columnTypeName.equalsIgnoreCase("geometry")) {
+                                if (geomMetadatas.isEmpty()) {
+                                    builder.append(columnName).append(" ").append(columnTypeName);
+                                } else {
+                                    GeometryMetaData geomMetadata = geomMetadatas.get(columnName);
+                                    if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
+                                        builder.append(columnName).append(" ").append(columnTypeName);
+                                    } else {
+                                        builder.append(columnName).append(" ").append(columnTypeName)
+                                                .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
+                                    }
+                                }
+                            } else {
+                                builder.append(columnName).append(" ").append(columnTypeName);
+                            }
                         }
                     }
+                    if (columnCount > 0) {
+                        builder.append(")");
+                    }
+                    return builder.toString();
+                } finally {
+                    resultSet.close();
                 }
-                if (columnCount > 0) {
-                    builder.append(")");
-                }
-                return builder.toString();
             } finally {
-                resultSet.close();
+                statement.close();
             }
-        } finally {
-            statement.close();
+
+        } else {
+            throw new SQLException("The table " + sourceTable + " doesn't exist");
         }
     }
 
@@ -821,12 +806,7 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static String createTableDDL(Connection connection, TableLocation location) throws SQLException {
-        if (JDBCUtilities.tableExists(connection, location)) {
-            String tableName = location.toString();
-            return createTableDDL(connection, tableName, tableName);
-        } else {
-            throw new SQLException("The table " + location + " doesn't exist");
-        }
+        return createTableDDL(connection, location, location);
     }
 
     /**

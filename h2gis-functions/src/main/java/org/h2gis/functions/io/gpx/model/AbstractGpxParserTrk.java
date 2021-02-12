@@ -106,9 +106,9 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
             Point geom = getGeometryFactory().createPoint(coordinate);
             geom.setSRID(4326);
             trackPoint.setValue(GpxMetadata.THE_GEOM, geom);
-            trackPoint.setValue(GpxMetadata.PTLAT, coordinate.y);
-            trackPoint.setValue(GpxMetadata.PTLON, coordinate.x);
-            trackPoint.setValue(GpxMetadata.PTELE, coordinate.z);
+            trackPoint.setValue(GpxMetadata.PTLAT, coordinate.getY());
+            trackPoint.setValue(GpxMetadata.PTLON, coordinate.getX());
+            trackPoint.setValue(GpxMetadata.PTELE, coordinate.getZ());
             trackPoint.setValue(GpxMetadata.PTID, trkptID++);
             trackPoint.setValue(GpxMetadata.TRKPT_TRKSEGID, trksegID);
             trksegList.add(coordinate);

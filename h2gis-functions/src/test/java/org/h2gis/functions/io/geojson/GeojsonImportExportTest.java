@@ -44,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -635,7 +634,7 @@ public class GeojsonImportExportTest {
             assertNull(res.getObject(11));
             assertTrue(res.getBoolean(12));
             res.next();
-            assertEquals(10.2d, ((Geometry) res.getObject(1)).getCoordinate().z, 0);
+            assertEquals(10.2d, ((Geometry) res.getObject(1)).getCoordinate().getZ(), 0);
             assertNull(res.getObject(13));
             assertEquals(0.87657195d, res.getDouble(14), 0);
             assertEquals(234.16d, res.getDouble(15), 0);
@@ -1102,7 +1101,7 @@ public class GeojsonImportExportTest {
             Geometry geom = (Geometry) res.getObject(1);
             assertEquals(4326, geom.getSRID());
             Coordinate coord = geom.getCoordinate();
-            assertEquals(coord.z, 5, 10E-1);
+            assertEquals(coord.getZ(), 5, 10E-1);
             stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
             res.close();
         }

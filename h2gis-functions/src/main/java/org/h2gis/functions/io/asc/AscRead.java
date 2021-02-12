@@ -24,7 +24,6 @@ import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.api.ScalarFunction;
-import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.utility.PRJUtil;
 import org.h2gis.utilities.URIUtilities;
 import org.locationtech.jts.geom.Geometry;

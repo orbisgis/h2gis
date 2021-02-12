@@ -25,7 +25,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.*;
-import org.h2gis.utilities.dbtypes.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

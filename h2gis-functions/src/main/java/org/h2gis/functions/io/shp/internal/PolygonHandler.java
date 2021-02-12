@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.shp.internal;
 
-import org.h2gis.drivers.utility.CoordinatesUtils;
+import org.h2gis.functions.io.utility.CoordinatesUtils;
 import org.h2gis.functions.io.utility.ReadBufferManager;
 import org.h2gis.functions.io.utility.WriteBufferManager;
 import org.locationtech.jts.algorithm.CGAlgorithms;

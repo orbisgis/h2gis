@@ -1007,7 +1007,7 @@ public class GeoJsonReaderDriver {
 
                     token = jp.nextToken(); //START_OBJECT new feature                    
                     featureCounter++;
-                    progress.setStep((int) ((featureCounter / nbFeature) * 100));
+                    progress.setStep((featureCounter / nbFeature) * 100);
                     if (batchSize > 0) {
                         try {
                             preparedStatement.executeBatch();
@@ -1482,10 +1482,10 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.VALUE_NULL) {
                 sb.append("null");
             } else if (value == JsonToken.FIELD_NAME)  {
-                sb.append("\""+jp.getValueAsString()+"\"");
+                sb.append("\"").append(jp.getValueAsString()).append("\"");
                 sep=":";
             } else if (value == JsonToken.VALUE_STRING)  {
-                sb.append("\""+jp.getValueAsString()+"\"");
+                sb.append("\"").append(jp.getValueAsString()).append("\"");
                 sep =",";
             } else  {
                 sb.append(jp.getValueAsString());
@@ -1518,10 +1518,10 @@ public class GeoJsonReaderDriver {
                 if (value == JsonToken.START_ARRAY) {
                     sep = "[";
                 } else if (value == JsonToken.FIELD_NAME) {
-                    sb.append("\"" + jp.getValueAsString() + "\"");
+                    sb.append("\"").append(jp.getValueAsString()).append("\"");
                     sep = ":";
                 } else if (value == JsonToken.VALUE_STRING) {
-                    sb.append("\"" + jp.getValueAsString() + "\"");
+                    sb.append("\"").append(jp.getValueAsString()).append("\"");
                     sep = ",";
                 } else {
                     sb.append(jp.getValueAsString());

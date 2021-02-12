@@ -103,7 +103,7 @@ public class GeometryTableUtilities {
                 return new Tuple<>(metadata.getColumnName(i), new GeometryMetaData());
             }
         }
-        throw new SQLException(String.format("The query does not contain a geometry field"));
+        throw new SQLException("The query does not contain a geometry field");
     }
 
     /**
