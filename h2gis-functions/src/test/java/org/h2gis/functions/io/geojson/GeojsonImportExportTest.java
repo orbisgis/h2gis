@@ -90,6 +90,32 @@ public class GeojsonImportExportTest {
     }
 
     @Test
+    public void testGeojsonPointRound() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+            stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT))");
+            stat.execute("insert into TABLE_POINT values(1, 'POINT(1.12345678911 2.12345678911 )')");
+            ResultSet res = stat.executeQuery("SELECT ST_AsGeoJSON(the_geom) from TABLE_POINT;");
+            res.next();
+            assertEquals("{\"type\":\"Point\",\"coordinates\":[1.123456789,2.123456789]}", res.getString(1));
+            res.close();
+        }
+    }
+
+    @Test
+    public void testGeojsonPointRound2() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+            stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT))");
+            stat.execute("insert into TABLE_POINT values(1, 'POINT(1.12345678911 2.12345678911 )')");
+            ResultSet res = stat.executeQuery("SELECT ST_AsGeoJSON(the_geom, 2) from TABLE_POINT;");
+            res.next();
+            assertEquals("{\"type\":\"Point\",\"coordinates\":[1.12,2.12]}", res.getString(1));
+            res.close();
+        }
+    }
+
+    @Test
     public void testGeojsonPointZ() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
@@ -263,9 +289,9 @@ public class GeojsonImportExportTest {
         Statement stat = connection.createStatement();
         try {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT), id INT, climat VARCHAR)");
-            stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)', 1, 'bad')");
-            stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)', 2, 'good')");
+            stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT), id INT, climat VARCHAR, tempo TIMESTAMP)");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)', 1, 'bad', NOW())");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)', 2, 'good', NOW())");
             stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS', true);");
             stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'TABLE_POINTS_READ');");
             try (ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;")) {

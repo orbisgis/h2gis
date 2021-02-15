@@ -89,9 +89,7 @@ public class GeoJsonWriteDriver {
      * @throws java.io.IOException
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
-        DBTypes dbType;
         if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
-            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -99,7 +97,6 @@ public class GeoJsonWriteDriver {
             }
             geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
         } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
-            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -120,7 +117,6 @@ public class GeoJsonWriteDriver {
                 }
             }
         } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
-            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -246,6 +242,7 @@ public class GeoJsonWriteDriver {
      * @throws IOException
      */
     private void geojsonWriter(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
+        DBTypes dbTypes = DBUtils.getDBType(connection);
         JsonEncoding jsonEncoding = JsonEncoding.UTF8;
         if (encoding != null) {
             try {
@@ -255,7 +252,7 @@ public class GeoJsonWriteDriver {
             }
         }
         try {
-            final TableLocation parse = TableLocation.parse(tableName, DBUtils.getDBType(connection));
+            final TableLocation parse = TableLocation.parse(tableName, dbTypes);
             int recordCount = JDBCUtilities.getRowCount(connection, parse.toString());
             if (recordCount > 0) {
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
@@ -789,6 +786,9 @@ public class GeoJsonWriteDriver {
                         jsonGenerator.writeFieldName(columnName);
                         jsonGenerator.writeString(rs.getString(fieldId));
                     }
+                    else if (specificType.equalsIgnoreCase("TIME")){
+                        jsonGenerator.writeStringField(columnName, rs.getObject(fieldId).toString());
+                    }
                 }
                 else if (rs.getObject(fieldId) instanceof Object[]) {
                     Object[] array = (Object[]) rs.getObject(fieldId);
@@ -840,6 +840,10 @@ public class GeoJsonWriteDriver {
             case Types.TINYINT:
             case Types.NUMERIC:
             case Types.NULL:
+                return true;
+            case Types.TIME:
+            case Types.TIMESTAMP:
+                cachedSpecificColumns.put(columnName, "TIME");
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);

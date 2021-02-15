@@ -225,5 +225,7 @@ public class TableLocationTest {
         assertEquals("\"217test\"", TableLocation.parse("217TEST", DBTypes.POSTGIS).toString());
         assertEquals("\"217TEST\"", TableLocation.parse("\"217TEST\"", DBTypes.POSTGIS).toString());
         assertEquals("\"create\"", TableLocation.parse("CREATE", DBTypes.POSTGIS).toString());
+        assertEquals("CATALOG.SCHEMA.\"TABLE\"", TableLocation.parse("caTAlog.schEma.TAbLe", DBTypes.H2GIS).toString());
+        assertEquals("catalog.schema.\"table\"", TableLocation.parse("caTAlog.schEma.TAbLe", DBTypes.POSTGIS).toString());
     }
 }

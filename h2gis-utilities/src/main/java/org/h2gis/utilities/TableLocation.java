@@ -119,10 +119,12 @@ public class TableLocation {
         if(QUOTE_PATTERN.matcher(identifier).find()){
             return identifier;
         }
-        if(dbTypes.getReservedWords().contains(identifier.toUpperCase()) ||
-                !Objects.requireNonNull(dbTypes.specialNamePattern()).matcher(identifier).find()) {
+        if(dbTypes.getReservedWords().contains(identifier.toUpperCase())){
             return quoteIdentifier(identifier);
-        } else {
+        }
+        if(!Objects.requireNonNull(dbTypes.specialNamePattern()).matcher(identifier).find()) {
+            return quoteIdentifier(identifier);
+        }else {
             return identifier;
         }
     }
