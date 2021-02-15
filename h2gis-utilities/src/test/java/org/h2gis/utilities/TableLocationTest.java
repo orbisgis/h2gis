@@ -41,20 +41,20 @@ public class TableLocationTest {
     @Test
     public void testSplitCatalogSchemaTableName() {
         check("mytable", null,
-                "", "", "MYTABLE",
-                "MYTABLE",
-                "MYTABLE",
-                "\"MYTABLE\"");
+                "", "", "mytable",
+                "mytable",
+                "\"mytable\"",
+                "mytable");
         check("myschema.mytable", null,
-                "", "MYSCHEMA", "MYTABLE",
-                "MYSCHEMA.MYTABLE",
-                "MYSCHEMA.MYTABLE",
-                "\"MYSCHEMA\".\"MYTABLE\"");
+                "", "myschema", "mytable",
+                "myschema.mytable",
+                "\"myschema\".\"mytable\"",
+                "myschema.mytable");
         check("mydb.myschema.mytable", null,
-                "MYDB", "MYSCHEMA", "MYTABLE",
-                "MYDB.MYSCHEMA.MYTABLE",
-                "MYDB.MYSCHEMA.MYTABLE",
-                "\"MYDB\".\"MYSCHEMA\".\"MYTABLE\"");
+                "mydb", "myschema", "mytable",
+                "mydb.myschema.mytable",
+                "\"mydb\".\"myschema\".\"mytable\"",
+                "mydb.myschema.mytable");
         check(TableLocation.parse("mydb.myschema.mytable").toString(), DBTypes.POSTGRESQL,
                 "mydb", "myschema", "mytable",
                 "mydb.myschema.mytable",
@@ -68,37 +68,37 @@ public class TableLocationTest {
                 "", "", "\"mytable\"",
                 "\"mytable\"",
                 "\"mytable\"",
-                "mytable");
+                "\"mytable\"");
         check("`myschema`.`mytable`", null,
                 "", "\"myschema\"", "\"mytable\"",
                 "\"myschema\".\"mytable\"",
                 "\"myschema\".\"mytable\"",
-                "myschema.mytable");
+                "\"myschema\".\"mytable\"");
         check("`mydb`.`myschema`.`mytable`", null,
                 "\"mydb\"", "\"myschema\"", "\"mytable\"",
                 "\"mydb\".\"myschema\".\"mytable\"",
                 "\"mydb\".\"myschema\".\"mytable\"",
-                "mydb.myschema.mytable");
+                "\"mydb\".\"myschema\".\"mytable\"");
         check("`mydb`.`myschema`.`mytable.hello`", null,
                 "\"mydb\"", "\"myschema\"", "\"mytable.hello\"",
                 "\"mydb\".\"myschema\".\"mytable.hello\"",
                 "\"mydb\".\"myschema\".\"mytable.hello\"",
-                "mydb.myschema.\"mytable.hello\"");
+                "\"mydb\".\"myschema\".\"mytable.hello\"");
         check("`mydb`.`my schema`.`my table`", null,
                 "\"mydb\"", "\"my schema\"", "\"my table\"",
                 "\"mydb\".\"my schema\".\"my table\"",
                 "\"mydb\".\"my schema\".\"my table\"",
-                "mydb.\"my schema\".\"my table\"");
+                "\"mydb\".\"my schema\".\"my table\"");
         check(TableLocation.parse("`mydb`.`my schema`.`my table`").toString(), null,
                 "\"mydb\"", "\"my schema\"", "\"my table\"",
                 "\"mydb\".\"my schema\".\"my table\"",
                 "\"mydb\".\"my schema\".\"my table\"",
-                "mydb.\"my schema\".\"my table\"");
+                "\"mydb\".\"my schema\".\"my table\"");
         check("public.MYTABLE", null,
-                "", "PUBLIC", "MYTABLE",
-                "PUBLIC.MYTABLE",
-                "PUBLIC.MYTABLE",
-                "\"PUBLIC\".\"MYTABLE\"");
+                "", "public", "MYTABLE",
+                "public.MYTABLE",
+                "\"public\".MYTABLE",
+                "public.\"MYTABLE\"");
     }
 
     @Test
@@ -133,7 +133,7 @@ public class TableLocationTest {
 
     @Test
     public void testEquality() {
-        assertEquals(new TableLocation("", "PUBLIC", "MYTABLE"), new TableLocation("MYTABLE"));
+        assertEquals(new TableLocation("", "public", "MYTABLE"), new TableLocation("MYTABLE"));
         assertEquals(new TableLocation("DATABASE", "PUBLIC", "MYTABLE"), TableLocation.parse("PUBLIC.MYTABLE"));
         assertEquals(new TableLocation("", "PUBLIC", "MYTABLE"), TableLocation.parse("DATABASE.PUBLIC.MYTABLE"));
         assertNotSame(TableLocation.parse("MYSCHEMA.MYTABLE"), TableLocation.parse("MYTABLE"));
@@ -143,7 +143,7 @@ public class TableLocationTest {
 
     @Test
     public void testNumber() {
-        assertEquals("\"2015MyTable\"", new TableLocation("2015MyTable").toString());
+        assertEquals("2015MyTable", new TableLocation("2015MyTable").toString());
         assertEquals("\"2015MYTABLE\"", new TableLocation("2015MYTABLE").toString(DBTypes.H2));
         assertEquals("\"2015mytable\"", new TableLocation("2015mytable").toString(DBTypes.POSTGRESQL));
         assertEquals("MY2015TABLE", new TableLocation("MY2015TABLE").toString(DBTypes.H2));
@@ -158,6 +158,8 @@ public class TableLocationTest {
         assertNotEquals(tableLocation, tableLocation2);
         tableLocation.setDefaultSchema("schema");
         assertEquals(tableLocation, tableLocation2);
+        assertEquals("", TableLocation.parse("test", DBTypes.H2).getSchema());
+        assertEquals("public", TableLocation.parse("test", DBTypes.H2).getSchema("public"));
     }
 
     @Test
@@ -212,5 +214,16 @@ public class TableLocationTest {
         assertArrayEquals(new String[]{"", "", "\"Test\""}, TableLocation.split("\"Test\""));
         assertArrayEquals(new String[]{"", "schema", "\"Test\""}, TableLocation.split("schema.\"Test\""));
         assertArrayEquals(new String[]{"", "schema", "\"Test.super\""}, TableLocation.split("schema.\"Test.super\""));
+    }
+
+    @Test
+    public void testParsing(){
+        assertEquals("TEST", TableLocation.parse("test", DBTypes.H2).toString());
+        assertEquals("\"235TEST\"", TableLocation.parse("235test", DBTypes.H2).toString());
+        assertEquals("test", TableLocation.parse("test", DBTypes.POSTGIS).toString());
+        assertEquals("test", TableLocation.parse("TEST", DBTypes.POSTGIS).toString());
+        assertEquals("\"217test\"", TableLocation.parse("217TEST", DBTypes.POSTGIS).toString());
+        assertEquals("\"217TEST\"", TableLocation.parse("\"217TEST\"", DBTypes.POSTGIS).toString());
+        assertEquals("\"create\"", TableLocation.parse("CREATE", DBTypes.POSTGIS).toString());
     }
 }

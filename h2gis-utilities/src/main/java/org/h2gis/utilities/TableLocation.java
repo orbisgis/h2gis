@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Just a class used to split Catalog Schema and Table. Theses components are a unique table identifier.
@@ -37,8 +38,9 @@ public class TableLocation {
     private String catalog,schema,table;
     /** Recognized by H2 and Postgres */
     private static final String QUOTE_CHAR = "\"";
-    private String defaultSchema = "PUBLIC";
-    private DBTypes dbTypes = DBTypes.H2;
+    private String defaultSchema = "public";
+    private DBTypes dbTypes = null;
+    public static final Pattern QUOTE_PATTERN = Pattern.compile("\\\"([^\\\"]+)\\\"|'([^']+)'|\\\\S+");
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -57,9 +59,6 @@ public class TableLocation {
     public TableLocation(String catalog, String schema, String table, DBTypes dbTypes) {
         if(table == null) {
             throw new IllegalArgumentException("Cannot construct table location with null table");
-        }
-        if(dbTypes==null){
-            throw new IllegalArgumentException("The db type cannot be null");
         }
         this.catalog = catalog == null ? "" : catalog;
         this.schema = schema  == null || schema.isEmpty() ? "" : schema;
@@ -108,13 +107,34 @@ public class TableLocation {
 
 
     /**
+     * Format the identifier is necessary. Require database knowledge.
+     * @param identifier Catalog,Schema,Table or Field name.
+     * @param dbTypes    Type of the database.
+     * @return Quoted identifier.
+     */
+    public static String format(String identifier, DBTypes dbTypes) {
+        if (identifier == null|| identifier.isEmpty() || dbTypes==null) {
+            return identifier;
+        }
+        if(QUOTE_PATTERN.matcher(identifier).find()){
+            return identifier;
+        }
+        if(dbTypes.getReservedWords().contains(identifier.toUpperCase()) ||
+                !Objects.requireNonNull(dbTypes.specialNamePattern()).matcher(identifier).find()) {
+            return quoteIdentifier(identifier);
+        } else {
+            return identifier;
+        }
+    }
+
+    /**
      * Quote identifier only if necessary. Require database knowledge.
      * @param identifier Catalog,Schema,Table or Field name.
      * @param dbTypes    Type of the database.
      * @return Quoted identifier.
      */
     public static String quoteIdentifier(String identifier, DBTypes dbTypes) {
-        if (identifier == null|| identifier.isEmpty()) {
+        if (identifier == null|| identifier.isEmpty() || dbTypes==null) {
             return identifier;
         }
         if(dbTypes.getReservedWords().contains(identifier.toUpperCase()) ||
@@ -129,14 +149,14 @@ public class TableLocation {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            sb.append(quoteIdentifier(catalog,getDbTypes()));
+            sb.append(format(catalog,getDbTypes()));
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            sb.append(quoteIdentifier(schema,getDbTypes()));
+            sb.append(format(schema,getDbTypes()));
             sb.append(".");
         }
-        sb.append(quoteIdentifier(table, getDbTypes()));
+        sb.append(format(table, getDbTypes()));
         return sb.toString();
     }
 
@@ -149,14 +169,14 @@ public class TableLocation {
     public String toString(DBTypes dbTypes) {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            sb.append(quoteIdentifier(catalog, dbTypes));
+            sb.append(format(catalog, dbTypes));
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            sb.append(quoteIdentifier(schema, dbTypes));
+            sb.append(format(schema, dbTypes));
             sb.append(".");
         }
-        sb.append(quoteIdentifier(table, dbTypes));
+        sb.append(format(table, dbTypes));
         return sb.toString();
     }
 
@@ -164,7 +184,7 @@ public class TableLocation {
      * @return Table catalog name (database)
      */
     public String getCatalog() {
-        return quoteIdentifier(catalog, dbTypes);
+        return catalog;
     }
 
 
@@ -173,7 +193,7 @@ public class TableLocation {
      * @return Table catalog name (database)
      */
     public String getCatalog(String defaultValue) {
-        return catalog.isEmpty() ? defaultValue : quoteIdentifier(catalog, dbTypes);
+        return catalog.isEmpty() ? defaultValue : catalog;
     }
 
     /**
@@ -185,7 +205,7 @@ public class TableLocation {
      * @return Java beans for table location
      */
     public static TableLocation parse(String concatenatedTableLocation) {
-        return parse(concatenatedTableLocation, DBTypes.H2);
+        return parse(concatenatedTableLocation, null);
     }
 
 
@@ -262,6 +282,7 @@ public class TableLocation {
         while(st.hasMoreTokens()) {
             String token = st.nextToken();
             if(token.equals("`") || token.equals("\"")) {
+                sb.append("\"");
                 openQuote = !openQuote;
             } else if(token.equals(".")) {
                 if(openQuote) {
@@ -322,7 +343,7 @@ public class TableLocation {
      * @return Table schema name
      */
     public String getSchema() {
-        return quoteIdentifier(schema,dbTypes);
+        return schema;
     }
 
     /**
@@ -330,13 +351,13 @@ public class TableLocation {
      * @return Table schema name
      */
     public String getSchema(String defaultValue) {
-        return schema.isEmpty() ? defaultValue : quoteIdentifier(schema, dbTypes);
+        return schema.isEmpty() ? defaultValue : schema;
     }
     /**
      * @return Table name
      */
     public String getTable() {
-        return quoteIdentifier(table, dbTypes);
+        return table;
     }
 
     @Override
@@ -348,7 +369,7 @@ public class TableLocation {
 
         return  (catalog.equals(that.catalog) || catalog.isEmpty() || that.catalog.isEmpty()) &&
                 (schema.equals(that.schema) || (schema.equals(defaultSchema) && that.schema.isEmpty()) ||
-                (that.schema.equals(defaultSchema) && schema.isEmpty())) &&
+                        (that.schema.equals(defaultSchema) && schema.isEmpty())) &&
                 table.equals(that.table);
     }
 

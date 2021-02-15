@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  * @author Sylvain Palominos (UBS Chaire GEOTERA 2021)
  */
 public enum DBTypes {
-    POSTGRESQL, POSTGIS, H2, H2GIS;
+    POSTGRESQL, POSTGIS, H2, H2GIS, UNKNOWN;
 
     /**
      * Return the list of the reserved keywords.

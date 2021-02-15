@@ -121,7 +121,7 @@ public class DBFDriverFunction implements DriverFunction {
 
         } else {
                 final DBTypes dbType = DBUtils.getDBType(connection);
-                String outputTable = TableLocation.parse(tableReference, dbType).toString();
+                String outputTable = TableLocation.parse(tableReference, dbType).toString(dbType);
                 int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
 
                 // Read table content
@@ -222,7 +222,7 @@ public class DBFDriverFunction implements DriverFunction {
         if (FileUtilities.isFileImportable(fileName, "dbf")) {
             final DBTypes dbType = DBUtils.getDBType(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
-            String outputTable = requestedTable.toString();
+            String outputTable = requestedTable.toString(dbType);
 
             if (deleteTables) {
                 Statement stmt = connection.createStatement();

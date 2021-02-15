@@ -21,6 +21,7 @@ package org.h2gis.utilities;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
 import org.junit.jupiter.api.*;
 
@@ -81,8 +82,8 @@ public class JDBCUtilitiesTest {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE1,perstable");
         st.execute("CREATE TEMPORARY TABLE TEMPTABLE1");
         st.execute("CREATE TABLE perstable");
-        assertTrue(JDBCUtilities.isTemporaryTable(connection, "temptable1"));
-        assertFalse(JDBCUtilities.isTemporaryTable(connection, "PERSTable"));
+        assertTrue(JDBCUtilities.isTemporaryTable(connection, TableLocation.parse("temptable1")));
+        assertFalse(JDBCUtilities.isTemporaryTable(connection, TableLocation.parse("PERSTable")));
     }
 
     @Test
@@ -92,8 +93,8 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE TEMPORARY TABLE TEMPTABLE1(id int)");
         st.execute("CREATE TABLE perstable(id int)");
         st.execute("CREATE VIEW perstable_view as select * from perstable; ");
-        assertEquals(TABLE_TYPE.TEMPORARY, JDBCUtilities.getTableType(connection, TableLocation.parse("temptable1")));
-        assertEquals(TABLE_TYPE.TABLE, JDBCUtilities.getTableType(connection, TableLocation.parse("perstable")));
+        assertEquals(TABLE_TYPE.TEMPORARY, JDBCUtilities.getTableType(connection, TableLocation.parse("temptable1", DBTypes.H2)));
+        assertEquals(TABLE_TYPE.TABLE, JDBCUtilities.getTableType(connection, TableLocation.parse("perstable",DBTypes.H2)));
     }
 
     @Test
