@@ -252,7 +252,7 @@ public class SHPEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
-        assertEquals(GeometryTypeCodes.MULTILINESTRING, GeometryTableUtilities.getMetaData(connection, TableLocation.parse("SHPTABLE"), "THE_GEOM").geometryTypeCode);
+        assertEquals(GeometryTypeCodes.MULTILINESTRING, GeometryTableUtilities.getMetaData(connection, TableLocation.parse("SHPTABLE", DBTypes.H2GIS), "THE_GEOM").geometryTypeCode);
         st.execute("drop table shptable");
     }
 
@@ -292,11 +292,11 @@ public class SHPEngineTest {
             rs.close();
         }
         // Check if the index exists
-        assertTrue(hasIndex(connection, TableLocation.parse("SHPTABLE"), "the_geom"));
+        assertTrue(hasIndex(connection, TableLocation.parse("SHPTABLE",DBTypes.H2GIS), "the_geom"));
         st.execute("DROP TABLE IF EXISTS shptable");
 
         // Check if the index exists
-        assertFalse(hasIndex(connection, TableLocation.parse("SHPTABLE"), "the_geom"));
+        assertFalse(hasIndex(connection, TableLocation.parse("SHPTABLE",DBTypes.H2GIS), "the_geom"));
 
 
         //Alphanumeric index
@@ -329,11 +329,11 @@ public class SHPEngineTest {
             rs.close();
         }
         // Check if the index is here
-        assertTrue(hasIndex(connection, TableLocation.parse("SHPTABLE"), "GID"));
+        assertTrue(hasIndex(connection, TableLocation.parse("SHPTABLE",DBTypes.H2GIS), "GID"));
 
         st.execute("DROP TABLE IF EXISTS shptable");
         // Check if the index has been removed
-        assertFalse(hasIndex(connection, TableLocation.parse("SHPTABLE"), "GID"));
+        assertFalse(hasIndex(connection, TableLocation.parse("SHPTABLE",DBTypes.H2GIS), "GID"));
 
     }
 

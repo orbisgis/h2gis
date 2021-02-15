@@ -290,13 +290,12 @@ public class JDBCUtilities {
      * reference is a temporary table.
      *
      * @param connection Active connection not closed by this method
-     * @param tableReference Table reference
+     * @param tableLocation Table reference
      * @return True if the provided table is temporary.
      * @throws SQLException If the table does not exists.
      */
-    public static boolean isTemporaryTable(Connection connection, String tableReference) throws SQLException {
-        String[] location = TableLocation.split(tableReference);
-        ResultSet rs = getTablesView(connection, location[0], location[1], location[2]);
+    public static boolean isTemporaryTable(Connection connection, TableLocation tableLocation) throws SQLException {
+        ResultSet rs = getTablesView(connection, tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable());
         boolean isTemporary = false;
         try {
             if (rs.next()) {
@@ -310,7 +309,7 @@ public class JDBCUtilities {
                 }
                 isTemporary = tableType.contains("TEMPORARY");
             } else {
-                throw new SQLException("The table " + tableReference + " does not exists");
+                throw new SQLException("The table " + tableLocation.toString() + " does not exists");
             }
         } finally {
             rs.close();

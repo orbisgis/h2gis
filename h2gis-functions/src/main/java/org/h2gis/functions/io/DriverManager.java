@@ -93,7 +93,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
                 try (Statement st = connection.createStatement()) {
                     String tableName_ = TableLocation.parse(tableName, dbType).toString();
                     st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
-                            TableLocation.parse(tableName, dbType).toString(),StringUtils.quoteStringSQL(fileName),
+                            tableName_,StringUtils.quoteStringSQL(fileName),
                             StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
                     return new String[]{tableName_};
                 }
