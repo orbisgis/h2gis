@@ -171,7 +171,7 @@ public class DbaseFileReader {
                 * header.getRecordLength() + 1;
         long fieldOffset = 0;
         for (int i = 0; i < column; i++) {
-            fieldOffset += (long) header.getFieldLength(i);
+            fieldOffset += header.getFieldLength(i);
         }
 
         return fieldOffset + recordOffset;

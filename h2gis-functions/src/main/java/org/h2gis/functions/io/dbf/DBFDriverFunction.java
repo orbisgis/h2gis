@@ -121,9 +121,9 @@ public class DBFDriverFunction implements DriverFunction {
 
         } else {
                 final DBTypes dbType = DBUtils.getDBType(connection);
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                String outputTable = TableLocation.parse(tableReference, isH2).toString(dbType);
+                String outputTable = TableLocation.parse(tableReference, dbType).toString(dbType);
                 int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
+
                 // Read table content
                 Statement st = connection.createStatement();
                 JDBCUtilities.attachCancelResultSet(st, progress);
@@ -220,10 +220,10 @@ public class DBFDriverFunction implements DriverFunction {
     public  String[]  importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         progress = DriverManager.check(connection, tableReference,fileName,progress);
         if (FileUtilities.isFileImportable(fileName, "dbf")) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
             String outputTable = requestedTable.toString(dbType);
+
             if (deleteTables) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTable);
@@ -240,8 +240,8 @@ public class DBFDriverFunction implements DriverFunction {
                 try {
                     try ( // Build CREATE TABLE sql request
                           Statement st = connection.createStatement()) {
-                        List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
-                        String types = getSQLColumnTypes(dbfHeader, isH2, DBUtils.getDBType(connection), otherCols);
+                        List<Column> otherCols = new ArrayList<>(dbfHeader.getNumFields() + 1);
+                        String types = getSQLColumnTypes(dbfHeader, DBUtils.getDBType(connection), otherCols);
                         String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                         st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", outputTable,
                                 types));
@@ -323,19 +323,18 @@ public class DBFDriverFunction implements DriverFunction {
     /**
      * Return SQL Columns declaration
      * @param header DBAse file header
-     * @param isH2Database true if H2 database
      * @param cols array columns that will be populated
      * @return Array of columns ex: ["id INTEGER", "len DOUBLE"]
      * @throws IOException
      */
-    public static String getSQLColumnTypes(DbaseFileHeader header, boolean isH2Database, DBTypes dbTypes, List<Column> cols) throws IOException {
+    public static String getSQLColumnTypes(DbaseFileHeader header, DBTypes dbTypes, List<Column> cols) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         for(int idColumn = 0; idColumn < header.getNumFields(); idColumn++) {
             if(idColumn > 0) {
                 stringBuilder.append(", ");
             }
             String columnName = header.getFieldName(idColumn);
-            String fieldName = TableLocation.capsIdentifier(columnName, isH2Database);
+            String fieldName = TableLocation.capsIdentifier(columnName, dbTypes);
             stringBuilder.append(TableLocation.quoteIdentifier(fieldName,dbTypes));
             stringBuilder.append(" ");
             switch (header.getFieldType(idColumn)) {

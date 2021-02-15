@@ -127,15 +127,15 @@ public class OSMParser extends DefaultHandler {
         this.progress = progress.subProcess(100);
         // Initialisation
         final DBTypes dbType = DBUtils.getDBType(connection);
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         connection.setAutoCommit(false);
-        TableLocation requestedTable = TableLocation.parse(tableName, isH2);
-        String osmTableName = requestedTable.toString(dbType);
+        TableLocation requestedTable = TableLocation.parse(tableName, dbType);
+        String osmTableName = requestedTable.toString();
         if(deleteTable){
-            OSMTablesFactory.dropOSMTables(connection, isH2, osmTableName);
+            OSMTablesFactory.dropOSMTables(connection, requestedTable.toString());
         }
-        checkOSMTables(connection, isH2, requestedTable, osmTableName);
-        String[] outputOSMTableNames = createOSMDatabaseModel(connection, isH2, requestedTable, osmTableName);
+        checkOSMTables(connection, dbType, requestedTable, osmTableName);
+        String[] outputOSMTableNames = createOSMDatabaseModel(connection, dbType, requestedTable, osmTableName);
+
 
         FileInputStream fs = null;
         try {
@@ -227,17 +227,17 @@ public class OSMParser extends DefaultHandler {
      * Check if one table already exists
      *
      * @param connection
-     * @param isH2
+     * @param dbType Database type.
      * @param requestedTable
      * @param osmTableName
      * @throws SQLException
      */
-    private void checkOSMTables(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
+    private void checkOSMTables(Connection connection, DBTypes dbType, TableLocation requestedTable, String osmTableName) throws SQLException {
         String[] omsTables = new String[]{OSMTablesFactory.NODE, OSMTablesFactory.NODE_TAG, OSMTablesFactory.WAY, OSMTablesFactory.WAY_NODE, 
             OSMTablesFactory.WAY_TAG, OSMTablesFactory.RELATION, OSMTablesFactory.RELATION_TAG, OSMTablesFactory.NODE_MEMBER, OSMTablesFactory.WAY_MEMBER, OSMTablesFactory.RELATION_MEMBER};
         for (String omsTableSuffix : omsTables) {
-            String osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);
-            if (JDBCUtilities.tableExists(connection, TableLocation.parse(osmTable, isH2))) {
+            String osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, dbType);
+            if (JDBCUtilities.tableExists(connection, TableLocation.parse(osmTable, dbType))) {
                 throw new SQLException("The table " + osmTable + " already exists.");
             }
         }
@@ -250,31 +250,31 @@ public class OSMParser extends DefaultHandler {
      * Create the OMS data model to store the content of the file
      *
      * @param connection
-     * @param isH2
+     * @param dbType Database type.
      * @param requestedTable
      * @param osmTableName
      * @throws SQLException
      */
-    private String[] createOSMDatabaseModel(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
-        String nodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE, isH2);
-        nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName, isH2);
-        String nodeTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE_TAG, isH2);
+    private String[] createOSMDatabaseModel(Connection connection, DBTypes dbType, TableLocation requestedTable, String osmTableName) throws SQLException {
+        String nodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE, dbType);
+        nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName);
+        String nodeTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE_TAG, dbType);
         nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName);
-        String wayTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY, isH2);
-        wayPreparedStmt = OSMTablesFactory.createWayTable(connection, wayTableName, isH2);
-        String wayTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_TAG, isH2);
+        String wayTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY, dbType);
+        wayPreparedStmt = OSMTablesFactory.createWayTable(connection, wayTableName);
+        String wayTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_TAG, dbType);
         wayTagPreparedStmt = OSMTablesFactory.createWayTagTable(connection, wayTagTableName);
-        String wayNodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_NODE, isH2);
+        String wayNodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_NODE, dbType);
         wayNodePreparedStmt = OSMTablesFactory.createWayNodeTable(connection, wayNodeTableName);
-        String relationTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION, isH2);
+        String relationTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION, dbType);
         relationPreparedStmt = OSMTablesFactory.createRelationTable(connection, relationTableName);
-        String relationTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION_TAG, isH2);
+        String relationTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION_TAG, dbType);
         relationTagPreparedStmt = OSMTablesFactory.createRelationTagTable(connection, relationTagTableName);
-        String nodeMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE_MEMBER, isH2);
+        String nodeMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE_MEMBER, dbType);
         nodeMemberPreparedStmt = OSMTablesFactory.createNodeMemberTable(connection, nodeMemberTableName);
-        String wayMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_MEMBER, isH2);
+        String wayMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_MEMBER, dbType);
         wayMemberPreparedStmt = OSMTablesFactory.createWayMemberTable(connection, wayMemberTableName);
-        String relationMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION_MEMBER, isH2);
+        String relationMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION_MEMBER, dbType);
         relationMemberPreparedStmt = OSMTablesFactory.createRelationMemberTable(connection, relationMemberTableName);
         return new String[]{nodeTableName,nodeTagTableName,wayTableName,wayTagTableName, wayNodeTableName, relationTableName, relationTagTableName,
         nodeMemberTableName, wayMemberTableName, relationMemberTableName};

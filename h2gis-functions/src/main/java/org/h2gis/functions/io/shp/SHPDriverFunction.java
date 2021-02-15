@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.EmptyProgressVisitor;
+
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
@@ -99,7 +99,6 @@ public class SHPDriverFunction implements DriverFunction {
                 throw new IOException("The file already exist.");
             }
         }
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         final DBTypes dbType = DBUtils.getDBType(connection);
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
@@ -122,8 +121,8 @@ public class SHPDriverFunction implements DriverFunction {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            TableLocation tableLocation = TableLocation.parse(tableReference, isH2);
-            String location = tableLocation.toString(dbType);
+            TableLocation tableLocation = TableLocation.parse(tableReference, dbType);
+            String location = tableLocation.toString();
             int recordCount = JDBCUtilities.getRowCount(connection, location);
             ProgressVisitor copyProgress = progress.subProcess(recordCount);
             // Read Geometry Index and type
@@ -280,11 +279,10 @@ public class SHPDriverFunction implements DriverFunction {
     @Override
     public String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         progress = DriverManager.check(connection,tableReference,fileName, progress);
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         if (FileUtilities.isFileImportable(fileName, "shp")) {
-            final DBTypes dbType = DBUtils.getDBType(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTableName = requestedTable.toString(dbType);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+            String outputTableName = requestedTable.toString();
             if (deleteTables) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
@@ -305,14 +303,14 @@ public class SHPDriverFunction implements DriverFunction {
                     Statement st = connection.createStatement()) {
                     List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
                     otherCols.add(new Column("THE_GEOM", TypeInfo.TYPE_GEOMETRY));
-                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2, DBUtils.getDBType(connection), otherCols);
+                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, DBUtils.getDBType(connection), otherCols);
                     if (!types.isEmpty()) {
                         types = ", " + types;
                     }
                     String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                     srid = PRJUtil.getSRID(shpDriver.prjFile);
                     shpDriver.setSRID(srid);
-                    if (isH2) {
+                    if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
                         //H2 Syntax
                         st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL , the_geom GEOMETRY(%s, %d) %s)", outputTableName,
                                 getSFSGeometryType(shpHeader), srid, types));

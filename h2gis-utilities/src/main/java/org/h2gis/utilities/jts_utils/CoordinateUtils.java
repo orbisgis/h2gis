@@ -54,7 +54,7 @@ public final class CoordinateUtils {
         double z;
 
         for (int t = cs.length - 1; t >= 0; t--) {
-            z = cs[t].z;
+            z = cs[t].getZ();
 
             if (!(Double.isNaN(z))) {
                 if (validZFound) {
@@ -86,13 +86,13 @@ public final class CoordinateUtils {
      * @return
      */
     public static double interpolate(Coordinate firstCoordinate, Coordinate lastCoordinate, Coordinate toBeInterpolated) {
-        if (Double.isNaN(firstCoordinate.z)) {
+        if (Double.isNaN(firstCoordinate.getZ())) {
             return Double.NaN;
         }
-        if (Double.isNaN(lastCoordinate.z)) {
+        if (Double.isNaN(lastCoordinate.getZ())) {
             return Double.NaN;
         }
-        return firstCoordinate.z + (lastCoordinate.z - firstCoordinate.z) * firstCoordinate.distance(toBeInterpolated)
+        return firstCoordinate.getZ() + (lastCoordinate.getZ() - firstCoordinate.getZ()) * firstCoordinate.distance(toBeInterpolated)
                 / (firstCoordinate.distance(toBeInterpolated) + toBeInterpolated.distance(lastCoordinate));
     }
 
@@ -130,7 +130,7 @@ public final class CoordinateUtils {
         if (delta != 0) {
             double k = ((p2.x - p1.x) * (-v2.getY()) - (p2.y - p1.y) * (-v2.getX())) / delta;
             // Fix precision problem with big decimal
-            i = new Coordinate(p1.x + k * v1.getX(), p1.y + k * v1.getY(), p1.z + k * v1.getZ());
+            i = new Coordinate(p1.x + k * v1.getX(), p1.y + k * v1.getY(), p1.getZ() + k * v1.getZ());
             if(new LineSegment(p1, new Coordinate(p1.x + v1.getX(), p1.y + v1.getY())).projectionFactor(i) < 0 ||
                     new LineSegment(p2, new Coordinate(p2.x + v2.getX(), p2.y + v2.getY())).projectionFactor(i) < 0) {
                 return null;

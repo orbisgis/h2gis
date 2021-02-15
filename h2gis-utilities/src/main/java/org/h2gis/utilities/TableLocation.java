@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -20,9 +20,7 @@
 
 package org.h2gis.utilities;
 
-import org.h2gis.utilities.dbtypes.Constants;
 import org.h2gis.utilities.dbtypes.DBTypes;
-import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,7 +38,9 @@ public class TableLocation {
     private String catalog,schema,table;
     /** Recognized by H2 and Postgres */
     private static final String QUOTE_CHAR = "\"";
-    private String defaultSchema = "PUBLIC";
+    private String defaultSchema = "public";
+    private DBTypes dbTypes = null;
+    public static final Pattern QUOTE_PATTERN = Pattern.compile("\\\"([^\\\"]+)\\\"|'([^']+)'|\\\\S+");
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -48,6 +48,22 @@ public class TableLocation {
      */
     public TableLocation(ResultSet rs) throws SQLException {
         this(rs.getString("TABLE_CAT"),rs.getString("TABLE_SCHEM"),rs.getString("TABLE_NAME"));
+    }
+
+    /**
+     *
+     * @param catalog Catalog name without quotes
+     * @param schema Schema name without quotes
+     * @param table Table name without quotes
+     */
+    public TableLocation(String catalog, String schema, String table, DBTypes dbTypes) {
+        if(table == null) {
+            throw new IllegalArgumentException("Cannot construct table location with null table");
+        }
+        this.catalog = catalog == null ? "" : catalog;
+        this.schema = schema  == null || schema.isEmpty() ? "" : schema;
+        this.table = table;
+        this.dbTypes=dbTypes;
     }
 
     /**
@@ -91,12 +107,36 @@ public class TableLocation {
 
 
     /**
+     * Format the identifier is necessary. Require database knowledge.
+     * @param identifier Catalog,Schema,Table or Field name.
+     * @param dbTypes    Type of the database.
+     * @return Quoted identifier.
+     */
+    public static String format(String identifier, DBTypes dbTypes) {
+        if (identifier == null|| identifier.isEmpty() || dbTypes==null) {
+            return identifier;
+        }
+        if(QUOTE_PATTERN.matcher(identifier).find()){
+            return identifier;
+        }
+        if(dbTypes.getReservedWords().contains(identifier.toUpperCase()) ||
+                !Objects.requireNonNull(dbTypes.specialNamePattern()).matcher(identifier).find()) {
+            return quoteIdentifier(identifier);
+        } else {
+            return identifier;
+        }
+    }
+
+    /**
      * Quote identifier only if necessary. Require database knowledge.
      * @param identifier Catalog,Schema,Table or Field name.
      * @param dbTypes    Type of the database.
      * @return Quoted identifier.
      */
     public static String quoteIdentifier(String identifier, DBTypes dbTypes) {
+        if (identifier == null|| identifier.isEmpty() || dbTypes==null) {
+            return identifier;
+        }
         if(dbTypes.getReservedWords().contains(identifier.toUpperCase()) ||
                 !Objects.requireNonNull(dbTypes.specialNamePattern()).matcher(identifier).find()) {
             return quoteIdentifier(identifier);
@@ -109,14 +149,14 @@ public class TableLocation {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            sb.append(quoteIdentifier(catalog));
+            sb.append(format(catalog,getDbTypes()));
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            sb.append(quoteIdentifier(schema));
+            sb.append(format(schema,getDbTypes()));
             sb.append(".");
         }
-        sb.append(quoteIdentifier(table));
+        sb.append(format(table, getDbTypes()));
         return sb.toString();
     }
 
@@ -129,14 +169,14 @@ public class TableLocation {
     public String toString(DBTypes dbTypes) {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            sb.append(quoteIdentifier(catalog, dbTypes));
+            sb.append(format(catalog, dbTypes));
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            sb.append(quoteIdentifier(schema, dbTypes));
+            sb.append(format(schema, dbTypes));
             sb.append(".");
         }
-        sb.append(quoteIdentifier(table, dbTypes));
+        sb.append(format(table, dbTypes));
         return sb.toString();
     }
 
@@ -168,25 +208,27 @@ public class TableLocation {
         return parse(concatenatedTableLocation, null);
     }
 
+
     /**
-     * Convert catalog.schema.table, schema.table or table into a TableLocation
-     * instance. Non-specified schema or catalogs are converted to the empty
-     * string.
+     * Convert catalog.schema.table, schema.table or table into a String array
+     * instance. Non-specified schema or catalogs are converted to the empty string.
      *
-     * @param concatenatedTableLocation Table location [[Catalog.]Schema.]Table
-     * @param isH2Database              True if H2, False if PostGreSQL, null if unknown
-     * @return Java beans for table location
+     * @param tableName in the form [[Catalog.]Schema.]Table
+     * @return a String array with
+     * [0] = Catalog
+     * [1] = Schema
+     * [2] = Table
      */
-    public static TableLocation parse(String concatenatedTableLocation, Boolean isH2Database) {
+    public static String[] split(String tableName) {
         List<String> parts = new LinkedList<String>();
-        String catalog,schema,table;
-        catalog = table = schema = "";
-        StringTokenizer st = new StringTokenizer(concatenatedTableLocation, ".`\"", true);
+        String catalog = "",schema = "",table = "";
+        StringTokenizer st = new StringTokenizer(tableName, ".`\"", true);
         boolean openQuote = false;
         StringBuilder sb = new StringBuilder();
         while(st.hasMoreTokens()) {
             String token = st.nextToken();
             if(token.equals("`") || token.equals("\"")) {
+                sb.append("\"");
                 openQuote = !openQuote;
             } else if(token.equals(".")) {
                 if(openQuote) {
@@ -198,8 +240,62 @@ public class TableLocation {
                     sb = new StringBuilder();
                 }
             } else {
-                if(!openQuote && isH2Database != null) {
-                    token = capsIdentifier(token, isH2Database);
+                sb.append(token);
+            }
+        }
+        if(sb.length() != 0) {
+            parts.add(sb.toString());
+        }
+        String[] values = parts.toArray(new String[0]);
+        switch (values.length) {
+            case 1:
+                table = values[0].trim();
+                break;
+            case 2:
+                schema = values[0].trim();
+                table = values[1].trim();
+                break;
+            case 3:
+                catalog = values[0].trim();
+                schema = values[1].trim();
+                table = values[2].trim();
+        }
+        return new String[]{catalog,schema,table};
+    }
+
+    /**
+     * Convert catalog.schema.table, schema.table or table into a TableLocation
+     * instance. Non-specified schema or catalogs are converted to the empty
+     * string.
+     *
+     * @param concatenatedTableLocation Table location [[Catalog.]Schema.]Table
+     * @param dbTypes                   Database type.
+     * @return Java beans for table location
+     */
+    public static TableLocation parse(String concatenatedTableLocation, DBTypes dbTypes) {
+        List<String> parts = new LinkedList<String>();
+        String catalog,schema,table;
+        catalog = table = schema = "";
+        StringTokenizer st = new StringTokenizer(concatenatedTableLocation, ".`\"", true);
+        boolean openQuote = false;
+        StringBuilder sb = new StringBuilder();
+        while(st.hasMoreTokens()) {
+            String token = st.nextToken();
+            if(token.equals("`") || token.equals("\"")) {
+                sb.append("\"");
+                openQuote = !openQuote;
+            } else if(token.equals(".")) {
+                if(openQuote) {
+                    // Still in part
+                    sb.append(token);
+                } else {
+                    // end of part
+                    parts.add(sb.toString());
+                    sb = new StringBuilder();
+                }
+            } else {
+                if(!openQuote && dbTypes != null) {
+                    token = capsIdentifier(token, dbTypes);
                 }
                 sb.append(token);
             }
@@ -221,19 +317,19 @@ public class TableLocation {
                 schema = values[1].trim();
                 table = values[2].trim();
         }
-        return new TableLocation(catalog,schema,table);
+        return new TableLocation(catalog,schema,table, dbTypes);
     }
 
     /**
      * Change case of parameters to make it more user-friendly.
      *
      * @param identifier   Table, Catalog, Schema, or column name
-     * @param isH2Database True if H2, False if PostGreSQL, null if unknown
+     * @param dbTypes      Database type.
      * @return Upper or lower case version of identifier
      */
-    public static String capsIdentifier(String identifier, Boolean isH2Database) {
-        if(isH2Database != null) {
-            if(isH2Database) {
+    public static String capsIdentifier(String identifier, DBTypes dbTypes) {
+        if(dbTypes != null) {
+            if(dbTypes == DBTypes.H2 || dbTypes == DBTypes.H2GIS) {
                 return identifier.toUpperCase();
             } else {
                 return identifier.toLowerCase();
@@ -273,7 +369,7 @@ public class TableLocation {
 
         return  (catalog.equals(that.catalog) || catalog.isEmpty() || that.catalog.isEmpty()) &&
                 (schema.equals(that.schema) || (schema.equals(defaultSchema) && that.schema.isEmpty()) ||
-                (that.schema.equals(defaultSchema) && schema.isEmpty())) &&
+                        (that.schema.equals(defaultSchema) && schema.isEmpty())) &&
                 table.equals(that.table);
     }
 
@@ -290,5 +386,15 @@ public class TableLocation {
      */
     public void setDefaultSchema(String defaultSchema) {
         this.defaultSchema = defaultSchema;
+    }
+
+
+    /**
+     * Return the dbtype used by tablelocation.
+     * Default is H2
+     * @return
+     */
+    public DBTypes getDbTypes() {
+        return dbTypes;
     }
 }

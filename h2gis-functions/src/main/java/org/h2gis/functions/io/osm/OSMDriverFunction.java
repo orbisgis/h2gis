@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.api.EmptyProgressVisitor;
+
 import org.h2gis.functions.io.DriverManager;
 
 /**

@@ -538,7 +538,7 @@ public class DbaseFileHeader {
 			field.fieldDataAddress = in.getInt();
 
 			// read the field length in bytes
-			int length = (int) in.get();
+			int length = in.get();
 			if (length < 0) {
 				length += 256;
 			}
@@ -549,7 +549,7 @@ public class DbaseFileHeader {
 			}
 
 			// read the field decimal count in bytes
-			field.decimalCount = (int) in.get();
+			field.decimalCount = in.get();
 
 			// rreservedvededved bytes.
 			// in.skipBytes(14);

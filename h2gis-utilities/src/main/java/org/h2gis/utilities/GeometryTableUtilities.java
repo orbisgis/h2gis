@@ -34,6 +34,7 @@ import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import static org.h2gis.utilities.dbtypes.DBTypes.*;
 
 /**
  *
@@ -55,15 +56,16 @@ public class GeometryTableUtilities {
      * @throws java.sql.SQLException
      */
     public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(Connection connection, TableLocation geometryTable) throws SQLException {
-        try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema(),
+        DBTypes dbTypes = geometryTable.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes== H2|| dbTypes== POSTGRESQL) {
+            try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema(),
                 geometryTable.getTable())) {
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             while (geomResultSet.next()) {
                 String geometryColumnName = geomResultSet.getString("F_GEOMETRY_COLUMN");
                 if (geometryColumnName != null && !geometryColumnName.isEmpty()) {
                     int dimension_ = geomResultSet.getInt("COORD_DIMENSION");
                     int srid_ = geomResultSet.getInt("SRID");
-                    if (isH2) {
+                    if (dbTypes==H2||dbTypes==H2GIS) {
                         GeometryMetaData geometryMetaData = new GeometryMetaData();
                         geometryMetaData.setDimension(dimension_);
                         geometryMetaData.setGeometryTypeCode(geomResultSet.getInt("GEOMETRY_TYPE"));
@@ -71,13 +73,15 @@ public class GeometryTableUtilities {
                         geometryMetaData.initDimension();
                         geometryMetaData.initGeometryType();
                         return new Tuple<>(geometryColumnName, geometryMetaData);
-                    } else {//POSTGIS case
+                    } else  {//POSTGIS case
                         return new Tuple<>(geometryColumnName, createMetadataFromPostGIS(geomResultSet.getString("type"), dimension_, srid_));
                     }
                 }
             }
         }
         throw new SQLException(String.format("The table %s does not contain a geometry field", geometryTable));
+        }
+        throw new SQLException("Database not supported");
     }
 
     /**
@@ -99,7 +103,7 @@ public class GeometryTableUtilities {
                 return new Tuple<>(metadata.getColumnName(i), new GeometryMetaData());
             }
         }
-        throw new SQLException(String.format("The query does not contain a geometry field"));
+        throw new SQLException("The query does not contain a geometry field");
     }
 
     /**
@@ -131,30 +135,33 @@ public class GeometryTableUtilities {
      * @throws java.sql.SQLException
      */
     public static LinkedHashMap<String, GeometryMetaData> getMetaData(Connection connection, TableLocation geometryTable) throws SQLException {
-        try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema(),
-                geometryTable.getTable())) {
-            LinkedHashMap<String, GeometryMetaData> geometryMetaDatas = new LinkedHashMap<>();
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            while (geomResultSet.next()) {
-                String geometryColumnName = geomResultSet.getString("F_GEOMETRY_COLUMN");
-                if (geometryColumnName != null && !geometryColumnName.isEmpty()) {
-                    int dimension_ = geomResultSet.getInt("COORD_DIMENSION");
-                    int srid_ = geomResultSet.getInt("SRID");
-                    if (isH2) {
-                        GeometryMetaData geometryMetaData = new GeometryMetaData();
-                        geometryMetaData.setDimension(dimension_);
-                        geometryMetaData.setGeometryTypeCode(geomResultSet.getInt("GEOMETRY_TYPE"));
-                        geometryMetaData.setSRID(srid_);
-                        geometryMetaData.initDimension();
-                        geometryMetaData.initGeometryType();
-                        geometryMetaDatas.put(geometryColumnName, geometryMetaData);
-                    } else {//POSTGIS case
-                        geometryMetaDatas.put(geometryColumnName, createMetadataFromPostGIS(geomResultSet.getString("type"), dimension_, srid_));
+        DBTypes dbTypes = geometryTable.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes== H2|| dbTypes== POSTGRESQL) {
+            try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema(),
+                    geometryTable.getTable())) {
+                LinkedHashMap<String, GeometryMetaData> geometryMetaDatas = new LinkedHashMap<>();
+                while (geomResultSet.next()) {
+                    String geometryColumnName = geomResultSet.getString("F_GEOMETRY_COLUMN");
+                    if (geometryColumnName != null && !geometryColumnName.isEmpty()) {
+                        int dimension_ = geomResultSet.getInt("COORD_DIMENSION");
+                        int srid_ = geomResultSet.getInt("SRID");
+                        if (dbTypes == H2GIS || dbTypes==H2) {
+                            GeometryMetaData geometryMetaData = new GeometryMetaData();
+                            geometryMetaData.setDimension(dimension_);
+                            geometryMetaData.setGeometryTypeCode(geomResultSet.getInt("GEOMETRY_TYPE"));
+                            geometryMetaData.setSRID(srid_);
+                            geometryMetaData.initDimension();
+                            geometryMetaData.initGeometryType();
+                            geometryMetaDatas.put(geometryColumnName, geometryMetaData);
+                        } else {//POSTGIS case
+                            geometryMetaDatas.put(geometryColumnName, createMetadataFromPostGIS(geomResultSet.getString("type"), dimension_, srid_));
+                        }
                     }
                 }
+                return geometryMetaDatas;
             }
-            return geometryMetaDatas;
         }
+        throw new SQLException("Database not supported");
     }
 
     /**
@@ -168,15 +175,14 @@ public class GeometryTableUtilities {
      */
     public static GeometryMetaData getMetaData(Connection connection, TableLocation geometryTable, String geometryColumnName) throws SQLException {
         GeometryMetaData geometryMetaData = null;
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        final DBTypes dbType = DBUtils.getDBType(connection);
-        try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema(),
-                geometryTable.getTable(), TableLocation.quoteIdentifier(geometryColumnName, dbType))) {
-            while (geomResultSet.next()) {
-                if (geometryColumnName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(geometryColumnName)) {
-                    int dimension_ = geomResultSet.getInt("COORD_DIMENSION");
-                    int srid_ = geomResultSet.getInt("SRID");
-                    if (isH2) {
+        final DBTypes dbTypes = geometryTable.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== H2) {
+            try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema("PUBLIC"),
+                    geometryTable.getTable(), TableLocation.quoteIdentifier(geometryColumnName, dbTypes))) {
+                while (geomResultSet.next()) {
+                    if (geometryColumnName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(geometryColumnName)) {
+                        int dimension_ = geomResultSet.getInt("COORD_DIMENSION");
+                        int srid_ = geomResultSet.getInt("SRID");
                         geometryMetaData = new GeometryMetaData();
                         geometryMetaData.setDimension(dimension_);
                         geometryMetaData.setGeometryTypeCode(geomResultSet.getInt("GEOMETRY_TYPE"));
@@ -184,14 +190,25 @@ public class GeometryTableUtilities {
                         geometryMetaData.initDimension();
                         geometryMetaData.initGeometryType();
                         break;
-                    } else {//POSTGIS case
+                    }
+                }
+            }
+            return geometryMetaData;
+        }else if(dbTypes== POSTGRESQL|| dbTypes== POSTGIS ){
+            try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema("public"),
+                    geometryTable.getTable(), TableLocation.quoteIdentifier(geometryColumnName, dbTypes))) {
+                while (geomResultSet.next()) {
+                    if (geometryColumnName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(geometryColumnName)) {
+                        int dimension_ = geomResultSet.getInt("COORD_DIMENSION");
+                        int srid_ = geomResultSet.getInt("SRID");
                         geometryMetaData = createMetadataFromPostGIS(geomResultSet.getString("type"), dimension_, srid_);
                         break;
                     }
                 }
             }
+            return geometryMetaData;
         }
-        return geometryMetaData;
+        throw new SQLException("Database not supported");
     }
 
     /**
@@ -593,18 +610,21 @@ public class GeometryTableUtilities {
      */
     public static boolean hasGeometryColumn(Connection connection, TableLocation tableLocation) throws SQLException {
         Statement statement = connection.createStatement();
-        final DBTypes dbType = DBUtils.getDBType(connection);
-        try (ResultSet resultSet = statement.executeQuery(
-                "SELECT * FROM " + tableLocation.toString(dbType) + " WHERE 1=0;")) {
-            ResultSetMetaData meta = resultSet.getMetaData();
-            int columnCount = meta.getColumnCount();
-            for (int i = 1; i <= columnCount; i++) {
-                if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                    return true;
+        DBTypes dbTypes = tableLocation.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
+            try (ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + tableLocation.toString() + " WHERE 1=0;")) {
+                ResultSetMetaData meta = resultSet.getMetaData();
+                int columnCount = meta.getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                        return true;
+                    }
                 }
             }
+            return false;
         }
-        return false;
+        throw  new SQLException("Database not supported");
     }
 
     /**
@@ -691,11 +711,11 @@ public class GeometryTableUtilities {
      * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
+        DBTypes dbTypes = tableLocation.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
         Geometry result;
         int srid = getSRID(connection, tableLocation, geometryColumnName);
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        final DBTypes dbType = DBUtils.getDBType(connection);
-        if (!isH2) {
+        if (dbTypes==POSTGIS || dbTypes==POSTGRESQL) {
             StringBuilder query = new StringBuilder("SELECT  ST_EstimatedExtent(");
             if (!tableLocation.getSchema().isEmpty()) {
                 query.append("'").append(tableLocation.getSchema()).append("',");
@@ -715,7 +735,7 @@ public class GeometryTableUtilities {
             }
         } else {
             StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
-            query.append(tableLocation.toString(dbType)).append("','").append(geometryColumnName).append("')");
+            query.append(tableLocation.toString()).append("','").append(geometryColumnName).append("')");
             try (ResultSet rs = connection.createStatement().executeQuery(query.toString())) {
                 if (rs.next()) {
                     result = (Geometry) rs.getObject(1);
@@ -737,8 +757,9 @@ public class GeometryTableUtilities {
                 }
             }
         }
-
         throw new SQLException("Unable to compute the estimated extent");
+        }
+        throw  new SQLException("Database not supported");
     }
 
     /**
@@ -797,10 +818,14 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static LinkedHashMap<String, Integer> getGeometryColumnNamesAndIndexes(Connection connection, TableLocation tableLocation) throws SQLException {
-        try (ResultSet resultSet = connection.createStatement().executeQuery(
-                "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
-            return getGeometryColumnNamesAndIndexes(resultSet.getMetaData());
+        DBTypes dbTypes = tableLocation.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
+            try (ResultSet resultSet = connection.createStatement().executeQuery(
+                    "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
+                return getGeometryColumnNamesAndIndexes(resultSet.getMetaData());
+            }
         }
+        throw new SQLException("Database not supported");
     }
 
     /**
@@ -833,10 +858,14 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static List<String> getGeometryColumnNames(Connection connection, TableLocation tableLocation) throws SQLException {
-        try (ResultSet resultSet = connection.createStatement().executeQuery(
-                "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
-            return getGeometryColumnNames(resultSet.getMetaData());
+        DBTypes dbTypes = tableLocation.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
+            try (ResultSet resultSet = connection.createStatement().executeQuery(
+                    "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
+                return getGeometryColumnNames(resultSet.getMetaData());
+            }
         }
+        throw new SQLException("Database not supported");
     }
 
     /**
@@ -868,11 +897,15 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static Tuple<String, Integer> getFirstGeometryColumnNameAndIndex(Connection connection, TableLocation tableLocation) throws SQLException {
-        Statement statement = connection.createStatement();
-        try (ResultSet resultSet = statement.executeQuery(
-                "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
-            return GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet.getMetaData());
+        DBTypes dbTypes = tableLocation.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes== H2|| dbTypes== POSTGRESQL) {
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
+                return GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet.getMetaData());
+            }
         }
+        throw new SQLException("Database not supported");
     }
 
     /**
@@ -927,7 +960,7 @@ public class GeometryTableUtilities {
                     "geometry_columns", String.format(" and F_GEOMETRY_COLUMN ='%s'", geometryField));
             return geomStatement.executeQuery();
         }
-        throw new SQLException("Unable to compute the estimated extent");
+        throw new SQLException("Unable to get geometry metadata from a null or empty column name");
     }
 
     /**
@@ -945,27 +978,30 @@ public class GeometryTableUtilities {
      */
     public static Geometry getEnvelope(Connection connection, TableLocation location, String geometryColumn)
             throws SQLException {
-        if (geometryColumn == null || geometryColumn.isEmpty()) {
-            throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
-                    + "cannot be computed");
-        }
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        if (isH2) {
-            try (ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
-                    + TableLocation.quoteIdentifier(geometryColumn) + ") as ext FROM " + location)) {
-                if (rs.next()) {
-                    return ((Geometry) rs.getObject(1));
+        DBTypes dbTypes = location.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
+            if (geometryColumn == null || geometryColumn.isEmpty()) {
+                throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
+                        + "cannot be computed");
+            }
+            if (dbTypes== H2GIS || dbTypes==H2) {
+                try (ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
+                        + TableLocation.quoteIdentifier(geometryColumn) + ") as ext FROM " + location)) {
+                    if (rs.next()) {
+                        return ((Geometry) rs.getObject(1));
+                    }
+                }
+            } else  {
+                try (ResultSet rs = connection.createStatement().executeQuery("SELECT ST_SetSRID(ST_Extent("
+                        + TableLocation.quoteIdentifier(geometryColumn) + "), MAX(ST_SRID(" + TableLocation.quoteIdentifier(geometryColumn) + "))) as ext FROM " + location)) {
+                    if (rs.next()) {
+                        return ((Geometry) rs.getObject(1));
+                    }
                 }
             }
-        } else {
-            try (ResultSet rs = connection.createStatement().executeQuery("SELECT ST_SetSRID(ST_Extent("
-                    + TableLocation.quoteIdentifier(geometryColumn) + "), MAX(ST_SRID(" + TableLocation.quoteIdentifier(geometryColumn) + "))) as ext FROM " + location)) {
-                if (rs.next()) {
-                    return ((Geometry) rs.getObject(1));
-                }
-            }
+            throw new SQLException("Unable to get the table extent it may be empty");
         }
-        throw new SQLException("Unable to get the table extent it may be empty");
+        throw new SQLException("Database not supported");
     }
 
     /**
@@ -1019,78 +1055,80 @@ public class GeometryTableUtilities {
      */
     public static Geometry getEnvelope(Connection connection, TableLocation location, String[] geometryColumns, String filter)
             throws SQLException {
-        if (geometryColumns == null || geometryColumns.length == 0) {
-            throw new SQLException("The table " + location + " does not contain a geometry columns, then the extent "
-                    + "cannot be computed");
-        }
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        final DBTypes dbType = DBUtils.getDBType(connection);
-        int columnCount = 0;
-        StringBuilder mainSelect = new StringBuilder("SELECT ");
-        StringBuilder subSELECT = new StringBuilder("SELECT ");
-        if (isH2) {            
-            for (int i = 0; i < geometryColumns.length; i++) {
-                String geomField = geometryColumns[i];
-                if (i > 0) {
-                    mainSelect.append(",");
-                    subSELECT.append(",");
-                }
-                if (geomField != null && !geomField.isEmpty()) {
-                    String columnName = "geom_"+i;
-                    subSELECT.append(geomField).append(" as ").append(columnName);
-                    mainSelect.append("ST_EXTENT(").append(columnName).append(")").append(" as ").append(columnName);                    
-                    columnCount++;
-                }
+        DBTypes dbTypes = location.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
+            if (geometryColumns == null || geometryColumns.length == 0) {
+                throw new SQLException("The table " + location + " does not contain a geometry columns, then the extent "
+                        + "cannot be computed");
             }
-        } else {
-            for (int i = 0; i < geometryColumns.length; i++) {
-                String geomField = geometryColumns[i];
-                if (i > 0) {
-                    mainSelect.append(",");                    
-                    subSELECT.append(",");
+            int columnCount = 0;
+            StringBuilder mainSelect = new StringBuilder("SELECT ");
+            StringBuilder subSELECT = new StringBuilder("SELECT ");
+            if (dbTypes== H2GIS|| dbTypes==H2) {
+                for (int i = 0; i < geometryColumns.length; i++) {
+                    String geomField = geometryColumns[i];
+                    if (i > 0) {
+                        mainSelect.append(",");
+                        subSELECT.append(",");
+                    }
+                    if (geomField != null && !geomField.isEmpty()) {
+                        String columnName = "geom_" + i;
+                        subSELECT.append(geomField).append(" as ").append(columnName);
+                        mainSelect.append("ST_EXTENT(").append(columnName).append(")").append(" as ").append(columnName);
+                        columnCount++;
+                    }
                 }
-                if (geomField != null && !geomField.isEmpty()) {
-                    String columnName = "geom_"+i;
-                    subSELECT.append(geomField).append(" as ").append(columnName);
-                    mainSelect.append(" ST_SetSRID(ST_EXTENT(").append(columnName).append("), MAX(ST_SRID(")
-                            .append(columnName).
-                            append(" ))) as ").append(columnName);
-                    columnCount++;
-                }
-            }
-        }
-        mainSelect.append(" FROM ");
-        subSELECT.append(" FROM ").append(location.toString(dbType)).append(" ");
-        if (filter != null && !filter.isEmpty()) {
-            subSELECT.append(filter);
-        }
-        subSELECT.append(" ) as foo");
-        mainSelect.append("(").append(subSELECT.toString());
-        Envelope aggregatedEnvelope = new Envelope();
-        int srid = 0;
-        try (ResultSet rs = connection.createStatement().executeQuery(mainSelect.toString())) {
-            if (rs.next()) {
-                for (int i = 0; i < columnCount; i++) {                    
-                    Geometry geom = (Geometry) rs.getObject(i + 1);
-                    if (geom != null) {
-                        int currentSRID = geom.getSRID();
-                        if (srid == 0) {
-                            srid = currentSRID;
-                        } else if (srid != currentSRID) {
-                            throw new SQLException("Operation on mixed SRID geometries not supported");
-                        }
-                        aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
+            } else {
+                for (int i = 0; i < geometryColumns.length; i++) {
+                    String geomField = geometryColumns[i];
+                    if (i > 0) {
+                        mainSelect.append(",");
+                        subSELECT.append(",");
+                    }
+                    if (geomField != null && !geomField.isEmpty()) {
+                        String columnName = "geom_" + i;
+                        subSELECT.append(geomField).append(" as ").append(columnName);
+                        mainSelect.append(" ST_SetSRID(ST_EXTENT(").append(columnName).append("), MAX(ST_SRID(")
+                                .append(columnName).
+                                append(" ))) as ").append(columnName);
+                        columnCount++;
                     }
                 }
             }
+            mainSelect.append(" FROM ");
+            subSELECT.append(" FROM ").append(location.toString()).append(" ");
+            if (filter != null && !filter.isEmpty()) {
+                subSELECT.append(filter);
+            }
+            subSELECT.append(" ) as foo");
+            mainSelect.append("(").append(subSELECT.toString());
+            Envelope aggregatedEnvelope = new Envelope();
+            int srid = 0;
+            try (ResultSet rs = connection.createStatement().executeQuery(mainSelect.toString())) {
+                if (rs.next()) {
+                    for (int i = 0; i < columnCount; i++) {
+                        Geometry geom = (Geometry) rs.getObject(i + 1);
+                        if (geom != null) {
+                            int currentSRID = geom.getSRID();
+                            if (srid == 0) {
+                                srid = currentSRID;
+                            } else if (srid != currentSRID) {
+                                throw new SQLException("Operation on mixed SRID geometries not supported");
+                            }
+                            aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
+                        }
+                    }
+                }
+            }
+            if (aggregatedEnvelope.isNull()) {
+                return null;
+            } else {
+                Geometry geom = new GeometryFactory().toGeometry(aggregatedEnvelope);
+                geom.setSRID(srid);
+                return geom;
+            }
         }
-        if (aggregatedEnvelope.isNull()) {
-            return null;
-        } else {
-            Geometry geom = new GeometryFactory().toGeometry(aggregatedEnvelope);
-            geom.setSRID(srid);
-            return geom;
-        }
+        throw new SQLException("Database not supported");
     }
     
     /**
@@ -1153,63 +1191,66 @@ public class GeometryTableUtilities {
         if(subQuery==null || subQuery.isEmpty()){
             throw new SQLException("The subquery cannot be null or empty");
         }
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        int columnCount = 0;
-        StringBuilder sb = new StringBuilder("SELECT ");
-        if (isH2) {
-            for (int i = 0; i < geometryColumns.length; i++) {
-                String geomField = geometryColumns[i];
-                if (i > 0) {
-                    sb.append(",");
+        DBTypes dbTypes = DBUtils.getDBType(connection);
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
+            int columnCount = 0;
+            StringBuilder sb = new StringBuilder("SELECT ");
+            if (dbTypes==H2GIS || dbTypes==H2) {
+                for (int i = 0; i < geometryColumns.length; i++) {
+                    String geomField = geometryColumns[i];
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    if (geomField != null && !geomField.isEmpty()) {
+                        sb.append("ST_EXTENT(").append(geomField).append(")").append(" as geom_").append(i);
+                        columnCount++;
+                    }
                 }
-                if (geomField != null && !geomField.isEmpty()) {
-                    sb.append("ST_EXTENT(").append(geomField).append(")").append(" as geom_").append(i);
-                    columnCount++;
-                }
-            }
-        } else {
-            for (int i = 0; i < geometryColumns.length; i++) {
-                String geomField = geometryColumns[i];
-                if (i > 0) {
-                    sb.append(",");
-                }
-                if (geomField != null && !geomField.isEmpty()) {
-                    sb.append(" ST_SetSRID(ST_EXTENT(").append(geomField).append("), MAX(ST_SRID(")
-                            .append(geomField).
-                            append(" ))) as geom_").append(i);
-                    columnCount++;
-                }
-            }
-        }
-        sb.append(" FROM ").append("(").append(subQuery).append(") as foo");
-        if(filter!=null && !filter.isEmpty()){
-            sb.append(" ").append(filter);
-        }
-        Envelope aggregatedEnvelope = new Envelope();
-        int srid = 0;
-        try (ResultSet rs = connection.createStatement().executeQuery(sb.toString())) {
-            if (rs.next()) {
-                for (int i = 0; i < columnCount; i++) {
-                    Geometry geom = (Geometry) rs.getObject(i + 1);
-                    if (geom != null) {
-                        int currentSRID = geom.getSRID();
-                        if (srid == 0) {
-                            srid = currentSRID;
-                        } else if (srid != currentSRID) {
-                            throw new SQLException("Operation on mixed SRID geometries not supported");
-                        }
-                        aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
+            } else {
+                for (int i = 0; i < geometryColumns.length; i++) {
+                    String geomField = geometryColumns[i];
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    if (geomField != null && !geomField.isEmpty()) {
+                        sb.append(" ST_SetSRID(ST_EXTENT(").append(geomField).append("), MAX(ST_SRID(")
+                                .append(geomField).
+                                append(" ))) as geom_").append(i);
+                        columnCount++;
                     }
                 }
             }
+            sb.append(" FROM ").append("(").append(subQuery).append(") as foo");
+            if (filter != null && !filter.isEmpty()) {
+                sb.append(" ").append(filter);
+            }
+            Envelope aggregatedEnvelope = new Envelope();
+            int srid = 0;
+            try (ResultSet rs = connection.createStatement().executeQuery(sb.toString())) {
+                if (rs.next()) {
+                    for (int i = 0; i < columnCount; i++) {
+                        Geometry geom = (Geometry) rs.getObject(i + 1);
+                        if (geom != null) {
+                            int currentSRID = geom.getSRID();
+                            if (srid == 0) {
+                                srid = currentSRID;
+                            } else if (srid != currentSRID) {
+                                throw new SQLException("Operation on mixed SRID geometries not supported");
+                            }
+                            aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
+                        }
+                    }
+                }
+            }
+            if (aggregatedEnvelope.isNull()) {
+                return null;
+            } else {
+                Geometry geom = new GeometryFactory().toGeometry(aggregatedEnvelope);
+                geom.setSRID(srid);
+                return geom;
+            }
         }
-        if (aggregatedEnvelope.isNull()) {
-            return null;
-        } else {
-            Geometry geom = new GeometryFactory().toGeometry(aggregatedEnvelope);
-            geom.setSRID(srid);
-            return geom;
-        }
+        throw new SQLException("DataBase not supported");
     }
 
     /**
@@ -1316,30 +1357,32 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static boolean alterSRID(Connection connection, TableLocation tableLocation, String geometryColumnName, int srid) throws SQLException {
-        if (srid >= 0) {
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            final DBTypes dbType = DBUtils.getDBType(connection);
-            String tableName = tableLocation.toString(dbType);
-            if (tableName.isEmpty()) {
-                throw new SQLException("The table name cannot be empty");
-            }
-            String fieldName = TableLocation.capsIdentifier(geometryColumnName, isH2);
-            GeometryMetaData metadata = GeometryTableUtilities.getMetaData(connection, tableLocation, fieldName);
-            if (metadata != null) {
-                if(metadata.getSRID()==srid){
+        DBTypes dbTypes = tableLocation.getDbTypes();
+        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
+            if (srid >= 0) {
+                String tableName = tableLocation.toString();
+                if (tableName.isEmpty()) {
+                    throw new SQLException("The table name cannot be empty");
+                }
+                String fieldName = TableLocation.capsIdentifier(geometryColumnName, dbTypes);
+                GeometryMetaData metadata = GeometryTableUtilities.getMetaData(connection, tableLocation, fieldName);
+                if (metadata != null) {
+                    if (metadata.getSRID() == srid) {
+                        return false;
+                    }
+                    fieldName = TableLocation.quoteIdentifier(fieldName, dbTypes);
+                    String geometrySignature = "GEOMETRY" + "(" + metadata.geometryType + "," + srid + ")";
+                    String query = "ALTER TABLE " + tableName + " ALTER COLUMN " + fieldName +
+                            " TYPE " + geometrySignature + " USING ST_SetSRID(" + fieldName + "," + srid + ")";
+                    connection.createStatement().execute(query);
+                    return true;
+                } else {
                     return false;
                 }
-                fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
-                String geometrySignature = "GEOMETRY" + "(" + metadata.geometryType +  "," + srid + ")";
-                String query = "ALTER TABLE " + tableName + " ALTER COLUMN " + fieldName +
-                        " TYPE " + geometrySignature + " USING ST_SetSRID(" + fieldName + "," + srid + ")";
-                connection.createStatement().execute(query);
-                return true;
-            }else{
-                return false;
             }
+            throw new SQLException("The SRID value must be greater or equal than 0");
         }
-        throw new SQLException("The SRID value must be greater or equal than 0");
+        throw new SQLException("DataBase not supported");
     }
 
     /**
@@ -1352,11 +1395,11 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static boolean isSpatialIndexed(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        DBTypes dbType = tableLocation.getDbTypes();
         String schema = tableLocation.getSchema();
         String tableName = tableLocation.getTable();
-        String fieldName = TableLocation.capsIdentifier(geometryColumnName, isH2);
-        if(isH2) {
+        String fieldName = TableLocation.capsIdentifier(geometryColumnName, dbType);
+        if (dbType==H2||dbType==H2GIS) {
             String query  = String.format("SELECT I.INDEX_TYPE_NAME, I.INDEX_CLASS FROM INFORMATION_SCHEMA.INDEXES AS I , " +
                             "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
                             "INFORMATION_SCHEMA.INDEXES WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
@@ -1367,8 +1410,9 @@ public class GeometryTableUtilities {
                     return  rs.getString("INDEX_TYPE_NAME").contains("SPATIAL");
                 }
             }
+            return false;
         }
-        else { //POSTGIS CASE
+        else if(dbType== POSTGIS || dbType==POSTGRESQL) { //POSTGIS CASE
             String query = String.format("SELECT  cls.relname, am.amname " +
                     "FROM  pg_class cls " +
                     "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
@@ -1380,6 +1424,6 @@ public class GeometryTableUtilities {
                 return rs.next();
             }
         }
-        return false;
+        throw new SQLException("DataBase not supported");
     }
 }

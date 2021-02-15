@@ -121,9 +121,9 @@ public class CSVDriverFunction implements DriverFunction{
 
         } else {
             final DBTypes dbType = DBUtils.getDBType(connection);
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTable = requestedTable.toString(dbType);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+            String outputTable = requestedTable.toString();
+   
             try (Statement st = connection.createStatement()) {
                 JDBCUtilities.attachCancelResultSet(st, progress);
                 Csv csv = new Csv();
@@ -184,17 +184,15 @@ public class CSVDriverFunction implements DriverFunction{
     public String[] importFile(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         progress = DriverManager.check(connection,tableReference,fileName,progress);
         if (FileUtilities.isFileImportable(fileName, "csv")) {
+            final DBTypes dbType = DBUtils.getDBType(connection);
             if(deleteTables) {
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+                TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
                 stmt.close();
             }
-            final DBTypes dbType = DBUtils.getDBType(connection);
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTable = requestedTable.toString(dbType);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+            String outputTable = requestedTable.getTable();
             FileInputStream fis = new FileInputStream(fileName);
             FileChannel fc = fis.getChannel();
             long fileSize = fc.size();

@@ -25,6 +25,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.*;
 
 import java.io.*;
@@ -65,7 +67,6 @@ public class GeoJsonWriteDriver {
     private Map<String, String> cachedSpecificColumns;
     private LinkedHashMap<String, Integer> cachedColumnIndex;
     private int columnCountProperties = -1;
-    private  boolean isH2;
 
     /**
      * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -88,8 +89,9 @@ public class GeoJsonWriteDriver {
      * @throws java.io.IOException
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
+        DBTypes dbType;
         if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
+            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -97,7 +99,7 @@ public class GeoJsonWriteDriver {
             }
             geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
         } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
+            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -118,7 +120,7 @@ public class GeoJsonWriteDriver {
                 }
             }
         } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
+            dbType = DBUtils.getDBType(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -253,8 +255,8 @@ public class GeoJsonWriteDriver {
             }
         }
         try {
-            final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
-            int recordCount = JDBCUtilities.getRowCount(connection, parse);
+            final TableLocation parse = TableLocation.parse(tableName, DBUtils.getDBType(connection));
+            int recordCount = JDBCUtilities.getRowCount(connection, parse.toString());
             if (recordCount > 0) {
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
                 // Read Geometry Index and type
@@ -747,8 +749,8 @@ public class GeoJsonWriteDriver {
         gen.writeStartArray();
         gen.writeNumber(coordinate.x);
         gen.writeNumber(coordinate.y);
-        if (!Double.isNaN(coordinate.z)) {
-            gen.writeNumber(coordinate.z);
+        if (!Double.isNaN(coordinate.getZ())) {
+            gen.writeNumber(coordinate.getZ());
         }
         gen.writeEndArray();
     }

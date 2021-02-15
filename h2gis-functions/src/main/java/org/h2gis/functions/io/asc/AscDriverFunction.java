@@ -23,15 +23,11 @@ import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.utility.PRJUtil;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
-import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  * Asc driver to import ESRI ASCII Raster file as polygons

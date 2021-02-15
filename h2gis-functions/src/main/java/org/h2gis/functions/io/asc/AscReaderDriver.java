@@ -21,7 +21,6 @@ package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
@@ -222,10 +221,9 @@ public class AscReaderDriver {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTableName = requestedTable.toString(dbType);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+            String outputTableName = requestedTable.toString();
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
@@ -239,10 +237,9 @@ public class AscReaderDriver {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             final DBTypes dbType = DBUtils.getDBType(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String outputTableName = requestedTable.toString(dbType);
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+            String outputTableName = requestedTable.toString();
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
@@ -268,6 +265,7 @@ public class AscReaderDriver {
      * @throws SQLException
      * @return output table name
      */
+
     private String readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, String outputTable,
             int srid) throws UnsupportedEncodingException, SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
