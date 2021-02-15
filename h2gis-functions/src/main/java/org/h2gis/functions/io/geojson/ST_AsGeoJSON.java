@@ -21,6 +21,7 @@
 package org.h2gis.functions.io.geojson;
 
 import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.CoordinateUtils;
 import org.locationtech.jts.geom.*;
 
 /**
@@ -30,10 +31,13 @@ import org.locationtech.jts.geom.*;
  */
 public class ST_AsGeoJSON extends DeterministicScalarFunction {
 
+    static  int maxdecimaldigits = 9;
+    
     public ST_AsGeoJSON() {
         addProperty(PROP_REMARKS, "Return the geometry as a Geometry Javascript Object Notation (GeoJSON 1.0) element.\n"
                 + "2D and 3D Geometries are both supported.\n"
-                + "GeoJSON only supports SFS 1.1 geometry types (POINT, LINESTRING, POLYGON and COLLECTION).");
+                + "GeoJSON only supports SFS 1.1 geometry types (POINT, LINESTRING, POLYGON and COLLECTION)"
+                + "maxdecimaldigits argument may be used to reduce the maximum number of decimal places used in output (defaults to 9).");
     }
 
     @Override
@@ -49,7 +53,20 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      */
     public static String toGeojson(Geometry geom) {
         StringBuilder sb = new StringBuilder();
-        toGeojsonGeometry(geom, sb);
+        toGeojsonGeometry(geom,maxdecimaldigits, sb);
+        return sb.toString();
+    }
+    
+     /**
+     * Convert the geometry to a GeoJSON representation.
+     *
+     * @param geom input geometry
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
+     * @return
+     */
+    public static String toGeojson(Geometry geom, int maxdecimaldigits) {
+        StringBuilder sb = new StringBuilder();
+        toGeojsonGeometry(geom, maxdecimaldigits,sb);
         return sb.toString();
     }
     
@@ -57,24 +74,25 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
     /**
      * Transform a JTS geometry to a GeoJSON representation.
      *
-     * @param geom
+     * @param geom input geometry
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
-    public static void toGeojsonGeometry(Geometry geom, StringBuilder sb) {
+    public static void toGeojsonGeometry(Geometry geom, int maxdecimaldigits, StringBuilder sb) {
         if (geom instanceof Point) {
-            toGeojsonPoint((Point) geom, sb);
+            toGeojsonPoint((Point) geom, maxdecimaldigits,sb);
         } else if (geom instanceof LineString) {
-            toGeojsonLineString((LineString) geom, sb);
+            toGeojsonLineString((LineString) geom, maxdecimaldigits, sb);
         } else if (geom instanceof Polygon) {
-            toGeojsonPolygon((Polygon) geom, sb);
+            toGeojsonPolygon((Polygon) geom,maxdecimaldigits, sb);
         } else if (geom instanceof MultiPoint) {
-            toGeojsonMultiPoint((MultiPoint) geom, sb);
+            toGeojsonMultiPoint((MultiPoint) geom, maxdecimaldigits,sb);
         } else if (geom instanceof MultiLineString) {
-            toGeojsonMultiLineString((MultiLineString) geom, sb);
+            toGeojsonMultiLineString((MultiLineString) geom, maxdecimaldigits,sb);
         } else if (geom instanceof MultiPolygon) {
-            toGeojsonMultiPolygon((MultiPolygon) geom, sb);
+            toGeojsonMultiPolygon((MultiPolygon) geom,maxdecimaldigits, sb);
         } else {
-            toGeojsonGeometryCollection((GeometryCollection) geom, sb);
+            toGeojsonGeometryCollection((GeometryCollection) geom, maxdecimaldigits,sb);
         }
     }
 
@@ -103,12 +121,12 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param point
      * @param sb
      */
-    public static void toGeojsonPoint(Point point, StringBuilder sb) {
+    public static void toGeojsonPoint(Point point, int maxdecimaldigits, StringBuilder sb) {
         Coordinate coord = point.getCoordinate();
         sb.append("{\"type\":\"Point\",\"coordinates\":[");
-        sb.append(coord.x).append(",").append(coord.y);
+        sb.append(CoordinateUtils.round(coord.x, maxdecimaldigits)).append(",").append(CoordinateUtils.round(coord.y, maxdecimaldigits));
         if (!Double.isNaN(coord.z)) {
-            sb.append(",").append(coord.z);
+            sb.append(",").append(CoordinateUtils.round(coord.z, maxdecimaldigits));
         }
         sb.append("]}");
     }
@@ -123,9 +141,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param multiPoint
      * @param sb
      */
-    public static void toGeojsonMultiPoint(MultiPoint multiPoint, StringBuilder sb) {
+    public static void toGeojsonMultiPoint(MultiPoint multiPoint,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"MultiPoint\",\"coordinates\":");
-        toGeojsonCoordinates(multiPoint.getCoordinates(), sb);
+        toGeojsonCoordinates(multiPoint.getCoordinates(), maxdecimaldigits, sb);
         sb.append("}");
     }
 
@@ -139,9 +157,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param lineString
      * @param sb
      */
-    public static void toGeojsonLineString(LineString lineString, StringBuilder sb) {
+    public static void toGeojsonLineString(LineString lineString, int maxdecimaldigits, StringBuilder sb) {
         sb.append("{\"type\":\"LineString\",\"coordinates\":");
-        toGeojsonCoordinates(lineString.getCoordinates(), sb);
+        toGeojsonCoordinates(lineString.getCoordinates(),maxdecimaldigits, sb);
         sb.append("}");
     }
 
@@ -157,10 +175,10 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param multiLineString
      * @param sb
      */
-    public static void toGeojsonMultiLineString(MultiLineString multiLineString, StringBuilder sb) {
+    public static void toGeojsonMultiLineString(MultiLineString multiLineString,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"MultiLineString\",\"coordinates\":[");
         for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
-            toGeojsonCoordinates(multiLineString.getGeometryN(i).getCoordinates(), sb);
+            toGeojsonCoordinates(multiLineString.getGeometryN(i).getCoordinates(),maxdecimaldigits, sb);
             if (i < multiLineString.getNumGeometries() - 1) {
                 sb.append(",");
             }
@@ -190,14 +208,14 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param polygon
      * @param sb
      */
-    public static void toGeojsonPolygon(Polygon polygon, StringBuilder sb) {
+    public static void toGeojsonPolygon(Polygon polygon,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"Polygon\",\"coordinates\":[");
         //Process exterior ring
-        toGeojsonCoordinates(polygon.getExteriorRing().getCoordinates(), sb);
+        toGeojsonCoordinates(polygon.getExteriorRing().getCoordinates(),maxdecimaldigits, sb);
         //Process interior rings
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
             sb.append(",");
-            toGeojsonCoordinates(polygon.getInteriorRingN(i).getCoordinates(), sb);
+            toGeojsonCoordinates(polygon.getInteriorRingN(i).getCoordinates(),maxdecimaldigits, sb);
         }
         sb.append("]}");
     }
@@ -215,18 +233,18 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param multiPolygon
      * @param sb
      */
-    public static void toGeojsonMultiPolygon(MultiPolygon multiPolygon, StringBuilder sb) {
+    public static void toGeojsonMultiPolygon(MultiPolygon multiPolygon, int maxdecimaldigits, StringBuilder sb) {
         sb.append("{\"type\":\"MultiPolygon\",\"coordinates\":[");
 
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
             Polygon p = (Polygon) multiPolygon.getGeometryN(i);
             sb.append("[");
             //Process exterior ring
-            toGeojsonCoordinates(p.getExteriorRing().getCoordinates(), sb);
+            toGeojsonCoordinates(p.getExteriorRing().getCoordinates(),maxdecimaldigits, sb);
             //Process interior rings
             for (int j = 0; j < p.getNumInteriorRing(); j++) {
                 sb.append(",");
-                toGeojsonCoordinates(p.getInteriorRingN(j).getCoordinates(), sb);
+                toGeojsonCoordinates(p.getInteriorRingN(j).getCoordinates(), maxdecimaldigits,sb);
             }
             sb.append("]");
             if (i < multiPolygon.getNumGeometries() - 1) {
@@ -253,16 +271,16 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param geometryCollection
      * @param sb
      */
-    public static void toGeojsonGeometryCollection(GeometryCollection geometryCollection, StringBuilder sb) {
+    public static void toGeojsonGeometryCollection(GeometryCollection geometryCollection,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"GeometryCollection\",\"geometries\":[");
         for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
             Geometry geom = geometryCollection.getGeometryN(i);
             if (geom instanceof Point) {
-                toGeojsonPoint((Point) geom, sb);
+                toGeojsonPoint((Point) geom, maxdecimaldigits, sb);
             } else if (geom instanceof LineString) {
-                toGeojsonLineString((LineString) geom, sb);
+                toGeojsonLineString((LineString) geom, maxdecimaldigits, sb);
             } else if (geom instanceof Polygon) {
-                toGeojsonPolygon((Polygon) geom, sb);
+                toGeojsonPolygon((Polygon) geom,maxdecimaldigits, sb);
             }
             if (i < geometryCollection.getNumGeometries() - 1) {
                 sb.append(",");
@@ -282,10 +300,10 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param coords
      * @param sb
      */
-    public static void toGeojsonCoordinates(Coordinate[] coords, StringBuilder sb) {
+    public static void toGeojsonCoordinates(Coordinate[] coords, int maxdecimaldigits, StringBuilder sb) {
         sb.append("[");
         for (int i = 0; i < coords.length; i++) {
-            toGeojsonCoordinate(coords[i], sb);
+            toGeojsonCoordinate(coords[i],maxdecimaldigits, sb);
             if (i < coords.length - 1) {
                 sb.append(",");
             }
@@ -305,11 +323,11 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @param coord
      * @param sb
      */
-    public static void toGeojsonCoordinate(Coordinate coord, StringBuilder sb) {
+    public static void toGeojsonCoordinate(Coordinate coord, int maxdecimaldigits, StringBuilder sb) {
         sb.append("[");
-        sb.append(coord.x).append(",").append(coord.y);
+        sb.append(CoordinateUtils.round(coord.x, maxdecimaldigits)).append(",").append(CoordinateUtils.round(coord.y, maxdecimaldigits));
         if (!Double.isNaN(coord.z)) {
-            sb.append(",").append(coord.z);
+            sb.append(",").append(CoordinateUtils.round(coord.z, maxdecimaldigits));
         }
         sb.append("]");
     }
@@ -321,9 +339,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * @return The envelope encoded as GeoJSON
      */
-    public String toGeoJsonEnvelope(Envelope e) {
-        return new StringBuffer().append("[").append(e.getMinX()).append(",")
-                .append(e.getMinY()).append(",").append(e.getMaxX()).append(",")
-                .append(e.getMaxY()).append("]").toString();
+    public String toGeoJsonEnvelope(Envelope e, int maxdecimaldigits) {
+        return new StringBuffer().append("[").append(CoordinateUtils.round(e.getMinX(), maxdecimaldigits)).append(",")
+                .append(CoordinateUtils.round(e.getMinY(), maxdecimaldigits)).append(",").append(CoordinateUtils.round(e.getMaxX(), maxdecimaldigits)).append(",")
+                .append(CoordinateUtils.round(e.getMaxY(), maxdecimaldigits)).append("]").toString();
     }
 }

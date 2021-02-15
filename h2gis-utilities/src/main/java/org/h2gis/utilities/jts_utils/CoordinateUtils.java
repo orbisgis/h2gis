@@ -24,6 +24,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.math.Vector3D;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -206,6 +208,20 @@ public final class CoordinateUtils {
         }
         return finalCoords.toArray(new Coordinate[0]);
         }
+
+    /**
+     *  Round a double value according a number of decimal places
+     *
+     * @param value the double value
+     * @param places the number of decimal places
+     * @return
+     */
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 
     /**
      * Private constructor for utility class.

@@ -263,8 +263,8 @@ public class JsonWriteDriver {
     private void jsonWrite(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding =  getEncoding(encoding);
         try {
-            final DBTypes dbType = DBUtils.getDBType(connection);
-            final TableLocation parse = TableLocation.parse(tableName, dbType);
+            DBTypes dbTypes = DBUtils.getDBType(connection);
+            final TableLocation parse = TableLocation.parse(tableName, dbTypes);
             String outputTable = parse.toString();
             int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
             if (recordCount > 0) {

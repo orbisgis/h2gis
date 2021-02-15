@@ -22,6 +22,8 @@ package org.h2gis.functions.io.json;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.DriverManager;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.io.File;
 import java.io.IOException;

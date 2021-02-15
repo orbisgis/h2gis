@@ -189,7 +189,7 @@ public class IOMethods {
                     enc = ENCODING_OPTION + UTF_ENCODING;
                 }
             }
-            return driverFunction.exportTable(connection, tableName.toUpperCase(), fileToSave,
+            return driverFunction.exportTable(connection, tableName, fileToSave,
                     enc, deleteFile, new EmptyProgressVisitor());
 
         } catch (SQLException | IOException e) {
@@ -337,7 +337,6 @@ public class IOMethods {
     public static String linkedFile(Connection connection, String filePath, String tableName, boolean delete) throws SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
         if (dbType != DBTypes.H2 && dbType != DBTypes.H2GIS) {
-
             throw new SQLException("Link file is only supported with an H2GIS database");
         }
         if (delete) {

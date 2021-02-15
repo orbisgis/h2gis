@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.functions.io.DriverManager;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 /**
  * GeoJSON driver to import a GeoJSON file and export a spatial table in a
