@@ -119,6 +119,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
      * @param point
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonPoint(Point point, int maxdecimaldigits, StringBuilder sb) {
@@ -139,6 +140,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
      * @param multiPoint
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonMultiPoint(MultiPoint multiPoint,int maxdecimaldigits,  StringBuilder sb) {
@@ -155,6 +157,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
      * @param lineString
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonLineString(LineString lineString, int maxdecimaldigits, StringBuilder sb) {
@@ -173,6 +176,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
      * @param multiLineString
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonMultiLineString(MultiLineString multiLineString,int maxdecimaldigits,  StringBuilder sb) {
@@ -206,6 +210,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      *
      * @param polygon
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonPolygon(Polygon polygon,int maxdecimaldigits,  StringBuilder sb) {
@@ -231,6 +236,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
      * @param multiPolygon
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonMultiPolygon(MultiPolygon multiPolygon, int maxdecimaldigits, StringBuilder sb) {
@@ -269,6 +275,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * [101.0, 0.0], [102.0, 1.0] ] } ] }
      *
      * @param geometryCollection
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonGeometryCollection(GeometryCollection geometryCollection,int maxdecimaldigits,  StringBuilder sb) {
@@ -298,6 +305,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * [[X1,Y1],[X2,Y2]]
      *
      * @param coords
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonCoordinates(Coordinate[] coords, int maxdecimaldigits, StringBuilder sb) {
@@ -321,6 +329,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * [X,Y] or [X,Y,Z]
      *
      * @param coord
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @param sb
      */
     public static void toGeojsonCoordinate(Coordinate coord, int maxdecimaldigits, StringBuilder sb) {
@@ -336,6 +345,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * Convert a JTS Envelope to a GeoJSON representation.
      *
      * @param e The envelope
+     * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      *
      * @return The envelope encoded as GeoJSON
      */
