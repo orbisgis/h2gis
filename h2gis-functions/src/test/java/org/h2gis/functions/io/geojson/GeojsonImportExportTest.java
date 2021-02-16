@@ -1238,5 +1238,36 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
     }
+    
+    @Test
+    public void testReadlGeojsonFeatures() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("features.geojson").getPath()) + ", 'TABLE_FEATURES', true);");
+            ResultSet res = stat.executeQuery("SELECT count(*) FROM TABLE_FEATURES;");          
+            res.next();
+            assertEquals(3, res.getInt(1));            
+        }
+    }
+    
+    @Test
+    public void testReadlGeojsonFeature() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("feature.geojson").getPath()) + ", 'TABLE_FEATURE', true);");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_FEATURE;");          
+            res.next();
+            assertGeometryEquals("POINT Z (-1.637021666666667 47.15928666666667 10.2)", res.getObject(1));   
+            assertEquals(79.04200463708992, res.getDouble(2));
+        }
+    }
+    
+    @Test
+    public void testReadlGeojsonGeometry() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("geometry.geojson").getPath()) + ", 'TABLE_GEOMETRY', true);");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_GEOMETRY;");          
+            res.next();
+            assertGeometryEquals("POINT Z (-1.637021666666667 47.15928666666667 10.2)", res.getObject(1));   
+        }
+    }
 }
 
