@@ -741,6 +741,10 @@ public class GeometryTableUtilsTest {
         geomMetadata = GeometryTableUtilities.getMetaData(connection, location, "THE_GEOM");
         assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
         assertEquals(4326, geomMetadata.getSRID()); 
+        st.execute("SELECT UpdateGeometrySRID('geo_point','THE_GEOM',4326);");
+        geomMetadata = GeometryTableUtilities.getMetaData(connection, location, "THE_GEOM");
+        assertEquals("GEOMETRY(POINTZ,4326)", geomMetadata.getSQL());
+        assertEquals(4326, geomMetadata.getSRID()); 
     }
     
     @Test
