@@ -280,11 +280,17 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
                 ResultSetMetaData metadata = rsQuery.getMetaData();
                 columnCount = metadata.getColumnCount();
                 for (int i = 1; i <= columnCount; i++) {
-                    if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")&& spatialFieldIndex==-1) {
+                    String type = metadata.getColumnTypeName(i);
+                    if (type.equalsIgnoreCase("geometry")&& spatialFieldIndex==-1) {
                         spatialFieldIndex = i;
                     }
-                    rs.addColumn(metadata.getColumnName(i), metadata.getColumnType(i),
-                            metadata.getColumnTypeName(i), metadata.getPrecision(i), metadata.getScale(i));
+                    String columnName =metadata.getColumnName(i);
+                    String label = metadata.getColumnLabel(i);
+                    if(label!=null){
+                        columnName = label;
+                    }
+                    rs.addColumn(columnName, metadata.getColumnType(i),
+                            type, metadata.getPrecision(i), metadata.getScale(i));
                 }
 
             } catch (SQLException ex) {

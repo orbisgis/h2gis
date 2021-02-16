@@ -1270,4 +1270,3 @@ public class GeojsonImportExportTest {
         }
     }
 }
-
