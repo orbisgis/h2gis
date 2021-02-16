@@ -45,9 +45,7 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction {
                 "\nJsonWrite(..." +
                 "\n Supported arguments :" +
                 "\n path of the file, table name" +
-                "\n path of the file, table name, true to delete the file if exists" +
-                "\n path of the file, table name, encoding chartset" +
-                "\n path of the file, table name, encoding chartset, true to delete the file if exists");
+                "\n path of the file, table name, true to delete the file if exists");
     }
 
     @Override
@@ -60,15 +58,14 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction {
      * @param fileName       Name of the destination file.
      * @param tableReference Name of the table to export or select query.
      *                       Note : The select query must be enclosed in parenthesis
-     * @param encoding       Encoding of the destination file.
      * @param deleteFile     True if the destination files should be deleted, false otherwise.
      * @throws SQLException Exception thrown when an SQL error occurs.
      * @throws IOException  Exception when a file writing error occurs.
      */
-    public static void exportTable(Connection connection, String fileName, String tableReference, String encoding,
+    public static void exportTable(Connection connection, String fileName, String tableReference, 
                                    boolean deleteFile) throws IOException, SQLException {
         JsonDriverFunction jsonDriver = new JsonDriverFunction();
-        jsonDriver.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteFile,
+        jsonDriver.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), deleteFile,
                 new EmptyProgressVisitor());
     }
 
@@ -84,31 +81,6 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction {
      */
     public static void exportTable(Connection connection, String fileName, String tableReference)
             throws SQLException, IOException {
-        exportTable(connection, fileName, tableReference, null, false);
-    }
-
-    /**
-     * Read a table and write it into a json file.
-     *
-     * @param connection     Connection to the database.
-     * @param fileName       Name of the destination file.
-     * @param tableReference Name of the table to export or select query.
-     *                       Note : The select query must be enclosed in parenthesis
-     * @param option         String file encoding charset or boolean value to delete the existing file.
-     * @throws SQLException Exception thrown when an SQL error occurs.
-     * @throws IOException  Exception when a file writing error occurs.
-     */
-    public static void exportTable(Connection connection, String fileName, String tableReference, Value option)
-            throws SQLException, IOException {
-        String encoding = null;
-        boolean deleteFiles = false;
-        if (option instanceof ValueBoolean) {
-            deleteFiles = option.getBoolean();
-        } else if (option instanceof ValueVarchar) {
-            encoding = option.getString();
-        } else if (!(option instanceof ValueNull)) {
-            throw new SQLException("Supported optional parameter is boolean or varchar");
-        }
-        exportTable(connection, fileName, tableReference, encoding, deleteFiles);
-    }
+        exportTable(connection, fileName, tableReference, false);
+    }   
 }
