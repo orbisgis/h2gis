@@ -244,7 +244,8 @@ public class SpatialFunctionTest {
         assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("exploded_forests")));
         st.execute("drop table forests");
     }
-     @Test
+    
+    @Test
     public void test_ST_ExplodeSubQuery() throws Exception {
         st.execute("DROP TABLE IF EXISTS forests; "
                 + "CREATE TABLE forests ( id INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
@@ -258,8 +259,9 @@ public class SpatialFunctionTest {
                 + "INSERT INTO zone VALUES (1,ST_GEOMFROMTEXT('POLYGON ((43.4 30.8, 61 30.8, 61 13.8, 43.4 13.8, 43.4 30.8))', 4326));");
         st.execute("Drop table if exists exploded_forests;"
                 + " CREATE TABLE exploded_forests as SELECT * FROM ST_Explode('(select a.id as id_a, b.id as id_b, a.the_geom from forests as a, zone as b where st_intersects(a.the_geom, b.the_geom))')");
-        ResultSet rs = st.executeQuery("SELECT * FROM exploded_forests");
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM exploded_forests");
         assertTrue(rs.next());
+        assertEquals(3, rs.getInt(1));
         assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("exploded_forests")));
         st.execute("drop table forests");
     }
@@ -1863,7 +1865,7 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_UPDATEZ(ST_FORCE3D(ST_buffer('POINT(0 0)'::GEOMETRY, 10)), 120);");
         assertTrue(rs.next());
-        System.out.println(((Geometry)rs.getObject(1)).getCoordinates()[0].z);
+        assertEquals(120, ((Geometry)rs.getObject(1)).getCoordinates()[0].getZ());
     }
 
     @Test
