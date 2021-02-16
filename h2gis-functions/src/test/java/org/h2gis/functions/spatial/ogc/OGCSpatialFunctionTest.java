@@ -341,14 +341,37 @@ public class OGCSpatialFunctionTest {
     @Test
     public void test_ST_ASWkt() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_ASWKT('POINT(1 1 1)')");
+        ResultSet rs = st.executeQuery("SELECT ST_ASWKT('POINT(1 1)')");
         try {
             assertTrue(rs.next());
             assertEquals("POINT (1 1)", rs.getString(1));
         } finally {
             rs.close();
         }
-
+    }
+    
+    @Test
+    public void test_ST_ASWkt2() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_ASWKT('POINT(1 1 1)')");
+        try {
+            assertTrue(rs.next());
+            assertEquals("POINT Z(1 1 1)", rs.getString(1));
+        } finally {
+            rs.close();
+        }
+    }
+    
+    @Test
+    public void test_ST_ASWkt3() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_ASWKT('POINT(1 1 1 2)')");
+        try {
+            assertTrue(rs.next());
+            assertEquals("POINT ZM(1 1 1 2)", rs.getString(1));
+        } finally {
+            rs.close();
+        }
     }
 
     @Test
