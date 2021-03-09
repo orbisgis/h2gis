@@ -480,6 +480,38 @@ public class IOMethodsTest {
             res.close();
         }
     }
+    
+    @Test
+    public void testLinkedTableQuery(TestInfo testInfo) throws SQLException, IOException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            Statement postgisST = con.createStatement();
+            postgisST.execute("DROP TABLE IF EXISTS AREA");
+            postgisST.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+            postgisST.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
+            Map<String, String> map = new HashMap<>();
+            props.forEach((key, value) -> map.put(key.toString(), value.toString()));
+            IOMethods.linkedTable(connection, map, "(select * from area where idarea=1)", "area_h2gis", true );
+            ResultSet res = st.executeQuery("SELECT * FROM area_h2gis");
+            assertTrue(res.next());
+            assertEquals(1, res.getInt(1));
+            assertGeometryEquals("POLYGON ((-10 9, -10 109, 90 109, 90 9, -10 9))", (Geometry) res.getObject(2));
+            res.close();
+        }
+    }
 
     @Test
     public void testRemoveAddDriver() {

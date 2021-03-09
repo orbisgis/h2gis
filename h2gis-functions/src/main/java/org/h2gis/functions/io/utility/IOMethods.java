@@ -276,12 +276,9 @@ public class IOMethods {
                     driverName = "org.h2gis.postgis_jts.Driver";
                     jdbc_url = "jdbc:postgresql_h2" + jdbc_url.substring("jdbc:postgresql".length());
                 }
-                DBTypes sourceDBType = DBUtils.getDBType(jdbc_url);
                 if (!driverName.isEmpty()) {
                     TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBType);
                     String ouputTableName = targetTableLocation.toString(targetDBType);
-                    TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBType);
-                    String inputTableName = sourceTableLocation.toString(sourceDBType);
                     if (delete) {
                         try ( //Drop table if exists
                                 Statement stmt = targetConnection.createStatement()) {
@@ -301,7 +298,7 @@ public class IOMethods {
 
                     try (Statement statement = targetConnection.createStatement()) {
                         statement.execute(String.format("CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s')",
-                                ouputTableName, driverName, jdbc_url, user, password, inputTableName));
+                                ouputTableName, driverName, jdbc_url, user, password, sourceTable));
                         if (!targetConnection.getAutoCommit()) {
                             targetConnection.commit();
                         }
