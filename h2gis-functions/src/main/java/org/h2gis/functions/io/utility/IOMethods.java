@@ -516,10 +516,9 @@ public class IOMethods {
                     insertTable.append(",").append("?");
                 }
                 insertTable.append(")");
-
-                preparedStatement = targetConnection.prepareStatement(insertTable.toString());
                 //Check the first row in order to limit the batch size if the query doesn't work
-                inputRes.next();
+                if(inputRes.next()){                 
+                preparedStatement = targetConnection.prepareStatement(insertTable.toString());
                 for (int i = 0; i < columnsCount; i++) {
                     int index = i + 1;
                     Object value = inputRes.getObject(index);
@@ -528,6 +527,7 @@ public class IOMethods {
                     }
                     preparedStatement.setObject(index, value);
                 }
+                
                 preparedStatement.execute();
                 long batchSize = 0;
                 while (inputRes.next()) {
@@ -579,6 +579,7 @@ public class IOMethods {
                     }
 
                 }
+            }
             } catch (SQLException e) {
                 try {
                     targetConnection.rollback();
