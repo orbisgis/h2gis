@@ -44,9 +44,7 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
                 + "\nGeoJsonWrite(..."
                 + "\n Supported arguments :"
                 + "\n path of the file, table name"
-                + "\n path of the file, table name, true to delete the file if exists"
-                + "\n path of the file, table name, encoding chartset"
-                + "\n path of the file, table name, encoding chartset, true to delete the file if exists");
+                + "\n path of the file, table name, true to delete the file if exists");
     }
 
     @Override
@@ -61,14 +59,13 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
      * @param fileName Shape file name or URI
      * @param tableReference Table name or select query Note : The select query
      * must be enclosed in parenthesis
-     * @param encoding charset encoding
      * @param deleteFile true to delete output file
      * @throws IOException
      * @throws SQLException
      */
-    public static void exportTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFile) throws IOException, SQLException {
+    public static void exportTable(Connection connection, String fileName, String tableReference, boolean deleteFile) throws IOException, SQLException {
         GeoJsonDriverFunction geoJsonDriver = new GeoJsonDriverFunction();
-        geoJsonDriver.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteFile, new EmptyProgressVisitor());
+        geoJsonDriver.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName),  deleteFile, new EmptyProgressVisitor());
     }
 
     /**
@@ -81,31 +78,6 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        exportTable(connection, fileName, tableReference, null, false);
-    }
-
-    /**
-     * Read a table and write it into a geojson file.
-     *
-     * @param connection Active connection
-     * @param fileName Shape file name or URI
-     * @param tableReference Table name or select query Note : The select query
-     * must be enclosed in parenthesis
-     * @param option Could be string file encoding charset or boolean value to
-     * delete the existing file
-     * @throws IOException
-     * @throws SQLException
-     */
-    public static void exportTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
-        String encoding = null;
-        boolean deleteFiles = false;
-        if (option instanceof ValueBoolean) {
-            deleteFiles = option.getBoolean();
-        } else if (option instanceof ValueVarchar) {
-            encoding = option.getString();
-        } else if (!(option instanceof ValueNull)) {
-            throw new SQLException("Supported optional parameter is boolean or varchar");
-        }
-        exportTable(connection, fileName, tableReference, encoding, deleteFiles);
-    }
+        exportTable(connection, fileName, tableReference, false);
+    }   
 }

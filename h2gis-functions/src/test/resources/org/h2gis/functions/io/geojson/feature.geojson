@@ -1,0 +1,14 @@
+{
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.637021666666667,
+          47.15928666666667,
+          10.2
+        ]
+      },
+    "properties": {
+    "leq_mean": 79.04200463708992
+    }  
+}
