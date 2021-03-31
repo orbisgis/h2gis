@@ -115,6 +115,19 @@ public class JDBCUtilities {
         geomStatement.setString(tableIndex, table.toUpperCase());
         return geomStatement.executeQuery();
     }
+    
+     /**
+     * Return true if table table contains field fieldName.
+     *
+     * @param connection Connection
+     * @param table a TableLocation
+     * @param fieldName Field name
+     * @return True if the table contains the field
+     * @throws SQLException
+     */
+    public static boolean hasField(Connection connection, TableLocation table, String fieldName) throws SQLException {
+            return hasField(connection, table.toString(), fieldName);
+    }
 
     /**
      * Return true if table tableName contains field fieldName.
@@ -179,6 +192,17 @@ public class JDBCUtilities {
         }
         return null;
     }
+    
+     /**
+     * @param connection Active connection to the database
+     * @param table a TableLocation
+     * @param columnIndex Field ordinal position [1-n]
+     * @return The field name, empty if the field position or table is not found
+     * @throws SQLException If jdbc throws an error
+     */
+    public static String getColumnName(Connection connection, TableLocation table, int columnIndex) throws SQLException {
+        return getColumnName(connection, table.toString(), columnIndex);
+    }
 
     /**
      * @param connection Active connection to the database
@@ -200,6 +224,18 @@ public class JDBCUtilities {
         } finally {
             statement.close();
         }
+    }
+    
+    /**
+     * Returns the list of all the column names of a table.
+     *
+     * @param connection Active connection to the database
+     * @param table a TableLocation
+     * @return The list of field name.
+     * @throws SQLException If jdbc throws an error
+     */
+    public static List<String> getColumnNames(Connection connection, TableLocation table) throws SQLException {
+        return getColumnNames(connection, table.toString());
     }
 
     /**
@@ -229,6 +265,18 @@ public class JDBCUtilities {
         }
         return fieldNameList;
     }
+    
+    /**
+     * Returns the list of all the column names and indexes of a table.
+     *
+     * @param connection Active connection to the database
+     * @param table a TableLocation
+     * @return The list of field name.
+     * @throws SQLException If jdbc throws an error
+     */
+    public static List<Tuple<String, Integer>> getColumnNamesAndIndexes(Connection connection, TableLocation table) throws SQLException {
+           return getColumnNamesAndIndexes(connection, table.toString());
+    }
 
     /**
      * Returns the list of all the column names and indexes of a table.
@@ -256,6 +304,19 @@ public class JDBCUtilities {
             statement.close();
         }
         return fieldNameList;
+    }
+    
+    /**
+     * Fetch the row count of a table.
+     *
+     *
+     * @param connection Active connection.
+     * @param table a TableLocation
+     * @return Row count
+     * @throws SQLException If the table does not exists, or sql request fail.
+     */
+    public static int getRowCount(Connection connection, TableLocation table) throws SQLException {
+        return getRowCount(connection, table.toString());
     }
 
     /**
@@ -316,6 +377,20 @@ public class JDBCUtilities {
         }
         return isTemporary;
     }
+    
+    /**
+     * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table
+     * reference is a linked table.
+     *
+     * @param connection Active connection not closed by this method
+     * @param table TableLocation
+     * @return True if the provided table is linked.
+     * @throws SQLException If the table does not exists.
+     */
+    public static boolean isLinkedTable(Connection connection, TableLocation table) throws SQLException {
+        return isLinkedTable(connection,table.toString());
+    }
+  
 
     /**
      * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table
@@ -471,8 +546,20 @@ public class JDBCUtilities {
      * @throws java.sql.SQLException
      */
     public static boolean tableExists(Connection connection, TableLocation tableLocation) throws SQLException {
+        return tableExists(connection, tableLocation.toString());
+    }
+    
+     /**
+     * Return true if the table exists.
+     *
+     * @param connection Connection
+     * @param tableName Table name
+     * @return true if the table exists
+     * @throws java.sql.SQLException
+     */
+    public static boolean tableExists(Connection connection, String tableName) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute("SELECT * FROM " + tableLocation.toString() + " LIMIT 0;");
+            statement.execute("SELECT * FROM " + tableName + " LIMIT 0;");
             return true;
         } catch (SQLException ex) {
             return false;
@@ -537,6 +624,20 @@ public class JDBCUtilities {
         }
         return tableList;
     }
+    
+    /**
+     * Returns the list of distinct values contained by a field from a table
+     * from the database
+     *
+     * @param connection Connection
+     * @param table Name of the table containing the field.
+     * @param fieldName Name of the field containing the values.
+     * @return The list of distinct values of the field.
+     * @throws java.sql.SQLException
+     */
+    public static List<String> getUniqueFieldValues(Connection connection, TableLocation table, String fieldName) throws SQLException {
+            return getUniqueFieldValues(connection, table.toString(), fieldName);
+    }
 
     /**
      * Returns the list of distinct values contained by a field from a table
@@ -546,6 +647,7 @@ public class JDBCUtilities {
      * @param tableName Name of the table containing the field.
      * @param fieldName Name of the field containing the values.
      * @return The list of distinct values of the field.
+     * @throws java.sql.SQLException
      */
     public static List<String> getUniqueFieldValues(Connection connection, String tableName, String fieldName) throws SQLException {
         final DBTypes dbType = getDBType(connection);
@@ -566,6 +668,20 @@ public class JDBCUtilities {
         return fieldValues;
     }
 
+    
+     /**
+     * A method to create an empty table (no columns)
+     *
+     * @param connection Connection
+     * @param table Table name
+     * @throws java.sql.SQLException
+     */
+    public static void createEmptyTable(Connection connection, TableLocation table) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE " + table.toString() + " ()");
+        }
+    }
+    
     /**
      * A method to create an empty table (no columns)
      *
@@ -879,7 +995,7 @@ public class JDBCUtilities {
         return builder.toString();
     }
 
-    /**
+     /**
      * Returns true if the given column name from the given table is indexed,
      * return false otherwise.
      *
@@ -1201,6 +1317,20 @@ public class JDBCUtilities {
     public static void dropIndex(Connection connection, String table) throws SQLException {
         dropIndex(connection, TableLocation.parse(table, getDBType(connection)));
     }
+    
+    /**
+     * Return the name of the index of the given column of the given table. If there is no index, return null.
+     *
+     * @param connection Connection to the database.
+     * @param table      Table location of the column.
+     * @param columnName Name of the column.
+     * @param dbType     Database type.
+     * @return           The name of the column index. Null if there is no index.
+     * @throws SQLException Exception thrown on SQL execution error.
+     */
+    private static String getIndexName(Connection connection, String table, String columnName) throws SQLException {
+        return getIndexName(connection, TableLocation.parse(table, getDBType(connection)), columnName);
+    }    
 
     /**
      * Return the name of the index of the given column of the given table. If there is no index, return null.
@@ -1212,14 +1342,14 @@ public class JDBCUtilities {
      * @return           The name of the column index. Null if there is no index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
-    private static String getIndexName(Connection connection, TableLocation table, String columnName, DBTypes dbType) throws SQLException {
+    private static String getIndexName(Connection connection, TableLocation table, String columnName) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS " +
                 "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? " +
                 "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? " +
                 "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
         ps.setObject(1, table.getTable());
         ps.setObject(2, table.getSchema("PUBLIC"));
-        ps.setObject(3, TableLocation.capsIdentifier(columnName, dbType));
+        ps.setObject(3, TableLocation.capsIdentifier(columnName, table.getDbTypes()));
         ResultSet rs = ps.executeQuery();
         if(rs.next()){
             return rs.getString("INDEX_NAME");

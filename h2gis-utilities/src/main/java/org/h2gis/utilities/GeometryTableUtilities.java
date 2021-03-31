@@ -35,6 +35,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import static org.h2gis.utilities.dbtypes.DBTypes.*;
+import static org.h2gis.utilities.dbtypes.DBUtils.getDBType;
 
 /**
  *
@@ -46,6 +47,19 @@ import static org.h2gis.utilities.dbtypes.DBTypes.*;
  */
 public class GeometryTableUtilities {
 
+    /**
+     * Read the geometry metadata of the first geometry column
+     *
+     *
+     * @param connection
+     * @param geometryTable
+     * @return Geometry MetaData
+     * @throws java.sql.SQLException
+     */
+    public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(Connection connection, String geometryTable) throws SQLException {
+        return getFirstColumnMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)));
+    }
+    
     /**
      * Read the geometry metadata of the first geometry column
      *
@@ -125,6 +139,18 @@ public class GeometryTableUtilities {
         }
         return geometryMetaDatas;
     }
+    
+    /**
+     * Read all geometry metadata from a table
+     *
+     * @param connection
+     * @param geometryTable
+     * @return Geometry MetaData
+     * @throws java.sql.SQLException
+     */
+    public static LinkedHashMap<String, GeometryMetaData> getMetaData(Connection connection, String geometryTable) throws SQLException {
+            return getMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)));
+    }
 
     /**
      * Read all geometry metadata from a table
@@ -162,6 +188,19 @@ public class GeometryTableUtilities {
             }
         }
         throw new SQLException("Database not supported");
+    }
+    
+    /**
+     * Read the geometry metadata from a column name
+     *
+     * @param connection
+     * @param geometryTable
+     * @param geometryColumnName
+     * @return Geometry MetaData
+     * @throws java.sql.SQLException
+     */
+    public static GeometryMetaData getMetaData(Connection connection, String geometryTable, String geometryColumnName) throws SQLException {
+        return getMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)), geometryColumnName);
     }
 
     /**
@@ -596,6 +635,20 @@ public class GeometryTableUtilities {
             }
         }
         return false;
+    }
+    
+     /**
+     * Check if the table contains a geometry column
+     *
+     * @param connection
+     * @param tableLocation
+     *
+     * @return True if the ResultSet contains one geometry field
+     *
+     * @throws SQLException
+     */
+    public static boolean hasGeometryColumn(Connection connection, String tableLocation) throws SQLException {
+        return hasGeometryColumn(connection, TableLocation.parse(tableLocation, getDBType(connection)));
     }
 
     /**
