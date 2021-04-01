@@ -35,6 +35,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import static org.h2gis.utilities.dbtypes.DBTypes.*;
+import static org.h2gis.utilities.dbtypes.DBUtils.getDBType;
 
 /**
  *
@@ -46,6 +47,19 @@ import static org.h2gis.utilities.dbtypes.DBTypes.*;
  */
 public class GeometryTableUtilities {
 
+    /**
+     * Read the geometry metadata of the first geometry column
+     *
+     *
+     * @param connection
+     * @param geometryTable
+     * @return Geometry MetaData
+     * @throws java.sql.SQLException
+     */
+    public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(Connection connection, String geometryTable) throws SQLException {
+        return getFirstColumnMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)));
+    }
+    
     /**
      * Read the geometry metadata of the first geometry column
      *
@@ -125,6 +139,18 @@ public class GeometryTableUtilities {
         }
         return geometryMetaDatas;
     }
+    
+    /**
+     * Read all geometry metadata from a table
+     *
+     * @param connection
+     * @param geometryTable
+     * @return Geometry MetaData
+     * @throws java.sql.SQLException
+     */
+    public static LinkedHashMap<String, GeometryMetaData> getMetaData(Connection connection, String geometryTable) throws SQLException {
+            return getMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)));
+    }
 
     /**
      * Read all geometry metadata from a table
@@ -162,6 +188,19 @@ public class GeometryTableUtilities {
             }
         }
         throw new SQLException("Database not supported");
+    }
+    
+    /**
+     * Read the geometry metadata from a column name
+     *
+     * @param connection
+     * @param geometryTable
+     * @param geometryColumnName
+     * @return Geometry MetaData
+     * @throws java.sql.SQLException
+     */
+    public static GeometryMetaData getMetaData(Connection connection, String geometryTable, String geometryColumnName) throws SQLException {
+        return getMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)), geometryColumnName);
     }
 
     /**
@@ -597,6 +636,20 @@ public class GeometryTableUtilities {
         }
         return false;
     }
+    
+     /**
+     * Check if the table contains a geometry column
+     *
+     * @param connection
+     * @param tableLocation
+     *
+     * @return True if the ResultSet contains one geometry field
+     *
+     * @throws SQLException
+     */
+    public static boolean hasGeometryColumn(Connection connection, String tableLocation) throws SQLException {
+        return hasGeometryColumn(connection, TableLocation.parse(tableLocation, getDBType(connection)));
+    }
 
     /**
      * Check if the table contains a geometry column
@@ -676,6 +729,22 @@ public class GeometryTableUtilities {
         geomEnv.setSRID(firstSRID);
         return geomEnv;
     }
+    
+     /**
+     * Compute the 'estimated' extent of the given spatial table. Use the first
+     * geometry field In case of POSTGIS : the estimated is taken from the
+     * geometry column's statistics. In case of H2GIS : the estimated is taken
+     * from the spatial index of the geometry column. If the estimated extend is
+     * null the extent is computed.
+     *
+     * @param connection
+     * @param tableName
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public static Geometry getEstimatedExtent(Connection connection, String tableName) throws SQLException {
+        return getEstimatedExtent(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
+    }
 
     /**
      * Compute the 'estimated' extent of the given spatial table. Use the first
@@ -696,6 +765,22 @@ public class GeometryTableUtilities {
         }
 
         return getEstimatedExtent(connection, tableLocation, geometryFields.keySet().iterator().next());
+    }
+    
+    /**
+     * Compute the 'estimated' extent of the given spatial table. In case of
+     * POSTGIS : the estimated is taken from the geometry column's statistics.
+     * In case of H2GIS : the estimated is taken from the spatial index of the
+     * geometry column. If the estimated extend is null the extent is computed.
+     *
+     * @param connection
+     * @param tableName
+     * @param geometryColumnName
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public static Geometry getEstimatedExtent(Connection connection, String tableName, String geometryColumnName) throws SQLException {
+        return getEstimatedExtent(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)), geometryColumnName);
     }
 
     /**
@@ -761,6 +846,21 @@ public class GeometryTableUtilities {
         }
         throw  new SQLException("Database not supported");
     }
+    
+     /**
+     * Return the SRID of the first geometry column of the input table
+     *
+     * @param connection Active connection
+     * @param tableName Table name
+     * @param geometryColumnName The geometryf field column
+     *
+     * @return The SRID of the first geometry column
+     *
+     * @throws SQLException
+     */
+    public static int getSRID(Connection connection,String tableName, String geometryColumnName) throws SQLException {
+     return getSRID(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)), geometryColumnName);
+    }
 
     /**
      * Return the SRID of the first geometry column of the input table
@@ -783,6 +883,20 @@ public class GeometryTableUtilities {
             }
         }
         return srid;
+    }
+    
+     /**
+     * Return the SRID of the first geometry column of the input table
+     *
+     * @param connection Active connection
+     * @param tableName Table name
+     *
+     * @return The SRID of the first geometry column
+     *
+     * @throws SQLException
+     */
+    public static int getSRID(Connection connection, String tableName) throws SQLException {
+        return getSRID(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
     }
 
     /**
@@ -807,6 +921,18 @@ public class GeometryTableUtilities {
         return srid;
     }
 
+    /* Find geometry column names and indexes of a table
+     *
+     * @param connection Active connection
+     * @param tableLocation Table location
+     *
+     * @return A list of Geometry column names and indexes
+     *
+     * @throws SQLException
+     */
+    public static LinkedHashMap<String, Integer> getGeometryColumnNamesAndIndexes(Connection connection, String tableName) throws SQLException {
+        return getGeometryColumnNamesAndIndexes(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
+    }
     /**
      * Find geometry column names and indexes of a table
      *
@@ -847,6 +973,20 @@ public class GeometryTableUtilities {
         return namesWithIndexes;
     }
 
+     /**
+     * Find geometry column names
+     *
+     * @param connection Active connection
+     * @param tableName Table location
+     *
+     * @return A list of Geometry column names and indexes
+     *
+     * @throws SQLException
+     */
+    public static List<String> getGeometryColumnNames(Connection connection, String tableName) throws SQLException {
+     return getGeometryColumnNames(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
+    }
+    
     /**
      * Find geometry column names
      *
@@ -885,6 +1025,19 @@ public class GeometryTableUtilities {
             }
         }
         return namesWithIndexes;
+    }
+    
+     /**
+     * Find the first geometry column name of a table with its index
+     *
+     * @param connection Active connection
+     * @param tableName Table location
+     * @return The first geometry column name and its index
+     *
+     * @throws SQLException
+     */
+    public static Tuple<String, Integer> getFirstGeometryColumnNameAndIndex(Connection connection, String tableName) throws SQLException {
+        return getFirstGeometryColumnNameAndIndex(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
     }
 
     /**
@@ -962,6 +1115,24 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("Unable to get geometry metadata from a null or empty column name");
     }
+    
+    /**
+     * Merge the bounding box of all geometries inside the provided table.
+     *
+     * @param connection Active connection (not closed by this function)
+     * @param table Location of the table
+     * @param geometryColumn Geometry field or empty string (take the first
+     * geometry field)
+     *
+     * @return Envelope of the table as Geometry
+     *
+     * @throws SQLException If the table not exists, empty or geometry field
+     * empty.
+     */
+    public static Geometry getEnvelope(Connection connection, String table, String geometryColumn)
+            throws SQLException {
+        return getEnvelope(connection, TableLocation.parse(geometryColumn, DBUtils.getDBType(connection)), geometryColumn);
+    }
 
     /**
      * Merge the bounding box of all geometries inside the provided table.
@@ -1003,7 +1174,8 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("Database not supported");
     }
-
+    
+    
     /**
      *
      * Merge the bounding box of all geometries inside the provided table and
@@ -1252,6 +1424,24 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("DataBase not supported");
     }
+    
+    /**
+     * Merge the bounding box of all geometries inside the provided table.
+     *
+     * Use the first geometry column
+     *
+     * @param connection Active connection (not closed by this function)
+     * @param table table name
+     *
+     * @return Envelope of the table as Geometry
+     *
+     * @throws SQLException If the table not exists, empty or does not contain a
+     * geometry field.
+     */
+    public static Geometry getEnvelope(Connection connection, String table)
+            throws SQLException {
+        return getEnvelope(connection, TableLocation.parse(table, DBUtils.getDBType(connection)));
+    }
 
     /**
      * Merge the bounding box of all geometries inside the provided table.
@@ -1311,6 +1501,24 @@ public class GeometryTableUtilities {
         }
         return null;        
     }
+    
+    
+    /**
+     * Return an array of two string that correspond to the authority name and
+     * its SRID code.If the SRID does not exist return the array {null, null}
+     *
+     * @param connection Active connection
+     * @param table Table name
+     * @param geometryColumnName Field to analyse
+     *
+     * @return Array of two string that correspond to the authority name and its
+     * SRID code
+     * @throws java.sql.SQLException
+     *
+     */
+    public static String[] getAuthorityAndSRID(Connection connection, String table, String geometryColumnName) throws SQLException{
+        return getAuthorityAndSRID(connection, TableLocation.parse(table, DBUtils.getDBType(connection)), geometryColumnName);
+    }
 
     /**
      * Return an array of two string that correspond to the authority name and
@@ -1344,6 +1552,20 @@ public class GeometryTableUtilities {
             }
         }
         return new String[]{authority, sridCode};
+    }
+    
+    /**
+     * Change the SRID of the table
+     *
+     * @param connection Active connection
+     * @param table Table name
+     * @param geometryColumnName geometry column name
+     * @param srid to force
+     * @return true if query is well executed
+     * @throws SQLException
+     */
+    public static boolean alterSRID(Connection connection, String table, String geometryColumnName, int srid) throws SQLException {
+        return alterSRID(connection, TableLocation.parse(table, DBUtils.getDBType(connection)), geometryColumnName, srid);
     }
 
     /**
