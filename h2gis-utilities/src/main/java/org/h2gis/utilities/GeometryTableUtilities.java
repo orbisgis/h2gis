@@ -875,8 +875,9 @@ public class GeometryTableUtilities {
      */
     public static int getSRID(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
         int srid = 0;
+        String columnName = TableLocation.capsIdentifier(geometryColumnName, tableLocation.getDbTypes());
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, tableLocation.getCatalog(), tableLocation.getSchema("PUBLIC"),
-                tableLocation.getTable(), geometryColumnName)) {
+                tableLocation.getTable(), columnName)) {
              while (geomResultSet.next()) {
                 srid = geomResultSet.getInt("srid");
                 break;

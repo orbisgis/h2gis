@@ -399,7 +399,15 @@ public class GeometryTableUtilsTest {
         st.execute("DROP TABLE IF EXISTS POINT3D");
         st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY(POINTZ, 4326))");
         assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("POINT3D")));
-
+    }
+    
+    @Test
+    public void testGetSRIDFromColumn() throws SQLException {
+        assertEquals(0, GeometryTableUtilities.getSRID(connection, TableLocation.parse("NOGEOM"),"ID" ));
+        st.execute("DROP TABLE IF EXISTS POINT3D");
+        st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY(POINTZ, 4326))");
+        assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("POINT3D", DBTypes.H2), "THE_GEOM"));
+        assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("POINT3D", DBTypes.H2), "the_geom"));
     }
 
     /**
