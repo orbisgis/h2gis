@@ -25,8 +25,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.h2gis.utilities.dbtypes.DBTypes;
@@ -115,8 +118,8 @@ public class JDBCUtilities {
         geomStatement.setString(tableIndex, table.toUpperCase());
         return geomStatement.executeQuery();
     }
-    
-     /**
+
+    /**
      * Return true if table table contains field fieldName.
      *
      * @param connection Connection
@@ -126,7 +129,7 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static boolean hasField(Connection connection, TableLocation table, String fieldName) throws SQLException {
-            return hasField(connection, table.toString(), fieldName);
+        return hasField(connection, table.toString(), fieldName);
     }
 
     /**
@@ -192,8 +195,8 @@ public class JDBCUtilities {
         }
         return null;
     }
-    
-     /**
+
+    /**
      * @param connection Active connection to the database
      * @param table a TableLocation
      * @param columnIndex Field ordinal position [1-n]
@@ -225,7 +228,7 @@ public class JDBCUtilities {
             statement.close();
         }
     }
-    
+
     /**
      * Returns the list of all the column names of a table.
      *
@@ -265,7 +268,7 @@ public class JDBCUtilities {
         }
         return fieldNameList;
     }
-    
+
     /**
      * Returns the list of all the column names and indexes of a table.
      *
@@ -275,7 +278,7 @@ public class JDBCUtilities {
      * @throws SQLException If jdbc throws an error
      */
     public static List<Tuple<String, Integer>> getColumnNamesAndIndexes(Connection connection, TableLocation table) throws SQLException {
-           return getColumnNamesAndIndexes(connection, table.toString());
+        return getColumnNamesAndIndexes(connection, table.toString());
     }
 
     /**
@@ -305,7 +308,7 @@ public class JDBCUtilities {
         }
         return fieldNameList;
     }
-    
+
     /**
      * Fetch the row count of a table.
      *
@@ -377,7 +380,7 @@ public class JDBCUtilities {
         }
         return isTemporary;
     }
-    
+
     /**
      * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table
      * reference is a linked table.
@@ -388,9 +391,8 @@ public class JDBCUtilities {
      * @throws SQLException If the table does not exists.
      */
     public static boolean isLinkedTable(Connection connection, TableLocation table) throws SQLException {
-        return isLinkedTable(connection,table.toString());
+        return isLinkedTable(connection, table.toString());
     }
-  
 
     /**
      * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table
@@ -548,8 +550,8 @@ public class JDBCUtilities {
     public static boolean tableExists(Connection connection, TableLocation tableLocation) throws SQLException {
         return tableExists(connection, tableLocation.toString());
     }
-    
-     /**
+
+    /**
      * Return true if the table exists.
      *
      * @param connection Connection
@@ -624,7 +626,7 @@ public class JDBCUtilities {
         }
         return tableList;
     }
-    
+
     /**
      * Returns the list of distinct values contained by a field from a table
      * from the database
@@ -636,7 +638,7 @@ public class JDBCUtilities {
      * @throws java.sql.SQLException
      */
     public static List<String> getUniqueFieldValues(Connection connection, TableLocation table, String fieldName) throws SQLException {
-            return getUniqueFieldValues(connection, table.toString(), fieldName);
+        return getUniqueFieldValues(connection, table.toString(), fieldName);
     }
 
     /**
@@ -668,8 +670,7 @@ public class JDBCUtilities {
         return fieldValues;
     }
 
-    
-     /**
+    /**
      * A method to create an empty table (no columns)
      *
      * @param connection Connection
@@ -681,7 +682,7 @@ public class JDBCUtilities {
             statement.execute("CREATE TABLE " + table.toString() + " ()");
         }
     }
-    
+
     /**
      * A method to create an empty table (no columns)
      *
@@ -803,7 +804,7 @@ public class JDBCUtilities {
         DBTypes dbType = location.getDbTypes();
         try (ResultSet rs = getTablesView(connection, location.getCatalog(), location.getSchema(), location.getTable())) {
             if (rs.next()) {
-                if (dbType== H2) {
+                if (dbType == H2) {
                     // H2                   
                     String storage = rs.getString("STORAGE_TYPE");
                     if (storage.contains("TEMPORARY")) {
@@ -937,9 +938,9 @@ public class JDBCUtilities {
     public static String createTableDDL(ResultSet resultSet, String outputTableName) throws SQLException {
         return createTableDDL(resultSet.getMetaData(), outputTableName);
     }
-    
+
     /**
-     * A simple method to generate a DDL create table command from 
+     * A simple method to generate a DDL create table command from
      * ResultSetMetaData
      *
      * Takes into account only data types
@@ -995,7 +996,7 @@ public class JDBCUtilities {
         return builder.toString();
     }
 
-     /**
+    /**
      * Returns true if the given column name from the given table is indexed,
      * return false otherwise.
      *
@@ -1010,8 +1011,8 @@ public class JDBCUtilities {
     }
 
     /**
-     * Returns true if the given column name from the given table is indexed,
-     * return false otherwise.
+     * Returns true if the given column name from the given table has an
+     * indexed, return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
      * @param table {@link TableLocation} of the table to check.
@@ -1020,37 +1021,22 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static boolean isIndexed(Connection connection, TableLocation table, String columnName) throws SQLException {
-        if (connection == null || columnName == null || table == null) {
-            throw new SQLException("Unable to find an index");
+        if (connection == null || table == null) {
+            throw new SQLException("Unable to get the index names");
         }
-        DBTypes dbType = table.getDbTypes();
-        if (dbType==H2||dbType==H2GIS) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
-            ps.setObject(1, table.getTable());
-            ps.setObject(2, table.getSchema("PUBLIC"));
-            ps.setObject(3, TableLocation.capsIdentifier(columnName, dbType));
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        } else if(dbType==POSTGIS||dbType==POSTGRESQL){
-            String query = "SELECT  cls.relname, am.amname "
-                    + "FROM  pg_class cls "
-                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
-                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
-                    + " where attname = ? and attrelid in "
-                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
-                    + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setObject(1, columnName);
-            ps.setObject(2, table.getSchema("public"));
-            ps.setObject(3, table.getTable());
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        }else {
-            throw new SQLException("Database not supported");
+        DBTypes dbTypes = table.getDbTypes();
+        columnName = TableLocation.capsIdentifier(columnName, dbTypes);
+        DatabaseMetaData md = connection.getMetaData();
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
+        while (indexInfo.next()) {
+            short type = indexInfo.getShort("TYPE");
+            if (type != DatabaseMetaData.tableIndexStatistic) {
+                if (columnName.equals(indexInfo.getString("COLUMN_NAME"))) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     /**
@@ -1082,37 +1068,36 @@ public class JDBCUtilities {
             throw new SQLException("Unable to find an index");
         }
         DBTypes dbType = table.getDbTypes();
-        if (dbType==H2||dbType==H2GIS) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
+        if (dbType == H2 || dbType == H2GIS) {
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES "
+                    + "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? "
+                    + "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? "
+                    + "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
             ps.setObject(1, table.getTable());
             ps.setObject(2, table.getSchema("PUBLIC"));
             ps.setObject(3, TableLocation.capsIdentifier(columnName, dbType));
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                if(rs.getString("INDEX_TYPE_NAME").contains("SPATIAL")){
+            while (rs.next()) {
+                if (rs.getString("INDEX_TYPE_NAME").contains("SPATIAL")) {
                     return true;
                 }
             }
             return false;
-        } else if(dbType==POSTGIS||dbType==POSTGRESQL) {
-            String query =  "SELECT  cls.relname, am.amname " +
-                    "FROM  pg_class cls " +
-                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                    " where attname = ? and attrelid in " +
-                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                    "and a.indexname = b.relname)) and am.amname = 'gist' ;";
+        } else if (dbType == POSTGIS || dbType == POSTGRESQL) {
+            String query = "SELECT  cls.relname, am.amname "
+                    + "FROM  pg_class cls "
+                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
+                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
+                    + " where attname = ? and attrelid in "
+                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
+                    + "and a.indexname = b.relname)) and am.amname = 'gist' ;";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setObject(1, columnName);
             ps.setObject(2, table.getSchema("public"));
             ps.setObject(3, table.getTable());
             ResultSet rs = ps.executeQuery();
             return rs.next();
-        }
-        else {
+        } else {
             throw new SQLException("Database not supported");
         }
     }
@@ -1133,8 +1118,8 @@ public class JDBCUtilities {
         }
         final DBTypes dbType = table.getDbTypes();
         final String tableName = table.toString();
-        connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + tableName + "_" + columnName +
-                " ON " + tableName + " (" + TableLocation.capsIdentifier(columnName, dbType) + ")");
+        connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + tableName + "_" + columnName
+                + " ON " + tableName + " (" + TableLocation.capsIdentifier(columnName, dbType) + ")");
         return true;
     }
 
@@ -1167,13 +1152,13 @@ public class JDBCUtilities {
             throw new SQLException("Unable to create a spatial index");
         }
         DBTypes dbTypes = table.getDbTypes();
-        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
+        if (dbTypes == H2GIS || dbTypes == POSTGIS || dbTypes == H2 || dbTypes == POSTGRESQL) {
             if (dbTypes == H2 || dbTypes == H2GIS) {
-                connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS " + table.toString() + "_" + columnName +
-                        " ON " + table.toString() + " (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
+                connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS " + table.toString() + "_" + columnName
+                        + " ON " + table.toString() + " (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
             } else {
-                connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + table.toString() + "_" + columnName +
-                        " ON " + table.toString() + " USING GIST (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
+                connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + table.toString() + "_" + columnName
+                        + " ON " + table.toString() + " USING GIST (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
             }
             return true;
         }
@@ -1204,46 +1189,91 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, TableLocation table, String columnName) throws SQLException {
-        if (connection == null || table == null || columnName == null) {
-            throw new SQLException("Unable to drop index");
+        List<String> indexes = getIndexNames(connection, table, columnName);
+        String query = indexes.stream()
+                .map(key -> "DROP INDEX " + key)
+                .collect(Collectors.joining(";"));
+        connection.createStatement().execute(query);
+    }
+
+    /**
+     * Return the name of all indexes for a given table
+     *
+     * @param connection Connection to access to the desired table.
+     * @param table Table containing the column to get the index names.
+     * @return a map with the index name and its column name
+     * @throws SQLException
+     */
+    public static Map<String, String> getIndexNames(Connection connection, String table) throws SQLException {
+        return getIndexNames(connection, TableLocation.parse(table, getDBType(connection)));
+    }
+
+    /**
+     * Return the name of all indexes for a given table
+     *
+     * @param connection Connection to access to the desired table.
+     * @param table Table containing the column to get the index names.
+     * @return a map with the index name and its column name
+     * @throws SQLException
+     */
+    public static Map<String, String> getIndexNames(Connection connection, TableLocation table) throws SQLException {
+        if (connection == null || table == null) {
+            throw new SQLException("Unable to get the index names");
         }
-        List<String> indexes = new ArrayList<>();
+        DatabaseMetaData md = connection.getMetaData();
+        Map<String, String> indexes = new HashMap<>();
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
+        while (indexInfo.next()) {
+            short type = indexInfo.getShort("TYPE");
+            if (type != DatabaseMetaData.tableIndexStatistic) {
+                String indexName = indexInfo.getString("INDEX_NAME");
+                String columnName = indexInfo.getString("COLUMN_NAME");
+                indexes.put(indexName, columnName);
+            }
+        }
+        return indexes;
+    }
+
+    /**
+     * Return the name of indexes for a given table and column
+     *
+     * @param connection Connection to access to the desired table.
+     * @param table Table containing the column to get the index names.
+     * @param columnName Name of the column.
+     * @return
+     * @throws SQLException
+     */
+    public static List<String> getIndexNames(Connection connection, String table, String columnName) throws SQLException {
+        return getIndexNames(connection, TableLocation.parse(table, getDBType(connection)), columnName);
+    }
+
+    /**
+     * Return the name of indexes for a given table and column
+     *
+     * @param connection Connection to access to the desired table.
+     * @param table Table containing the column to get the index names.
+     * @param columnName Name of the column.
+     * @return
+     * @throws SQLException
+     */
+    public static List<String> getIndexNames(Connection connection, TableLocation table, String columnName) throws SQLException {
+        if (connection == null || table == null) {
+            throw new SQLException("Unable to get the index names");
+        }
         DBTypes dbTypes = table.getDbTypes();
-        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
-            if (dbTypes == H2 || dbTypes == H2GIS) {
-                PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                        "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                        "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                        "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
-                ps.setObject(1, table.getTable());
-                ps.setObject(2, table.getSchema("PUBLIC"));
-                ps.setObject(3, TableLocation.capsIdentifier(columnName, dbTypes));
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    indexes.add(rs.getString("INDEX_NAME"));
-                }
-            } else {
-                PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name "
-                        + "FROM  pg_class cls "
-                        + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
-                        + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
-                        + " where attname = ? and attrelid in "
-                        + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
-                        + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
-                ps.setObject(1, columnName);
-                ps.setObject(2, table.getSchema("public"));
-                ps.setObject(3, table.getTable());
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    indexes.add(rs.getString("index_name"));
+        columnName = TableLocation.capsIdentifier(columnName, dbTypes);
+        DatabaseMetaData md = connection.getMetaData();
+        ArrayList<String> indexes = new ArrayList<>();
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
+        while (indexInfo.next()) {
+            short type = indexInfo.getShort("TYPE");
+            if (type != DatabaseMetaData.tableIndexStatistic) {
+                if (columnName.equals(indexInfo.getString("COLUMN_NAME"))) {
+                    indexes.add(indexInfo.getString("INDEX_NAME"));
                 }
             }
-            for (String index : indexes) {
-                connection.createStatement().execute("DROP INDEX IF EXISTS " + index);
-            }
-        }else {
-            throw new SQLException("DataBase not supported");
         }
+        return indexes;
     }
 
     /**
@@ -1259,7 +1289,6 @@ public class JDBCUtilities {
         dropIndex(connection, TableLocation.parse(table, getDBType(connection)), columnName);
     }
 
-
     /**
      * Drop the all the indexes of the given table on the given connection.
      *
@@ -1271,40 +1300,11 @@ public class JDBCUtilities {
         if (connection == null || table == null) {
             throw new SQLException("Unable to drop index");
         }
-        List<String> indexes = new ArrayList<>();
-        DBTypes dbTypes = table.getDbTypes();
-        if(dbTypes==H2GIS || dbTypes== POSTGIS || dbTypes==H2 || dbTypes==POSTGRESQL) {
-            if (dbTypes==H2|| dbTypes==H2GIS) {
-                PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES "
-                        + "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? "
-                        + "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=?;");
-                ps.setObject(1, table.getTable());
-                ps.setObject(2, table.getSchema("PUBLIC"));
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    indexes.add(rs.getString("INDEX_NAME"));
-                }
-            } else {
-                PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name "
-                        + "FROM  pg_class cls "
-                        + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
-                        + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
-                        + " where attrelid in "
-                        + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
-                        + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
-                ps.setObject(1, table.getSchema("public"));
-                ps.setObject(2, table.getTable());
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    indexes.add(rs.getString("index_name"));
-                }
-            }
-            for (String index : indexes) {
-                connection.createStatement().execute("DROP INDEX IF EXISTS " + index);
-            }
-        }else {
-            throw new SQLException("DataBase not supported");
-        }
+        Map<String, String> indexes = getIndexNames(connection, table);
+        String query = indexes.keySet().stream()
+                .map(key -> "DROP INDEX " + key)
+                .collect(Collectors.joining(";"));
+        connection.createStatement().execute(query);
     }
 
     /**
@@ -1316,44 +1316,5 @@ public class JDBCUtilities {
      */
     public static void dropIndex(Connection connection, String table) throws SQLException {
         dropIndex(connection, TableLocation.parse(table, getDBType(connection)));
-    }
-    
-    /**
-     * Return the name of the index of the given column of the given table. If there is no index, return null.
-     *
-     * @param connection Connection to the database.
-     * @param table      Table location of the column.
-     * @param columnName Name of the column.
-     * @param dbType     Database type.
-     * @return           The name of the column index. Null if there is no index.
-     * @throws SQLException Exception thrown on SQL execution error.
-     */
-    private static String getIndexName(Connection connection, String table, String columnName) throws SQLException {
-        return getIndexName(connection, TableLocation.parse(table, getDBType(connection)), columnName);
     }    
-
-    /**
-     * Return the name of the index of the given column of the given table. If there is no index, return null.
-     *
-     * @param connection Connection to the database.
-     * @param table      Table location of the column.
-     * @param columnName Name of the column.
-     * @param dbType     Database type.
-     * @return           The name of the column index. Null if there is no index.
-     * @throws SQLException Exception thrown on SQL execution error.
-     */
-    private static String getIndexName(Connection connection, TableLocation table, String columnName) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS " +
-                "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? " +
-                "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? " +
-                "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
-        ps.setObject(1, table.getTable());
-        ps.setObject(2, table.getSchema("PUBLIC"));
-        ps.setObject(3, TableLocation.capsIdentifier(columnName, table.getDbTypes()));
-        ResultSet rs = ps.executeQuery();
-        if(rs.next()){
-            return rs.getString("INDEX_NAME");
-        }
-        return null;
-    }
 }
