@@ -209,7 +209,7 @@ public class TopographyTest {
         try {
             st.execute("DROP TABLE IF EXISTS TIN");
             st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom");
-            ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN', 2,3,4,5)");
+            ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN', 2,3,4,5) order by idiso");
             assertEquals(2, rs.getMetaData().getColumnCount());
             assertTrue(rs.next());
             assertGeometryBarelyEquals("POLYGON ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
@@ -255,7 +255,7 @@ public class TopographyTest {
         try {
             st.execute("DROP TABLE IF EXISTS TIN");
             st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom, 1.0 as m1, 4.4 as m2, 4.0 as m3");
-            ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN','m1','m2','m3',2,3,4,5)");
+            ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN','m1','m2','m3',2,3,4,5) order by idiso");
             assertEquals(5, rs.getMetaData().getColumnCount());
             assertTrue(rs.next());
             assertGeometryBarelyEquals("POLYGON ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
@@ -300,7 +300,7 @@ public class TopographyTest {
         try {
             st.execute("DROP TABLE IF EXISTS TIN");
             st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom");
-            ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN', DOUBLERANGE(2,6,1))");
+            ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN', DOUBLERANGE(2,6,1)) order by idiso");
             assertEquals(2, rs.getMetaData().getColumnCount());
             assertTrue(rs.next());
             assertGeometryBarelyEquals("POLYGON ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
