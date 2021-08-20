@@ -58,7 +58,8 @@ public class TableUtilities {
                     "SELECT * FROM " + tableLocation + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
-                for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+                int columnCount = metadata.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
                     rs.addColumn(metadata.getColumnName(columnId), metadata.getColumnType(columnId),
                     metadata.getColumnTypeName(columnId), metadata.getPrecision(columnId)
                     , metadata.getScale(columnId));

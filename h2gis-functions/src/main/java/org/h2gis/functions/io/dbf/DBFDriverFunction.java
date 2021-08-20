@@ -400,7 +400,8 @@ public class DBFDriverFunction implements DriverFunction {
      */
     public static DbaseFileHeader dBaseHeaderFromMetaData(ResultSetMetaData metaData, List<Integer> retainedColumns) throws SQLException {
         DbaseFileHeader dbaseFileHeader = new DbaseFileHeader();
-        for(int fieldId= 1; fieldId <= metaData.getColumnCount(); fieldId++) {
+        int columnCount = metaData.getColumnCount();
+        for(int fieldId= 1; fieldId <= columnCount; fieldId++) {
             final String fieldTypeName = metaData.getColumnTypeName(fieldId);
             // TODO postgis check field type
             if(!fieldTypeName.equalsIgnoreCase("geometry")) {

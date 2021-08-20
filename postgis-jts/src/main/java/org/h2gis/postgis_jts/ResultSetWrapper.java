@@ -52,7 +52,8 @@ public class ResultSetWrapper implements ResultSet {
         // Fetch spatial fields
         try {
             ResultSetMetaData meta = rs.getMetaData();
-            for(int col = 1; col <= meta.getColumnCount(); col++) {
+            int columnCount = meta.getColumnCount();
+            for(int col = 1; col <= columnCount; col++) {
                 String typeName = meta.getColumnTypeName(col);
                 if(GEOMETRY_COLUMNS.contains(typeName)) {
                     spatialFields.add(col);
