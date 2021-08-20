@@ -517,7 +517,8 @@ public class GeoJsonWriteDriver {
     private void cacheMetadata(ResultSetMetaData resultSetMetaData) throws SQLException {
         cachedColumnIndex = new LinkedHashMap<String, Integer>();
         cachedSpecificColumns = new LinkedHashMap<String, String>();
-        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+        int columnCount =resultSetMetaData.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
             final String fieldTypeName = resultSetMetaData.getColumnTypeName(i);
             String columnName = resultSetMetaData.getColumnName(i);
             if (!fieldTypeName.equalsIgnoreCase("geometry")

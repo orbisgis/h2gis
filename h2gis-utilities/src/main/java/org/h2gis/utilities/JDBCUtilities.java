@@ -171,7 +171,8 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static int getFieldIndex(ResultSetMetaData resultSetMetaData, String fieldName) throws SQLException {
-        for (int columnId = 1; columnId <= resultSetMetaData.getColumnCount(); columnId++) {
+        int columnCount = resultSetMetaData.getColumnCount();
+        for (int columnId = 1; columnId <= columnCount; columnId++) {
             if (fieldName.equalsIgnoreCase(resultSetMetaData.getColumnName(columnId))) {
                 return columnId;
             }
@@ -188,7 +189,8 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static String getColumnName(ResultSetMetaData resultSetMetaData, Integer columnIndex) throws SQLException {
-        for (int columnId = 1; columnId <= resultSetMetaData.getColumnCount(); columnId++) {
+        int columnCount =resultSetMetaData.getColumnCount();
+        for (int columnId = 1; columnId <= columnCount; columnId++) {
             if (columnId == columnIndex) {
                 return resultSetMetaData.getColumnName(columnId);
             }
@@ -257,7 +259,8 @@ public class JDBCUtilities {
                     "SELECT * FROM " + tableName + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
-                for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+                int columnCount =metadata.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
                     fieldNameList.add(metadata.getColumnName(columnId));
                 }
             } finally {
@@ -297,7 +300,8 @@ public class JDBCUtilities {
                     "SELECT * FROM " + tableName + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
-                for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+                int columnCount =metadata.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
                     fieldNameList.add(new Tuple<>(metadata.getColumnName(columnId), columnId));
                 }
             } finally {
