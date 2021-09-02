@@ -110,7 +110,7 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public Index addIndex(SessionLocal session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
+    public Index addIndex(SessionLocal session, String indexName, int indexId, IndexColumn[] cols,int uniqueColumnCount, IndexType indexType, boolean create, String indexComment) {
         if (indexType.isPrimaryKey()) {
             for (IndexColumn c : cols) {
                 Column column = c.column;
@@ -128,9 +128,9 @@ public class H2MVTable extends MVTable {
         }
         Index index;
         if (indexType.isSpatial()) {
-            index = new MVSpatialIndex(session.getDatabase(), this, indexId, indexName, cols, indexType);
+            index = new MVSpatialIndex(session.getDatabase(), this, indexId, indexName, cols,  uniqueColumnCount, indexType);
         } else {
-            index = new MVSecondaryIndex(session.getDatabase(), this, indexId, indexName, cols, indexType);
+            index = new MVSecondaryIndex(session.getDatabase(), this, indexId, indexName, cols,uniqueColumnCount, indexType);
         }
 
         if (index.needRebuild() && getRowCount(session) > 0) {
@@ -246,16 +246,6 @@ public class H2MVTable extends MVTable {
         for(Index index : indexes) {
             if(index.getIndexType().isScan()) {
                 return index;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Index getUniqueIndex() {
-        for (Index idx : indexes) {
-            if (idx.getIndexType().isUnique()) {
-                return idx;
             }
         }
         return null;

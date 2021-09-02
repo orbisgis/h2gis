@@ -36,7 +36,7 @@
         <h2-version>2.0.201-SNAPSHOT</h2-version>
         <jackson-core-version>2.11.0</jackson-core-version>
         <java-network-analyzer-version>0.1.8-SNAPSHOT</java-network-analyzer-version>
-        <jts-core-version>1.18.0</jts-core-version>
+        <jts-core-version>1.18.2</jts-core-version>
         <junit-version>5.7.0-M1</junit-version>
         <osgi-compendium-version>5.0.0</osgi-compendium-version>
         <osgi-core-version>6.0.0</osgi-core-version>
