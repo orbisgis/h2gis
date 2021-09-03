@@ -260,7 +260,7 @@ public class Voronoi {
                     lastCoord = circumCenter;
                 }
             }
-            return gf.createPolygon(polygonVertex.toArray(new Coordinate[polygonVertex.size()]));
+            return gf.createPolygon(polygonVertex.toArray(new Coordinate[0]));
         } else {
             // Must complete with boundary
             if(envelope == null) {
@@ -358,7 +358,7 @@ public class Voronoi {
                     throw new TopologyException("Voronoi method accept only polygons");
                 }
             }
-            MultiPolygon result = geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+            MultiPolygon result = geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
             if(envelope == null) {
                 return result;
             } else {
@@ -402,19 +402,19 @@ public class Voronoi {
             if(envelope != null) {
                 voronoiBorderLines.add(((Polygon)geometryFactory.toGeometry(envelope)).getExteriorRing());
                 MultiLineString env = (MultiLineString)geometryFactory.createMultiLineString(voronoiBorderLines.
-                        toArray(new LineString[voronoiBorderLines.size()])).union();
+                        toArray(new LineString[0])).union();
                 for (int i = 0; i < env.getNumGeometries(); i++) {                    
                     lineStrings.add((LineString) env.getGeometryN(i));
                 }
             }
             if(outputDimension == 1) {
-                MultiLineString g = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+                MultiLineString g = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[0]));
                 ReplaceZ replacez = new ReplaceZ();
                 g.apply(replacez);
                 return g;
             } else {
                 Polygonizer polygonizer = new Polygonizer();
-                MultiLineString voronoiSegs = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+                MultiLineString voronoiSegs = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[0]));
                 polygonizer.add(voronoiSegs);
                 return geometryFactory.createMultiPolygon(GeometryFactory.toPolygonArray(polygonizer.getPolygons()));
             }

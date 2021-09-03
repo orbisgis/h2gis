@@ -49,8 +49,8 @@ public class Contouring {
         if (marker1 < isoValue && isoValue < marker2) {
             double interval = (isoValue - marker1) / (marker2 - marker1);
             splitPosition.setCoordinate(new Coordinate(p1.x + (p2.x - p1.x)
-                    * interval, p1.y + (p2.y - p1.y) * interval, p1.z
-                    + (p2.z - p1.z) * interval));
+                    * interval, p1.y + (p2.y - p1.y) * interval, p1.getZ()
+                    + (p2.getZ() - p1.getZ()) * interval));
             return true;
         } else {
             return false;
@@ -293,8 +293,7 @@ public class Contouring {
                 ) { // Covered totally by the range
             intervalTriangles.add(currentTriangle);
             return true;
-        } else if (((vertIso1Start != -1 || sideIso1Start != -1) && !((vertIso2Start != -1 || sideIso2Start != -1))) ||
-                (!(vertIso1Start != -1 || sideIso1Start != -1))) // Range
+        } else if (!(vertIso1Start != -1 || sideIso1Start != -1) || !((vertIso2Start != -1 || sideIso2Start != -1))) // Range
         // begin notfound but
         {
             // Side to side

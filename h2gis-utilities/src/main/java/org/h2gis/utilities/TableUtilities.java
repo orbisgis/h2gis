@@ -21,6 +21,8 @@
 package org.h2gis.utilities;
 
 import org.h2.tools.SimpleResultSet;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -56,7 +58,8 @@ public class TableUtilities {
                     "SELECT * FROM " + tableLocation + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
-                for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+                int columnCount = metadata.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
                     rs.addColumn(metadata.getColumnName(columnId), metadata.getColumnType(columnId),
                     metadata.getColumnTypeName(columnId), metadata.getPrecision(columnId)
                     , metadata.getScale(columnId));
@@ -95,7 +98,7 @@ public class TableUtilities {
      */
     public static TableLocation parseInputTable(Connection connection,
                                                 String inputTable) throws SQLException {
-       return TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection));
+       return TableLocation.parse(inputTable, DBUtils.getDBType(connection));
     }
     
     
@@ -118,12 +121,12 @@ public class TableUtilities {
      *
      * @param requestedTable Catalog and schema used
      * @param tableName Table without quotes
-     * @param isH2 True if H2, false if PostGRES
+     * @param dbType Database type.
      *
      * @return Find table identifier
      */
-    public static String caseIdentifier(TableLocation requestedTable, String tableName, boolean isH2) {
+    public static String caseIdentifier(TableLocation requestedTable, String tableName, DBTypes dbType) {
         return new TableLocation(requestedTable.getCatalog(), requestedTable.getSchema(),
-                TableLocation.parse(tableName, isH2).getTable()).toString();
+                TableLocation.parse(tableName, dbType).getTable()).toString();
     }
 }
