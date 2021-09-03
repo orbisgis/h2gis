@@ -287,8 +287,8 @@ public class SHPDriverFunction implements DriverFunction {
         }        
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if (FileUtilities.isFileImportable(fileName, "shp")) {
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             if (deleteTables) {
-                TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
                 String table = requestedTable.getTable();
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + table);
@@ -297,7 +297,6 @@ public class SHPDriverFunction implements DriverFunction {
             SHPDriver shpDriver = new SHPDriver();
             shpDriver.initDriverFromFile(fileName, options);
             ProgressVisitor copyProgress = progress.subProcess((int) (shpDriver.getRowCount() / BATCH_MAX_SIZE));
-            // PostGIS does not show sql
             String lastSql = "";
             try {
                 DbaseFileHeader dbfHeader = shpDriver.getDbaseFileHeader();
@@ -313,31 +312,25 @@ public class SHPDriverFunction implements DriverFunction {
                     if (!types.isEmpty()) {
                         types = ", " + types;
                     }
-                    parse = TableLocation.parse(tableReference, isH2);
                     String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                     srid = PRJUtil.getSRID(shpDriver.prjFile);
                     shpDriver.setSRID(srid);
-                    if (isH2) {
-                        //H2 Syntax
-                        st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL , the_geom GEOMETRY(%s, %d) %s)", parse,
+                    st.execute(String.format("CREATE TABLE %s (" + pkColName + " INT PRIMARY KEY , the_geom GEOMETRY(%s, %d) %s)", requestedTable,
                                 getSFSGeometryType(shpHeader), srid, types));
-                    } else {
-                        // PostgreSQL Syntax
-                        lastSql = String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
-                                getPostGISSFSGeometryType(shpHeader), srid, types);
-                        st.execute(lastSql);
-                    }
+
                 }
                 try {
-                    lastSql = String.format("INSERT INTO %s VALUES (DEFAULT, %s )", parse,
+                    lastSql = String.format("INSERT INTO %s VALUES (?, %s )", requestedTable,
                             DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
                     connection.setAutoCommit(false);
                     final int columnCount = shpDriver.getFieldCount();
                     try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
+                            //Set the PK
+                            preparedStatement.setInt(1, rowId+1);
                             for (int columnId = 0; columnId < columnCount; columnId++) {
-                                JdbcUtils.set(preparedStatement,columnId + 1, shpDriver.getField(rowId, columnId), null);
+                                JdbcUtils.set(preparedStatement,columnId + 2, shpDriver.getField(rowId, columnId), null);
                             }
                             preparedStatement.addBatch();
                             batchSize++;
@@ -412,33 +405,6 @@ public class SHPDriverFunction implements DriverFunction {
     }
 
     private static String getSFSGeometryType(ShapefileHeader header) {
-        switch (header.getShapeType().id) {
-            case 1:
-                return "POINT";
-            case 11:
-            case 21:
-                return "POINT Z";
-            case 3:
-                return "MULTILINESTRING";
-            case 13:
-            case 23:
-                return "MULTILINESTRING Z";
-            case 5:
-                return "MULTIPOLYGON";
-            case 15:
-            case 25:
-                return "MULTIPOLYGON Z";
-            case 8:
-                return "MULTIPOINT";
-            case 18:
-            case 28:
-                return "MULTIPOINT Z";
-            default:
-                return "GEOMETRY";
-        }
-    }
-
-    private static String getPostGISSFSGeometryType(ShapefileHeader header) {
         switch (header.getShapeType().id) {
             case 1:
                 return "POINT";
