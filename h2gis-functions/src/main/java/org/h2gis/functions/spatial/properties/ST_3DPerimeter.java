@@ -65,7 +65,8 @@ public class ST_3DPerimeter extends DeterministicScalarFunction{
      */
     private static double compute3DPerimeter(Geometry geometry) {
         double sum = 0;
-        for (int i = 0; i < geometry.getNumGeometries(); i++) {
+        int size  = geometry.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry subGeom = geometry.getGeometryN(i);
             if (subGeom instanceof Polygon) {
                 sum += ST_3DLength.length3D(((Polygon) subGeom).getExteriorRing());

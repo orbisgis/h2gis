@@ -100,7 +100,8 @@ public class IOMethodsTest {
         ioMethods.exportToFile(connection, "AREA", "target/area_export.shp", null, true);
         // Read this shape file to check values
         assertTrue(shpFile.exists());
-        ioMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
+        String[] tableNames = ioMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
+        assertEquals("TEST_TABLE", tableNames[0]);
         ResultSet res = st.executeQuery("SELECT * FROM test_table");
         assertTrue(res.next());
         assertEquals(1, res.getInt(1));
@@ -120,7 +121,7 @@ public class IOMethodsTest {
         assertThrows(SQLException.class, () -> {
             ioMethods.exportToFile(connection, "", "target/area_export.shp", null, true);
         });
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(SQLException.class, () -> {
             ioMethods.exportToFile(null, "", "target/area_export.shp", null, true);
         });
         assertThrows(SQLException.class, () -> {
@@ -154,7 +155,8 @@ public class IOMethodsTest {
             st.execute("CALL SHPWrite('target/area_export.shp', 'AREA', true)");
             // Read this shape file to check values
             assertTrue(shpFile.exists());
-            ioMethods.importFile(con, shpFile.getAbsolutePath(), "test_table", null, true);
+            String[] tableName = ioMethods.importFile(con, shpFile.getAbsolutePath(), "test_table", null, true);
+            assertEquals("test_table", tableName[0]);
             ResultSet res = con.createStatement().executeQuery("SELECT * FROM test_table");
             assertTrue(res.next());
             assertEquals(1, res.getInt(1));
@@ -480,6 +482,38 @@ public class IOMethodsTest {
     }
 
     @Test
+    public void testLinkedTableQuery(TestInfo testInfo) throws SQLException, IOException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            Statement postgisST = con.createStatement();
+            postgisST.execute("DROP TABLE IF EXISTS AREA");
+            postgisST.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+            postgisST.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
+            Map<String, String> map = new HashMap<>();
+            props.forEach((key, value) -> map.put(key.toString(), value.toString()));
+            IOMethods.linkedTable(connection, map, "(select * from area where idarea=1)", "area_h2gis", true );
+            ResultSet res = st.executeQuery("SELECT * FROM area_h2gis");
+            assertTrue(res.next());
+            assertEquals(1, res.getInt(1));
+            assertGeometryEquals("POLYGON ((-10 9, -10 109, 90 109, 90 9, -10 9))", (Geometry) res.getObject(2));
+            res.close();
+        }
+    }
+
+    @Test
     public void testRemoveAddDriver() {
         IOMethods ioMethods = new IOMethods();
         assertTrue(ioMethods.getAllExportDriverSupportedExtensions().contains("shp"));
@@ -487,5 +521,34 @@ public class IOMethodsTest {
         assertNotNull(df);
         ioMethods.removeDriver(df);
         assertFalse(ioMethods.getAllExportDriverSupportedExtensions().contains("shp"));
+    }
+
+    @Test
+    public void testExportPOSTGISQueryEmptyResultToH2GIS(TestInfo testInfo) throws SQLException, IOException {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            Statement postgisST = con.createStatement();
+            postgisST.execute("DROP TABLE IF EXISTS AREA");
+            postgisST.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+            postgisST.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
+            postgisST.execute("insert into area values(2, 'POLYGON ((-10 200, 90 109, 90 9, -10 20, -10 200))')");
+            IOMethods.exportToDataBase(con, "(SELECT * FROM area where idarea=3)", connection, "area_h2gis", -1, 2);
+            ResultSet res = st.executeQuery("SELECT * FROM area_h2gis");
+            assertFalse(res.next());
+            res.close();
+        }
     }
 }

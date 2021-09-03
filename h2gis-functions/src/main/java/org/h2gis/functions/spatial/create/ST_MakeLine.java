@@ -66,7 +66,7 @@ public class ST_MakeLine extends DeterministicScalarFunction {
         for (Geometry optionalPoint : optionalPoints) {
             addCoordinatesToList(optionalPoint, coordinateList);
         }
-        return ((Geometry) pointA).getFactory().createLineString(
+        return pointA.getFactory().createLineString(
                 coordinateList.toArray(new Coordinate[optionalPoints.length]));
     }
 

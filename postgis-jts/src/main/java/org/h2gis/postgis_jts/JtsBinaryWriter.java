@@ -301,7 +301,7 @@ public class JtsBinaryWriter {
         return 4 + this.estimateGeometryArray(geom);
     }
 
-    public static final int getCoordDim(Geometry geom) {
+    public static int getCoordDim(Geometry geom) {
         if (geom.isEmpty()) {
             return 0;
         } else if (geom instanceof Point) {
@@ -313,7 +313,7 @@ public class JtsBinaryWriter {
         }
     }
 
-    public static final int getCoordSequenceDim(CoordinateSequence coords) {
+    public static int getCoordSequenceDim(CoordinateSequence coords) {
         if (coords != null && coords.size() != 0) {
             int dimensions = coords.getDimension();
             if (dimensions == 3) {

@@ -110,7 +110,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
      */
     public static MultiLineString removeCoordinates(MultiLineString g) {
         ArrayList<LineString> lines = new ArrayList<LineString>();
-        for (int i = 0; i < g.getNumGeometries(); i++) {
+        int size = g.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             LineString line = (LineString) g.getGeometryN(i);
             lines.add(removeCoordinates(line));
         }
@@ -143,7 +144,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
      */
     public static MultiPolygon removeCoordinates(MultiPolygon g) {
         ArrayList<Polygon> polys = new ArrayList<Polygon>();
-        for (int i = 0; i < g.getNumGeometries(); i++) {
+        int size = g.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Polygon poly = (Polygon) g.getGeometryN(i);
             polys.add(removeCoordinates(poly));
         }
@@ -158,7 +160,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
      */
     public static GeometryCollection removeCoordinates(GeometryCollection g) {
         ArrayList<Geometry> geoms = new ArrayList<Geometry>();
-        for (int i = 0; i < g.getNumGeometries(); i++) {
+        int size = g.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry geom = g.getGeometryN(i);
             geoms.add(removeCoordinates(geom));
         }

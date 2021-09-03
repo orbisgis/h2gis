@@ -173,8 +173,9 @@ public class IOMethods {
      * @param encoding Encoding of the file. Can be null
      * @param deleteFile true to delete the file if exists
      * @throws java.sql.SQLException
+     * @return The absolute path of the exported files
      */
-    public void exportToFile(Connection connection, String tableName,
+    public String[] exportToFile(Connection connection, String tableName,
             String filePath, String encoding, boolean deleteFile) throws SQLException {
         String enc = encoding;
         File fileToSave = URIUtilities.fileFromString(filePath);
@@ -188,7 +189,7 @@ public class IOMethods {
                     enc = ENCODING_OPTION + UTF_ENCODING;
                 }
             }
-            driverFunction.exportTable(connection, tableName.toUpperCase(), fileToSave,
+            return driverFunction.exportTable(connection, tableName, fileToSave,
                     enc, deleteFile, new EmptyProgressVisitor());
 
         } catch (SQLException | IOException e) {
@@ -205,9 +206,10 @@ public class IOMethods {
      * @param encoding An encoding value to read the file. Can be null
      * @param deleteTable True to delete the table if exists
      * @throws java.sql.SQLException
+     * @return the name of table imported and formated according the database rules
      *
      */
-    public void importFile(Connection connection, String filePath, String tableName, String encoding,
+    public String[] importFile(Connection connection, String filePath, String tableName, String encoding,
             boolean deleteTable) throws SQLException {
         File fileToImport = URIUtilities.fileFromString(filePath);
         DriverFunction driverFunction = getImportDriverFromFile(fileToImport);
@@ -215,7 +217,7 @@ public class IOMethods {
             throw new SQLException("Cannot find any file driver for the file." + filePath);
         }
         try {
-            driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable,
+            return driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable,
                     new EmptyProgressVisitor());
         } catch (SQLException | IOException e) {
             try {
@@ -232,6 +234,46 @@ public class IOMethods {
      *
      * @param targetConnection The targetConnection to the database that will
      * received the table
+     * @param properties External database database properties to set up
+     * a connection to the target database
+     * @param sourceTable The name of the table in the external database
+     * @param targetTable The name of the table in the H2GIS database
+     * @param delete True to delete the table if exists
+     * @throws java.sql.SQLException
+     * @return  the name of the linked table
+     */
+    public static String linkedTable(Connection targetConnection, Properties properties, String sourceTable, String targetTable,
+                                     boolean delete) throws SQLException {
+        Map<String, String> map = new HashMap<>();
+        properties.forEach((key, value) -> map.put(key.toString(), value.toString()));
+        return linkedTable(targetConnection,map, sourceTable, targetTable,delete);
+    }
+
+    /**
+     * Link a table from another database to an H2GIS database
+     *
+     * @param targetConnection The targetConnection to the database that will
+     * received the table
+     * @param properties External database database properties to set up
+     * a connection to the target database
+     * @param sourceTable The name of the table in the external database
+     * @param targetTable The name of the table in the H2GIS database
+     * @param delete True to delete the table if exists
+     * @param fetchSize The number of rows fetched from the linked table
+     * @throws java.sql.SQLException
+     * @return  the name of the linked table
+     */
+    public static String linkedTable(Connection targetConnection, Properties properties, String sourceTable, String targetTable,
+                                     boolean delete, int fetchSize) throws SQLException {
+        Map<String, String> map = new HashMap<>();
+        properties.forEach((key, value) -> map.put(key.toString(), value.toString()));
+        return linkedTable(targetConnection,map, sourceTable, targetTable,delete,  fetchSize);
+    }
+    /**
+     * Link a table from another database to an H2GIS database
+     *
+     * @param targetConnection The targetConnection to the database that will
+     * received the table
      * @param databaseProperties External database databaseProperties to set up
      * a connection to the target database
      * @param sourceTable The name of the table in the external database
@@ -241,7 +283,26 @@ public class IOMethods {
      * @return  the name of the linked table
      */
     public static String linkedTable(Connection targetConnection, Map<String, String> databaseProperties, String sourceTable, String targetTable,
-            boolean delete) throws SQLException {
+                                     boolean delete) throws SQLException {
+        return linkedTable(targetConnection,databaseProperties, sourceTable, targetTable,delete, 100);
+    }
+
+        /**
+         * Link a table from another database to an H2GIS database
+         *
+         * @param targetConnection The targetConnection to the database that will
+         * received the table
+         * @param databaseProperties External database databaseProperties to set up
+         * a connection to the target database
+         * @param sourceTable The name of the table in the external database
+         * @param targetTable The name of the table in the H2GIS database
+         * @param delete True to delete the table if exists
+         * @param fetchSize The number of rows fetched from the linked table
+         * @throws java.sql.SQLException
+         * @return  the name of the linked table
+         */
+    public static String linkedTable(Connection targetConnection, Map<String, String> databaseProperties, String sourceTable, String targetTable,
+            boolean delete, int fetchSize) throws SQLException {
         if (targetConnection == null) {
             throw new SQLException("The connection to the output database cannot be null.\n");
         }
@@ -254,7 +315,8 @@ public class IOMethods {
         if (databaseProperties == null || databaseProperties.isEmpty()) {
             throw new SQLException("The external database connection properties cannot be null or empty.\n");
         }
-        if (!JDBCUtilities.isH2DataBase(targetConnection)) {
+        final DBTypes targetDBType = DBUtils.getDBType(targetConnection);
+        if (targetDBType != DBTypes.H2 && targetDBType != DBTypes.H2GIS) {
             throw new SQLException("Link file is only supported with an H2GIS database");
         }
 
@@ -262,13 +324,11 @@ public class IOMethods {
         String password = databaseProperties.getOrDefault(DataSourceFactory.JDBC_PASSWORD, "");
         String driverName = "";
         String jdbc_url = databaseProperties.get("url");
-        boolean sourceDBTypeIsH2 = false;
         if (jdbc_url != null) {
             if (jdbc_url.startsWith("jdbc:")) {
                 String url = jdbc_url.substring("jdbc:".length());
                 if (url.startsWith("h2")) {
                     driverName = "org.h2.Driver";
-                    sourceDBTypeIsH2 = true;
                 } else if (url.startsWith("postgresql_h2")) {
                     driverName = "org.h2gis.postgis_jts.Driver";
                 } else if (url.startsWith("postgresql")) {
@@ -276,12 +336,8 @@ public class IOMethods {
                     jdbc_url = "jdbc:postgresql_h2" + jdbc_url.substring("jdbc:postgresql".length());
                 }
                 if (!driverName.isEmpty()) {
-                    boolean targetDBTypeIsH2 = JDBCUtilities.isH2DataBase(targetConnection);
-                    final DBTypes dbType = DBUtils.getDBType(targetConnection);
-                    TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBTypeIsH2);
-                    String ouputTableName = targetTableLocation.toString(dbType);
-                    TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBTypeIsH2);
-                    String inputTableName = sourceTableLocation.toString(dbType);
+                    TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBType);
+                    String ouputTableName = targetTableLocation.toString(targetDBType);
                     if (delete) {
                         try ( //Drop table if exists
                                 Statement stmt = targetConnection.createStatement()) {
@@ -300,8 +356,8 @@ public class IOMethods {
                     }
 
                     try (Statement statement = targetConnection.createStatement()) {
-                        statement.execute(String.format("CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s')",
-                                ouputTableName, driverName, jdbc_url, user, password, inputTableName));
+                        statement.execute(String.format("CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s') FETCH_SIZE %s",
+                                ouputTableName, driverName, jdbc_url, user, password, sourceTable, fetchSize));
                         if (!targetConnection.getAutoCommit()) {
                             targetConnection.commit();
                         }
@@ -334,8 +390,9 @@ public class IOMethods {
      * @param delete True to delete the table if exists
      * @throws java.sql.SQLException
      */
-    public static void linkedFile(Connection connection, String filePath, String tableName, boolean delete) throws SQLException {
-        if (!JDBCUtilities.isH2DataBase(connection)) {
+    public static String linkedFile(Connection connection, String filePath, String tableName, boolean delete) throws SQLException {
+        final DBTypes dbType = DBUtils.getDBType(connection);
+        if (dbType != DBTypes.H2 && dbType != DBTypes.H2GIS) {
             throw new SQLException("Link file is only supported with an H2GIS database");
         }
         if (delete) {
@@ -371,6 +428,7 @@ public class IOMethods {
             }
             throw new SQLException("Cannot link the file", e);
         }
+        return tableName;
     }
 
     /**
@@ -415,12 +473,10 @@ public class IOMethods {
             throw new SQLException("The target table cannot be null or empty.\n");
         }
 
-        boolean sourceDBTypeIsH2 = JDBCUtilities.isH2DataBase(sourceConnection);
         final DBTypes sourceDBType = DBUtils.getDBType(sourceConnection);
-        boolean targetDBTypeIsH2 = JDBCUtilities.isH2DataBase(targetConnection);
         final DBTypes targetDBType = DBUtils.getDBType(targetConnection);
 
-        TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBTypeIsH2);
+        TableLocation targetTableLocation = TableLocation.parse(targetTable, targetDBType);
         String ouputTableName = targetTableLocation.toString(targetDBType);
 
         String query;
@@ -435,7 +491,7 @@ public class IOMethods {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM MYTATBLE)'.");
             }
         } else {
-            TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBTypeIsH2);
+            TableLocation sourceTableLocation = TableLocation.parse(sourceTable, sourceDBType);
             if (!JDBCUtilities.tableExists(sourceConnection, sourceTableLocation)) {
                 throw new SQLException("The source table doesn't exist.\n");
             }
@@ -487,6 +543,7 @@ public class IOMethods {
                 String ddlCommand = JDBCUtilities.createTableDDL(inputMetadata, ouputTableName);
                 if (!ddlCommand.isEmpty()) {
                     try (Statement outputST = targetConnection.createStatement()) {
+                        targetConnection.rollback();
                         outputST.execute(ddlCommand);
                         targetConnection.commit();
 
@@ -518,10 +575,9 @@ public class IOMethods {
                     insertTable.append(",").append("?");
                 }
                 insertTable.append(")");
-
-                preparedStatement = targetConnection.prepareStatement(insertTable.toString());
                 //Check the first row in order to limit the batch size if the query doesn't work
-                inputRes.next();
+                if(inputRes.next()){
+                preparedStatement = targetConnection.prepareStatement(insertTable.toString());
                 for (int i = 0; i < columnsCount; i++) {
                     int index = i + 1;
                     Object value = inputRes.getObject(index);
@@ -530,6 +586,7 @@ public class IOMethods {
                     }
                     preparedStatement.setObject(index, value);
                 }
+
                 preparedStatement.execute();
                 long batchSize = 0;
                 while (inputRes.next()) {
@@ -562,7 +619,7 @@ public class IOMethods {
                 if(!geomColumnAndSRID.isEmpty()){
                     StringBuilder querySRID = new StringBuilder();
                     for (Map.Entry<String, Integer> entry : geomColumnAndSRID.entrySet()) {
-                        String fieldName = TableLocation.capsIdentifier(entry.getKey(), targetDBTypeIsH2);
+                        String fieldName = TableLocation.capsIdentifier(entry.getKey(), targetDBType);
                         Integer srid = entry.getValue();
                         querySRID.append("ALTER TABLE ").append(ouputTableName).append(" ALTER COLUMN ").append(fieldName);
                         querySRID.append(" TYPE GEOMETRY(GEOMETRY, ").append(srid).append(") USING ST_SetSRID(").append(fieldName).append(",").append(srid).append(");\n");
@@ -581,6 +638,7 @@ public class IOMethods {
                     }
 
                 }
+            }
             } catch (SQLException e) {
                 try {
                     targetConnection.rollback();

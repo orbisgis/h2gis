@@ -21,6 +21,7 @@
 package org.h2gis.functions.io.geojson;
 
 import org.h2.jdbc.JdbcSQLDataException;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -85,6 +86,32 @@ public class GeojsonImportExportTest {
             ResultSet res = stat.executeQuery("SELECT ST_AsGeoJSON(the_geom) from TABLE_POINT;");
             res.next();
             assertEquals("{\"type\":\"Point\",\"coordinates\":[1.0,2.0]}", res.getString(1));
+            res.close();
+        }
+    }
+
+    @Test
+    public void testGeojsonPointRound() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+            stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT))");
+            stat.execute("insert into TABLE_POINT values(1, 'POINT(1.12345678911 2.12345678911 )')");
+            ResultSet res = stat.executeQuery("SELECT ST_AsGeoJSON(the_geom) from TABLE_POINT;");
+            res.next();
+            assertEquals("{\"type\":\"Point\",\"coordinates\":[1.123456789,2.123456789]}", res.getString(1));
+            res.close();
+        }
+    }
+
+    @Test
+    public void testGeojsonPointRound2() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+            stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT))");
+            stat.execute("insert into TABLE_POINT values(1, 'POINT(1.12345678911 2.12345678911 )')");
+            ResultSet res = stat.executeQuery("SELECT ST_AsGeoJSON(the_geom, 2) from TABLE_POINT;");
+            res.next();
+            assertEquals("{\"type\":\"Point\",\"coordinates\":[1.12,2.12]}", res.getString(1));
             res.close();
         }
     }
@@ -263,9 +290,9 @@ public class GeojsonImportExportTest {
         Statement stat = connection.createStatement();
         try {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT), id INT, climat VARCHAR)");
-            stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)', 1, 'bad')");
-            stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)', 2, 'good')");
+            stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT), id INT, climat VARCHAR, tempo TIMESTAMP)");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)', 1, 'bad', NOW())");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)', 2, 'good', NOW())");
             stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS', true);");
             stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'TABLE_POINTS_READ');");
             try (ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;")) {
@@ -634,7 +661,7 @@ public class GeojsonImportExportTest {
             assertNull(res.getObject(11));
             assertTrue(res.getBoolean(12));
             res.next();
-            assertEquals(10.2d, ((Geometry) res.getObject(1)).getCoordinate().z, 0);
+            assertEquals(10.2d, ((Geometry) res.getObject(1)).getCoordinate().getZ(), 0);
             assertNull(res.getObject(13));
             assertEquals(0.87657195d, res.getDouble(14), 0);
             assertEquals(234.16d, res.getDouble(15), 0);
@@ -1101,7 +1128,7 @@ public class GeojsonImportExportTest {
             Geometry geom = (Geometry) res.getObject(1);
             assertEquals(4326, geom.getSRID());
             Coordinate coord = geom.getCoordinate();
-            assertEquals(coord.z, 5, 10E-1);
+            assertEquals(coord.getZ(), 5, 10E-1);
             stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
             res.close();
         }
@@ -1186,7 +1213,7 @@ public class GeojsonImportExportTest {
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
             stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)', true);");
-            assertThrows(JdbcSQLNonTransientException.class, () -> {
+            assertThrows(JdbcSQLException.class, () -> {
                 stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             });
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
@@ -1212,5 +1239,35 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
     }
-}
 
+    @Test
+    public void testReadlGeojsonFeatures() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("features.geojson").getPath()) + ", 'TABLE_FEATURES', true);");
+            ResultSet res = stat.executeQuery("SELECT count(*) FROM TABLE_FEATURES;");
+            res.next();
+            assertEquals(3, res.getInt(1));
+        }
+    }
+
+    @Test
+    public void testReadlGeojsonFeature() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("feature.geojson").getPath()) + ", 'TABLE_FEATURE', true);");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_FEATURE;");
+            res.next();
+            assertGeometryEquals("POINT Z (-1.637021666666667 47.15928666666667 10.2)", res.getObject(1));
+            assertEquals(79.04200463708992, res.getDouble(2));
+        }
+    }
+
+    @Test
+    public void testReadlGeojsonGeometry() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("geometry.geojson").getPath()) + ", 'TABLE_GEOMETRY', true);");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_GEOMETRY;");
+            res.next();
+            assertGeometryEquals("POINT Z (-1.637021666666667 47.15928666666667 10.2)", res.getObject(1));
+        }
+    }
+}
