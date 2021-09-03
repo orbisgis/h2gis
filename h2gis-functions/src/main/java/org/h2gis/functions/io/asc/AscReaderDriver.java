@@ -66,7 +66,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class AscReaderDriver {
 
-    private static final int BATCH_MAX_SIZE = 100;
+    private static final int BATCH_MAX_SIZE = 1;
     private static final int BUFFER_SIZE = 16384;
     private boolean as3DPoint = true;
     private Envelope extractEnvelope = null;
@@ -277,20 +277,20 @@ public class AscReaderDriver {
             PreparedStatement preparedStatement;
             if (as3DPoint) {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
+                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
                 } else {
-                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
+                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
                 }
                 preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(dbType)
-                        + "(the_geom, Z) VALUES (?, ?)");
+                        + "(PK, the_geom, Z) VALUES (?, ?, ?)");
             } else {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
+                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
                 } else {
-                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK SERIAL PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
+                    st.execute("CREATE TABLE " + requestedTable.toString(dbType) + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
                 }
                 preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(dbType)
-                        + "(the_geom, Z) VALUES (?, ?)");
+                        + "(PK,the_geom, Z) VALUES (?, ?, ?)");
             }
             // Read data
             GeometryFactory factory = new GeometryFactory();
@@ -310,6 +310,7 @@ public class AscReaderDriver {
             if (progress != null) {
                 cellProgress = progress.subProcess(lastRow);
             }
+            int index=0;
             for (int i = 0; i < nrows; i++) {
                 for (int j = 0; j < ncols; j++) {
                     if (readFirst) {
@@ -323,30 +324,34 @@ public class AscReaderDriver {
                         double x = xValue + j * cellSize;
                         double y = yValue - i * cellSize;
                         if (as3DPoint) {
+                            //Set the PK
+                            preparedStatement.setObject(1, index++);
                             Point cell = factory.createPoint(new Coordinate(x + cellSize / 2, y - cellSize / 2, z));
                             cell.setSRID(srid);
                             if (Math.abs(noData - z) != 0) {
-                                preparedStatement.setObject(1, cell);
-                                preparedStatement.setObject(2, z);
+                                preparedStatement.setObject(2, cell);
+                                preparedStatement.setObject(3, z);
                                 preparedStatement.addBatch();
                                 batchSize++;
                             } else if (importNodata) {
-                                preparedStatement.setObject(1, cell);
-                                preparedStatement.setObject(2, noData);
+                                preparedStatement.setObject(2, cell);
+                                preparedStatement.setObject(3, noData);
                                 preparedStatement.addBatch();
                                 batchSize++;
                             }
                         } else {
+                            //Set the PK
+                            preparedStatement.setObject(1, index++);
                             Polygon cell = factory.createPolygon(new Coordinate[]{new Coordinate(x, y, z), new Coordinate(x, y - cellSize * downScale, z), new Coordinate(x + cellSize * downScale, y - cellSize * downScale, z), new Coordinate(x + cellSize * downScale, y, z), new Coordinate(x, y, z)});
                             cell.setSRID(srid);
                             if (Math.abs(noData - z) != 0) {
-                                preparedStatement.setObject(1, cell);
-                                preparedStatement.setObject(2, z);
+                                preparedStatement.setObject(2, cell);
+                                preparedStatement.setObject(3, z);
                                 preparedStatement.addBatch();
                                 batchSize++;
                             } else if (importNodata) {
-                                preparedStatement.setObject(1, cell);
-                                preparedStatement.setObject(2, noData);
+                                preparedStatement.setObject(2, cell);
+                                preparedStatement.setObject(3, noData);
                                 preparedStatement.addBatch();
                                 batchSize++;
                             }
