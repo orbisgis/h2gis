@@ -346,9 +346,9 @@ public class TopographyTest {
         Statement st = connection.createStatement();
         try {
             st.execute("DROP TABLE IF EXISTS TIN");
-            st.execute("CREATE TABLE TIN(pk serial, THE_GEOM GEOMETRY);");
-            st.execute("INSERT INTO TIN(THE_GEOM) VALUES ('POLYGON((0 0 5, 3 0 5, 3 3 10, 0 0 10))')");
-            st.execute("INSERT INTO TIN(THE_GEOM) VALUES ('POLYGON((0 0 0, 3 0 0, 3 3 3, 0 0 0))')");
+            st.execute("CREATE TABLE TIN(pk INT PRIMARY KEY, THE_GEOM GEOMETRY);");
+            st.execute("INSERT INTO TIN VALUES (1,'POLYGON((0 0 5, 3 0 5, 3 3 10, 0 0 10))')");
+            st.execute("INSERT INTO TIN VALUES (2,'POLYGON((0 0 0, 3 0 0, 3 3 3, 0 0 0))')");
             ResultSet rs = st.executeQuery("SELECT pk FROM ST_TriangleContouring('TIN', -1 ,1 , 4)");
             Set<Integer> pk = new HashSet<Integer>();
             while(rs.next()) {
