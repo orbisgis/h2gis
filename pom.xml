@@ -79,7 +79,7 @@
                 <version>${commons-io-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.h2database</groupId>
+                <groupId>org.orbisgis</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2-version}</version>
             </dependency>
@@ -469,10 +469,10 @@
         <connection>scm:git:git://github.com/orbisgis/H2GIS</connection>
     </scm>
 
-     <repositories>
+    <repositories>
         <repository>
             <id>orbisgis-release</id>
-            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release</url>
+            <url>https://oss.sonatype.org/content/repositories/releases/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -482,7 +482,7 @@
         </repository>
         <repository>
             <id>orbisgis-snapshot</id>
-            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -498,21 +498,6 @@
             <modules>
                 <module>h2gis-dist</module>
             </modules>
-        </profile>
-             <profile>
-            <id>h2gis-deploy</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>h2gis-deploy-snapshots</id>
-                    <name>Internal Snaphots</name>
-                    <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>h2gis-deploy-release</id>
-                    <name>Internal Releases</name>
-                    <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release/</url>
-                </repository>
-            </distributionManagement>
         </profile>
         <profile>
             <id>maven-deploy</id>
