@@ -103,9 +103,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGE_COMP_SUFFIX);
 
         if (storeNodeConnectedComponents(connection, nodesName, edgesName, componentsList)) {
-            if (storeEdgeConnectedComponents(connection, tableName, nodesName, edgesName)) {
-                return true;
-            }
+            return storeEdgeConnectedComponents(connection, tableName, nodesName, edgesName);
         }
         return false;
     }

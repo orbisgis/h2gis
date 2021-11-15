@@ -304,7 +304,9 @@ public class FileUtilities {
                 File file = listToZip.remove(0);
                 if (file.isDirectory()) {
                     File[] children = file.listFiles();
-                    listToZip.addAll(Arrays.asList(children));
+                    if(children!=null) {
+                        listToZip.addAll(Arrays.asList(children));
+                    }
                 } else {
                     BufferedInputStream in = null;
                     try {

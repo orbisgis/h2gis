@@ -51,7 +51,7 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      * @return
      * @throws java.sql.SQLException
      */
-    public static Geometry removeRepeatedPoints(Geometry geometry) throws SQLException, SQLException, SQLException, SQLException {
+    public static Geometry removeRepeatedPoints(Geometry geometry) throws SQLException, SQLException {
         return removeDuplicateCoordinates(geometry, 0);
     }
     

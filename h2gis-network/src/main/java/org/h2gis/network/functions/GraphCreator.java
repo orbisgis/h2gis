@@ -144,7 +144,8 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private void initIndices(ResultSet edges) {
         try {
             ResultSetMetaData metaData = edges.getMetaData();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            int columnCount =metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
                 final String columnName = metaData.getColumnName(i);
                 if (columnName.equalsIgnoreCase(START_NODE)) startNodeIndex = i;
                 if (columnName.equalsIgnoreCase(END_NODE)) endNodeIndex = i;

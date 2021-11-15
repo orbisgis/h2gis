@@ -21,16 +21,14 @@
 package org.h2gis.functions.io;
 
 import org.h2.util.StringUtils;
-import org.h2gis.api.AbstractFunction;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.ProgressVisitor;
-import org.h2gis.api.ScalarFunction;
+import org.h2gis.api.*;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.dbf.DBFEngine;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.shp.SHPEngine;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,18 +83,20 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
      * @param connection Active connection, do not close this connection.
      * @param fileName File path to write, if exists it may be replaced
      * @param tableName [[catalog.]schema.]table reference
+     * @return The name of table formatted according the database rules
      */
-    public static void openFile(Connection connection, String fileName, String tableName) throws SQLException {
-        String ext = fileName.substring(fileName.lastIndexOf('.') + 1,fileName.length());
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+    public static String[] openFile(Connection connection, String fileName, String tableName) throws SQLException {
+        String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 try (Statement st = connection.createStatement()) {
+                    String tableName_ = TableLocation.parse(tableName, dbType).toString();
                     st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
-                            TableLocation.parse(tableName, isH2).toString(isH2),StringUtils.quoteStringSQL(fileName),
+                            tableName_,StringUtils.quoteStringSQL(fileName),
                             StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
+                    return new String[]{tableName_};
                 }
-                return;
             }
         }
         throw new SQLException("No driver is available to open the "+ext+" file format");
@@ -130,25 +130,25 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
         throw new SQLFeatureNotSupportedException("Work in progress..");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
 
         throw new SQLFeatureNotSupportedException("Work in progress..");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
 
         throw new SQLFeatureNotSupportedException("Work in progress..");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress
                             ) throws SQLException, IOException {
         throw new SQLFeatureNotSupportedException("Work in progress..");
     }
@@ -173,25 +173,52 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    public String[]  importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        openFile(connection, fileName.getAbsolutePath(), tableReference);
+        return openFile(connection, fileName.getAbsolutePath(), tableReference);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,  String options, ProgressVisitor progress
+    public String[]  importFile(Connection connection, String tableReference, File fileName,  String options, ProgressVisitor progress
                           ) throws SQLException, IOException {
-        openFile(connection, fileName.getAbsolutePath(), tableReference);
+        return openFile(connection, fileName.getAbsolutePath(), tableReference);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,boolean deleteTables, ProgressVisitor progress
+    public String[]  importFile(Connection connection, String tableReference, File fileName,boolean deleteTables, ProgressVisitor progress
                            ) throws SQLException, IOException {
-        openFile(connection, fileName.getAbsolutePath(), tableReference);
+        return openFile(connection, fileName.getAbsolutePath(), tableReference);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        openFile(connection, fileName.getAbsolutePath(), tableReference);
+    public String[]  importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        return openFile(connection, fileName.getAbsolutePath(), tableReference);
+    }
+
+
+
+    /**
+     * Method to check the import and export arguments
+     * @param connection
+     * @param tableReference
+     * @param fileName
+     * @param progress
+     * @return
+     * @throws SQLException
+     */
+    public static ProgressVisitor check(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException {
+        if (connection == null) {
+            throw new SQLException("The connection cannot be null.\n");
+        }
+        if (tableReference == null || tableReference.isEmpty()) {
+            throw new SQLException("The table cannot be null or empty");
+        }
+        if (fileName == null) {
+            throw new SQLException("The file name cannot be null.\n");
+        }
+        if (progress == null) {
+            progress = new EmptyProgressVisitor();
+        }
+        return progress;
     }
 }

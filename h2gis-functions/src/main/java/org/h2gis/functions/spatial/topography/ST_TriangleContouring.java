@@ -26,9 +26,9 @@ import org.h2.value.Value;
 import org.h2.value.ValueArray;
 import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.h2gis.utilities.jts_utils.Contouring;
 import org.h2gis.utilities.jts_utils.TriMarkers;
 import org.locationtech.jts.geom.Coordinate;
@@ -139,7 +139,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
 
         private ExplodeResultSet(Connection connection, String tableName, String isoField1,String isoField2,String isoField3, List<Double> isoLvls) throws SQLException {
             this.tableName = tableName;                      
-            this.tableLocation=TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+            this.tableLocation=TableLocation.parse(tableName, DBUtils.getDBType(connection));
             this.spatialFieldName = "";
             this.connection = connection;
             useZ = false;
@@ -151,7 +151,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
 
         private ExplodeResultSet(Connection connection, String tableName, List<Double> isoLvls) throws SQLException {
             this.tableName = tableName;            
-            this.tableLocation=TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
+            this.tableLocation=TableLocation.parse(tableName, DBUtils.getDBType(connection));
             this.spatialFieldName = "";
             this.connection = connection;
             useZ = true;
@@ -261,7 +261,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
+            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
             rs.addColumn(ISO_FIELD_NAME, Types.INTEGER,10,0);
             return rs;
         }

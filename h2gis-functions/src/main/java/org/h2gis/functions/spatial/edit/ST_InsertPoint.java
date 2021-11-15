@@ -195,7 +195,7 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
     private static Polygon insertVertexInPolygon(Polygon polygon,
                                                  Point vertexPoint, double tolerance,  GeometryFactory factory) throws SQLException {
         Polygon geom =polygon;
-        LinearRing linearRing = polygon.getExteriorRing();
+        LinearRing linearRing = factory.createLinearRing(polygon.getExteriorRing().getCoordinates());
         int index = -1;
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
             double distCurr = computeDistance(polygon.getInteriorRingN(i),vertexPoint, tolerance);
@@ -209,7 +209,7 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
             if(inserted!=null){
                 LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
                 for (int i = 0; i < holes.length; i++) {
-                    holes[i]= polygon.getInteriorRingN(i);
+                    holes[i]= factory.createLinearRing(polygon.getInteriorRingN(i).getCoordinates());
                 }
                 geom = factory.createPolygon(inserted, holes);
             }
@@ -221,7 +221,7 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
                 if (i == index) {
                     holes[i] = insertVertexInLinearRing(polygon.getInteriorRingN(i), vertexPoint, tolerance, factory);
                 } else {
-                    holes[i] = polygon.getInteriorRingN(i);
+                    holes[i] = factory.createLinearRing(polygon.getInteriorRingN(i).getCoordinates());
                 }
             }
             geom = factory.createPolygon(linearRing, holes);

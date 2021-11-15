@@ -21,11 +21,11 @@
 package org.h2gis.functions.io.file_table;
 
 import org.h2.api.ErrorCode;
-import org.h2.command.query.AllColumnsForPlan;
+import org.h2.command.dml.AllColumnsForPlan;
 import org.h2.engine.Constants;
-import org.h2.engine.SessionLocal;
+import org.h2.engine.Session;
+import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
-import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.message.DbException;
 import org.h2.result.Row;
@@ -45,7 +45,7 @@ import java.io.IOException;
  * @author Nicolas Fortin
  * @author Erwan Bocher, CNRS, 2020
  */
-public class H2TableIndex extends Index {
+public class H2TableIndex extends BaseIndex {
     public static final String PK_COLUMN_NAME = "PK";
 
     private FileDriver driver;
@@ -88,27 +88,27 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public Row getRow(SessionLocal session, long key) {
+    public Row getRow(Session session, long key) {
         return new DriverRow(driver, key);
     }
 
     @Override
-    public void close(SessionLocal session) {
+    public void close(Session session) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void add(SessionLocal session, Row row) {
+    public void add(Session session, Row row) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void remove(SessionLocal session, Row row) {
+    public void remove(Session session, Row row) {
         throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"remove in file");
     }
 
     @Override
-    public Cursor find(SessionLocal session, SearchRow first, SearchRow last) {
+    public Cursor find(Session session, SearchRow first, SearchRow last) {
         if (!isScanIndex) {
             Row remakefirst = Row.get(null, 0);
             if(first != null) {
@@ -129,7 +129,7 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public double getCost(SessionLocal session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan) {
+    public double getCost(Session session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan) {
         // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L210
         // Must kept sync with this
         try {
@@ -141,12 +141,12 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public void remove(SessionLocal session) {
+    public void remove(Session session) {
         throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"remove in Shape files");
     }
 
     @Override
-    public void truncate(SessionLocal session) {
+    public void truncate(Session session) {
         throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"truncate in Shape files");
     }
 
@@ -156,7 +156,7 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public Cursor findFirstOrLast(SessionLocal session, boolean first) {
+    public Cursor findFirstOrLast(Session session, boolean first) {
         return new SHPCursor(this,first ? 0 : getRowCount(session),session);
     }
 
@@ -166,12 +166,12 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public long getRowCount(SessionLocal session) {
+    public long getRowCount(Session session) {
         return driver.getRowCount();
     }
 
     @Override
-    public long getRowCountApproximation(SessionLocal sessionLocal) {
+    public long getRowCountApproximation() {
         return driver.getRowCount();
     }
 
@@ -189,16 +189,16 @@ public class H2TableIndex extends Index {
     private static class SHPCursor implements Cursor {
         private H2TableIndex tIndex;
         private long rowIndex;
-        private SessionLocal session;
+        private Session session;
         private SearchRow begin, end;
 
-        private SHPCursor(H2TableIndex tIndex, long rowIndex, SessionLocal session) {
+        private SHPCursor(H2TableIndex tIndex, long rowIndex, Session session) {
             this.tIndex = tIndex;
             this.rowIndex = rowIndex;
             this.session = session;
         }
 
-        private SHPCursor(H2TableIndex tIndex, SearchRow begin, SearchRow end, SessionLocal session) {
+        private SHPCursor(H2TableIndex tIndex, SearchRow begin, SearchRow end, Session session) {
             this.tIndex = tIndex;
             this.session = session;
             this.begin = begin;
@@ -260,9 +260,10 @@ public class H2TableIndex extends Index {
         @Override
         public Value[] getValueList() {
             try {
-                Value[] values = new Value[getColumnCount()];
+                int columnCount = getColumnCount();
+                Value[] values = new Value[columnCount];
                 values[0] = ValueBigint.get(key);
-                for(int i = 1; i < values.length; i++) {
+                for(int i = 1; i < columnCount; i++) {
                     values[i] = (Value)(driver.getField(key - 1, i - 1));
                 }
                 return values;
@@ -312,7 +313,8 @@ public class H2TableIndex extends Index {
         @Override
         public void copyFrom(SearchRow source) {
             setKey(source.getKey());
-            for (int i = 0; i < getColumnCount(); i++) {
+            int columnCount = getColumnCount();
+            for (int i = 0; i < columnCount; i++) {
                 setValue(i, source.getValue(i));
             }
         }
@@ -320,7 +322,8 @@ public class H2TableIndex extends Index {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder("( /* key:").append(key).append(" */ ");
-            for (int i = 0, length = getColumnCount(); i < length; i++) {
+            int columnCount =getColumnCount();
+            for (int i = 0, length = columnCount; i < length; i++) {
                 if (i > 0) {
                     builder.append(", ");
                 }

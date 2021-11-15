@@ -34,8 +34,6 @@ import org.locationtech.jts.io.WKBConstants;
  */
 public class GeometryMetaData {
 
-    private static Pattern CREATE_TABLE_PATTERN;
-
     /**
      * If Z Component is available
      */
@@ -382,7 +380,7 @@ public class GeometryMetaData {
     public static GeometryMetaData getMetaData(String geometry) {
         if (geometry != null && !geometry.isEmpty()) {
             if (geometry.toUpperCase().startsWith("GEOMETRY")) {
-                CREATE_TABLE_PATTERN = Pattern.compile("(?:(?:GEOMETRY\\s*\\(\\s*([a-zA-Z]+\\s*(?:[ZM]+)?)\\s*(?:,\\s*([\\d]+))?\\))|^\\s*([a-zA-Z]+\\s*(?:[ZM]+)?))", Pattern.CASE_INSENSITIVE);
+                Pattern CREATE_TABLE_PATTERN = Pattern.compile("(?:(?:GEOMETRY\\s*\\(\\s*([a-zA-Z]+\\s*(?:[ZM]+)?)\\s*(?:,\\s*([\\d]+))?\\))|^\\s*([a-zA-Z]+\\s*(?:[ZM]+)?))", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = CREATE_TABLE_PATTERN.matcher(geometry);
                 if (matcher.find()) {
                     String type = matcher.group(1);

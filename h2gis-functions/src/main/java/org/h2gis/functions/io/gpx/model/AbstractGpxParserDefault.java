@@ -24,6 +24,8 @@ import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -35,6 +37,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 import org.h2gis.utilities.FileUtilities;
 
 /**
@@ -135,18 +139,19 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * @throws SQLException if the creation of the tables failed
      * @throws java.io.FileNotFoundException
      */
-    public boolean read(String tableName, ProgressVisitor progress) throws SQLException, FileNotFoundException {
-        boolean success = false;
+    public String[] read(String tableName, ProgressVisitor progress) throws SQLException, FileNotFoundException {
         if (FileUtilities.isFileImportable(fileName, "gpx")) {
             // Initialisation
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-
-            TableLocation requestedTable = TableLocation.parse(tableName, isH2);
+            final DBTypes dbType = DBUtils.getDBType(connection);
+            ArrayList<String> tableNames = new ArrayList<>();
+            TableLocation requestedTable = TableLocation.parse(tableName, dbType);
             if (deleteTable) {
-                GPXTablesFactory.dropOSMTables(connection, isH2, requestedTable);
+                GPXTablesFactory.dropOSMTables(connection, requestedTable);
             }
             if (fileName.length() == 0) {
-                JDBCUtilities.createEmptyTable(connection, requestedTable.toString(isH2));
+                String outputEmptyTable = requestedTable.toString();
+                JDBCUtilities.createEmptyTable(connection, outputEmptyTable);
+                tableNames.add(outputEmptyTable);
             }
             else {
                 String table = requestedTable.getTable();
@@ -161,44 +166,56 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
                 }
                 // We create the tables to store all gpx data in the database
                 if (gpxPreparser.getTotalWpt() > 0) {
-                    String wptTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.WAYPOINT, isH2);
-                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(wptTableName, isH2))) {
+                    String wptTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.WAYPOINT, dbType);
+                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(wptTableName, dbType))) {
                         throw new SQLException("The table " + wptTableName + " already exists.");
                     }
-                    setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName, isH2));
+                    setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
+                    tableNames.add(wptTableName);
                 }
                 if (gpxPreparser.getTotalRte() > 0 && gpxPreparser.getTotalRtept() > 0) {
-                    String routeTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.ROUTE, isH2);
-                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(routeTableName, isH2))) {
+                    String routeTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.ROUTE, dbType);
+                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(routeTableName, dbType))) {
                         throw new SQLException("The table " + routeTableName + " already exists.");
                     }
-                    String routePointsTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.ROUTEPOINT, isH2);
-                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(routePointsTableName, isH2))) {
+                    String routePointsTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.ROUTEPOINT, dbType);
+                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(routePointsTableName, dbType))) {
                         throw new SQLException("The table " + routePointsTableName + " already exists.");
                     }
-                    setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName, isH2));
-                    setRteptPreparedStmt(GPXTablesFactory.createRoutePointsTable(connection, routePointsTableName, isH2));
+
+                    setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));
+                    setRteptPreparedStmt(GPXTablesFactory.createRoutePointsTable(connection, routePointsTableName));
+
+                    tableNames.add(routeTableName);
+                    tableNames.add(routePointsTableName);
+
                 }
 
                 if (gpxPreparser.getTotalTrk() > 0 && gpxPreparser.getTotalTrkseg() > 0
                         && gpxPreparser.getTotalTrkpt() > 0) {
-                    String trackTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.TRACK, isH2);
-                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(trackTableName, isH2))) {
+                    String trackTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.TRACK, dbType);
+                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(trackTableName, dbType))) {
                         throw new SQLException("The table " + trackTableName + " already exists.");
                     }
 
-                    String trackSegmentsTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.TRACKSEGMENT, isH2);
-                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(trackSegmentsTableName, isH2))) {
+                    String trackSegmentsTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.TRACKSEGMENT, dbType);
+                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(trackSegmentsTableName, dbType))) {
                         throw new SQLException("The table " + trackSegmentsTableName + " already exists.");
                     }
 
-                    String trackPointsTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.TRACKPOINT, isH2);
-                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(trackPointsTableName, isH2))) {
+                    String trackPointsTableName = TableUtilities.caseIdentifier(requestedTable, table + GPXTablesFactory.TRACKPOINT, dbType);
+                    if (JDBCUtilities.tableExists(connection, TableLocation.parse(trackPointsTableName, dbType))) {
                         throw new SQLException("The table " + trackPointsTableName + " already exists.");
                     }
-                    setTrkPreparedStmt(GPXTablesFactory.createTrackTable(connection, trackTableName, isH2));
-                    setTrkSegmentsPreparedStmt(GPXTablesFactory.createTrackSegmentsTable(connection, trackSegmentsTableName, isH2));
-                    setTrkPointsPreparedStmt(GPXTablesFactory.createTrackPointsTable(connection, trackPointsTableName, isH2));
+
+                    setTrkPreparedStmt(GPXTablesFactory.createTrackTable(connection, trackTableName));
+                    setTrkSegmentsPreparedStmt(GPXTablesFactory.createTrackSegmentsTable(connection, trackSegmentsTableName));
+                    setTrkPointsPreparedStmt(GPXTablesFactory.createTrackPointsTable(connection, trackPointsTableName));
+
+                    tableNames.add(trackTableName);
+                    tableNames.add(trackSegmentsTableName);
+                    tableNames.add(trackPointsTableName);
+
                 }
 
                 // Initialisation of the contentHandler by default
@@ -207,7 +224,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
                     getReader().setErrorHandler(this);
                     getReader().setContentHandler(this);
                     getReader().parse(new InputSource(new FileInputStream(fileName)));
-                    success = true;
+                    return tableNames.toArray(new String[0]);
                 } catch (SAXException ex) {
                     throw new SQLException(ex);
                 } catch (IOException ex) {
@@ -229,8 +246,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
                 }
             }
         }
-            return success;
-
+        return null;
     }    
 
     /**

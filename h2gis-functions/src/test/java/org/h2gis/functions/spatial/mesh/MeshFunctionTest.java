@@ -226,8 +226,8 @@ public class MeshFunctionTest {
                 "st_npoints(the_geom) numpts  from voro;")) {
             assertTrue(rs.next());
             assertEquals(1071, rs.getInt(1));
-            assertEquals(4350.87, rs.getDouble(2), 1e-2);
-            assertEquals(7390, rs.getInt(3));
+             assertEquals(8941.49, rs.getDouble(2), 1e-2);
+             assertEquals(7465, rs.getInt(3));
         }
     }
 

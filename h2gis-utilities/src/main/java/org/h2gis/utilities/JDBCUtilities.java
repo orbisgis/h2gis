@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -25,11 +25,19 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
+
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
+
+import static org.h2gis.utilities.dbtypes.DBTypes.*;
+import static org.h2gis.utilities.dbtypes.DBUtils.getDBType;
 
 /**
  * DBMS should follow standard but it is not always the case, this class do some
@@ -38,6 +46,7 @@ import org.h2gis.utilities.wrapper.DataSourceWrapper;
  * @author Nicolas Fortin
  * @author Erwan Bocher
  * @author Adam Gouge
+ * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 public class JDBCUtilities {
 
@@ -111,20 +120,32 @@ public class JDBCUtilities {
     }
 
     /**
+     * Return true if table table contains field fieldName.
+     *
+     * @param connection Connection
+     * @param table a TableLocation
+     * @param fieldName Field name
+     * @return True if the table contains the field
+     * @throws SQLException
+     */
+    public static boolean hasField(Connection connection, TableLocation table, String fieldName) throws SQLException {
+        return hasField(connection, table.toString(), fieldName);
+    }
+
+    /**
      * Return true if table tableName contains field fieldName.
      *
      * @param connection Connection
-     * @param tableName Table name
+     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
      * @param fieldName Field name
      * @return True if the table contains the field
      * @throws SQLException
      */
     public static boolean hasField(Connection connection, String tableName, String fieldName) throws SQLException {
         final Statement statement = connection.createStatement();
-        boolean isH2 = isH2DataBase(connection);
         try {
             final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + TableLocation.parse(tableName).toString(isH2) + " LIMIT 0;");
+                    "SELECT * FROM " + tableName + " LIMIT 0;");
             try {
                 return hasField(resultSet.getMetaData(), fieldName);
             } finally {
@@ -150,7 +171,8 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static int getFieldIndex(ResultSetMetaData resultSetMetaData, String fieldName) throws SQLException {
-        for (int columnId = 1; columnId <= resultSetMetaData.getColumnCount(); columnId++) {
+        int columnCount = resultSetMetaData.getColumnCount();
+        for (int columnId = 1; columnId <= columnCount; columnId++) {
             if (fieldName.equalsIgnoreCase(resultSetMetaData.getColumnName(columnId))) {
                 return columnId;
             }
@@ -167,7 +189,8 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static String getColumnName(ResultSetMetaData resultSetMetaData, Integer columnIndex) throws SQLException {
-        for (int columnId = 1; columnId <= resultSetMetaData.getColumnCount(); columnId++) {
+        int columnCount =resultSetMetaData.getColumnCount();
+        for (int columnId = 1; columnId <= columnCount; columnId++) {
             if (columnId == columnIndex) {
                 return resultSetMetaData.getColumnName(columnId);
             }
@@ -177,17 +200,27 @@ public class JDBCUtilities {
 
     /**
      * @param connection Active connection to the database
-     * @param tableLocation Table identifier [[catalog.]schema.]table
+     * @param table a TableLocation
      * @param columnIndex Field ordinal position [1-n]
      * @return The field name, empty if the field position or table is not found
      * @throws SQLException If jdbc throws an error
      */
-    public static String getColumnName(Connection connection, TableLocation tableLocation, int columnIndex) throws SQLException {
-        boolean isH2 = isH2DataBase(connection);
+    public static String getColumnName(Connection connection, TableLocation table, int columnIndex) throws SQLException {
+        return getColumnName(connection, table.toString(), columnIndex);
+    }
+
+    /**
+     * @param connection Active connection to the database
+     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
+     * @param columnIndex Field ordinal position [1-n]
+     * @return The field name, empty if the field position or table is not found
+     * @throws SQLException If jdbc throws an error
+     */
+    public static String getColumnName(Connection connection, String tableName, int columnIndex) throws SQLException {
         final Statement statement = connection.createStatement();
         try {
             final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
+                    "SELECT * FROM " + tableName + " LIMIT 0;");
             try {
                 return getColumnName(resultSet.getMetaData(), columnIndex);
             } finally {
@@ -202,20 +235,32 @@ public class JDBCUtilities {
      * Returns the list of all the column names of a table.
      *
      * @param connection Active connection to the database
-     * @param tableLocation Table identifier [[catalog.]schema.]table
+     * @param table a TableLocation
      * @return The list of field name.
      * @throws SQLException If jdbc throws an error
      */
-    public static List<String> getColumnNames(Connection connection, TableLocation tableLocation) throws SQLException {
+    public static List<String> getColumnNames(Connection connection, TableLocation table) throws SQLException {
+        return getColumnNames(connection, table.toString());
+    }
+
+    /**
+     * Returns the list of all the column names of a table.
+     *
+     * @param connection Active connection to the database
+     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
+     * @return The list of field name.
+     * @throws SQLException If jdbc throws an error
+     */
+    public static List<String> getColumnNames(Connection connection, String tableName) throws SQLException {
         List<String> fieldNameList = new ArrayList<>();
-        boolean isH2 = isH2DataBase(connection);
         final Statement statement = connection.createStatement();
         try {
             final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
+                    "SELECT * FROM " + tableName + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
-                for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+                int columnCount =metadata.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
                     fieldNameList.add(metadata.getColumnName(columnId));
                 }
             } finally {
@@ -231,20 +276,32 @@ public class JDBCUtilities {
      * Returns the list of all the column names and indexes of a table.
      *
      * @param connection Active connection to the database
-     * @param tableLocation Table identifier [[catalog.]schema.]table
+     * @param table a TableLocation
      * @return The list of field name.
      * @throws SQLException If jdbc throws an error
      */
-    public static List<Tuple<String, Integer>> getColumnNamesAndIndexes(Connection connection, TableLocation tableLocation) throws SQLException {
+    public static List<Tuple<String, Integer>> getColumnNamesAndIndexes(Connection connection, TableLocation table) throws SQLException {
+        return getColumnNamesAndIndexes(connection, table.toString());
+    }
+
+    /**
+     * Returns the list of all the column names and indexes of a table.
+     *
+     * @param connection Active connection to the database
+     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
+     * @return The list of field name.
+     * @throws SQLException If jdbc throws an error
+     */
+    public static List<Tuple<String, Integer>> getColumnNamesAndIndexes(Connection connection, String tableName) throws SQLException {
         List<Tuple<String, Integer>> fieldNameList = new ArrayList<>();
         final Statement statement = connection.createStatement();
-        boolean isH2 = isH2DataBase(connection);
         try {
             final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
+                    "SELECT * FROM " + tableName + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
-                for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+                int columnCount =metadata.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
                     fieldNameList.add(new Tuple<>(metadata.getColumnName(columnId), columnId));
                 }
             } finally {
@@ -259,29 +316,30 @@ public class JDBCUtilities {
     /**
      * Fetch the row count of a table.
      *
+     *
      * @param connection Active connection.
-     * @param location Table location
+     * @param table a TableLocation
      * @return Row count
      * @throws SQLException If the table does not exists, or sql request fail.
      */
-    public static int getRowCount(Connection connection, TableLocation location) throws SQLException {
-        return getRowCount(connection, location.toString());
+    public static int getRowCount(Connection connection, TableLocation table) throws SQLException {
+        return getRowCount(connection, table.toString());
     }
 
     /**
      * Fetch the row count of a table.
      *
+     *
      * @param connection Active connection.
-     * @param tableReference Table reference
+     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
      * @return Row count
      * @throws SQLException If the table does not exists, or sql request fail.
      */
-    public static int getRowCount(Connection connection, String tableReference) throws SQLException {
-        boolean isH2 = isH2DataBase(connection);
+    public static int getRowCount(Connection connection, String tableName) throws SQLException {
         Statement st = connection.createStatement();
         int rowCount = 0;
         try {
-            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", TableLocation.parse(tableReference).toString(isH2)));
+            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", tableName));
             try {
                 if (rs.next()) {
                     rowCount = rs.getInt(1);
@@ -300,13 +358,12 @@ public class JDBCUtilities {
      * reference is a temporary table.
      *
      * @param connection Active connection not closed by this method
-     * @param tableReference Table reference
+     * @param tableLocation Table reference
      * @return True if the provided table is temporary.
      * @throws SQLException If the table does not exists.
      */
-    public static boolean isTemporaryTable(Connection connection, String tableReference) throws SQLException {
-        TableLocation location = TableLocation.parse(tableReference);
-        ResultSet rs = getTablesView(connection, location.getCatalog(), location.getSchema(), location.getTable());
+    public static boolean isTemporaryTable(Connection connection, TableLocation tableLocation) throws SQLException {
+        ResultSet rs = getTablesView(connection, tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable());
         boolean isTemporary = false;
         try {
             if (rs.next()) {
@@ -320,7 +377,7 @@ public class JDBCUtilities {
                 }
                 isTemporary = tableType.contains("TEMPORARY");
             } else {
-                throw new SQLException("The table " + location + " does not exists");
+                throw new SQLException("The table " + tableLocation.toString() + " does not exists");
             }
         } finally {
             rs.close();
@@ -333,20 +390,33 @@ public class JDBCUtilities {
      * reference is a linked table.
      *
      * @param connection Active connection not closed by this method
+     * @param table TableLocation
+     * @return True if the provided table is linked.
+     * @throws SQLException If the table does not exists.
+     */
+    public static boolean isLinkedTable(Connection connection, TableLocation table) throws SQLException {
+        return isLinkedTable(connection, table.toString());
+    }
+
+    /**
+     * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table
+     * reference is a linked table.
+     *
+     * @param connection Active connection not closed by this method
      * @param tableReference Table reference
      * @return True if the provided table is linked.
      * @throws SQLException If the table does not exists.
      */
     public static boolean isLinkedTable(Connection connection, String tableReference) throws SQLException {
-        TableLocation location = TableLocation.parse(tableReference);
-        ResultSet rs = getTablesView(connection, location.getCatalog(), location.getSchema(), location.getTable());
+        String[] location = TableLocation.split(tableReference);
+        ResultSet rs = getTablesView(connection, location[0], location[1], location[2]);
         boolean isLinked;
         try {
             if (rs.next()) {
-                String tableType = rs.getString("STORAGE_TYPE");
-                isLinked = tableType.equals("TABLE LINK");
+                String tableType = rs.getString("TABLE_TYPE");
+                isLinked = tableType.contains("TABLE LINK");
             } else {
-                throw new SQLException("The table " + location + " does not exists");
+                throw new SQLException("The table " + tableReference + " does not exists");
             }
         } finally {
             rs.close();
@@ -482,13 +552,49 @@ public class JDBCUtilities {
      * @throws java.sql.SQLException
      */
     public static boolean tableExists(Connection connection, TableLocation tableLocation) throws SQLException {
-        boolean isH2 = isH2DataBase(connection);
+        return tableExists(connection, tableLocation.toString());
+    }
+
+    /**
+     * Return true if the table exists.
+     *
+     * @param connection Connection
+     * @param tableName Table name
+     * @return true if the table exists
+     * @throws java.sql.SQLException
+     */
+    public static boolean tableExists(Connection connection, String tableName) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute("SELECT * FROM " + tableLocation.toString(isH2) + " LIMIT 0;");
+            statement.execute("SELECT * FROM " + tableName + " LIMIT 0;");
             return true;
         } catch (SQLException ex) {
             return false;
         }
+    }
+
+    /**
+     * Returns the list of table names.
+     *
+     * @param connection Active connection to the database
+     * @param tableLocation Table name
+     * @param types A list of table types, which must be from the list of table
+     * types returned from getTableTypes(), to include. null returns all types
+     * @return The integer primary key used for edition[1-n]; 0 if the source is
+     * closed or if the table has no primary key or more than one column as
+     * primary key
+     * @throws java.sql.SQLException
+     */
+    public static List<String> getTableNames(Connection connection, TableLocation tableLocation, String[] types) throws SQLException {
+        List<String> tableList = new ArrayList<>();
+        ResultSet rs = connection.getMetaData().getTables(tableLocation.getCatalog(), tableLocation.getSchema("PUBLIC"), tableLocation.getTable(), types);
+        try {
+            while (rs.next()) {
+                tableList.add(new TableLocation(rs).toString(tableLocation.getDbTypes()));
+            }
+        } finally {
+            rs.close();
+        }
+        return tableList;
     }
 
     /**
@@ -512,12 +618,12 @@ public class JDBCUtilities {
      */
     public static List<String> getTableNames(Connection connection, String catalog, String schemaPattern,
             String tableNamePattern, String[] types) throws SQLException {
-        List<String> tableList = new ArrayList<String>();
+        List<String> tableList = new ArrayList<>();
         ResultSet rs = connection.getMetaData().getTables(catalog, schemaPattern, tableNamePattern, types);
-        boolean isH2 = isH2DataBase(connection);
+        final DBTypes dbType = getDBType(connection);
         try {
             while (rs.next()) {
-                tableList.add(new TableLocation(rs).toString(isH2));
+                tableList.add(new TableLocation(rs).toString(dbType));
             }
         } finally {
             rs.close();
@@ -530,16 +636,31 @@ public class JDBCUtilities {
      * from the database
      *
      * @param connection Connection
+     * @param table Name of the table containing the field.
+     * @param fieldName Name of the field containing the values.
+     * @return The list of distinct values of the field.
+     * @throws java.sql.SQLException
+     */
+    public static List<String> getUniqueFieldValues(Connection connection, TableLocation table, String fieldName) throws SQLException {
+        return getUniqueFieldValues(connection, table.toString(), fieldName);
+    }
+
+    /**
+     * Returns the list of distinct values contained by a field from a table
+     * from the database
+     *
+     * @param connection Connection
      * @param tableName Name of the table containing the field.
      * @param fieldName Name of the field containing the values.
      * @return The list of distinct values of the field.
+     * @throws java.sql.SQLException
      */
     public static List<String> getUniqueFieldValues(Connection connection, String tableName, String fieldName) throws SQLException {
-        boolean isH2 = isH2DataBase(connection);
+        final DBTypes dbType = getDBType(connection);
         final Statement statement = connection.createStatement();
-        List<String> fieldValues = new ArrayList<String>();
+        List<String> fieldValues = new ArrayList<>();
         try {
-            ResultSet result = statement.executeQuery("SELECT DISTINCT " + TableLocation.quoteIdentifier(fieldName) + " FROM " + TableLocation.parse(tableName).toString(isH2));
+            ResultSet result = statement.executeQuery("SELECT DISTINCT " + TableLocation.quoteIdentifier(fieldName) + " FROM " + TableLocation.parse(tableName).toString(dbType));
             try {
                 while (result.next()) {
                     fieldValues.add(result.getString(1));
@@ -551,6 +672,19 @@ public class JDBCUtilities {
             statement.close();
         }
         return fieldValues;
+    }
+
+    /**
+     * A method to create an empty table (no columns)
+     *
+     * @param connection Connection
+     * @param table Table name
+     * @throws java.sql.SQLException
+     */
+    public static void createEmptyTable(Connection connection, TableLocation table) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE " + table.toString() + " ()");
+        }
     }
 
     /**
@@ -671,10 +805,10 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static TABLE_TYPE getTableType(Connection connection, TableLocation location) throws SQLException {
-        boolean isH2 = isH2DataBase(connection);
+        DBTypes dbType = location.getDbTypes();
         try (ResultSet rs = getTablesView(connection, location.getCatalog(), location.getSchema(), location.getTable())) {
             if (rs.next()) {
-                if (isH2) {
+                if (dbType == H2) {
                     // H2                   
                     String storage = rs.getString("STORAGE_TYPE");
                     if (storage.contains("TEMPORARY")) {
@@ -697,102 +831,87 @@ public class JDBCUtilities {
     /**
      * A simple method to generate a DDL create table command from a table name
      *
+     *
      * Takes into account only data types
      *
      * @param connection
-     * @param location
-     * @param outputTableName
+     * @param sourceTable
+     * @param targetTable
      * @return a create table ddl command
      * @throws SQLException
      */
-    public static String createTableDDL(Connection connection, TableLocation location, String outputTableName) throws SQLException {
-        if (JDBCUtilities.tableExists(connection, location)) {
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            String tableName = location.toString(isH2);
-            return createTableDDL(connection, tableName, outputTableName);
-        } else {
-            throw new SQLException("The table " + location + " doesn't exist");
-        }
-    }
-
-    /**
-     * Create table ddl command TODO : It supports only H2GIS and PostGIS
-     * databases
-     *
-     * @param connection
-     * @param sourceTableName the name of the source table
-     * @param targetTableName the table of the target table used after the
-     * CREATE TABLE <targetTableName>
-     * @return
-     * @throws SQLException
-     */
-    public static String createTableDDL(Connection connection, String sourceTableName, String targetTableName) throws SQLException {
-        if (sourceTableName == null || sourceTableName.isEmpty()) {
+    public static String createTableDDL(Connection connection, TableLocation sourceTable, TableLocation targetTable) throws SQLException {
+        if (sourceTable == null) {
             throw new SQLException("The source table name cannot be null or empty");
         }
-        if (targetTableName == null || targetTableName.isEmpty()) {
+        if (targetTable == null) {
             throw new SQLException("The target table name cannot be null or empty");
         }
-        final StringBuilder builder = new StringBuilder(256);
-        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse(sourceTableName));
-        builder.append("CREATE TABLE ").append(targetTableName);
-        final Statement statement = connection.createStatement();
-        try {
-            final ResultSet resultSet = statement.executeQuery("SELECT * FROM " + sourceTableName + " LIMIT 0;");
+        if (JDBCUtilities.tableExists(connection, sourceTable)) {
+            final StringBuilder builder = new StringBuilder(256);
+            LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, sourceTable);
+            builder.append("CREATE TABLE ").append(targetTable);
+            final Statement statement = connection.createStatement();
             try {
-                ResultSetMetaData metadata = resultSet.getMetaData();
-                int columnCount = metadata.getColumnCount();
-                if (columnCount > 0) {
-                    builder.append(" (");
-                }
-                for (int i = 1; i <= columnCount; i++) {
-                    if (i > 1) {
-                        builder.append(",");
+                final ResultSet resultSet = statement.executeQuery("SELECT * FROM " + sourceTable.toString() + " LIMIT 0;");
+                try {
+                    ResultSetMetaData metadata = resultSet.getMetaData();
+                    int columnCount = metadata.getColumnCount();
+                    if (columnCount > 0) {
+                        builder.append(" (");
                     }
-                    String columnName = metadata.getColumnName(i);
-                    String columnTypeName = metadata.getColumnTypeName(i);
-                    int columnType = metadata.getColumnType(i);
-                    if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
-                        int precision = metadata.getPrecision(i);
-                        //POSTGRESQL VARCHAR MAX SIZE
-                        if (precision > POSTGRES_MAX_VARCHAR) {
-                            builder.append(columnName).append(" ").append(columnTypeName);
-                        } else {
-                            builder.append(columnName).append(" ").append(columnTypeName);
-                            builder.append("(").append(precision).append(")");
+                    for (int i = 1; i <= columnCount; i++) {
+                        if (i > 1) {
+                            builder.append(",");
                         }
-                    } else {
-                        if (columnType == Types.CHAR) {
-                            builder.append(columnName).append(" ").append(columnTypeName);
-                            builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
-                        } else if (columnType == Types.DOUBLE) {
-                            builder.append(columnName).append(" ").append("DOUBLE PRECISION");
-                        } else if (columnTypeName.equalsIgnoreCase("geometry")) {
-                            if (geomMetadatas.isEmpty()) {
+                        String columnName = metadata.getColumnName(i);
+                        String columnTypeName = metadata.getColumnTypeName(i);
+                        int columnType = metadata.getColumnType(i);
+                        if (columnType == Types.VARCHAR || columnType == Types.LONGVARCHAR || columnType == Types.NVARCHAR || columnType == Types.LONGNVARCHAR) {
+                            int precision = metadata.getPrecision(i);
+                            //POSTGRESQL VARCHAR MAX SIZE
+                            if (precision > POSTGRES_MAX_VARCHAR) {
                                 builder.append(columnName).append(" ").append(columnTypeName);
                             } else {
-                                GeometryMetaData geomMetadata = geomMetadatas.get(columnName);
-                                if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
-                                    builder.append(columnName).append(" ").append(columnTypeName);
-                                } else {
-                                    builder.append(columnName).append(" ").append(columnTypeName)
-                                            .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
-                                }
+                                builder.append(columnName).append(" ").append(columnTypeName);
+                                builder.append("(").append(precision).append(")");
                             }
                         } else {
-                            builder.append(columnName).append(" ").append(columnTypeName);
+                            if (columnType == Types.CHAR) {
+                                builder.append(columnName).append(" ").append(columnTypeName);
+                                builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
+                            } else if (columnType == Types.DOUBLE) {
+                                builder.append(columnName).append(" ").append("DOUBLE PRECISION");
+                            } else if (columnTypeName.equalsIgnoreCase("geometry")) {
+                                if (geomMetadatas.isEmpty()) {
+                                    builder.append(columnName).append(" ").append(columnTypeName);
+                                } else {
+                                    GeometryMetaData geomMetadata = geomMetadatas.get(columnName);
+                                    if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
+                                        builder.append(columnName).append(" ").append(columnTypeName);
+                                    } else {
+                                        builder.append(columnName).append(" ").append(columnTypeName)
+                                                .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
+                                    }
+                                }
+                            } else {
+                                builder.append(columnName).append(" ").append(columnTypeName);
+                            }
                         }
                     }
+                    if (columnCount > 0) {
+                        builder.append(")");
+                    }
+                    return builder.toString();
+                } finally {
+                    resultSet.close();
                 }
-                if (columnCount > 0) {
-                    builder.append(")");
-                }
-                return builder.toString();
             } finally {
-                resultSet.close();
+                statement.close();
             }
-        } finally {
-            statement.close();
+
+        } else {
+            throw new SQLException("The table " + sourceTable + " doesn't exist");
         }
     }
 
@@ -807,13 +926,7 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static String createTableDDL(Connection connection, TableLocation location) throws SQLException {
-        if (JDBCUtilities.tableExists(connection, location)) {
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            String tableName = location.toString(isH2);
-            return createTableDDL(connection, tableName, tableName);
-        } else {
-            throw new SQLException("The table " + location + " doesn't exist");
-        }
+        return createTableDDL(connection, location, location);
     }
 
     /**
@@ -827,12 +940,26 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static String createTableDDL(ResultSet resultSet, String outputTableName) throws SQLException {
+        return createTableDDL(resultSet.getMetaData(), outputTableName);
+    }
+
+    /**
+     * A simple method to generate a DDL create table command from
+     * ResultSetMetaData
+     *
+     * Takes into account only data types
+     *
+     * @param outputTableName
+     * @param metadata
+     * @return a create table ddl command
+     * @throws SQLException
+     */
+    public static String createTableDDL(ResultSetMetaData metadata, String outputTableName) throws SQLException {
         if (outputTableName == null || outputTableName.isEmpty()) {
             throw new SQLException("The target table name cannot be null or empty");
         }
         final StringBuilder builder = new StringBuilder(256);
         builder.append("CREATE TABLE ").append(outputTableName);
-        ResultSetMetaData metadata = resultSet.getMetaData();
         int columnCount = metadata.getColumnCount();
         if (columnCount > 0) {
             builder.append(" (");
@@ -884,12 +1011,12 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static boolean isIndexed(Connection connection, String tableName, String columnName) throws SQLException {
-        return isIndexed(connection, TableLocation.parse(tableName, isH2DataBase(connection)), columnName);
+        return isIndexed(connection, TableLocation.parse(tableName, getDBType(connection)), columnName);
     }
 
     /**
-     * Returns true if the given column name from the given table is indexed,
-     * return false otherwise.
+     * Returns true if the given column name from the given table has an
+     * indexed, return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
      * @param table {@link TableLocation} of the table to check.
@@ -898,35 +1025,22 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static boolean isIndexed(Connection connection, TableLocation table, String columnName) throws SQLException {
-        if (connection == null || columnName == null || table == null) {
-            throw new SQLException("Unable to find an index");
+        if (connection == null || table == null) {
+            throw new SQLException("Unable to get the index names");
         }
-        boolean isH2 = isH2DataBase(connection);
-        if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
-                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
-            ps.setObject(1, table.getTable());
-            ps.setObject(2, table.getSchema("PUBLIC"));
-            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        } else {
-            String query = "SELECT  cls.relname, am.amname "
-                    + "FROM  pg_class cls "
-                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
-                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
-                    + " where attname = ? and attrelid in "
-                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
-                    + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setObject(1, columnName);
-            ps.setObject(2, table.getSchema("public"));
-            ps.setObject(3, table.getTable());
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
+        DBTypes dbTypes = table.getDbTypes();
+        columnName = TableLocation.capsIdentifier(columnName, dbTypes);
+        DatabaseMetaData md = connection.getMetaData();
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
+        while (indexInfo.next()) {
+            short type = indexInfo.getShort("TYPE");
+            if (type != DatabaseMetaData.tableIndexStatistic) {
+                if (columnName.equals(indexInfo.getString("COLUMN_NAME"))) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     /**
@@ -940,7 +1054,7 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static boolean isSpatialIndexed(Connection connection, String tableName, String columnName) throws SQLException {
-        return isSpatialIndexed(connection, TableLocation.parse(tableName, isH2DataBase(connection)), columnName);
+        return isSpatialIndexed(connection, TableLocation.parse(tableName, getDBType(connection)), columnName);
     }
 
     /**
@@ -957,27 +1071,23 @@ public class JDBCUtilities {
         if (connection == null || columnName == null || table == null) {
             throw new SQLException("Unable to find an index");
         }
-        boolean isH2 = isH2DataBase(connection);
-        if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
-                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?"
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.INDEX_NAME "
-                    + "IN (SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES  WHERE "
-                    + "INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? "
-                    + "AND  INFORMATION_SCHEMA.INDEXES.TABLE_NAME= ?  "
-                    + " AND INFORMATION_SCHEMA.INDEXES.INDEX_TYPE_NAME='SPATIAL INDEX')");
-            String tableName = table.getTable();
-            String schemaName = table.getSchema("PUBLIC");
-            ps.setObject(1, tableName);
-            ps.setObject(2, schemaName);
-            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
-            ps.setObject(4, schemaName);
-            ps.setObject(5, tableName);
+        DBTypes dbType = table.getDbTypes();
+        if (dbType == H2 || dbType == H2GIS) {
+            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES "
+                    + "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? "
+                    + "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? "
+                    + "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;");
+            ps.setObject(1, table.getTable());
+            ps.setObject(2, table.getSchema("PUBLIC"));
+            ps.setObject(3, TableLocation.capsIdentifier(columnName, dbType));
             ResultSet rs = ps.executeQuery();
-            return rs.next();
-        } else {
+            while (rs.next()) {
+                if (rs.getString("INDEX_TYPE_NAME").contains("SPATIAL")) {
+                    return true;
+                }
+            }
+            return false;
+        } else if (dbType == POSTGIS || dbType == POSTGRESQL) {
             String query = "SELECT  cls.relname, am.amname "
                     + "FROM  pg_class cls "
                     + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
@@ -991,6 +1101,8 @@ public class JDBCUtilities {
             ps.setObject(3, table.getTable());
             ResultSet rs = ps.executeQuery();
             return rs.next();
+        } else {
+            throw new SQLException("Database not supported");
         }
     }
 
@@ -1008,9 +1120,10 @@ public class JDBCUtilities {
         if (connection == null || table == null || columnName == null) {
             throw new SQLException("Unable to create an index");
         }
-        boolean isH2 = isH2DataBase(connection);
-        connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName
-                + " ON " + table.toString(isH2) + " (" + TableLocation.capsIdentifier(columnName, isH2) + ")");
+        final DBTypes dbType = table.getDbTypes();
+        final String tableName = table.toString();
+        connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + tableName + "_" + columnName
+                + " ON " + tableName + " (" + TableLocation.capsIdentifier(columnName, dbType) + ")");
         return true;
     }
 
@@ -1025,7 +1138,7 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static boolean createIndex(Connection connection, String table, String columnName) throws SQLException {
-        return createIndex(connection, TableLocation.parse(table, isH2DataBase(connection)), columnName);
+        return createIndex(connection, TableLocation.parse(table, getDBType(connection)), columnName);
     }
 
     /**
@@ -1042,15 +1155,18 @@ public class JDBCUtilities {
         if (connection == null || table == null || columnName == null) {
             throw new SQLException("Unable to create a spatial index");
         }
-        boolean isH2 = isH2DataBase(connection);
-        if (isH2) {
-            connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName
-                    + " ON " + table.toString(isH2) + " (" + TableLocation.capsIdentifier(columnName, isH2) + ")");
-        } else {
-            connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + table.toString(isH2) + "_" + columnName
-                    + " ON " + table.toString(isH2) + " USING GIST (" + TableLocation.capsIdentifier(columnName, isH2) + ")");
+        DBTypes dbTypes = table.getDbTypes();
+        if (dbTypes == H2GIS || dbTypes == POSTGIS || dbTypes == H2 || dbTypes == POSTGRESQL) {
+            if (dbTypes == H2 || dbTypes == H2GIS) {
+                connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS " + table.toString() + "_" + columnName
+                        + " ON " + table.toString() + " (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
+            } else {
+                connection.createStatement().execute("CREATE INDEX IF NOT EXISTS " + table.toString() + "_" + columnName
+                        + " ON " + table.toString() + " USING GIST (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
+            }
+            return true;
         }
-        return true;
+        throw new SQLException("DataBase not supported");
     }
 
     /**
@@ -1064,7 +1180,7 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static boolean createSpatialIndex(Connection connection, String table, String columnName) throws SQLException {
-        return createSpatialIndex(connection, TableLocation.parse(table, isH2DataBase(connection)), columnName);
+        return createSpatialIndex(connection, TableLocation.parse(table, getDBType(connection)), columnName);
     }
 
     /**
@@ -1077,42 +1193,91 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, TableLocation table, String columnName) throws SQLException {
-        if (connection == null || table == null || columnName == null) {
-            throw new SQLException("Unable to drop index");
+        List<String> indexes = getIndexNames(connection, table, columnName);
+        String query = indexes.stream()
+                .map(key -> "DROP INDEX " + key)
+                .collect(Collectors.joining(";"));
+        connection.createStatement().execute(query);
+    }
+
+    /**
+     * Return the name of all indexes for a given table
+     *
+     * @param connection Connection to access to the desired table.
+     * @param table Table containing the column to get the index names.
+     * @return a map with the index name and its column name
+     * @throws SQLException
+     */
+    public static Map<String, String> getIndexNames(Connection connection, String table) throws SQLException {
+        return getIndexNames(connection, TableLocation.parse(table, getDBType(connection)));
+    }
+
+    /**
+     * Return the name of all indexes for a given table
+     *
+     * @param connection Connection to access to the desired table.
+     * @param table Table containing the column to get the index names.
+     * @return a map with the index name and its column name
+     * @throws SQLException
+     */
+    public static Map<String, String> getIndexNames(Connection connection, TableLocation table) throws SQLException {
+        if (connection == null || table == null) {
+            throw new SQLException("Unable to get the index names");
         }
-        List<String> indexes = new ArrayList<>();
-        boolean isH2 = isH2DataBase(connection);
-        if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS "
-                    + "WHERE INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_NAME=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.TABLE_SCHEMA=? "
-                    + "AND INFORMATION_SCHEMA.INDEX_COLUMNS.COLUMN_NAME=?;");
-            ps.setObject(1, table.getTable());
-            ps.setObject(2, table.getSchema("PUBLIC"));
-            ps.setObject(3, TableLocation.capsIdentifier(columnName, isH2));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                indexes.add(rs.getString("INDEX_NAME"));
+        DatabaseMetaData md = connection.getMetaData();
+        Map<String, String> indexes = new HashMap<>();
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
+        while (indexInfo.next()) {
+            short type = indexInfo.getShort("TYPE");
+            if (type != DatabaseMetaData.tableIndexStatistic) {
+                String indexName = indexInfo.getString("INDEX_NAME");
+                String columnName = indexInfo.getString("COLUMN_NAME");
+                indexes.put(indexName, columnName);
             }
-        } else {
-            PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name "
-                    + "FROM  pg_class cls "
-                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
-                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
-                    + " where attname = ? and attrelid in "
-                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
-                    + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
-            ps.setObject(1, columnName);
-            ps.setObject(2, table.getSchema("public"));
-            ps.setObject(3, table.getTable());
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                indexes.add(rs.getString("index_name"));
+        }
+        return indexes;
+    }
+
+    /**
+     * Return the name of indexes for a given table and column
+     *
+     * @param connection Connection to access to the desired table.
+     * @param table Table containing the column to get the index names.
+     * @param columnName Name of the column.
+     * @return
+     * @throws SQLException
+     */
+    public static List<String> getIndexNames(Connection connection, String table, String columnName) throws SQLException {
+        return getIndexNames(connection, TableLocation.parse(table, getDBType(connection)), columnName);
+    }
+
+    /**
+     * Return the name of indexes for a given table and column
+     *
+     * @param connection Connection to access to the desired table.
+     * @param table Table containing the column to get the index names.
+     * @param columnName Name of the column.
+     * @return
+     * @throws SQLException
+     */
+    public static List<String> getIndexNames(Connection connection, TableLocation table, String columnName) throws SQLException {
+        if (connection == null || table == null) {
+            throw new SQLException("Unable to get the index names");
+        }
+        DBTypes dbTypes = table.getDbTypes();
+        columnName = TableLocation.capsIdentifier(columnName, dbTypes);
+        DatabaseMetaData md = connection.getMetaData();
+        ArrayList<String> indexes = new ArrayList<>();
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
+        while (indexInfo.next()) {
+            short type = indexInfo.getShort("TYPE");
+            if (type != DatabaseMetaData.tableIndexStatistic) {
+                if (columnName.equals(indexInfo.getString("COLUMN_NAME"))) {
+                    indexes.add(indexInfo.getString("INDEX_NAME"));
+                }
             }
         }
-        for (String index : indexes) {
-            connection.createStatement().execute("DROP INDEX IF EXISTS " + index);
-        }
+        return indexes;
     }
 
     /**
@@ -1125,11 +1290,11 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, String table, String columnName) throws SQLException {
-        dropIndex(connection, TableLocation.parse(table, isH2DataBase(connection)), columnName);
+        dropIndex(connection, TableLocation.parse(table, getDBType(connection)), columnName);
     }
 
     /**
-     * Drop the all the indexes of the given table on yhe given connection.
+     * Drop the all the indexes of the given table on the given connection.
      *
      * @param connection Connection to access to the desired table.
      * @param table Table containing the column to drop index.
@@ -1139,36 +1304,11 @@ public class JDBCUtilities {
         if (connection == null || table == null) {
             throw new SQLException("Unable to drop index");
         }
-        List<String> indexes = new ArrayList<>();
-        boolean isH2 = isH2DataBase(connection);
-        if (isH2) {
-            PreparedStatement ps = connection.prepareStatement("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES "
-                    + "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? "
-                    + "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=?;");
-            ps.setObject(1, table.getTable());
-            ps.setObject(2, table.getSchema("PUBLIC"));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                indexes.add(rs.getString("INDEX_NAME"));
-            }
-        } else {
-            PreparedStatement ps = connection.prepareStatement("SELECT  cls.relname as index_name "
-                    + "FROM  pg_class cls "
-                    + "JOIN pg_am am ON am.oid=cls.relam where cls.oid "
-                    + " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute "
-                    + " where attrelid in "
-                    + "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? "
-                    + "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;");
-            ps.setObject(1, table.getSchema("public"));
-            ps.setObject(2, table.getTable());
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                indexes.add(rs.getString("index_name"));
-            }
-        }
-        for (String index : indexes) {
-            connection.createStatement().execute("DROP INDEX IF EXISTS " + index);
-        }
+        Map<String, String> indexes = getIndexNames(connection, table);
+        String query = indexes.keySet().stream()
+                .map(key -> "DROP INDEX " + key)
+                .collect(Collectors.joining(";"));
+        connection.createStatement().execute(query);
     }
 
     /**
@@ -1179,6 +1319,6 @@ public class JDBCUtilities {
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, String table) throws SQLException {
-        dropIndex(connection, TableLocation.parse(table, isH2DataBase(connection)));
-    }
+        dropIndex(connection, TableLocation.parse(table, getDBType(connection)));
+    }    
 }

@@ -88,9 +88,9 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
                 Point geom = getGeometryFactory().createPoint(coordinate);
                 geom.setSRID(4326);
                 routePoint.setValue(GpxMetadata.THE_GEOM, geom);
-                routePoint.setValue(GpxMetadata.PTLAT, coordinate.y);
-                routePoint.setValue(GpxMetadata.PTLON, coordinate.x);
-                routePoint.setValue(GpxMetadata.PTELE, coordinate.z);
+                routePoint.setValue(GpxMetadata.PTLAT, coordinate.getY());
+                routePoint.setValue(GpxMetadata.PTLON, coordinate.getX());
+                routePoint.setValue(GpxMetadata.PTELE, coordinate.getZ());
                 routePoint.setValue(GpxMetadata.PTID, idRtPt++);
                 routePoint.setValue(GpxMetadata.RTEPT_RTEID, getCurrentLine().getValues()[GpxMetadata.LINEID]);
                 rteList.add(coordinate);

@@ -18,7 +18,7 @@
  * or contact directly: info_at_h2gis.org
  */
 
-package org.h2gis.drivers.utility;
+package org.h2gis.functions.io.utility;
 
 import org.locationtech.jts.geom.*;
 
@@ -38,19 +38,19 @@ public final class CoordinatesUtils {
          * @return
          */
         public static double interpolate(Coordinate firstCoordinate, Coordinate lastCoordinate, Coordinate toBeInterpolated) {
-                if (Double.isNaN(firstCoordinate.z)) {
+                if (Double.isNaN(firstCoordinate.getZ())) {
                         return Double.NaN;
                 }
-                if (Double.isNaN(lastCoordinate.z)) {
+                if (Double.isNaN(lastCoordinate.getZ())) {
                         return Double.NaN;
                 }
-                return firstCoordinate.z + (lastCoordinate.z - firstCoordinate.z) * firstCoordinate.distance(toBeInterpolated)
+                return firstCoordinate.getZ() + (lastCoordinate.getZ() - firstCoordinate.getZ()) * firstCoordinate.distance(toBeInterpolated)
                         / (firstCoordinate.distance(toBeInterpolated) + toBeInterpolated.distance(lastCoordinate));
         }
 
         public static boolean contains(Coordinate[] coords, Coordinate coord) {
                 for (Coordinate coordinate : coords) {
-                        if (Double.isNaN(coord.z)) {
+                        if (Double.isNaN(coord.getZ())) {
                                 return coordinate.equals(coord);
                         } else {
                                 return coordinate.equals3D(coord);
@@ -113,7 +113,7 @@ public final class CoordinatesUtils {
                 double z;
 
                 for (int t = cs.length - 1; t >= 0; t--) {
-                        z = cs[t].z;
+                        z = cs[t].getZ();
 
                         if (!(Double.isNaN(z))) {
                                 if (validZFound) {
@@ -183,7 +183,7 @@ public final class CoordinatesUtils {
                 pts.getCoordinate(0, p);
                 double x0 = p.x;
                 double y0 = p.y;
-                double z0 = p.z;
+                double z0 = p.getZ();
 
                 if (Double.isNaN(z0)) {
                         return 0.0;
@@ -194,7 +194,7 @@ public final class CoordinatesUtils {
 
                         double x1 = p.x;
                         double y1 = p.y;
-                        double z1 = p.z;
+                        double z1 = p.getZ();
                         if (Double.isNaN(z1)) {
                                 return 0.0;
                         }

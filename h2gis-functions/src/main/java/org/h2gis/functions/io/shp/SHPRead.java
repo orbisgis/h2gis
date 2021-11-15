@@ -27,7 +27,6 @@ import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
-import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 
 import java.io.File;
@@ -92,7 +91,7 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
     public static void importTable(Connection connection, String fileName, String tableReference,String forceEncoding, boolean deleteTables) throws IOException, SQLException {
         File file = URIUtilities.fileFromString(fileName);
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true),
+        shpDriverFunction.importFile(connection, tableReference,
                 file,  forceEncoding,deleteTables, new EmptyProgressVisitor());
     }
 

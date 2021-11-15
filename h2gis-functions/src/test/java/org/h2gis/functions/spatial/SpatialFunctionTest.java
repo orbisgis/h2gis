@@ -28,6 +28,7 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.spatial.affine_transformations.ST_Translate;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.WKTReader;
@@ -243,6 +244,27 @@ public class SpatialFunctionTest {
         assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("exploded_forests")));
         st.execute("drop table forests");
     }
+    
+    @Test
+    public void test_ST_ExplodeSubQuery() throws Exception {
+        st.execute("DROP TABLE IF EXISTS forests; "
+                + "CREATE TABLE forests ( id INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                + " the_geom GEOMETRY(POLYGON, 4326));"
+                + "INSERT INTO forests VALUES(109, 'Green Forest', ST_GEOMFROMTEXT('POLYGON((28 26,28 0,84 0,"
+                + "84 42,28 26))', 4326)),"
+                + "(100, 'Green', ST_GEOMFROMTEXT('POLYGON((59 18,67 18,67 13,59 13,59 18))',4326)),"
+                + "(99, 'Green', ST_GEOMFROMTEXT('POLYGON((52 18,66 23,73 9,48 6,52 18))',4326));"
+                + "DROP TABLE IF EXISTS zone;"
+                + "CREATE TABLE zone (id INTEGER, THE_GEOM GEOMETRY(POLYGON, 4326));"
+                + "INSERT INTO zone VALUES (1,ST_GEOMFROMTEXT('POLYGON ((43.4 30.8, 61 30.8, 61 13.8, 43.4 13.8, 43.4 30.8))', 4326));");
+        st.execute("Drop table if exists exploded_forests;"
+                + " CREATE TABLE exploded_forests as SELECT * FROM ST_Explode('(select a.id as id_a, b.id as id_b, a.the_geom from forests as a, zone as b where st_intersects(a.the_geom, b.the_geom))')");
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM exploded_forests");
+        assertTrue(rs.next());
+        assertEquals(3, rs.getInt(1));
+        assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("exploded_forests")));
+        st.execute("drop table forests");
+    }
 
     @Test
     public void test_ST_Extent() throws Exception {
@@ -290,7 +312,7 @@ public class SpatialFunctionTest {
                 + "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)),"
                 + "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154)),"
                 + "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
-        Envelope result = GeometryTableUtilities.getEnvelope(connection, TableLocation.parse("PTCLOUDS"), "THE_GEOM").getEnvelopeInternal();
+        Envelope result = GeometryTableUtilities.getEnvelope(connection, TableLocation.parse("PTCLOUDS", DBTypes.H2GIS), "THE_GEOM").getEnvelopeInternal();
         Envelope expected = new Envelope(-5, 99, -21, 124);
         assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
         assertEquals(expected.getMaxX(), result.getMaxX(), 1e-12);
@@ -1843,7 +1865,7 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_UPDATEZ(ST_FORCE3D(ST_buffer('POINT(0 0)'::GEOMETRY, 10)), 120);");
         assertTrue(rs.next());
-        System.out.println(((Geometry)rs.getObject(1)).getCoordinates()[0].z);
+        assertEquals(120, ((Geometry)rs.getObject(1)).getCoordinates()[0].getZ());
     }
 
     @Test
@@ -2192,7 +2214,7 @@ public class SpatialFunctionTest {
     public void test_ST_Force3DM1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Force3DM('LINESTRING (-10 10, 10 10)'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("LINESTRING M(-10 10 0, 10 10 0)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING (-10 10, 10 10)", rs.getBytes(1));
         rs.close();
     }
 
@@ -2200,7 +2222,7 @@ public class SpatialFunctionTest {
     public void test_T_Force3DM2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Force3DM('LINESTRINGZ (-10 10 10 , 10 10 10)'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("LINESTRING M(-10 10 0, 10 10 0)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING (-10 10, 10 10)", rs.getBytes(1));
         rs.close();
     }
 
@@ -2208,7 +2230,7 @@ public class SpatialFunctionTest {
     public void test_T_Force3DM3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT  ST_Force3DM('LINESTRINGM (-10 10 10 , 10 10 10)'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("LINESTRINGM(-10 10 10, 10 10 10)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING (-10 10, 10 10)", rs.getBytes(1));
         rs.close();
     }
 

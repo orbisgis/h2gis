@@ -28,6 +28,8 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,8 +69,8 @@ public class GeoJsonReaderDriver {
     boolean hasGeometryField = false;
     private static final Logger log = LoggerFactory.getLogger(GeoJsonReaderDriver.class);
     private int parsedSRID = 0;
-    private boolean isH2;
-    private TableLocation tableLocation;
+    private DBTypes dbType =DBTypes.H2GIS;
+    private String tableLocation;
     private LinkedHashMap<String, Integer> cachedColumnNames;
     private LinkedHashMap<String, Integer> cachedColumnIndex;
     private static final int BATCH_MAX_SIZE = 100;
@@ -97,16 +99,17 @@ public class GeoJsonReaderDriver {
      *
      * @param progress
      * @param tableReference
+     * @return 
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
-    public void read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
+    public String read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
         if (fileName != null && fileName.getName().toLowerCase().endsWith(".geojson")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
-            this.tableLocation = TableLocation.parse(tableReference, isH2);
+            this.dbType = DBUtils.getDBType(connection);
+            this.tableLocation = TableLocation.parse(tableReference, dbType).toString();
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
@@ -114,18 +117,22 @@ public class GeoJsonReaderDriver {
             }
             if (fileName.length() > 0) {
                 parseGeoJson(progress);
+                return tableLocation;
             } else {
-                JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
+                JDBCUtilities.createEmptyTable(connection, tableLocation);
+                return tableLocation;
             }
         } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
-            this.tableLocation = TableLocation.parse(tableReference, isH2);
+            this.dbType = DBUtils.getDBType(connection);
+            this.tableLocation = TableLocation.parse(tableReference, dbType).toString();
+
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + tableLocation.toString(isH2));
+                stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
+
                 stmt.close();
             }
 
@@ -139,11 +146,13 @@ public class GeoJsonReaderDriver {
                     fis = new FileInputStream(fileName);
                     parseData(new GZIPInputStream(fis));
                     connection.setAutoCommit(true);
+                    return tableLocation;
                 } else {
                     throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
                 }
             } else {
-                JDBCUtilities.createEmptyTable(connection, tableLocation.toString(isH2));
+                JDBCUtilities.createEmptyTable(connection, tableLocation);
+                return tableLocation;
             }
         } else {
             throw new SQLException("The geojson read driver supports only geojson or gz extensions");
@@ -202,13 +211,52 @@ public class GeoJsonReaderDriver {
             try (JsonParser jp = jsFactory.createParser(new InputStreamReader(is, jsonEncoding.getJavaName()))) {
                 jp.nextToken();//START_OBJECT
                 jp.nextToken(); // field_name (type)
-                jp.nextToken(); // value_string (FeatureCollection)
-                String geomType = jp.getText();
-
-                if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                String dataType = jp.getText();
+                if (dataType.equalsIgnoreCase(GeoJsonField.TYPE)) {
+                    jp.nextToken(); // value_string (FeatureCollection)   
+                    dataType = jp.getText();
+                    if (dataType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                        jp.nextToken(); // FIELD_NAME features
+                        parseFeaturesMetadata(jp);
+                    } 
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.FEATURE)){
+                        parseFeatureMetadata(jp);
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.POINT)){
+                        parseGeometryMetadata(jp, jp.getText());
+                        hasGeometryField = true;
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.LINESTRING)){
+                        parseGeometryMetadata(jp, jp.getText());
+                        hasGeometryField = true;
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.POLYGON)){
+                        parseGeometryMetadata(jp, jp.getText());
+                        hasGeometryField = true;
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.MULTIPOINT)){
+                        parseGeometryMetadata(jp, jp.getText());
+                        hasGeometryField = true;
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.MULTILINESTRING)){
+                        parseGeometryMetadata(jp, jp.getText());
+                        hasGeometryField = true;
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.MULTIPOLYGON)){
+                        parseGeometryMetadata(jp, jp.getText());
+                        hasGeometryField = true;
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.GEOMETRYCOLLECTION)){
+                        parseGeometryMetadata(jp, jp.getText());
+                        hasGeometryField = true;
+                    }
+                    else {
+                        throw new SQLException("Malformed GeoJSON file. Found '" + dataType + "'");
+                    }
+                } else if (dataType.equalsIgnoreCase(GeoJsonField.FEATURES)) {
                     parseFeaturesMetadata(jp);
                 } else {
-                    throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
+                    throw new SQLException("Malformed GeoJSON file. Found '" + dataType + "'");
                 }
             } //START_OBJECT
 
@@ -228,7 +276,7 @@ public class GeoJsonReaderDriver {
         if (hasGeometryField) {
             StringBuilder createTable = new StringBuilder();
             createTable.append("CREATE TABLE ");
-            createTable.append(tableLocation.toString(isH2));
+            createTable.append(tableLocation);
             createTable.append(" (");
             //Add the geometry column
             String finalGeometryType = GeoJsonField.GEOMETRY;
@@ -241,7 +289,8 @@ public class GeoJsonReaderDriver {
             }
             cachedColumnIndex = new LinkedHashMap<>();
             StringBuilder insertTable = new StringBuilder("INSERT INTO ");
-            insertTable.append(tableLocation.toString(isH2)).append(" VALUES(ST_GeomFromWKB(?, ").append(parsedSRID).append(")");
+            insertTable.append(tableLocation).append(" VALUES(ST_GeomFromWKB(?, ").append(parsedSRID).append(")");
+
             int i = 1;
             for (Map.Entry<String, Integer> columns : cachedColumnNames.entrySet()) {
                 String columnName = columns.getKey();
@@ -249,7 +298,7 @@ public class GeoJsonReaderDriver {
                 cachedColumnIndex.put(columnName, i++);
                 createTable.append(",").append(columns.getKey()).append(" ").append(getSQLTypeName(columnType));
                 if(columnType==Types.ARRAY){
-                    if(isH2){
+                    if(dbType == DBTypes.H2 || dbType == DBTypes.H2GIS){
                         insertTable.append(",").append(" ? FORMAT json");
                     }else {
                         insertTable.append(",").append("cast(? as json)");
@@ -280,8 +329,7 @@ public class GeoJsonReaderDriver {
      * @throws IOException
      * @throws SQLException
      */
-    private void parseFeaturesMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME features
+    private void parseFeaturesMetadata(JsonParser jp) throws IOException, SQLException {        
         // Passes all the properties until "Feature" object is found
         while (!jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES)
                 && !jp.getText().equalsIgnoreCase(GeoJsonField.CRS)) {
@@ -696,7 +744,8 @@ public class GeoJsonReaderDriver {
     private void parsePropertiesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
+            String fieldName = TableLocation.capsIdentifier(jp.getText(), dbType); //FIELD_NAME columnName
+            fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
             JsonToken value = jp.nextToken();
             if (null != value) {
                 Integer dataType = cachedColumnNames.get(fieldName);
@@ -899,7 +948,8 @@ public class GeoJsonReaderDriver {
     private void parseProperties(JsonParser jp, Object[] values) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText(), isH2); //FIELD_NAME columnName
+            String fieldName = TableLocation.capsIdentifier(jp.getText(), dbType); //FIELD_NAME columnName
+            fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
             JsonToken value = jp.nextToken();
             if (null == value) {
                 //ignore other value
@@ -954,7 +1004,6 @@ public class GeoJsonReaderDriver {
      * @throws SQLException
      */
     private void parseFeatures(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME features
         // Passes all the properties until "Feature" object is found
         while (!jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES)
                 && !jp.getText().equalsIgnoreCase(GeoJsonField.CRS)) {
@@ -995,7 +1044,7 @@ public class GeoJsonReaderDriver {
 
                     token = jp.nextToken(); //START_OBJECT new feature                    
                     featureCounter++;
-                    progress.setStep((int) ((featureCounter / nbFeature) * 100));
+                    progress.setStep((featureCounter / nbFeature) * 100);
                     if (batchSize > 0) {
                         try {
                             preparedStatement.executeBatch();
@@ -1320,12 +1369,55 @@ public class GeoJsonReaderDriver {
             try (JsonParser jp = jsFactory.createParser(new InputStreamReader(is, jsonEncoding.getJavaName()))) {
                 jp.nextToken();//START_OBJECT
                 jp.nextToken(); // field_name (type)
-                jp.nextToken(); // value_string (FeatureCollection)
-                String geomType = jp.getText();
-                if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                String dataType = jp.getText();
+                if (dataType.equalsIgnoreCase(GeoJsonField.TYPE)) {
+                    jp.nextToken(); // value_string (FeatureCollection)
+                    dataType = jp.getText();
+                    if (dataType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                        jp.nextToken(); // FIELD_NAME features        
+                        parseFeatures(jp);
+                    }else if(dataType.equalsIgnoreCase(GeoJsonField.FEATURE)){
+                        Object[] values = parseFeature(jp);
+                        for (int i = 0; i < values.length; i++) {
+                        preparedStatement.setObject(i + 1, values[i]);
+                        }
+                        preparedStatement.execute();
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.POINT)){
+                        preparedStatement.setObject(1, parsePoint(jp));
+                        preparedStatement.execute();
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.LINESTRING)){
+                        preparedStatement.setObject(1, parseLinestring(jp));
+                        preparedStatement.execute();
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.POLYGON)){
+                        preparedStatement.setObject(1, parsePolygon(jp));
+                        preparedStatement.execute();
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.MULTIPOINT)){
+                        preparedStatement.setObject(1, parseMultiPoint(jp));
+                        preparedStatement.execute();
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.MULTILINESTRING)){
+                        preparedStatement.setObject(1, parseMultiLinestring(jp));
+                        preparedStatement.execute();
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.MULTIPOLYGON)){
+                        preparedStatement.setObject(1, parseMultiPolygon(jp));
+                        preparedStatement.execute();
+                    }
+                    else if(dataType.equalsIgnoreCase(GeoJsonField.GEOMETRYCOLLECTION)){
+                        preparedStatement.setObject(1, parseGeometryCollection(jp));
+                        preparedStatement.execute();
+                    }
+                    else {
+                        throw new SQLException("Malformed GeoJSON file. Found '" + dataType + "'");
+                    }
+                } else if (dataType.equalsIgnoreCase(GeoJsonField.FEATURES)) {
                     parseFeatures(jp);
                 } else {
-                    throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
+                    throw new SQLException("Malformed GeoJSON file. Found '" + dataType + "'");
                 }
             } //START_OBJECT
         } catch (FileNotFoundException ex) {
@@ -1470,10 +1562,10 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.VALUE_NULL) {
                 sb.append("null");
             } else if (value == JsonToken.FIELD_NAME)  {
-                sb.append("\""+jp.getValueAsString()+"\"");
+                sb.append("\"").append(jp.getValueAsString()).append("\"");
                 sep=":";
             } else if (value == JsonToken.VALUE_STRING)  {
-                sb.append("\""+jp.getValueAsString()+"\"");
+                sb.append("\"").append(jp.getValueAsString()).append("\"");
                 sep =",";
             } else  {
                 sb.append(jp.getValueAsString());
@@ -1506,10 +1598,10 @@ public class GeoJsonReaderDriver {
                 if (value == JsonToken.START_ARRAY) {
                     sep = "[";
                 } else if (value == JsonToken.FIELD_NAME) {
-                    sb.append("\"" + jp.getValueAsString() + "\"");
+                    sb.append("\"").append(jp.getValueAsString()).append("\"");
                     sep = ":";
                 } else if (value == JsonToken.VALUE_STRING) {
-                    sb.append("\"" + jp.getValueAsString() + "\"");
+                    sb.append("\"").append(jp.getValueAsString()).append("\"");
                     sep = ",";
                 } else {
                     sb.append(jp.getValueAsString());
