@@ -62,7 +62,7 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException Exception thrown when an SQL error occurs.
      * @throws IOException  Exception when a file writing error occurs.
      */
-    public static void exportTable(Connection connection, String fileName, String tableReference, 
+    public static void exportTable(Connection connection, String fileName, String tableReference,
                                    boolean deleteFile) throws IOException, SQLException {
         JsonDriverFunction jsonDriver = new JsonDriverFunction();
         jsonDriver.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), deleteFile,
@@ -82,5 +82,5 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction {
     public static void exportTable(Connection connection, String fileName, String tableReference)
             throws SQLException, IOException {
         exportTable(connection, fileName, tableReference, false);
-    }   
+    }
 }

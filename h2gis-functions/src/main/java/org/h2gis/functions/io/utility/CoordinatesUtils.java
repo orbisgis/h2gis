@@ -219,7 +219,8 @@ public final class CoordinatesUtils {
          */
         public static double length3D(Geometry geom) {
                 double sum = 0;
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                int size = geom.getNumGeometries();
+                for (int i = 0; i < size; i++) {
                         Geometry subGeom = geom.getGeometryN(i);
                         if (subGeom instanceof Polygon) {
                                 sum += length3D((Polygon) subGeom);

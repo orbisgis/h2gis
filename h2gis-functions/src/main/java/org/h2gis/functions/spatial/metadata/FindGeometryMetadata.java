@@ -62,25 +62,28 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
      * values[3] =   TYPE
      * @throws SQLException
      */
-    public static ValueArray extractMetadata(Connection connection, String catalogName, String schemaName, String tableName, String columnName, String geometryTableSignature) throws SQLException {
-        GeometryMetaData geomMeta = GeometryMetaData.getMetaData(geometryTableSignature);
-        int srid = geomMeta.getSRID();
-        Value[] values = new Value[4];
-        if (srid == 0) {
+    public static String[] extractMetadata(Connection connection, String catalogName, String schemaName, String tableName, String columnName, String data_type, String geometry_type, String srid) throws SQLException {
+        if(geometry_type==null){
+            geometry_type=data_type;
+        }
+        String[] values = new String[4];
+        if(srid==null) {
             try ( // Fetch the first geometry to find a stored SRID
                   Statement st = connection.createStatement();
                   ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
                           StringUtils.quoteJavaString(columnName.toUpperCase()), new TableLocation(catalogName, schemaName, tableName)))) {
                 if (rs.next()) {
-                    srid = rs.getInt(1);
+                    srid = rs.getString(1);
                 }
             }
         }
-        values[0] = ValueInteger.get(geomMeta.getGeometryTypeCode());
-        values[1] = ValueInteger.get(geomMeta.getDimension());
-        values[2] = ValueInteger.get(srid);
-        values[3] = ValueVarchar.get(geomMeta.getSfs_geometryType());
-        return ValueArray.get(values);
+        GeometryMetaData geomMeta = GeometryMetaData.createMetadataFromGeometryType(geometry_type);
+        values[0] = String.valueOf(geomMeta.getGeometryTypeCode());
+        values[1] = String.valueOf(geomMeta.getDimension());
+        values[2] = srid;
+        values[3] = geomMeta.getSfs_geometryType();
+
+        return values;
     }
 
 }

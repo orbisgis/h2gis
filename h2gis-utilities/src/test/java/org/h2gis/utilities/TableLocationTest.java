@@ -41,24 +41,24 @@ public class TableLocationTest {
     @Test
     public void testSplitCatalogSchemaTableName() {
         check("mytable", null,
-                "", "", "mytable",
-                "mytable",
-                "\"mytable\"",
+                "", "", "MYTABLE",
+                "MYTABLE",
+                "MYTABLE",
                 "mytable");
         check("myschema.mytable", null,
-                "", "myschema", "mytable",
-                "myschema.mytable",
-                "\"myschema\".\"mytable\"",
+                "", "MYSCHEMA", "MYTABLE",
+                "MYSCHEMA.MYTABLE",
+                "MYSCHEMA.MYTABLE",
                 "myschema.mytable");
         check("mydb.myschema.mytable", null,
-                "mydb", "myschema", "mytable",
-                "mydb.myschema.mytable",
-                "\"mydb\".\"myschema\".\"mytable\"",
+                "MYDB", "MYSCHEMA", "MYTABLE",
+                "MYDB.MYSCHEMA.MYTABLE",
+                "MYDB.MYSCHEMA.MYTABLE",
                 "mydb.myschema.mytable");
         check(TableLocation.parse("mydb.myschema.mytable").toString(), DBTypes.POSTGRESQL,
                 "mydb", "myschema", "mytable",
                 "mydb.myschema.mytable",
-                "\"mydb\".\"myschema\".\"mytable\"",
+                "MYDB.MYSCHEMA.MYTABLE",
                 "mydb.myschema.mytable");
     }
 
@@ -95,10 +95,10 @@ public class TableLocationTest {
                 "\"mydb\".\"my schema\".\"my table\"",
                 "\"mydb\".\"my schema\".\"my table\"");
         check("public.MYTABLE", null,
-                "", "public", "MYTABLE",
-                "public.MYTABLE",
-                "\"public\".MYTABLE",
-                "public.\"MYTABLE\"");
+                "", "PUBLIC", "MYTABLE",
+                "PUBLIC.MYTABLE",
+                "PUBLIC.MYTABLE",
+                "public.mytable");
     }
 
     @Test
@@ -107,7 +107,7 @@ public class TableLocationTest {
                 "", "", "MYTABLE",
                 "MYTABLE",
                 "MYTABLE",
-                "\"MYTABLE\"");
+                "mytable");
         check("\"MyTable\"", DBTypes.H2GIS,
                 "", "", "\"MyTable\"",
                 "\"MyTable\"",
@@ -127,8 +127,8 @@ public class TableLocationTest {
         assertEquals(schema,location.getSchema());
         assertEquals(table, location.getTable());
         assertEquals(toString, location.toString());
-        assertEquals(toH2, location.toString(DBTypes.H2));
-        assertEquals(toPOSTGRESQL, location.toString(DBTypes.POSTGRESQL));
+        assertEquals(toH2, TableLocation.parse(input, DBTypes.H2).toString());
+        assertEquals(toPOSTGRESQL, TableLocation.parse(input,DBTypes.POSTGRESQL).toString());
     }
 
     @Test

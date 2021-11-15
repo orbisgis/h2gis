@@ -207,7 +207,7 @@ public class TableLocation {
      * @return Java beans for table location
      */
     public static TableLocation parse(String concatenatedTableLocation) {
-        return parse(concatenatedTableLocation, null);
+        return parse(concatenatedTableLocation, DBTypes.H2);
     }
 
 

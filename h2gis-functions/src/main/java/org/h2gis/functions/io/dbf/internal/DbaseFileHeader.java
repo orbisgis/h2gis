@@ -198,16 +198,17 @@ public class DbaseFileHeader {
 		}
 		int tempLength = 1; // the length is used for the offset, and there is a
 		// * for deleted as the first byte
-		DbaseField[] tempFieldDescriptors = new DbaseField[fields.length + 1];
-		for (int i = 0; i < fields.length; i++) {
+		int numbFields = fields.length;
+		DbaseField[] tempFieldDescriptors = new DbaseField[numbFields + 1];
+		for (int i = 0; i < numbFields; i++) {
 			fields[i].fieldDataAddress = tempLength;
 			tempLength += fields[i].fieldLength;
 			tempFieldDescriptors[i] = fields[i];
 		}
-		tempFieldDescriptors[fields.length] = new DbaseField();
-		tempFieldDescriptors[fields.length].fieldLength = inFieldLength;
-		tempFieldDescriptors[fields.length].decimalCount = inDecimalCount;
-		tempFieldDescriptors[fields.length].fieldDataAddress = tempLength;
+		tempFieldDescriptors[numbFields] = new DbaseField();
+		tempFieldDescriptors[numbFields].fieldLength = inFieldLength;
+		tempFieldDescriptors[numbFields].decimalCount = inDecimalCount;
+		tempFieldDescriptors[numbFields].fieldDataAddress = tempLength;
 
 		// set the field name
 		String tempFieldName = inFieldName;
@@ -708,7 +709,7 @@ public class DbaseFileHeader {
 	 *
 	 * @return A String representing the state of the header.
 	 */
-        @Override
+	@Override
 	public String toString() {
 		StringBuilder fs = new StringBuilder();
 		for (int i = 0, ii = fields.length; i < ii; i++) {

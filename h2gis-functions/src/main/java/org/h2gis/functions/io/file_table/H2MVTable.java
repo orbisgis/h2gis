@@ -24,6 +24,7 @@ import org.h2.api.DatabaseEventListener;
 import org.h2.api.ErrorCode;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.engine.Session;
+import org.h2.engine.SessionLocal;
 import org.h2.index.Cursor;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
@@ -82,12 +83,12 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public boolean lock(Session session, boolean exclusive, boolean force) {
+    public boolean lock(SessionLocal session, boolean exclusive, boolean force) {
         return false;
     }
 
     @Override
-    public void close(Session session) {
+    public void close(SessionLocal session) {
         for (Index index : indexes) {
             index.close(session);
         }
@@ -99,17 +100,17 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public void unlock(Session session) {
+    public void unlock(SessionLocal session) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public Row getRow(Session session, long key) {
+    public Row getRow(SessionLocal session, long key) {
         return indexes.get(0).getRow(session, key);
     }
 
     @Override
-    public Index addIndex(Session session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
+    public Index addIndex(SessionLocal session, String indexName, int indexId, IndexColumn[] cols,int uniqueColumnCount, IndexType indexType, boolean create, String indexComment) {
         if (indexType.isPrimaryKey()) {
             for (IndexColumn c : cols) {
                 Column column = c.column;
@@ -127,9 +128,9 @@ public class H2MVTable extends MVTable {
         }
         Index index;
         if (indexType.isSpatial()) {
-            index = new MVSpatialIndex(session.getDatabase(), this, indexId, indexName, cols, indexType);
+            index = new MVSpatialIndex(session.getDatabase(), this, indexId, indexName, cols,  uniqueColumnCount, indexType);
         } else {
-            index = new MVSecondaryIndex(session.getDatabase(), this, indexId, indexName, cols, indexType);
+            index = new MVSecondaryIndex(session.getDatabase(), this, indexId, indexName, cols,uniqueColumnCount, indexType);
         }
 
         if (index.needRebuild() && getRowCount(session) > 0) {
@@ -155,7 +156,7 @@ public class H2MVTable extends MVTable {
      * @param session
      * @param index
      */
-    private void rebuild(Session session, Index index){
+    private void rebuild(SessionLocal session, Index index){
         Index scan = getScanIndex(session);
         long remaining = scan.getRowCount(session);
         long total = remaining;
@@ -177,13 +178,13 @@ public class H2MVTable extends MVTable {
         }
         addRowsToIndex(session, buffer, index);
         if (remaining != 0) {
-            throw DbException.throwInternalError("rowcount remaining=" + remaining +
+            throw DbException.getInternalError("rowcount remaining=" + remaining +
                     " " + getName());
         }
     }
 
     @Override
-    public void removeChildrenAndResources(Session session) {
+    public void removeChildrenAndResources(SessionLocal session) {
         while (indexes.size() > 2) {
             Index index = indexes.get(2);
             index.remove(session);
@@ -195,7 +196,7 @@ public class H2MVTable extends MVTable {
         super.removeChildrenAndResources(session);
     }
 
-    public static void addRowsToIndex(Session session, ArrayList<Row> list,
+    public static void addRowsToIndex(SessionLocal session, ArrayList<Row> list,
                                        Index index) {
         final Index idx = index;
         Collections.sort(list, new Comparator<Row>() {
@@ -211,20 +212,21 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public void removeRow(Session session, Row row) {
+    public void removeRow(SessionLocal session, Row row) {
         throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"removeRow in this driver file");
     }
 
     @Override
-    public void truncate(Session session) {
-        long result = getRowCountApproximation();
+    public long truncate(SessionLocal session) {
+        long result = getRowCountApproximation(session);
         for(Index index : indexes) {
             index.truncate(session);
         }
+        return result;
     }
 
     @Override
-    public void addRow(Session session, Row row) {
+    public void addRow(SessionLocal session, Row row) {
         throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"addRow in this driver file");
     }
 
@@ -239,21 +241,11 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public Index getScanIndex(Session session) {
+    public Index getScanIndex(SessionLocal session) {
         // Look for scan index
         for(Index index : indexes) {
             if(index.getIndexType().isScan()) {
                 return index;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Index getUniqueIndex() {
-        for (Index idx : indexes) {
-            if (idx.getIndexType().isUnique()) {
-                return idx;
             }
         }
         return null;
@@ -280,22 +272,17 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public boolean canGetRowCount() {
-        return true;
-    }
-
-    @Override
     public boolean canDrop() {
         return true;
     }
 
     @Override
-    public long getRowCount(Session session) {
+    public long getRowCount(SessionLocal session) {
         return driver.getRowCount();
     }
 
     @Override
-    public long getRowCountApproximation() {
+    public long getRowCountApproximation(SessionLocal session) {
         return driver.getRowCount();
     }
 

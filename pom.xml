@@ -33,11 +33,11 @@
         <commons-compress-version>1.20</commons-compress-version>
         <commons-io-version>2.8.0</commons-io-version>
         <cts-version>1.6.0-SNAPSHOT</cts-version>
-        <h2-version>1.4.201-RC2</h2-version>
+        <h2-version>2.0.201-SNAPSHOT</h2-version>
         <jackson-core-version>2.12.1</jackson-core-version>
         <java-network-analyzer-version>0.1.8-SNAPSHOT</java-network-analyzer-version>
-        <jts-core-version>1.16.1</jts-core-version>
-        <junit-version>5.7.0</junit-version>
+        <jts-core-version>1.18.2</jts-core-version>
+        <junit-version>5.7.0-M1</junit-version>
         <osgi-compendium-version>5.0.0</osgi-compendium-version>
         <osgi-core-version>6.0.0</osgi-core-version>
         <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
@@ -78,7 +78,7 @@
                 <version>${commons-io-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.h2database</groupId>
+                <groupId>org.orbisgis</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2-version}</version>
             </dependency>
@@ -417,10 +417,10 @@
         <connection>scm:git:git://github.com/orbisgis/H2GIS</connection>
     </scm>
 
-     <repositories>
+    <repositories>
         <repository>
             <id>orbisgis-release</id>
-            <url>https://nexus.orbisgis.org/repository/orbisgis-release</url>
+            <url>https://oss.sonatype.org/content/repositories/releases/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -430,7 +430,7 @@
         </repository>
         <repository>
             <id>orbisgis-snapshot</id>
-            <url>https://nexus.orbisgis.org/repository/orbisgis-snapshot</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -446,21 +446,6 @@
             <modules>
                 <module>h2gis-dist</module>
             </modules>
-        </profile>
-             <profile>
-            <id>h2gis-deploy</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>h2gis-deploy-snapshots</id>
-                    <name>Internal Snaphots</name>
-                    <url>https://nexus.orbisgis.org/repository/orbisgis-snapshot/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>h2gis-deploy-release</id>
-                    <name>Internal Releases</name>
-                    <url>https://nexus.orbisgis.org/repository/orbisgis-release/</url>
-                </repository>
-            </distributionManagement>
         </profile>
         <profile>
             <id>maven-deploy</id>

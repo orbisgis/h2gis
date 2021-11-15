@@ -96,7 +96,8 @@ public class ST_ToMultiLine extends DeterministicScalarFunction {
 
     private static void toMultiLineString(final GeometryCollection geometryCollection,
                                    final List<LineString> lineStrings) throws SQLException {
-        for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+        int size = geometryCollection.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             toMultiLineString(geometryCollection.getGeometryN(i), lineStrings);
         }
     }

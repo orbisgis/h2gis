@@ -54,7 +54,6 @@ public class PolygonHandler implements ShapeHandler {
                         throw new ShapefileException(
                                 "PolygonHandler constructor - expected type to be 5, 15, or 25.");
                 }
-
                 shapeType = type;
         }
 
@@ -66,7 +65,6 @@ public class PolygonHandler implements ShapeHandler {
         @Override
         public int getLength(Object geometry) {
                 MultiPolygon multi;
-
                 if (geometry instanceof MultiPolygon) {
                         multi = (MultiPolygon) geometry;
                 } else {
@@ -74,10 +72,9 @@ public class PolygonHandler implements ShapeHandler {
                 }
 
                 int nrings = 0;
-
-                for (int t = 0; t < multi.getNumGeometries(); t++) {
-                        Polygon p;
-                        p = (Polygon) multi.getGeometryN(t);
+                int size = multi.getNumGeometries();
+                for (int t = 0; t < size; t++) {
+                        Polygon p = (Polygon) multi.getGeometryN(t);
                         nrings = nrings + 1 + p.getNumInteriorRing();
                 }
 
@@ -119,8 +116,8 @@ public class PolygonHandler implements ShapeHandler {
                         partOffsets[i] = buffer.getInt();
                 }
 
-                List<LinearRing> shells = new ArrayList<LinearRing>(numParts);
-                List<LinearRing> holes = new ArrayList<LinearRing>(numParts);
+                List<LinearRing> shells = new ArrayList<LinearRing>();
+                List<LinearRing> holes = new ArrayList<LinearRing>();
                 CoordinateSequence coords = readCoordinates(buffer, numPoints,
                         dimensions);
 
@@ -321,12 +318,10 @@ public class PolygonHandler implements ShapeHandler {
         private CoordinateSequence readCoordinates(final ReadBufferManager buffer,
                 final int numPoints, final int dimensions) throws IOException {
                 CoordinateSequence cs = geometryFactory.getCoordinateSequenceFactory().create(numPoints, dimensions);
-
                 for (int t = 0; t < numPoints; t++) {
                         cs.setOrdinate(t, 0, buffer.getDouble());
                         cs.setOrdinate(t, 1, buffer.getDouble());
                 }
-
                 return cs;
         }
 
@@ -458,7 +453,8 @@ public class PolygonHandler implements ShapeHandler {
                 // need to find the total number of rings and points
                 int nrings = 0;
 
-                for (int t = 0; t < multi.getNumGeometries(); t++) {
+                int size = multi.getNumGeometries();
+                for (int t = 0; t < size; t++) {
                         Polygon p;
                         p = (Polygon) multi.getGeometryN(t);
                         nrings = nrings + 1 + p.getNumInteriorRing();
@@ -467,7 +463,7 @@ public class PolygonHandler implements ShapeHandler {
                 int u = 0;
                 int[] pointsPerRing = new int[nrings];
 
-                for (int t = 0; t < multi.getNumGeometries(); t++) {
+                for (int t = 0; t < size; t++) {
                         Polygon p;
                         p = (Polygon) multi.getGeometryN(t);
                         pointsPerRing[u] = p.getExteriorRing().getNumPoints();

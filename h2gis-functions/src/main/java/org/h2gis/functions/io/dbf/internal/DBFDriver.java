@@ -140,7 +140,8 @@ public class DBFDriver implements FileDriver {
     @Override
     public int getEstimatedRowSize(long rowId) {
         int totalSize = 0;
-        for(int column = 0; column < getFieldCount(); column++) {
+        int fieldCount = getFieldCount();
+        for(int column = 0; column < fieldCount; column++) {
             totalSize += dbaseFileReader.getLengthFor(column);
         }
         return totalSize;

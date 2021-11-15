@@ -99,7 +99,11 @@ public class GeoJsonReaderDriver {
      *
      * @param progress
      * @param tableReference
+<<<<<<< HEAD
      * @return 
+=======
+     * @return
+>>>>>>> f17753e8b57767967bf0b70caf35a42b79d92059
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
@@ -132,7 +136,6 @@ public class GeoJsonReaderDriver {
             if (deleteTable) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
-
                 stmt.close();
             }
 
@@ -213,12 +216,12 @@ public class GeoJsonReaderDriver {
                 jp.nextToken(); // field_name (type)
                 String dataType = jp.getText();
                 if (dataType.equalsIgnoreCase(GeoJsonField.TYPE)) {
-                    jp.nextToken(); // value_string (FeatureCollection)   
+                    jp.nextToken(); // value_string (FeatureCollection)
                     dataType = jp.getText();
                     if (dataType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
                         jp.nextToken(); // FIELD_NAME features
                         parseFeaturesMetadata(jp);
-                    } 
+                    }
                     else if(dataType.equalsIgnoreCase(GeoJsonField.FEATURE)){
                         parseFeatureMetadata(jp);
                     }
@@ -329,7 +332,7 @@ public class GeoJsonReaderDriver {
      * @throws IOException
      * @throws SQLException
      */
-    private void parseFeaturesMetadata(JsonParser jp) throws IOException, SQLException {        
+    private void parseFeaturesMetadata(JsonParser jp) throws IOException, SQLException {
         // Passes all the properties until "Feature" object is found
         while (!jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES)
                 && !jp.getText().equalsIgnoreCase(GeoJsonField.CRS)) {
@@ -1374,7 +1377,7 @@ public class GeoJsonReaderDriver {
                     jp.nextToken(); // value_string (FeatureCollection)
                     dataType = jp.getText();
                     if (dataType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
-                        jp.nextToken(); // FIELD_NAME features        
+                        jp.nextToken(); // FIELD_NAME features
                         parseFeatures(jp);
                     }else if(dataType.equalsIgnoreCase(GeoJsonField.FEATURE)){
                         Object[] values = parseFeature(jp);

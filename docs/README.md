@@ -106,9 +106,9 @@ From maven central, check https://search.maven.org/artifact/org.orbisgis/h2gis/1
 To use the current snapshot add in the pom
 ```xml
 <repository>
-  <id>orbisgis-nexus-snapshot</id>
-  <name>OrbisGIS nexus snapshot repository</name>
-  <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
+  <id>orbisgis-snapshot</id>
+  <name>OrbisGIS sonatype snapshot repository</name>
+  <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 </repository>
 ```
 

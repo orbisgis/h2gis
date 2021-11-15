@@ -257,7 +257,8 @@ public class KMLGeometry {
      */
     public static void toKMLMultiGeometry(GeometryCollection gc, ExtrudeMode extrude, int altitudeModeEnum, StringBuilder sb) {
         sb.append("<MultiGeometry>");
-        for (int i = 0; i < gc.getNumGeometries(); i++) {
+        int size = gc.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry geom = gc.getGeometryN(i);
             if (geom instanceof Point) {
                 toKMLPoint((Point) geom, extrude, altitudeModeEnum, sb);

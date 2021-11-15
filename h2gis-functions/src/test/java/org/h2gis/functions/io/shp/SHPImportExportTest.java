@@ -156,20 +156,20 @@ public class SHPImportExportTest {
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
         assertEquals(H2TableIndex.PK_COLUMN_NAME, rs.getString("COLUMN_NAME"));
-        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
+        assertEquals("INTEGER", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("THE_GEOM", rs.getString("COLUMN_NAME"));
-        assertEquals("GEOMETRY", rs.getString("TYPE_NAME"));
+        assertEquals("GEOMETRY", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE", rs.getString("COLUMN_NAME"));
-        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
+        assertEquals("CHARACTER VARYING", rs.getString("DATA_TYPE"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID", rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT", rs.getString("TYPE_NAME"));
+        assertEquals("BIGINT", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("LENGTH", rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE", rs.getString("TYPE_NAME"));
+        assertEquals("DOUBLE PRECISION", rs.getString("DATA_TYPE"));
         rs.close();
         // Check content
         rs = st.executeQuery("SELECT * FROM WATERNETWORK");
@@ -787,7 +787,7 @@ public class SHPImportExportTest {
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
             res.next();
             Geometry geom = (Geometry) res.getObject("THE_GEOM");
-            assertEquals(4326, geom.getSRID());            
+            assertEquals(4326, geom.getSRID());
             assertGeometryBarelyEquals(geomOutPut.toString(), geom.getGeometryN(0));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
@@ -801,15 +801,15 @@ public class SHPImportExportTest {
             stat.execute("DROP TABLE IF EXISTS POINTS");
         }
     }
-    
-    
+
+
     @Test
     public void testWriteReadNullValues() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute(" DROP TABLE IF EXISTS orbisgis;"
                     + "CREATE TABLE orbisgis (the_geom geometry(point, 4326), id int, name varchar, version REAL, age FLOAT, distance DOUBLE PRECISION );"
                     + "INSERT INTO orbisgis VALUES ('SRID=4326;POINT(10 10)'::GEOMETRY, null, null, null, null, null); ");
-            
+
             stat.execute("CALL SHPWrite('target/orbisgis_null.shp','orbisgis', true);");
             stat.execute("CALL SHPRead('target/orbisgis_null.shp', 'TABLE_ORBISGIS');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_ORBISGIS;");
@@ -904,7 +904,7 @@ public class SHPImportExportTest {
             }
         }
     }
-    
+
     @Test
     public void exportImportNotSensitive() throws SQLException, IOException {
         Statement stat = connection.createStatement();
