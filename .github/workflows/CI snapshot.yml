@@ -39,7 +39,7 @@ jobs:
 
       # Deploy the snapshot
       - name: Deploy
-        run: mvn deploy --no-transfer-progress --batch-mode
+        run: mvn deploy --no-transfer-progress --batch-mode -P maven-deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
