@@ -50,7 +50,7 @@ jobs:
           mvn \
             --no-transfer-progress \
             --batch-mode \
-            -P deploy \
+            -P maven-deploy \
             release:prepare release:perform \
             -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN -DtagNameFormat=v@{project.version}
         env:
