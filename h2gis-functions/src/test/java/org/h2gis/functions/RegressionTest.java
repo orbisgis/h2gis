@@ -1,5 +1,7 @@
 package org.h2gis.functions;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.AfterAll;
@@ -11,11 +13,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class IntegrationTests {
+
+public class RegressionTest {
 
     private static Connection connection;
-    private static final String DB_NAME = "IntegrationTests";
+    private static final String DB_NAME = "RegressionTest";
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -27,10 +32,15 @@ public class IntegrationTests {
         connection.close();
     }
 
-    @Disabled
     @Test
     public void testBigGeometry() throws SQLException {
         Statement stat = connection.createStatement();
-        stat.execute("SELECT ST_ACCUM(st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00)) FROM GENERATE_SERIES(1, 200000)");
+        assertDoesNotThrow(() -> {
+            try {
+                stat.execute("SELECT ST_ACCUM(st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00)) FROM GENERATE_SERIES(1, 100000)");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 }
