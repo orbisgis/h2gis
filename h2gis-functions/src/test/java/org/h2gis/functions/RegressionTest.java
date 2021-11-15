@@ -47,13 +47,15 @@ public class RegressionTest {
     }
 
     @Test
-    public void testH2GIS_SPATIALCALL() throws SQLException {
+    public void testH2gis_spatialCall() throws SQLException {
         Statement stat = connection.createStatement();
-        stat.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR \"org.h2gis.functions.factory.H2GISFunctions.load\"");
-        stat.execute("CREATE ALIAS IF NOT EXISTS H2GIS_UNLOAD FOR \"org.h2gis.functions.factory.H2GISFunctions.unRegisterH2GISFunctions\"");
-        stat.execute("CALL H2GIS_SPATIAL();");
-        stat.execute("SELECT 1");
-        stat.execute("CALL SHPRead("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath())+", 'water', true)");
-        stat.execute("CALL H2GIS_SPATIAL();");
+        assertDoesNotThrow(() -> {
+            stat.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR \"org.h2gis.functions.factory.H2GISFunctions.load\"");
+            stat.execute("CREATE ALIAS IF NOT EXISTS H2GIS_UNLOAD FOR \"org.h2gis.functions.factory.H2GISFunctions.unRegisterH2GISFunctions\"");
+            stat.execute("CALL H2GIS_SPATIAL();");
+            stat.execute("SELECT 1");
+            stat.execute("CALL SHPRead(" + StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'water', true)");
+            stat.execute("CALL H2GIS_SPATIAL();");
+        });
     }
 }
