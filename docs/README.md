@@ -1,7 +1,6 @@
 # H2GIS
 [![GitHub](https://img.shields.io/github/license/orbisgis/h2gis.svg)](https://github.com/orbisgis/h2gis/blob/master/LICENSE.md) 
-[![Build Stat](https://img.shields.io/jenkins/s/http/jenkins-ng.orbisgis.org/job/h2gis.svg)](http://jenkins-ng.orbisgis.org/job/h2gis) 
-[![Build Test](https://img.shields.io/jenkins/t/http/jenkins-ng.orbisgis.org/job/h2gis.svg)](https://jenkins-ng.orbisgis.org/job/h2gis/test_results_analyzer/) 
+[![Build Stat](https://img.shields.io/jenkins/s/http/jenkins.orbisgis.org/job/h2gis.svg)](http://jenkins.orbisgis.org/job/h2gis) 
 [![codecov](https://img.shields.io/codecov/c/github/orbisgis/h2gis.svg)](https://codecov.io/gh/orbisgis/h2gis) 
 [![Codacy Badge](https://img.shields.io/codacy/grade/93899ea0675d43a2a3787ce5dd3c5595.svg)](https://www.codacy.com/app/orbisgis/h2gis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=orbisgis/h2gis&amp;utm_campaign=Badge_Grade) 
 
@@ -107,9 +106,9 @@ From maven central, check https://search.maven.org/artifact/org.orbisgis/h2gis/1
 To use the current snapshot add in the pom
 ```xml
 <repository>
-  <id>orbisgis-nexus-snapshot</id>
-  <name>OrbisGIS nexus snapshot repository</name>
-  <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
+  <id>orbisgis-snapshot</id>
+  <name>OrbisGIS sonatype snapshot repository</name>
+  <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 </repository>
 ```
 

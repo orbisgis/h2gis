@@ -44,6 +44,8 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
         addProperty(PROP_REMARKS, "Calculate a regular grid.\n"
                 + "The first argument is either a geometry or a table.\n"
                 + "The delta X and Y cell grid are expressed in a cartesian plane."
+                + "An optional value set to true indicates that the delta x and delta y defines the number of" +
+                "columns and rows\n"
                 + "Note :The geometry could be expressed using a subquery as\n"
                 + " (SELECT the_geom from myTable)");
     }
@@ -74,6 +76,35 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
             GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
+            return gridRowSet.getResultSet();
+        } else {
+            throw new SQLException("This function supports only table name or geometry as first argument.");
+        }
+    }
+
+    /**
+     * Create a regular grid using the first input argument to compute the full
+     * extent.
+     *
+     * @param connection
+     * @param value could be the name of a table or a geometry.
+     * @param deltaX the X cell size
+     * @param deltaY the Y cell size
+     * @return a resultset that contains all cells as a set of polygons
+     * @throws SQLException
+     */
+    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean isColumnsRowsMeasure) throws SQLException {
+        if(value == null){
+            return null;
+        }
+        if (value instanceof ValueVarchar) {
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
+            gridRowSet.setIsRowColumnNumber(isColumnsRowsMeasure);
+            return gridRowSet.getResultSet();
+        } else if (value instanceof ValueGeometry) {
+            ValueGeometry geom = (ValueGeometry) value;
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
+            gridRowSet.setIsRowColumnNumber(isColumnsRowsMeasure);
             return gridRowSet.getResultSet();
         } else {
             throw new SQLException("This function supports only table name or geometry as first argument.");

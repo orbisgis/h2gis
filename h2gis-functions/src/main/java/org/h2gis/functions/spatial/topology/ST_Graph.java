@@ -240,13 +240,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
         final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
         final TableLocation nodesName = TableUtilities.suffixTableLocation(tableName, NODES_SUFFIX);
-        final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX); 
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX);
         final DBTypes dbType = DBUtils.getDBType(connection);
         if(deleteTables){            
             try (Statement stmt = connection.createStatement()) {
                 StringBuilder sb = new StringBuilder("drop table if exists ");
-                sb.append(nodesName.toString(dbType)).append(",").append(edgesName.toString(dbType));
+                sb.append(nodesName.toString()).append(",").append(edgesName.toString());
                 stmt.execute(sb.toString());
             }
         }
@@ -256,8 +255,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             throw new IllegalArgumentException(ALREADY_RUN_ERROR + tableName.getTable());
         }
         //Tables used to store intermediate data
-        PTS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_PTS", isH2).toString();
-        COORDS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_COORDS", isH2).toString();
+        PTS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_PTS", dbType).toString();
+        COORDS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_COORDS", dbType).toString();
         // Check for a primary key
         final Tuple<String, Integer> pkIndex = JDBCUtilities.getIntegerPrimaryKeyNameAndIndex(connection, tableName);
         if (pkIndex==null) {
@@ -282,9 +281,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.getKey(), tolerance);            
             int srid = geometryMetada.getValue().SRID;
             boolean hasZ = geometryMetada.getValue().hasZ;
-            makeEnvelopes(st, tolerance, isH2, srid,hasZ);
-            nodesTable(st, nodesName, tolerance, isH2,srid, hasZ);
-            edgesTable(st, nodesName, edgesName, tolerance, isH2);
+            makeEnvelopes(st, tolerance, dbType, srid,hasZ);
+            nodesTable(st, nodesName, tolerance, srid, hasZ);
+            edgesTable(st, nodesName, edgesName, tolerance, dbType);
             checkForNullEdgeEndpoints(st, edgesName);
             if (orientBySlope) {
                 orientBySlope(st, nodesName, edgesName);
@@ -350,7 +349,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Make a big table of all points in the coords table with an envelope around each point.
      * We will use this table to remove duplicate points.
      */
-    private static void makeEnvelopes(Statement st, double tolerance, boolean isH2, int srid, boolean hasZ) throws SQLException {
+    private static void makeEnvelopes(Statement st, double tolerance, DBTypes dbType, int srid, boolean hasZ) throws SQLException {
         st.execute("DROP TABLE IF EXISTS" + PTS_TABLE + ";");
         String pointSignature = hasZ?"POINTZ":"POINT";
         if (tolerance > 0) {
@@ -365,7 +364,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + " UNION ALL "
                     + "SELECT  END_POINT AS THE_GEOM, END_POINT_EXP as AREA FROM " + COORDS_TABLE + ") as a);");
             // Putting a spatial index on the envelopes...
-            if (isH2) {
+            if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
                 st.execute("CREATE SPATIAL INDEX ON " + PTS_TABLE + "(AREA);");
             } else {
                 st.execute("CREATE INDEX ON " + PTS_TABLE + " USING GIST(AREA);");
@@ -381,7 +380,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + "(SELECT  START_POINT as THE_GEOM FROM " + COORDS_TABLE
                     + " UNION ALL "
                     + "SELECT  END_POINT as THE_GEOM FROM " + COORDS_TABLE + ") as a);");
-            if (isH2) {
+            if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
                 // Putting a spatial index on the points themselves...
                 st.execute("CREATE SPATIAL INDEX ON " + PTS_TABLE + "(THE_GEOM);");
             } else {
@@ -396,7 +395,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     private static void nodesTable(Statement st,
                                    TableLocation nodesName,
-                                   double tolerance, boolean isH2, int srid, boolean hasZ) throws SQLException {
+                                   double tolerance, int srid, boolean hasZ) throws SQLException {
         LOGGER.info("Creating the nodes table...");
         // Creating nodes table by removing copies from the pts table.
         String pointSignature = hasZ?"POINTZ":"POINT";
@@ -431,10 +430,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static void edgesTable(Statement st,
                                    TableLocation nodesName,
                                    TableLocation edgesName,
-                                   double tolerance, boolean isH2) throws SQLException {
+                                   double tolerance, DBTypes dbType) throws SQLException {
         LOGGER.info("Creating the edges table...");
         if (tolerance > 0) {
-            if (isH2) {
+            if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
                 st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(EXP);");
                 st.execute("CREATE SPATIAL INDEX ON "+ COORDS_TABLE+"(START_POINT_EXP);");
                 st.execute("CREATE SPATIAL INDEX ON "+ COORDS_TABLE+"(END_POINT_EXP);");
@@ -452,7 +451,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "FROM "+ COORDS_TABLE+";");
             st.execute("ALTER TABLE " + nodesName + " DROP COLUMN EXP;");
         } else {
-            if (isH2) {
+            if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
                 st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
                 st.execute("CREATE SPATIAL INDEX ON "+ COORDS_TABLE+"(START_POINT);");
                 st.execute("CREATE SPATIAL INDEX ON "+ COORDS_TABLE+"(END_POINT);");

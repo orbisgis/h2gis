@@ -257,9 +257,7 @@ public class FullConvexHull
             if (c1.y <= c2.y && c2.y <= c3.y) {
                 return true;
             }
-            if (c3.y <= c2.y && c2.y <= c1.y) {
-                return true;
-            }
+            return c3.y <= c2.y && c2.y <= c1.y;
         }
         return false;
     }

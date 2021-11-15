@@ -96,7 +96,8 @@ public class MakeValidOp {
      * @param list a list of simple components (Point, LineString or Polygon)
      */
     private static void decompose(Geometry geometry, Collection<Geometry> list) {
-        for (int i = 0; i < geometry.getNumGeometries(); i++) {
+        int size = geometry.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry component = geometry.getGeometryN(i);
             if (component instanceof GeometryCollection) {
                 decompose(component, list);
@@ -146,16 +147,20 @@ public class MakeValidOp {
                 }
             } else if (component instanceof LineString) {
                 Geometry geom = makeLineStringValid((LineString) component);
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
-                    if (!geom.getGeometryN(i).isEmpty()) {
-                        list2.add(geom.getGeometryN(i));
+                int size = geom.getNumGeometries();
+                for (int i = 0; i < size; i++) {
+                    Geometry subGeom = geom.getGeometryN(i);
+                    if (!subGeom.isEmpty()) {
+                        list2.add(subGeom);
                     }
                 }
             } else if (component instanceof Polygon) {
                 Geometry geom = makePolygonValid((Polygon) component);
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
-                    if (!geom.getGeometryN(i).isEmpty()) {
-                        list2.add(geom.getGeometryN(i));
+                int size = geom.getNumGeometries();
+                for (int i = 0; i < size; i++) {
+                    Geometry subGeom = geom.getGeometryN(i);
+                    if (!subGeom.isEmpty()) {
+                        list2.add(subGeom);
                     }
                 }
             } else {
@@ -234,7 +239,8 @@ public class MakeValidOp {
 
     // Reursively remove geometries with a dimension less than dimension parameter
     private void removeLowerDimension(Geometry geometry, List<Geometry> result, int dimension) {
-        for (int i = 0; i < geometry.getNumGeometries(); i++) {
+        int size  = geometry.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry g = geometry.getGeometryN(i);
             if (g instanceof GeometryCollection) {
                 removeLowerDimension(g, result, dimension);
@@ -248,9 +254,10 @@ public class MakeValidOp {
     private Collection<Geometry> unionAdjacentPolygons(Collection<Geometry> list) {
         UnaryUnionOp op = new UnaryUnionOp(list);
         Geometry result = op.union();
-        if (result.getNumGeometries() < list.size()) {
+        int size  = result.getNumGeometries();
+        if (size < list.size()) {
             list.clear();
-            for (int i = 0; i < result.getNumGeometries(); i++) {
+            for (int i = 0; i < size; i++) {
                 list.add(result.getGeometryN(i));
             }
         }
@@ -387,11 +394,13 @@ public class MakeValidOp {
         //heterogeneous dimension
         Geometry geom = makePolygonComponentsValid(polygon);
         List<Geometry> list = new ArrayList<>();
-        for (int i = 0; i < geom.getNumGeometries(); i++) {
+        int size  = geom.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry component = geom.getGeometryN(i);
             if (component instanceof Polygon) {
                 Geometry nodedPolygon = nodePolygon((Polygon) component);
-                for (int j = 0; j < nodedPolygon.getNumGeometries(); j++) {
+                int sub_size = nodedPolygon.getNumGeometries();
+                for (int j = 0; j < sub_size; j++) {
                     list.add(nodedPolygon.getGeometryN(j));
                 }
             } else {
@@ -587,7 +596,8 @@ public class MakeValidOp {
                 }
                 result.add(factory.createPolygon(outer, inner));
             } else {
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                int size = geom.getNumGeometries();
+                for (int i = 0; i < size; i++) {
                     result.addAll(restoreDim4(Collections.singleton(geom.getGeometryN(i)), map));
                 }
             }
@@ -608,7 +618,8 @@ public class MakeValidOp {
                 gatherDim4(polygon.getInteriorRingN(i).getCoordinateSequence(), map);
             }
         } else {
-            for (int i = 0; i < geometry.getNumGeometries(); i++) {
+            int size = geometry.getNumGeometries();
+            for (int i = 0; i < size; i++) {
                 gatherDim4(geometry.getGeometryN(i), map);
             }
         }

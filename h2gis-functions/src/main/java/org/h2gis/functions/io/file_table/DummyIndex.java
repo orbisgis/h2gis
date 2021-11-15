@@ -41,7 +41,7 @@ public class DummyIndex extends Index {
    
         
     public DummyIndex(Table table,int id, IndexColumn indexColumn) {
-        super(table,id,table.getName()+"_DATA",new IndexColumn[] {indexColumn}, IndexType.createScan(true));
+        super(table,id,table.getName()+"_DATA",new IndexColumn[] {indexColumn}, 0,IndexType.createScan(true));
     }
 
     @Override

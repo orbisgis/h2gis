@@ -50,7 +50,7 @@ public class ST_AsWKT extends DeterministicScalarFunction {
         if(geometry==null) {
             return null;
         }
-        WKTWriter wktWriter = new WKTWriter();
+        WKTWriter wktWriter = new WKTWriter(4);
         return wktWriter.write(geometry);
     }
 }

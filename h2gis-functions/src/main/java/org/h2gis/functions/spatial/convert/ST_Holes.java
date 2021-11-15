@@ -59,11 +59,13 @@ public class ST_Holes extends DeterministicScalarFunction {
         if (geom != null) {
             if (geom.getDimension() >= 2) {
                 ArrayList<Geometry> holes = new ArrayList<Geometry>();
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                int size = geom.getNumGeometries();
+                for (int i = 0; i < size; i++) {
                     Geometry subgeom = geom.getGeometryN(i);
                     if (subgeom instanceof Polygon) {
                         Polygon polygon = (Polygon) subgeom;
-                        for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
+                        int sub_size = polygon.getNumInteriorRing();
+                        for (int j = 0; j < sub_size; j++) {
                             holes.add(geom.getFactory().createPolygon(
                                     geom.getFactory().createLinearRing(
                                             polygon.getInteriorRingN(j).getCoordinates()), null));

@@ -93,7 +93,7 @@ public class ShapefileReader {
                 return header;
         }
 
-        private void init() throws IOException, ShapefileException {
+        private void init() throws IOException {
                 header = readHeader(channel);
                 fileShapeType = header.getShapeType();
                 handler = fileShapeType.getShapeHandler();

@@ -61,11 +61,13 @@ public class ST_Tessellate extends DeterministicScalarFunction {
         if(geometry instanceof Polygon) {
             return tessellatePolygon((Polygon) geometry);
         } else if (geometry instanceof MultiPolygon) {
-            ArrayList<Polygon> polygons = new ArrayList<Polygon>(geometry.getNumGeometries() * 2);
-            for(int idPoly = 0; idPoly < geometry.getNumGeometries(); idPoly++) {
+            int size =geometry.getNumGeometries();
+            ArrayList<Polygon> polygons = new ArrayList<Polygon>(size * 2);
+            for(int idPoly = 0; idPoly < size; idPoly++) {
                 MultiPolygon triangles = tessellatePolygon((Polygon)geometry.getGeometryN(idPoly));
-                polygons.ensureCapacity(triangles.getNumGeometries());
-                for(int idTri=0; idTri < triangles.getNumGeometries(); idTri++) {
+                int sub_size = triangles.getNumGeometries();
+                polygons.ensureCapacity(sub_size);
+                for(int idTri=0; idTri < sub_size; idTri++) {
                     polygons.add((Polygon)triangles.getGeometryN(idTri));
                 }
             }

@@ -61,7 +61,7 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
 
 
 
-    public static void importTable(Connection connection, String fileName, Value option) throws SQLException, FileNotFoundException, IOException {
+    public static void importTable(Connection connection, String fileName, Value option) throws SQLException, IOException {
         String tableReference =null;
         boolean deleteTable =  false;
         if(option instanceof ValueBoolean){

@@ -120,7 +120,8 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
      */
     public static Geometry computeOffsetCurve(Geometry geometry, double offset, BufferParameters bufferParameters) {
         ArrayList<LineString> lineStrings = new ArrayList<LineString>();
-        for (int i = 0; i < geometry.getNumGeometries(); i++) {
+        int size = geometry.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry subGeom = geometry.getGeometryN(i);
             if (subGeom.getDimension() == 1) {
                 lineStringOffSetCurve(lineStrings, (LineString) subGeom, offset, bufferParameters);

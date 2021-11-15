@@ -25,6 +25,7 @@ import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
 
 /**
  * Function to update the SRID of a geometry column
@@ -84,7 +85,7 @@ public class UpdateGeometrySRID  extends AbstractFunction implements ScalarFunct
      * @throws SQLException 
      */
     public static boolean changeSRID(Connection connection, String catalog_name, String schema_name, String table_name, String column_name, int srid) throws SQLException {
-        TableLocation tableLocation = new TableLocation(catalog_name, schema_name, table_name);
+        TableLocation tableLocation = new TableLocation(catalog_name, schema_name, table_name, DBTypes.H2GIS);
         return GeometryTableUtilities.alterSRID(connection, tableLocation, column_name, srid);
     }
 

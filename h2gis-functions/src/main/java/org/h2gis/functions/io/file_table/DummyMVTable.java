@@ -51,7 +51,7 @@ public class DummyMVTable extends MVTable {
     }
 
     @Override
-    public Index addIndex(SessionLocal session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
+    public Index addIndex(SessionLocal session, String indexName, int indexId, IndexColumn[] cols, int uniqueColumnCount,IndexType indexType, boolean create, String indexComment) {
         return null;
     }
 
@@ -98,11 +98,6 @@ public class DummyMVTable extends MVTable {
 
     @Override
     public Index getScanIndex(SessionLocal session) {
-        return createIndex();
-    }
-
-    @Override
-    public Index getUniqueIndex() { 
         return createIndex();
     }
 

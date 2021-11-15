@@ -44,7 +44,8 @@ public class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper imple
     @Override
     public int getFirstGeometryFieldIndex() throws SQLException {
         if(firstGeometryFieldIndex==-1) {
-            for(int idColumn=1;idColumn<=getColumnCount();idColumn++) {
+            int columnCount =getColumnCount();
+            for(int idColumn=1;idColumn<=columnCount;idColumn++) {
                 if(getColumnTypeName(idColumn).equalsIgnoreCase("geometry")) {
                     firstGeometryFieldIndex = idColumn;
                     break;

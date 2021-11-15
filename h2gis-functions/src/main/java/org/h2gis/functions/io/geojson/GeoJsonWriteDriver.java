@@ -25,6 +25,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.*;
 
 import java.io.*;
@@ -65,7 +67,6 @@ public class GeoJsonWriteDriver {
     private Map<String, String> cachedSpecificColumns;
     private LinkedHashMap<String, Integer> cachedColumnIndex;
     private int columnCountProperties = -1;
-    private  boolean isH2;
 
     /**
      * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -89,7 +90,6 @@ public class GeoJsonWriteDriver {
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -97,7 +97,6 @@ public class GeoJsonWriteDriver {
             }
             geojsonWriter(progress, rs, new FileOutputStream(fileName), encoding);
         } else if (FileUtilities.isExtensionWellFormated(fileName, "gz")) {
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -118,7 +117,6 @@ public class GeoJsonWriteDriver {
                 }
             }
         } else if (FileUtilities.isExtensionWellFormated(fileName, "zip")) {
-            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -189,7 +187,7 @@ public class GeoJsonWriteDriver {
                 if (authAndSrid != null) {
                     //Write the SRID based on the first geometry
                     writeCRS(jsonGenerator, authAndSrid);
-                    srid = Integer.valueOf(authAndSrid[1]);
+                    srid = Integer.parseInt(authAndSrid[1]);
                 }
                 jsonGenerator.writeArrayFieldStart("features");
                 //Don't forget to save the first geom
@@ -244,6 +242,7 @@ public class GeoJsonWriteDriver {
      * @throws IOException
      */
     private void geojsonWriter(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
+        DBTypes dbTypes = DBUtils.getDBType(connection);
         JsonEncoding jsonEncoding = JsonEncoding.UTF8;
         if (encoding != null) {
             try {
@@ -253,8 +252,8 @@ public class GeoJsonWriteDriver {
             }
         }
         try {
-            final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
-            int recordCount = JDBCUtilities.getRowCount(connection, parse);
+            final TableLocation parse = TableLocation.parse(tableName, dbTypes);
+            int recordCount = JDBCUtilities.getRowCount(connection, parse.toString());
             if (recordCount > 0) {
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
                 // Read Geometry Index and type
@@ -518,7 +517,8 @@ public class GeoJsonWriteDriver {
     private void cacheMetadata(ResultSetMetaData resultSetMetaData) throws SQLException {
         cachedColumnIndex = new LinkedHashMap<String, Integer>();
         cachedSpecificColumns = new LinkedHashMap<String, String>();
-        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+        int columnCount =resultSetMetaData.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
             final String fieldTypeName = resultSetMetaData.getColumnTypeName(i);
             String columnName = resultSetMetaData.getColumnName(i);
             if (!fieldTypeName.equalsIgnoreCase("geometry")
@@ -629,7 +629,8 @@ public class GeoJsonWriteDriver {
         gen.writeStringField("type", "MultiLineString");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
-        for (int i = 0; i < geom.getNumGeometries(); ++i) {
+        int size = geom.getNumGeometries();
+        for (int i = 0; i < size; ++i) {
             writeCoordinates(geom.getGeometryN(i).getCoordinates(), gen);
         }
         gen.writeEndArray();
@@ -650,7 +651,8 @@ public class GeoJsonWriteDriver {
     private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "GeometryCollection");
         gen.writeArrayFieldStart("geometries");
-        for (int i = 0; i < coll.getNumGeometries(); ++i) {
+        int size = coll.getNumGeometries();
+        for (int i = 0; i < size; ++i) {
             Geometry geom = coll.getGeometryN(i);
             gen.writeStartObject();
             if (geom instanceof Point) {
@@ -724,7 +726,8 @@ public class GeoJsonWriteDriver {
         gen.writeStringField("type", "MultiPolygon");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
-        for (int i = 0; i < geom.getNumGeometries(); ++i) {
+        int size = geom.getNumGeometries();
+        for (int i = 0; i < size; ++i) {
             Polygon p = (Polygon) geom.getGeometryN(i);
             gen.writeStartArray();
             writeCoordinates(p.getExteriorRing().getCoordinates(), gen);
@@ -747,8 +750,8 @@ public class GeoJsonWriteDriver {
         gen.writeStartArray();
         gen.writeNumber(coordinate.x);
         gen.writeNumber(coordinate.y);
-        if (!Double.isNaN(coordinate.z)) {
-            gen.writeNumber(coordinate.z);
+        if (!Double.isNaN(coordinate.getZ())) {
+            gen.writeNumber(coordinate.getZ());
         }
         gen.writeEndArray();
     }
@@ -786,6 +789,9 @@ public class GeoJsonWriteDriver {
                     if(specificType.equalsIgnoreCase("JSON")) {
                         jsonGenerator.writeFieldName(columnName);
                         jsonGenerator.writeString(rs.getString(fieldId));
+                    }
+                    else if (specificType.equalsIgnoreCase("TIME")){
+                        jsonGenerator.writeStringField(columnName, rs.getObject(fieldId).toString());
                     }
                 }
                 else if (rs.getObject(fieldId) instanceof Object[]) {
@@ -838,6 +844,10 @@ public class GeoJsonWriteDriver {
             case Types.TINYINT:
             case Types.NUMERIC:
             case Types.NULL:
+                return true;
+            case Types.TIME:
+            case Types.TIMESTAMP:
+                cachedSpecificColumns.put(columnName, "TIME");
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);

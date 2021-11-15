@@ -89,9 +89,10 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
         } else if (geometry instanceof LineString) {
             return insertVertexInLineString((LineString) geometry, point, tolerance, factory);
         } else if (geometry instanceof MultiLineString) {
-            LineString[] linestrings = new LineString[geometry.getNumGeometries()];
+            int size = geometry.getNumGeometries();
+            LineString[] linestrings = new LineString[size];
             boolean any = false;
-            for (int i = 0; i < geometry.getNumGeometries(); i++) {
+            for (int i = 0; i < size; i++) {
                 LineString line = (LineString) geometry.getGeometryN(i);
 
                 LineString inserted = insertVertexInLineString(line, point, tolerance, factory);

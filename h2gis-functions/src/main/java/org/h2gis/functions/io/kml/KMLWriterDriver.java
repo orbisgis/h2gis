@@ -293,7 +293,7 @@ public class KMLWriterDriver {
             xmlOut.writeAttribute("id", tableName);
             //Write column metadata
             kmlFields = new HashMap<Integer, String>();
-            for (int fieldId = 1; fieldId <= metaData.getColumnCount(); fieldId++) {
+            for (int fieldId = 1; fieldId <= columnCount; fieldId++) {
                 final String fieldTypeName = metaData.getColumnTypeName(fieldId);
                 if (!fieldTypeName.equalsIgnoreCase("geometry")) {
                     String fieldName = metaData.getColumnName(fieldId);

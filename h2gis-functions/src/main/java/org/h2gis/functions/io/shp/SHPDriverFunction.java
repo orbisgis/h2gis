@@ -24,6 +24,7 @@ import org.h2.util.JdbcUtils;
 import org.h2.value.TypeInfo;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.h2gis.functions.io.file_table.FileEngine;
@@ -65,17 +66,18 @@ public class SHPDriverFunction implements DriverFunction {
     private static final int BATCH_MAX_SIZE = 200;
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, null, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName, null, progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, null, deleteFiles, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName, null, deleteFiles, progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection,tableReference, fileName, progress);
         if (!FileUtilities.isExtensionWellFormated(fileName, "shp")) {
             throw new SQLException("Only .shp extension is supported");
         }
@@ -97,7 +99,6 @@ public class SHPDriverFunction implements DriverFunction {
                 throw new IOException("The file already exist.");
             }
         }
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         final DBTypes dbType = DBUtils.getDBType(connection);
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
@@ -113,16 +114,14 @@ public class SHPDriverFunction implements DriverFunction {
                 resultSet.beforeFirst();
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
                 Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
-                int srid = doExport(spatialFieldNameAndIndex.second(), resultSet, recordCount, fileName, progress, options);
-                String path = fileName.getAbsolutePath();
-                String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
-                PRJUtil.writePRJ(connection, srid, new File(nameWithoutExt + ".prj"));
+                String[] files = doExport(connection, spatialFieldNameAndIndex.second(), resultSet, recordCount, fileName, progress, options);
                 copyProgress.endOfProgress();
+                return files;
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            TableLocation tableLocation = TableLocation.parse(tableReference, isH2);
+            TableLocation tableLocation = TableLocation.parse(tableReference, dbType);
             String location = tableLocation.toString(dbType);
             int recordCount = JDBCUtilities.getRowCount(connection, location);
             ProgressVisitor copyProgress = progress.subProcess(recordCount);
@@ -131,11 +130,9 @@ public class SHPDriverFunction implements DriverFunction {
             Statement st = connection.createStatement();
             JDBCUtilities.attachCancelResultSet(st, progress);
             ResultSet rs = st.executeQuery(String.format("select * from %s", location));
-            doExport(spatialFieldNameAndIndex.second(), rs, recordCount, fileName, copyProgress, options);
-            String path = fileName.getAbsolutePath();
-            String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
-            PRJUtil.writePRJ(connection, tableLocation, spatialFieldNameAndIndex.first(), new File(nameWithoutExt + ".prj"));
+            String[] files = doExport(connection, spatialFieldNameAndIndex.second(), rs, recordCount, fileName, copyProgress, options);
             copyProgress.endOfProgress();
+            return files;
         }
 
     }
@@ -152,8 +149,8 @@ public class SHPDriverFunction implements DriverFunction {
      * @throws IOException
      */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, encoding, false, progress);
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
+        return exportTable(connection, tableReference, fileName, encoding, false, progress);
     }
 
     /**
@@ -164,7 +161,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @param encoding File encoding, null will use default encoding
      * @throws java.sql.SQLException
      */
-    private int doExport(Integer spatialFieldIndex, ResultSet rs, int recordCount, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
+    private String[] doExport(Connection connection, Integer spatialFieldIndex, ResultSet rs, int recordCount, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
         int srid = 0;
         ShapeType shapeType = null;
         try {
@@ -209,10 +206,19 @@ public class SHPDriverFunction implements DriverFunction {
             if (shpDriver != null) {
                 shpDriver.close();
             }
+            if(srid>=0) {
+                String path = fileName.getAbsolutePath();
+                String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
+                File outPrjFile = new File(nameWithoutExt + ".prj");
+                PRJUtil.writePRJ(connection, srid,outPrjFile);
+                return new String[]{shpDriver.shpFile.getAbsolutePath(), shpDriver.shxFile.getAbsolutePath(),
+                        shpDriver.dbfFile.getAbsolutePath(), outPrjFile.getAbsolutePath()};
+            }
+            return new String[]{shpDriver.shpFile.getAbsolutePath(), shpDriver.shxFile.getAbsolutePath(), shpDriver.dbfFile.getAbsolutePath()};
+
         } finally {
             rs.close();
         }
-        return srid;
     }
 
     @Override
@@ -245,8 +251,8 @@ public class SHPDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, progress);
+    public String[] importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        return importFile(connection, tableReference, fileName, null, progress);
     }
 
     /**
@@ -261,43 +267,31 @@ public class SHPDriverFunction implements DriverFunction {
      * @throws IOException File read error
      */
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String forceEncoding, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, false, progress);
+    public String[] importFile(Connection connection, String tableReference, File fileName, String forceEncoding, ProgressVisitor progress) throws SQLException, IOException {
+        return importFile(connection, tableReference, fileName, null, false, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
+    public String[] importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
     ) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, null, deleteTables, progress);
+        return importFile(connection, tableReference, fileName, null, deleteTables, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (connection == null) {
-            throw new SQLException("The connection cannot be null.\n");
-        }
-        if (tableReference == null || tableReference.isEmpty()) {
-            throw new SQLException("The table name cannot be null or empty");
-        }        
-        if (fileName == null) {
-            throw new SQLException("The file name cannot be null.\n");
-        }
-        if(progress==null){
-            progress= new EmptyProgressVisitor();
-        }        
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+    public String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection,tableReference,fileName, progress);
+        final DBTypes dbType = DBUtils.getDBType(connection);
         if (FileUtilities.isFileImportable(fileName, "shp")) {
+            TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
+            String outputTableName = requestedTable.toString();
             if (deleteTables) {
-                TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-                String table = requestedTable.getTable();
                 Statement stmt = connection.createStatement();
-                stmt.execute("DROP TABLE IF EXISTS " + table);
+                stmt.execute("DROP TABLE IF EXISTS " + outputTableName);
                 stmt.close();
             }
             SHPDriver shpDriver = new SHPDriver();
             shpDriver.initDriverFromFile(fileName, options);
             ProgressVisitor copyProgress = progress.subProcess((int) (shpDriver.getRowCount() / BATCH_MAX_SIZE));
-            // PostGIS does not show sql
             String lastSql = "";
             try {
                 DbaseFileHeader dbfHeader = shpDriver.getDbaseFileHeader();
@@ -309,35 +303,29 @@ public class SHPDriverFunction implements DriverFunction {
                     Statement st = connection.createStatement()) {
                     List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
                     otherCols.add(new Column("THE_GEOM", TypeInfo.TYPE_GEOMETRY));
-                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2, DBUtils.getDBType(connection), otherCols);
+                    String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, DBUtils.getDBType(connection), otherCols);
                     if (!types.isEmpty()) {
                         types = ", " + types;
                     }
-                    parse = TableLocation.parse(tableReference, isH2);
                     String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                     srid = PRJUtil.getSRID(shpDriver.prjFile);
                     shpDriver.setSRID(srid);
-                    if (isH2) {
-                        //H2 Syntax
-                        st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL , the_geom GEOMETRY(%s, %d) %s)", parse,
+                    st.execute(String.format("CREATE TABLE %s (" + pkColName + " INT PRIMARY KEY , the_geom GEOMETRY(%s, %d) %s)", requestedTable,
                                 getSFSGeometryType(shpHeader), srid, types));
-                    } else {
-                        // PostgreSQL Syntax
-                        lastSql = String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
-                                getPostGISSFSGeometryType(shpHeader), srid, types);
-                        st.execute(lastSql);
-                    }
+
                 }
                 try {
-                    lastSql = String.format("INSERT INTO %s VALUES (DEFAULT, %s )", parse,
+                    lastSql = String.format("INSERT INTO %s VALUES (?, %s )", outputTableName,
                             DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
                     connection.setAutoCommit(false);
                     final int columnCount = shpDriver.getFieldCount();
                     try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
+                            //Set the PK
+                            preparedStatement.setInt(1, rowId+1);
                             for (int columnId = 0; columnId < columnCount; columnId++) {
-                                JdbcUtils.set(preparedStatement,columnId + 1, shpDriver.getField(rowId, columnId), null);
+                                JdbcUtils.set(preparedStatement,columnId + 2, shpDriver.getField(rowId, columnId), null);
                             }
                             preparedStatement.addBatch();
                             batchSize++;
@@ -355,9 +343,10 @@ public class SHPDriverFunction implements DriverFunction {
                         }
 
                         connection.setAutoCommit(true);
+                        return new String[]{outputTableName};
                     }
                 } catch (Exception ex) {
-                    connection.createStatement().execute("DROP TABLE IF EXISTS " + tableReference);
+                    connection.createStatement().execute("DROP TABLE IF EXISTS " + outputTableName);
                     throw new SQLException(ex.getLocalizedMessage(), ex);
                 }
             } catch (SQLException ex) {
@@ -367,6 +356,7 @@ public class SHPDriverFunction implements DriverFunction {
                 copyProgress.endOfProgress();
             }
         }
+        return null;
     }
 
     /**
@@ -412,33 +402,6 @@ public class SHPDriverFunction implements DriverFunction {
     }
 
     private static String getSFSGeometryType(ShapefileHeader header) {
-        switch (header.getShapeType().id) {
-            case 1:
-                return "POINT";
-            case 11:
-            case 21:
-                return "POINT Z";
-            case 3:
-                return "MULTILINESTRING";
-            case 13:
-            case 23:
-                return "MULTILINESTRING Z";
-            case 5:
-                return "MULTIPOLYGON";
-            case 15:
-            case 25:
-                return "MULTIPOLYGON Z";
-            case 8:
-                return "MULTIPOINT";
-            case 18:
-            case 28:
-                return "MULTIPOINT Z";
-            default:
-                return "GEOMETRY";
-        }
-    }
-
-    private static String getPostGISSFSGeometryType(ShapefileHeader header) {
         switch (header.getShapeType().id) {
             case 1:
                 return "POINT";

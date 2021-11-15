@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.functions.io.DriverManager;
 
 /**
  *
@@ -72,37 +73,37 @@ public class OSMDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-
+    public String[]  exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-
+    public String[] exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName,
+    public String[] exportTable(Connection connection, String tableReference, File fileName,
                             String options, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+    public String[] importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, false, progress);
+        return importFile(connection, tableReference, fileName, false, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName,String options, ProgressVisitor progress
+    public String[] importFile(Connection connection, String tableReference, File fileName,String options, ProgressVisitor progress
                            ) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName,false, progress);
+        return importFile(connection, tableReference, fileName,false, progress);
     }
 
     /**
@@ -116,23 +117,15 @@ public class OSMDriverFunction implements DriverFunction {
      * @throws IOException File read error
      */
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        importFile( connection,  tableReference,  fileName,  null,  deleteTables,  progress);
+    public String[] importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        return importFile( connection,  tableReference,  fileName,  null,  deleteTables,  progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        if (connection == null) {
-            throw new SQLException("The connection cannot be null.\n");
-        }
-        if (tableReference == null || tableReference.isEmpty()) {
-            throw new SQLException("The table name cannot be null or empty");
-        }        
-        if (progress == null) {
-            progress = new EmptyProgressVisitor();
-        }
+    public String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection,tableReference,fileName, progress);
         OSMParser osmp = new OSMParser(connection, fileName, options, deleteTables);
-        osmp.read(tableReference, progress);
+        return osmp.read(tableReference, progress);
     }
 
     @Override

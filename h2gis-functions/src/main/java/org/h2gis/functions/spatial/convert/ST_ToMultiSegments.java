@@ -101,7 +101,8 @@ public class ST_ToMultiSegments extends DeterministicScalarFunction {
 
     private static void createSegments(final GeometryCollection geometryCollection,
                                        final List<LineString> result) throws SQLException {
-        for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+        int size = geometryCollection.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             createSegments(geometryCollection.getGeometryN(i), result);
         }
     }

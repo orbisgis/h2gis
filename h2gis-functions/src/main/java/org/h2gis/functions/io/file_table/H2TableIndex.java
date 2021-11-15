@@ -59,7 +59,7 @@ public class H2TableIndex extends Index {
      * @param indexColumn Column to index
      */
     public H2TableIndex(FileDriver driver, Table table, int id,  IndexColumn indexColumn) {  
-        super(table, id, table.getName() + "_ROWID_", new IndexColumn[]{indexColumn}, IndexType.createScan(true));
+        super(table, id, table.getName() + "_ROWID_", new IndexColumn[]{indexColumn}, 0,IndexType.createScan(true));
         this.isScanIndex = true;
         this.driver = driver;
     }
@@ -73,7 +73,7 @@ public class H2TableIndex extends Index {
      * @param indexColumn Column to index
      */
     public H2TableIndex(FileDriver driver, Table table, int id, String indexName, IndexColumn indexColumn) {
-            super(table, id, indexName, new IndexColumn[]{indexColumn}, IndexType.createPrimaryKey(true, false));
+            super(table, id, indexName, new IndexColumn[]{indexColumn}, 0,IndexType.createPrimaryKey(true, false));
             this.isScanIndex = false;
             this.driver = driver;
     }

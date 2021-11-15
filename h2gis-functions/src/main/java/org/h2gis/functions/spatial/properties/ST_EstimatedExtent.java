@@ -8,6 +8,7 @@ package org.h2gis.functions.spatial.properties;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
@@ -45,7 +46,7 @@ public class ST_EstimatedExtent extends AbstractFunction implements ScalarFuncti
      */
     public static Geometry computeEstimatedExtent(Connection connection,
                                       String tableName) throws SQLException{
-        return GeometryTableUtilities.getEstimatedExtent(connection, TableLocation.parse(tableName, true));
+        return GeometryTableUtilities.getEstimatedExtent(connection, TableLocation.parse(tableName, DBTypes.H2GIS));
     }
     
     /**
@@ -58,6 +59,6 @@ public class ST_EstimatedExtent extends AbstractFunction implements ScalarFuncti
      */
     public static Geometry computeEstimatedExtent(Connection connection,
                                       String tableName, String geometryColumn) throws SQLException{  
-        return GeometryTableUtilities.getEstimatedExtent(connection, TableLocation.parse(tableName, true), geometryColumn);
+        return GeometryTableUtilities.getEstimatedExtent(connection, TableLocation.parse(tableName, DBTypes.H2GIS), geometryColumn);
     }
 }

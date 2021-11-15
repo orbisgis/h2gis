@@ -86,7 +86,7 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
         }
     }
 
-    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws SQLException, FileNotFoundException, IOException {
+    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws SQLException, IOException {
         String encoding = null;
         boolean deleteTable = false;
         if (option instanceof ValueBoolean) {

@@ -52,7 +52,8 @@ public class ResultSetWrapper implements ResultSet {
         // Fetch spatial fields
         try {
             ResultSetMetaData meta = rs.getMetaData();
-            for(int col = 1; col <= meta.getColumnCount(); col++) {
+            int columnCount = meta.getColumnCount();
+            for(int col = 1; col <= columnCount; col++) {
                 String typeName = meta.getColumnTypeName(col);
                 if(GEOMETRY_COLUMNS.contains(typeName)) {
                     spatialFields.add(col);
@@ -914,7 +915,7 @@ public class ResultSetWrapper implements ResultSet {
     public static PGobject longToTid(long value) throws SQLException {
         PGobject pGobject = new PGobject();
         pGobject.setType("tid");
-        pGobject.setValue("(" + Long.toString(value >> 32)+","+Long.toString(value << 32 >> 32)+ ")");
+        pGobject.setValue("(" + (value >> 32) +","+ (value << 32 >> 32) + ")");
         return pGobject;
     }
 
