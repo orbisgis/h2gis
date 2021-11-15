@@ -62,22 +62,22 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         try ( // Query declared Table columns
-            ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
+              ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
             assertTrue(rs.next());
             assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
             assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-            assertEquals("CHAR",rs.getString("TYPE_NAME"));
+            assertEquals("CHARACTER",rs.getString("DATA_TYPE"));
             assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
             assertTrue(rs.next());
             assertEquals("GID",rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-            assertEquals(19,rs.getInt("NUMERIC_PRECISION"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
+            assertEquals(64,rs.getInt("NUMERIC_PRECISION"));
             assertTrue(rs.next());
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
-            assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+            assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
+            assertEquals(20,rs.getInt("DECLARED_NUMERIC_PRECISION"));
         }
         st.execute("drop table dbftable");
     }
@@ -89,7 +89,7 @@ public class  DBFEngineTest {
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         try ( // Query declared Table columns
-                ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
+              ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("gid"));
             assertEquals("river",rs.getString("type_axe"));
@@ -134,7 +134,7 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("encoding_test.dbf").getPath())+", 'DBFTABLE');");
         try ( // Query declared Table columns
-                ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
+              ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
             assertTrue(rs.next());
             assertEquals(2, rs.getInt("RIVERTYPE"));
             assertEquals("松柏坑溪",rs.getString("RIVERNAME"));
@@ -163,8 +163,8 @@ public class  DBFEngineTest {
         File srcDbf = new File(SHPEngineTest.class.getResource("waternetwork.dbf").getPath());
         File dstDbf = new File("target/waternetwork.dbf");
         if(dstDbf.exists()){
-            dstDbf.delete();       
-        }   
+            dstDbf.delete();
+        }
         FileUtils.copyFile(srcDbf, dstDbf);
         Statement st = connection.createStatement();
         st.execute("drop table if exists dbftable");
@@ -243,29 +243,29 @@ public class  DBFEngineTest {
         try (ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
             assertTrue(rs.next());
             assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
             assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-            assertEquals("CHAR",rs.getString("TYPE_NAME"));
+            assertEquals("CHARACTER",rs.getString("DATA_TYPE"));
             assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
             assertTrue(rs.next());
             assertEquals("GID",rs.getString("COLUMN_NAME"));
-            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals("BIGINT",rs.getString("DATA_TYPE"));
             assertTrue(rs.next());
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+            assertEquals("REAL",rs.getString("DATA_TYPE"));
         }
         st.execute("drop table dbftable");
     }
 
 
-   // @Test
+    // @Test
     public void readDBFNullDataTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("null_values.dbf").getPath())+", 'DBFTABLE');");
         try ( // Query declared Table columns
-                ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
+              ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
             assertTrue(rs.next());
             assertNull(rs.getObject("MAXSPEED"));
             assertTrue(rs.next());
@@ -289,7 +289,7 @@ public class  DBFEngineTest {
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("comma_separator.dbf").getPath())+", 'DBFTABLE');");
         try ( // Query declared Table columns
-                ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
+              ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
             assertTrue(rs.next());
             assertEquals(1.,rs.getDouble("PREC_PLANI"),1e-12);
         }
@@ -305,8 +305,8 @@ public class  DBFEngineTest {
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM DBFTABLE WHERE "+H2TableIndex.PK_COLUMN_NAME+" = 5");
         try {
             assertTrue(rs.next());
-            assertTrue(rs.getString(1).endsWith("\": "+H2TableIndex.PK_COLUMN_NAME+" = 5 */\nWHERE \""+
-                    H2TableIndex.PK_COLUMN_NAME+"\" = 5"));
+            assertTrue(rs.getString(1).endsWith("\": "+H2TableIndex.PK_COLUMN_NAME+" = CAST(5 AS BIGINT) */\nWHERE \""+
+                    H2TableIndex.PK_COLUMN_NAME+"\" = CAST(5 AS BIGINT)"));
         } finally {
             rs.close();
         }

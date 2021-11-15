@@ -104,7 +104,8 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
      * @param geometry 
      */
     private static void getPunctualGeometry(ArrayList<Point> points, Geometry geometry) {
-         for (int i = 0; i < geometry.getNumGeometries(); i++) {
+        int size = geometry.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry subGeom = geometry.getGeometryN(i);
             if(subGeom instanceof Point){
                 points.add((Point) subGeom);
@@ -121,7 +122,8 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
      * @param geometry 
      */
     private static void getLinealGeometry(ArrayList<LineString> lines, Geometry geometry) {
-         for (int i = 0; i < geometry.getNumGeometries(); i++) {
+        int size = geometry.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry subGeom = geometry.getGeometryN(i);
             if(subGeom instanceof LineString){
                 lines.add((LineString) subGeom);
@@ -138,7 +140,8 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
      * @param geometry 
      */
     private static void getArealGeometry(ArrayList<Polygon> polygones, Geometry geometry) {
-         for (int i = 0; i < geometry.getNumGeometries(); i++) {
+        int size = geometry.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry subGeom = geometry.getGeometryN(i);
             if(subGeom instanceof Polygon){
                 polygones.add((Polygon) subGeom);

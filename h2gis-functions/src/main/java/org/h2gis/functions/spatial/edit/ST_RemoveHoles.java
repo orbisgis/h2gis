@@ -58,8 +58,9 @@ public class ST_RemoveHoles extends DeterministicScalarFunction {
         } else if (geometry instanceof MultiPolygon) {
             return removeHolesMultiPolygon((MultiPolygon) geometry);
         } else if (geometry instanceof GeometryCollection) {
-            Geometry[] geometries = new Geometry[geometry.getNumGeometries()];
-            for (int i = 0; i < geometry.getNumGeometries(); i++) {
+            int size = geometry.getNumGeometries();
+            Geometry[] geometries = new Geometry[size];
+            for (int i = 0; i < size; i++) {
                 Geometry geom = geometry.getGeometryN(i);
                 if (geometry instanceof Polygon) {
                     geometries[i] = removeHolesPolygon((Polygon) geom);

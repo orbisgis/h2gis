@@ -79,5 +79,5 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
      */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         exportTable(connection, fileName, tableReference, false);
-    }   
+    }
 }

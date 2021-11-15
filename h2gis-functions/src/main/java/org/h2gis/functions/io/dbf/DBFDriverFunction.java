@@ -243,7 +243,7 @@ public class DBFDriverFunction implements DriverFunction {
                         List<Column> otherCols = new ArrayList<>(dbfHeader.getNumFields() + 1);
                         String types = getSQLColumnTypes(dbfHeader, DBUtils.getDBType(connection), otherCols);
                         String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
-                        st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", outputTable,
+                        st.execute(String.format("CREATE TABLE %s (" + pkColName + " INT PRIMARY KEY, %s)", outputTable,
                                 types));
                     }
                     try {

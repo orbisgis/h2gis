@@ -95,10 +95,11 @@ public class DbaseFileReader {
         // The entire file is in little endian
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
+        int numFields = header.getNumFields();
         // Set up some buffers and lookups for efficiency
-        fieldTypes = new char[header.getNumFields()];
-        fieldLengths = new int[header.getNumFields()];
-        for (int i = 0, ii = header.getNumFields(); i < ii; i++) {
+        fieldTypes = new char[numFields];
+        fieldLengths = new int[numFields];
+        for (int i = 0, ii = numFields; i < ii; i++) {
             fieldTypes[i] = header.getFieldType(i);
             fieldLengths[i] = header.getFieldLength(i);
         }

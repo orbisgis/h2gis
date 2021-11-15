@@ -102,17 +102,17 @@ public class DBFImportExportTest {
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
         assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
+        assertEquals("INTEGER", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
+        assertEquals("CHARACTER VARYING", rs.getString("DATA_TYPE"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID",rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT", rs.getString("TYPE_NAME"));
+        assertEquals("BIGINT", rs.getString("DATA_TYPE"));
         assertTrue(rs.next());
         assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+        assertEquals("DOUBLE PRECISION",rs.getString("DATA_TYPE"));
         rs.close();
         // Check content
         rs = st.executeQuery("SELECT * FROM WATERNETWORK");
@@ -244,7 +244,7 @@ public class DBFImportExportTest {
         assertTrue(!res.next());
         stat.close();
     }
-    
+
     @Test
     public void testWriteReadEmptyTable2() throws SQLException {
         Statement stat = connection.createStatement();
@@ -298,8 +298,7 @@ public class DBFImportExportTest {
             assertEquals("second area", res.getString("descr"));
         }
     }
-    
-    
+
     @Test
     public void testWriteReadNotSensitive() throws SQLException, IOException {
         Statement stat = connection.createStatement();

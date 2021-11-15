@@ -19,12 +19,7 @@
  */
 package org.h2gis.utilities;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,7 +54,7 @@ public class GeometryTableUtilities {
     public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(Connection connection, String geometryTable) throws SQLException {
         return getFirstColumnMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)));
     }
-    
+
     /**
      * Read the geometry metadata of the first geometry column
      *
@@ -189,7 +184,7 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("Database not supported");
     }
-    
+
     /**
      * Read the geometry metadata from a column name
      *
@@ -846,7 +841,7 @@ public class GeometryTableUtilities {
         }
         throw  new SQLException("Database not supported");
     }
-    
+
      /**
      * Return the SRID of the first geometry column of the input table
      *
@@ -987,7 +982,7 @@ public class GeometryTableUtilities {
     public static List<String> getGeometryColumnNames(Connection connection, String tableName) throws SQLException {
      return getGeometryColumnNames(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
     }
-    
+
     /**
      * Find geometry column names
      *
@@ -1116,7 +1111,6 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("Unable to get geometry metadata from a null or empty column name");
     }
-    
     /**
      * Merge the bounding box of all geometries inside the provided table.
      *
@@ -1175,8 +1169,6 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("Database not supported");
     }
-    
-    
     /**
      *
      * Merge the bounding box of all geometries inside the provided table and
@@ -1425,7 +1417,7 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("DataBase not supported");
     }
-    
+
     /**
      * Merge the bounding box of all geometries inside the provided table.
      *
@@ -1618,35 +1610,6 @@ public class GeometryTableUtilities {
      * @throws SQLException
      */
     public static boolean isSpatialIndexed(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
-        DBTypes dbType = tableLocation.getDbTypes();
-        String schema = tableLocation.getSchema();
-        String tableName = tableLocation.getTable();
-        String fieldName = TableLocation.capsIdentifier(geometryColumnName, dbType);
-        if (dbType==H2||dbType==H2GIS) {
-            String query  = String.format("SELECT I.INDEX_TYPE_NAME, I.INDEX_CLASS FROM INFORMATION_SCHEMA.INDEXES AS I , " +
-                            "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
-                            "INFORMATION_SCHEMA.INDEXES WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
-                            "WHERE I.TABLE_SCHEMA=C.TABLE_SCHEMA AND I.TABLE_NAME=C.TABLE_NAME and C.COLUMN_NAME='%s'"
-                    ,schema.isEmpty()?"PUBLIC":schema,tableName, fieldName, fieldName);
-            try (ResultSet rs = connection.createStatement().executeQuery(query)) {
-                if (rs.next()) {
-                    return  rs.getString("INDEX_TYPE_NAME").contains("SPATIAL");
-                }
-            }
-            return false;
-        }
-        else if(dbType== POSTGIS || dbType==POSTGRESQL) { //POSTGIS CASE
-            String query = String.format("SELECT  cls.relname, am.amname " +
-                    "FROM  pg_class cls " +
-                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                    " where attname = '%s' and attrelid in " +
-                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname ='%s' and a.tablename ='%s' " +
-                    "and a.indexname = b.relname)) and am.amname = 'gist' ;" ,fieldName,schema.isEmpty()?"public":schema,tableName);
-            try (ResultSet rs = connection.createStatement().executeQuery(query)) {
-                return rs.next();
-            }
-        }
-        throw new SQLException("DataBase not supported");
+        return JDBCUtilities.isSpatialIndexed(connection,tableLocation, geometryColumnName);
     }
 }

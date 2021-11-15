@@ -32,7 +32,6 @@ import org.locationtech.jts.geom.*;
 public class ST_AsGeoJSON extends DeterministicScalarFunction {
 
     static  int maxdecimaldigits = 9;
-    
     public ST_AsGeoJSON() {
         addProperty(PROP_REMARKS, "Return the geometry as a Geometry Javascript Object Notation (GeoJSON 1.0) element.\n"
                 + "2D and 3D Geometries are both supported.\n"
@@ -56,7 +55,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
         toGeojsonGeometry(geom,maxdecimaldigits, sb);
         return sb.toString();
     }
-    
+
      /**
      * Convert the geometry to a GeoJSON representation.
      *
@@ -181,9 +180,10 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      */
     public static void toGeojsonMultiLineString(MultiLineString multiLineString,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"MultiLineString\",\"coordinates\":[");
-        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
+        int size = multiLineString.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             toGeojsonCoordinates(multiLineString.getGeometryN(i).getCoordinates(),maxdecimaldigits, sb);
-            if (i < multiLineString.getNumGeometries() - 1) {
+            if (i < size - 1) {
                 sb.append(",");
             }
         }
@@ -241,19 +241,20 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      */
     public static void toGeojsonMultiPolygon(MultiPolygon multiPolygon, int maxdecimaldigits, StringBuilder sb) {
         sb.append("{\"type\":\"MultiPolygon\",\"coordinates\":[");
-
-        for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+        int size = multiPolygon.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Polygon p = (Polygon) multiPolygon.getGeometryN(i);
             sb.append("[");
             //Process exterior ring
             toGeojsonCoordinates(p.getExteriorRing().getCoordinates(),maxdecimaldigits, sb);
             //Process interior rings
-            for (int j = 0; j < p.getNumInteriorRing(); j++) {
+            int size_p = p.getNumInteriorRing();
+            for (int j = 0; j < size_p; j++) {
                 sb.append(",");
                 toGeojsonCoordinates(p.getInteriorRingN(j).getCoordinates(), maxdecimaldigits,sb);
             }
             sb.append("]");
-            if (i < multiPolygon.getNumGeometries() - 1) {
+            if (i < size - 1) {
                 sb.append(",");
             }
         }
@@ -280,7 +281,8 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      */
     public static void toGeojsonGeometryCollection(GeometryCollection geometryCollection,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"GeometryCollection\",\"geometries\":[");
-        for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+        int size = geometryCollection.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry geom = geometryCollection.getGeometryN(i);
             if (geom instanceof Point) {
                 toGeojsonPoint((Point) geom, maxdecimaldigits, sb);
@@ -289,7 +291,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
             } else if (geom instanceof Polygon) {
                 toGeojsonPolygon((Polygon) geom,maxdecimaldigits, sb);
             }
-            if (i < geometryCollection.getNumGeometries() - 1) {
+            if (i < size - 1) {
                 sb.append(",");
             }
         }

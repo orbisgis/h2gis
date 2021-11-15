@@ -116,7 +116,8 @@ public class ST_AddPoint extends DeterministicScalarFunction {
     private static Geometry insertVertexInMultipoint(MultiPoint g, Point vertexPoint, int position, GeometryFactory factory) throws SQLException {
         ArrayList<Point> geoms = new ArrayList<Point>();
         boolean added =false;
-        for (int i = 0; i < g.getNumGeometries(); i++) {
+        int size = g.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Point geom ;
             if(i==position){
                 geoms.add(vertexPoint);

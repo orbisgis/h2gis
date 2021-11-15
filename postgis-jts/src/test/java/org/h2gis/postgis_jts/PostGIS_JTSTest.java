@@ -52,6 +52,7 @@ public class PostGIS_JTSTest {
         System.setProperty("test.postgis", Boolean.toString(connection!=null));
     }
 
+
     @AfterAll
     public static void tearDown() throws Exception {
         if (connection != null) {

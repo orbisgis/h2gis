@@ -58,7 +58,8 @@ public class DBFEngine extends FileEngine<DBFDriver> {
      * @throws java.io.IOException
      */
     public static void feedTableDataFromHeader(DbaseFileHeader header, CreateTableData data) throws IOException {
-        for (int i = 0; i < header.getNumFields(); i++) {
+        int numFields = header.getNumFields();
+        for (int i = 0; i < numFields; i++) {
             String fieldsName = header.getFieldName(i);
             Column column = new Column(fieldsName.toUpperCase(), dbfTypeToH2Type(header,i));
             data.columns.add(column);
@@ -90,20 +91,21 @@ public class DBFEngine extends FileEngine<DBFDriver> {
             case 'n':
             case 'N':
                 if ((header.getFieldDecimalCount(i) == 0)) {
-                    if ((header.getFieldLength(i) >= 0)
-                            && (header.getFieldLength(i) < 10)) {
+                    int fieldLength = header.getFieldLength(i);
+                    if ((fieldLength >= 0)
+                            && (fieldLength < 10)) {
                         return TypeInfo.TYPE_INTEGER;
                     } else {
                         return TypeInfo.TYPE_BIGINT;
                     }
                 } else {
-                   return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, 0, null);
+                   return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, null);
                 }
             case 'f':
             case 'F': // floating point number
             case 'o':
             case 'O': // floating point number
-                return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, 0, null);
+                return new TypeInfo(Value.DOUBLE, header.getFieldLength(i), 0, null);
             default:
                 throw new IOException("Unknown DBF field type "+header.getFieldType(i));
         }

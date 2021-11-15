@@ -187,7 +187,7 @@ public class GeoJsonWriteDriver {
                 if (authAndSrid != null) {
                     //Write the SRID based on the first geometry
                     writeCRS(jsonGenerator, authAndSrid);
-                    srid = Integer.valueOf(authAndSrid[1]);
+                    srid = Integer.parseInt(authAndSrid[1]);
                 }
                 jsonGenerator.writeArrayFieldStart("features");
                 //Don't forget to save the first geom
@@ -629,7 +629,8 @@ public class GeoJsonWriteDriver {
         gen.writeStringField("type", "MultiLineString");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
-        for (int i = 0; i < geom.getNumGeometries(); ++i) {
+        int size = geom.getNumGeometries();
+        for (int i = 0; i < size; ++i) {
             writeCoordinates(geom.getGeometryN(i).getCoordinates(), gen);
         }
         gen.writeEndArray();
@@ -650,7 +651,8 @@ public class GeoJsonWriteDriver {
     private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "GeometryCollection");
         gen.writeArrayFieldStart("geometries");
-        for (int i = 0; i < coll.getNumGeometries(); ++i) {
+        int size = coll.getNumGeometries();
+        for (int i = 0; i < size; ++i) {
             Geometry geom = coll.getGeometryN(i);
             gen.writeStartObject();
             if (geom instanceof Point) {
@@ -724,7 +726,8 @@ public class GeoJsonWriteDriver {
         gen.writeStringField("type", "MultiPolygon");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
-        for (int i = 0; i < geom.getNumGeometries(); ++i) {
+        int size = geom.getNumGeometries();
+        for (int i = 0; i < size; ++i) {
             Polygon p = (Polygon) geom.getGeometryN(i);
             gen.writeStartArray();
             writeCoordinates(p.getExteriorRing().getCoordinates(), gen);

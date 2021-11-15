@@ -24,10 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.h2.value.ValueGeometry;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ByteArrayInStream;
-import org.locationtech.jts.io.ByteOrderDataInStream;
-import org.locationtech.jts.io.ByteOrderValues;
-import org.locationtech.jts.io.WKBConstants;
+import org.locationtech.jts.io.*;
 
 /**
  * Extract Geometry MetaData from various geometry signatures
@@ -351,7 +348,7 @@ public class GeometryMetaData {
             geomMet.initGeometryType();
 
             return geomMet;
-        }catch (IOException ex) {
+        }catch (IOException | ParseException ex) {
             throw new RuntimeException("Cannot read the geometry metadata");
         }
     }

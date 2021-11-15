@@ -276,7 +276,7 @@ public class TSVDriverFunction implements DriverFunction {
 
     @Override
     public String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        progress = DriverManager.check(connection,tableReference, fileName,progress);    
+        progress = DriverManager.check(connection,tableReference, fileName,progress);
         final DBTypes dbType = DBUtils.getDBType(connection);
         TableLocation requestedTable = TableLocation.parse(tableReference, dbType);
         if (fileName != null && fileName.getName().toLowerCase().endsWith(".tsv")) {

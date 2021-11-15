@@ -137,7 +137,8 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      */
     public static MultiLineString removeDuplicateCoordinates(MultiLineString multiLineString, double tolerance) throws SQLException {
         ArrayList<LineString> lines = new ArrayList<LineString>();
-        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
+        int size = multiLineString.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             LineString line = (LineString) multiLineString.getGeometryN(i);
             lines.add(removeDuplicateCoordinates(line, tolerance));
         }
@@ -177,7 +178,8 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      */
     public static MultiPolygon removeDuplicateCoordinates(MultiPolygon multiPolygon, double tolerance) throws SQLException {
         ArrayList<Polygon> polys = new ArrayList<Polygon>();
-        for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+        int size = multiPolygon.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Polygon poly = (Polygon) multiPolygon.getGeometryN(i);
             polys.add(removeDuplicateCoordinates(poly, tolerance));
         }
@@ -194,7 +196,8 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      */
     public static GeometryCollection removeDuplicateCoordinates(GeometryCollection geometryCollection, double tolerance) throws SQLException {
         ArrayList<Geometry> geoms = new ArrayList<>();
-        for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+        int size = geometryCollection.getNumGeometries();
+        for (int i = 0; i < size; i++) {
             Geometry geom = geometryCollection.getGeometryN(i);
             geoms.add(removeDuplicateCoordinates(geom, tolerance));
         }

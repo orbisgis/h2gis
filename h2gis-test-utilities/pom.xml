@@ -9,7 +9,6 @@
         <artifactId>h2gis-parent</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>h2gis-test-utilities</artifactId>
@@ -48,7 +47,7 @@
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2</artifactId>
         </dependency>
         <dependency>

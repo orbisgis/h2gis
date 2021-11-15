@@ -78,10 +78,12 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
     private void addGeometry(Geometry geom) {
         if (geom != null) {
             if (geom instanceof GeometryCollection) {
-                List<Geometry> toUnitTmp = new ArrayList<Geometry>(geom.getNumGeometries());
-                for (int i = 0; i < geom.getNumGeometries(); i++) {
-                    toUnitTmp.add(geom.getGeometryN(i));
-                    feedDim(geom.getGeometryN(i));
+                int size = geom.getNumGeometries();
+                List<Geometry> toUnitTmp = new ArrayList<Geometry>(size);
+                for (int i = 0; i < size; i++) {
+                    Geometry geomsub = geom.getGeometryN(i);
+                    toUnitTmp.add(geomsub);
+                    feedDim(geomsub);
                 }
                 toUnite.addAll(toUnitTmp);
             } else {
