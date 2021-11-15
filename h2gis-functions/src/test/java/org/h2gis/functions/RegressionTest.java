@@ -2,7 +2,9 @@ package org.h2gis.functions;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.io.shp.SHPEngineTest;
 import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,5 +44,16 @@ public class RegressionTest {
                 throw e.getCause();
             }
         });
+    }
+
+    @Test
+    public void testH2GIS_SPATIALCALL() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR \"org.h2gis.functions.factory.H2GISFunctions.load\"");
+        stat.execute("CREATE ALIAS IF NOT EXISTS H2GIS_UNLOAD FOR \"org.h2gis.functions.factory.H2GISFunctions.unRegisterH2GISFunctions\"");
+        stat.execute("CALL H2GIS_SPATIAL();");
+        stat.execute("SELECT 1");
+        stat.execute("CALL SHPRead("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath())+", 'water', true)");
+        stat.execute("CALL H2GIS_SPATIAL();");
     }
 }
