@@ -750,6 +750,23 @@ public class CreateFunctionTest {
         st.execute("DROP TABLE grid;");
     }
 
+
+    @Test
+    public void testST_MakeGridFromFunctionLatLon() throws Exception {
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM " +
+                "st_makegrid(ST_MAKEENVELOPE(0.0, 0.0, 0.008983152841195214, 0.008983152841195214, 4326), 1000, 1000);");
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 1);
+        rs.close();
+        rs = st.executeQuery("select * from grid;");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((0 0, 0 0.008983152841195214, 0.0089831529516059 0.008983152841195214, 0.0089831529516059 0, 0 0))",rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+
     @Test
     public void test_ST_MakePolygon1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY );");
