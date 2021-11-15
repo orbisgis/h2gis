@@ -244,7 +244,7 @@ public class DBFImportExportTest {
         assertTrue(!res.next());
         stat.close();
     }
-    
+
     @Test
     public void testWriteReadEmptyTable2() throws SQLException {
         Statement stat = connection.createStatement();
@@ -298,8 +298,7 @@ public class DBFImportExportTest {
             assertEquals("second area", res.getString("descr"));
         }
     }
-    
-    
+
     @Test
     public void testWriteReadNotSensitive() throws SQLException, IOException {
         Statement stat = connection.createStatement();

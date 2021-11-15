@@ -329,7 +329,7 @@ public class JDBCUtilitiesTest {
         assertTrue(JDBCUtilities.isIndexed(connection, tableName, "idx"));
         assertTrue(JDBCUtilities.isIndexed(connection, table, "idx"));
         assertTrue(JDBCUtilities.isIndexed(connection, tableName, "spatial_idx"));
-        assertTrue(JDBCUtilities.isIndexed(connection, table, "spatial_idx"));
+        assertTrue(JDBCUtilities.isIndexed(connection, table, "spatial_idx"));    
     }
 
     @Test
@@ -425,26 +425,26 @@ public class JDBCUtilitiesTest {
         JDBCUtilities.dropIndex(connection, table, "spatial_idx");
         assertFalse(JDBCUtilities.isIndexed(connection, table, "spatial_idx"));
     }
-
+    
     @Test
     public void indexesTest() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEST_INDEX");
         st.execute("CREATE TABLE TEST_INDEX(id int)");
-        st.execute("INSERT INTO TEST_INDEX VALUES(1), (2)");
+        st.execute("INSERT INTO TEST_INDEX VALUES(1), (2)");        
         st.execute("CREATE INDEX ON TEST_INDEX(id)");
         st.execute("CREATE INDEX IF NOT EXISTS tata ON TEST_INDEX(id)");
         String tableName = "test_index";
-        TableLocation table = TableLocation.parse(tableName, DBTypes.H2);
-        Map<String, String> indexes = JDBCUtilities.getIndexNames(connection, table);
+        TableLocation table = TableLocation.parse(tableName, DBTypes.H2);        
+        Map<String, String> indexes = JDBCUtilities.getIndexNames(connection, table);        
         assertEquals(2, indexes.size());
         assertTrue(indexes.containsKey("TATA"));
         assertTrue(JDBCUtilities.isIndexed(connection, table, "ID"));
         JDBCUtilities.dropIndex(connection, tableName);
-        assertFalse(JDBCUtilities.isIndexed(connection, table, "id"));
-        indexes = JDBCUtilities.getIndexNames(connection, table);
-        assertTrue(indexes.isEmpty());
+        assertFalse(JDBCUtilities.isIndexed(connection, table, "id"));        
+        indexes = JDBCUtilities.getIndexNames(connection, table);        
+        assertTrue(indexes.isEmpty());        
         st.execute("CREATE INDEX IF NOT EXISTS tata ON TEST_INDEX(id)");
-        List<String> indexes2 = JDBCUtilities.getIndexNames(connection, table, "ID");
+        List<String> indexes2 = JDBCUtilities.getIndexNames(connection, table, "ID");         
         assertEquals(1, indexes2.size());
         assertTrue(indexes2.contains("TATA"));
     }

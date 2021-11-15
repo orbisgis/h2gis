@@ -61,6 +61,7 @@ public class FindGeometryMetadataTest {
     }
 
     @Test
+    @Disabled
     public void testFindGeometryMetadata() throws SQLException {
         st.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable (the_geom GEOMETRY); ");
         ResultSet res =  st.executeQuery("SELECT  TABLE_CATALOG f_table_catalog, "
@@ -140,6 +141,7 @@ public class FindGeometryMetadataTest {
     }
 
     @Test
+    @Disabled
     public void testFindGeometryMetadataAlterTable() throws SQLException {
         st.execute("drop table if exists geo_point;\n" +
                 "CREATE TABLE geo_point (the_geom GEOMETRY);\n" +
@@ -171,6 +173,7 @@ public class FindGeometryMetadataTest {
     }
 
     @Test
+    @Disabled
     public void testFindGeometryMetadataAlterTableEmpty() throws SQLException {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY);");
         st.execute(" ALTER TABLE GEO_POINT ALTER COLUMN THE_GEOM type geometry(POINTZ, 4326);");
@@ -200,6 +203,7 @@ public class FindGeometryMetadataTest {
     }
 
     @Test
+    @Disabled
     public void testCheckSRID() throws SQLException {
         st.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable (the_geom GEOMETRY); ");
         ResultSet res = st.executeQuery(

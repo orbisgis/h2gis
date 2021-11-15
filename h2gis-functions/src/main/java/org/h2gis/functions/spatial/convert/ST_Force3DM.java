@@ -168,7 +168,7 @@ public class ST_Force3DM extends DeterministicScalarFunction {
                     holes[i] = gf.createLinearRing(convertSequence(csHole));
                 }
                 else {
-                    holes[i] =polygon.getInteriorRingN(i);
+                    holes[i] = gf.createLinearRing(polygon.getInteriorRingN(i).getCoordinates());
                 }
             }
             Polygon p = gf.createPolygon(shell, holes);

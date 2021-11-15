@@ -22,9 +22,10 @@ package org.h2gis.functions.io.file_table;
 
 
 import org.h2.command.query.AllColumnsForPlan;
+import org.h2.engine.Session;
 import org.h2.engine.SessionLocal;
-import org.h2.index.Index;
 import org.h2.index.Cursor;
+import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.result.Row;
 import org.h2.result.SearchRow;
