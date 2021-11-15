@@ -745,27 +745,27 @@ public class GeojsonImportExportTest {
             assertNull((res.getObject(1)));
             assertTrue(res.getBoolean(2));
             assertEquals("{\"member\":1}", res.getString(3));
-            assertEquals("[1,2]", res.getString(4));            
+            assertEquals("[1,2]", res.getString(4));
             res.next();
             assertNull((res.getObject(1)));
             assertEquals(2, res.getInt(2), 0);
             assertEquals("{\"member\":1}", res.getString(3));
-            assertEquals("[1,2]", res.getString(4)); 
+            assertEquals("[1,2]", res.getString(4));
             res.next();
             assertNull((res.getObject(1)));
             assertEquals("{\"member3\":4}", res.getString(2));
             assertEquals("{\"member\":1}", res.getString(3));
-            assertEquals("[1,2]", res.getString(4)); 
+            assertEquals("[1,2]", res.getString(4));
             res.next();
             assertNull((res.getObject(1)));
             assertEquals("[5,6,6]", res.getString(2));
             assertEquals("{\"member\":1}", res.getString(3));
-            assertEquals("[1,2]", res.getString(4)); 
+            assertEquals("[1,2]", res.getString(4));
             res.next();
             assertNull((res.getObject(1)));
             assertNull(res.getString(2));
             assertEquals("{\"member\":1}", res.getString(3));
-            assertEquals("[1,2]", res.getString(4)); 
+            assertEquals("[1,2]", res.getString(4));
             res.close();
         }
     }
@@ -834,7 +834,7 @@ public class GeojsonImportExportTest {
         try (ResultSet res = stat.executeQuery("SELECT IDAREA FROM IMPORT_LINEAL;")) {
             res.next();
             assertEquals(1, res.getInt(1));
-        }  
+        }
     }
 
 
@@ -957,7 +957,7 @@ public class GeojsonImportExportTest {
             assertEquals(1, res.getInt(1));
         }
     }
-    
+
     @Test
     public void exportQueryImportFileGZOption2() throws SQLException, IOException {
         Statement stat = connection.createStatement();
@@ -991,7 +991,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS LINEAL");
             stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
             stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-            ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");            
+            ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");
             GeoJsonDriverFunction geoJsonDriver = new GeoJsonDriverFunction();
             geoJsonDriver.exportTable(connection, "(SELECT * FROM lineal)", new File("target/lineal_export.geojson"), "CP52", true, new EmptyProgressVisitor());
         });
@@ -1005,7 +1005,7 @@ public class GeojsonImportExportTest {
             stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
             stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
             GeoJsonDriverFunction geoJsonDriver = new GeoJsonDriverFunction();
-            geoJsonDriver.exportTable(connection, "lineal", new File("target/lineal_export.geojson"), "CP52", true, new EmptyProgressVisitor());  
+            geoJsonDriver.exportTable(connection, "lineal", new File("target/lineal_export.geojson"), "CP52", true, new EmptyProgressVisitor());
         });
     }
 
@@ -1133,8 +1133,8 @@ public class GeojsonImportExportTest {
             res.close();
         }
     }
-    
-     @Test
+
+    @Test
     public void testSelectWrite() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)', true);");
@@ -1181,8 +1181,8 @@ public class GeojsonImportExportTest {
             }
         }
     }
-    
-        
+
+
     @Test
     public void testSelectWriteReadGeojsonParameters() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -1204,7 +1204,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }
-    
+
     @Test
     public void testSelectWriteManyTimes() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -1219,7 +1219,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }
-    
+
     @Test
     public void testWriteReadNoSensitive() throws Exception {
         try (Statement stat = connection.createStatement()) {

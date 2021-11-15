@@ -51,7 +51,7 @@ public class DummyMVTable extends MVTable {
     }
 
     @Override
-    public Index addIndex(SessionLocal session, String indexName, int indexId, IndexColumn[] cols, int uniqueColumnCount,IndexType indexType, boolean create, String indexComment) {
+    public Index addIndex(SessionLocal session, String indexName, int indexId, IndexColumn[] cols, int uniqueColumnCount, IndexType indexType, boolean create, String indexComment) {
         return null;
     }
 
@@ -77,8 +77,7 @@ public class DummyMVTable extends MVTable {
 
     @Override
     public long truncate(SessionLocal session) {
-        //Nothing to do
-        return 0;
+        return -1;
     }
 
     @Override
@@ -138,7 +137,7 @@ public class DummyMVTable extends MVTable {
     }
 
     @Override
-    public long getRowCountApproximation(SessionLocal sessionLocal) {
+    public long getRowCountApproximation(SessionLocal session) {
         return 0;
     }
 

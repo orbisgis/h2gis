@@ -109,14 +109,14 @@ public class IOMethods {
      *
      * @param targetConnection The targetConnection to the database that will
      *                         received the table
-     * @param properties       External database database properties to set up
      *                         a connection to the target database
      * @param sourceTable      The name of the table in the external database
      * @param targetTable      The name of the table in the H2GIS database
      * @param delete           True to delete the table if exists
-     * @param fetchSize        The number of rows fetched from the linked table
+     * @param fetchSize          The number of rows fetched from the linked table
      * @return the name of the linked table
      * @throws java.sql.SQLException
+     * @return The absolute path of the exported files
      */
     public static String linkedTable(Connection targetConnection, Properties properties, String sourceTable, String targetTable,
                                      boolean delete, int fetchSize) throws SQLException {
@@ -128,15 +128,15 @@ public class IOMethods {
     /**
      * Link a table from another database to an H2GIS database
      *
-     * @param targetConnection   The targetConnection to the database that will
-     *                           received the table
-     * @param databaseProperties External database databaseProperties to set up
-     *                           a connection to the target database
-     * @param sourceTable        The name of the table in the external database
-     * @param targetTable        The name of the table in the H2GIS database
-     * @param delete             True to delete the table if exists
+     * @param targetConnection The targetConnection to the database that will
+     *                         received the table
+     *                         a connection to the target database
+     * @param sourceTable      The name of the table in the external database
+     * @param targetTable      The name of the table in the H2GIS database
+     * @param delete           True to delete the table if exists
      * @return the name of the linked table
      * @throws java.sql.SQLException
+     * @return The absolute path of the exported files
      */
     public static String linkedTable(Connection targetConnection, Map<String, String> databaseProperties, String sourceTable, String targetTable,
                                      boolean delete) throws SQLException {

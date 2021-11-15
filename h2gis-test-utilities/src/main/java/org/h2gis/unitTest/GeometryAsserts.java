@@ -109,7 +109,7 @@ public class GeometryAsserts {
             assertNull(valueObject);
         } else {
             ValueGeometry expected = ValueGeometry.get(expectedWKT);
-            ValueGeometry actual = ValueGeometry.getFromGeometry(((ValueGeometry) valueObject).getGeometry().norm());            
+            ValueGeometry actual = ValueGeometry.getFromGeometry(valueObject.getGeometry().norm());
             expected = ValueGeometry.getFromGeometry(expected.getGeometry().norm());
             String moreInfo = "";
             if (!actual.equals(expected)) {
@@ -161,7 +161,7 @@ public class GeometryAsserts {
         for (int idPoint = 0; idPoint < expectedCoordinates.length; idPoint++) {
             assertEquals(expectedCoordinates[idPoint].x, resultCoordinates[idPoint].x, epsilon);
             assertEquals(expectedCoordinates[idPoint].y, resultCoordinates[idPoint].y, epsilon);
-            assertEquals(expectedCoordinates[idPoint].z, resultCoordinates[idPoint].z, epsilon);
+            assertEquals(expectedCoordinates[idPoint].getZ(), resultCoordinates[idPoint].getZ(), epsilon);
         }
     }
 }

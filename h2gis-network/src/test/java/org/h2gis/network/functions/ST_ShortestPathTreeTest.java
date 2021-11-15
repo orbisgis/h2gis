@@ -831,7 +831,7 @@ public class ST_ShortestPathTreeTest {
         }
     }
 
-    private class TreeEdge {
+    private static class TreeEdge {
         private String geom;
         private int source;
         private int destination;

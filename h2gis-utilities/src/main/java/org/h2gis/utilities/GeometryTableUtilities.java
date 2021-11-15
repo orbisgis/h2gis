@@ -112,7 +112,7 @@ public class GeometryTableUtilities {
                 return new Tuple<>(metadata.getColumnName(i), new GeometryMetaData());
             }
         }
-        throw new SQLException(String.format("The query does not contain a geometry field"));
+        throw new SQLException("The query does not contain a geometry field");
     }
 
     /**
@@ -134,7 +134,7 @@ public class GeometryTableUtilities {
         }
         return geometryMetaDatas;
     }
-
+    
     /**
      * Read all geometry metadata from a table
      *
@@ -631,7 +631,7 @@ public class GeometryTableUtilities {
         }
         return false;
     }
-
+    
      /**
      * Check if the table contains a geometry column
      *
@@ -724,7 +724,7 @@ public class GeometryTableUtilities {
         geomEnv.setSRID(firstSRID);
         return geomEnv;
     }
-
+    
      /**
      * Compute the 'estimated' extent of the given spatial table. Use the first
      * geometry field In case of POSTGIS : the estimated is taken from the
@@ -761,7 +761,7 @@ public class GeometryTableUtilities {
 
         return getEstimatedExtent(connection, tableLocation, geometryFields.keySet().iterator().next());
     }
-
+    
     /**
      * Compute the 'estimated' extent of the given spatial table. In case of
      * POSTGIS : the estimated is taken from the geometry column's statistics.
@@ -880,7 +880,7 @@ public class GeometryTableUtilities {
         }
         return srid;
     }
-
+    
      /**
      * Return the SRID of the first geometry column of the input table
      *
@@ -1022,7 +1022,7 @@ public class GeometryTableUtilities {
         }
         return namesWithIndexes;
     }
-
+    
      /**
      * Find the first geometry column name of a table with its index
      *
@@ -1111,7 +1111,6 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("Unable to get geometry metadata from a null or empty column name");
     }
-
     /**
      * Merge the bounding box of all geometries inside the provided table.
      *
@@ -1170,8 +1169,6 @@ public class GeometryTableUtilities {
         }
         throw new SQLException("Database not supported");
     }
-
-
     /**
      *
      * Merge the bounding box of all geometries inside the provided table and
@@ -1497,8 +1494,8 @@ public class GeometryTableUtilities {
         }
         return null;        
     }
-
-
+    
+    
     /**
      * Return an array of two string that correspond to the authority name and
      * its SRID code.If the SRID does not exist return the array {null, null}
@@ -1549,7 +1546,7 @@ public class GeometryTableUtilities {
         }
         return new String[]{authority, sridCode};
     }
-
+    
     /**
      * Change the SRID of the table
      *

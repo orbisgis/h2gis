@@ -166,7 +166,7 @@ public class OGCSpatialFunctionTest {
         assertGeometryEquals("SRID=0;GEOMETRYCOLLECTION EMPTY", rs.getObject(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_Collect() throws Exception {
         Statement st = connection.createStatement();
@@ -197,7 +197,7 @@ public class OGCSpatialFunctionTest {
         assertEquals(27572, rs.getInt("original"));
         assertEquals(5321, rs.getInt("trans"));
     }
-    
+
     @Test
     public void testSetSRIDNullGeom() throws SQLException {
         Statement st = connection.createStatement();
@@ -206,7 +206,7 @@ public class OGCSpatialFunctionTest {
         assertNull(rs.getObject(1));
         rs.close();
     }
-    
+
     @Test
     public void testSetSRIDNullSRID() {
         assertThrows(JdbcSQLNonTransientException.class, ()-> {
@@ -238,7 +238,7 @@ public class OGCSpatialFunctionTest {
         assertEquals(3, rs.getInt(1));
         st.execute("DROP TABLE input_table;");
     }
-    
+
     @Test
     public void test_ST_Is3D() throws Exception {
         Statement st = connection.createStatement();
@@ -515,7 +515,7 @@ public class OGCSpatialFunctionTest {
             }
         });
     }
-    
+
     @Test
     public void test_ST_OrderingEquals1() throws SQLException {
         Statement st = connection.createStatement();
@@ -525,7 +525,7 @@ public class OGCSpatialFunctionTest {
         assertTrue(!rs.getBoolean(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_OrderingEquals2() throws SQLException {
         Statement st = connection.createStatement();
@@ -535,7 +535,7 @@ public class OGCSpatialFunctionTest {
         assertTrue(!rs.getBoolean(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_OrderingEquals3() throws SQLException {
         Statement st = connection.createStatement();
@@ -545,8 +545,8 @@ public class OGCSpatialFunctionTest {
         assertTrue(rs.getBoolean(1));
         rs.close();
     }
-    
-     @Test
+
+    @Test
     public void test_ST_OrderingEquals4() throws SQLException {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0, 10 10)'::GEOMETRY,"
@@ -555,7 +555,7 @@ public class OGCSpatialFunctionTest {
         assertTrue(!rs.getBoolean(1));
         rs.close();
     }
- 
+
     @Test
     public void test_ST_OrderingEquals5() throws SQLException {
         Statement st = connection.createStatement();
@@ -589,7 +589,7 @@ public class OGCSpatialFunctionTest {
             }
         });
     }
-    
+
     @Test
     public void test_ST_PointFromWKB1() throws SQLException {
         Statement st = connection.createStatement();
@@ -599,7 +599,7 @@ public class OGCSpatialFunctionTest {
         assertFalse(rs.next());
         rs.close();
     }
-    
+
     @Test
     public void test_ST_PointFromWKB2() throws Throwable {
         assertThrows(SQLException.class, ()-> {
@@ -607,7 +607,7 @@ public class OGCSpatialFunctionTest {
             st.executeQuery("SELECT ST_PointFromWKB(ST_AsBinary('LINESTRING(0 10, 10 10)'::GEOMETRY));");
         });
     }
-    
+
     @Test
     public void test_ST_GeomFromWKB1() throws SQLException {
         Statement st = connection.createStatement();
@@ -617,17 +617,17 @@ public class OGCSpatialFunctionTest {
         assertFalse(rs.next());
         rs.close();
     }
-    
+
     @Test
     public void test_ST_GeomFromWKB2() throws SQLException {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_SRID(ST_GeomFromWKB(ST_AsBinary('POINT(0 10)'::GEOMETRY), 4326))");
         rs.next();
-        assertEquals(4326, rs.getInt(1));        
+        assertEquals(4326, rs.getInt(1));
         assertFalse(rs.next());
         rs.close();
     }
-    
+
     @Test
     public void test_ST_GeomFromWKB3() throws SQLException {
         Statement st = connection.createStatement();
@@ -637,7 +637,7 @@ public class OGCSpatialFunctionTest {
         assertFalse(rs.next());
         rs.close();
     }
-    
+
     @Test
     public void test_ST_LengthOnPolygon() throws SQLException {
         Statement st = connection.createStatement();
