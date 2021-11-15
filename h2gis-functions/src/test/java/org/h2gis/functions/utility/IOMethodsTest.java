@@ -480,7 +480,7 @@ public class IOMethodsTest {
             res.close();
         }
     }
-
+    
     @Test
     public void testLinkedTableQuery(TestInfo testInfo) throws SQLException, IOException {
         String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
@@ -522,7 +522,7 @@ public class IOMethodsTest {
         ioMethods.removeDriver(df);
         assertFalse(ioMethods.getAllExportDriverSupportedExtensions().contains("shp"));
     }
-
+    
     @Test
     public void testExportPOSTGISQueryEmptyResultToH2GIS(TestInfo testInfo) throws SQLException, IOException {
         String url = "jdbc:postgresql://localhost:5432/orbisgis_db";

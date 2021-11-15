@@ -54,7 +54,7 @@ public class GraphFunctionParserTest {
     }
 
     private void checkOrientation(String input, GraphFunctionParser.Orientation global, String local) {
-        assertEquals(global, parser.parseGlobalOrientation(input));
+        assertEquals(global, GraphFunctionParser.parseGlobalOrientation(input));
         assertEquals(local, parser.parseEdgeOrientation(input));
     }
 

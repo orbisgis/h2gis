@@ -291,7 +291,6 @@ public class JsonWriteDriver {
                         copyProgress.endOfProgress();
                         jsonGenerator.flush();
                         jsonGenerator.close();
-
                     } finally {
                         rs.close();
                     }

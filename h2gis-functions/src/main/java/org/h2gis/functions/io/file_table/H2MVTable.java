@@ -272,11 +272,6 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public boolean canGetRowCount(SessionLocal session) {
-        return true;
-    }
-
-    @Override
     public boolean canDrop() {
         return true;
     }
@@ -287,7 +282,7 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public long getRowCountApproximation(SessionLocal sessionLocal) {
+    public long getRowCountApproximation(SessionLocal session) {
         return driver.getRowCount();
     }
 

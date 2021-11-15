@@ -147,7 +147,6 @@ public class MultiPointHandler implements ShapeHandler {
                                 buffer.putDouble(zExtreame[0]);
                                 buffer.putDouble(zExtreame[1]);
                         }
-
                         for (int t = 0; t < numGeom; t++) {
                                 Coordinate c = (mp.getGeometryN(t)).getCoordinate();
                                 double z = c.z;

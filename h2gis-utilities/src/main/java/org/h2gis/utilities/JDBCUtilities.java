@@ -136,7 +136,7 @@ public class JDBCUtilities {
      * Return true if table tableName contains field fieldName.
      *
      * @param connection Connection
-     * @param tableName Table name
+     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
      * @param fieldName Field name
      * @return True if the table contains the field
      * @throws SQLException
@@ -1229,12 +1229,9 @@ public class JDBCUtilities {
         Map<String, String> indexes = new HashMap<>();
         ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
         while (indexInfo.next()) {
-            short type = indexInfo.getShort("TYPE");
-            //if (type != DatabaseMetaData.tableIndexStatistic) {
-                String indexName = indexInfo.getString("INDEX_NAME");
-                String columnName = indexInfo.getString("COLUMN_NAME");
-                indexes.put(indexName, columnName);
-           // }
+            String indexName = indexInfo.getString("INDEX_NAME");
+            String columnName = indexInfo.getString("COLUMN_NAME");
+            indexes.put(indexName, columnName);
         }
         return indexes;
     }
@@ -1291,9 +1288,8 @@ public class JDBCUtilities {
         dropIndex(connection, TableLocation.parse(table, getDBType(connection)), columnName);
     }
 
-
     /**
-     * Drop the all the indexes of the given table on yhe given connection.
+     * Drop the all the indexes of the given table on the given connection.
      *
      * @param connection Connection to access to the desired table.
      * @param table Table containing the column to drop index.

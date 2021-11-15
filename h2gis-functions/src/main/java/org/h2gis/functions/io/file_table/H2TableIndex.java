@@ -23,6 +23,7 @@ package org.h2gis.functions.io.file_table;
 import org.h2.api.ErrorCode;
 import org.h2.command.query.AllColumnsForPlan;
 import org.h2.engine.Constants;
+import org.h2.engine.Session;
 import org.h2.engine.SessionLocal;
 import org.h2.index.Cursor;
 import org.h2.index.Index;
@@ -171,7 +172,7 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public long getRowCountApproximation(SessionLocal sessionLocal) {
+    public long getRowCountApproximation(SessionLocal session) {
         return driver.getRowCount();
     }
 
@@ -260,9 +261,10 @@ public class H2TableIndex extends Index {
         @Override
         public Value[] getValueList() {
             try {
-                Value[] values = new Value[getColumnCount()];
+                int columnCount = getColumnCount();
+                Value[] values = new Value[columnCount];
                 values[0] = ValueBigint.get(key);
-                for(int i = 1; i < values.length; i++) {
+                for(int i = 1; i < columnCount; i++) {
                     values[i] = (Value)(driver.getField(key - 1, i - 1));
                 }
                 return values;
@@ -312,7 +314,8 @@ public class H2TableIndex extends Index {
         @Override
         public void copyFrom(SearchRow source) {
             setKey(source.getKey());
-            for (int i = 0; i < getColumnCount(); i++) {
+            int columnCount = getColumnCount();
+            for (int i = 0; i < columnCount; i++) {
                 setValue(i, source.getValue(i));
             }
         }
@@ -320,7 +323,8 @@ public class H2TableIndex extends Index {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder("( /* key:").append(key).append(" */ ");
-            for (int i = 0, length = getColumnCount(); i < length; i++) {
+            int columnCount =getColumnCount();
+            for (int i = 0, length = columnCount; i < length; i++) {
                 if (i > 0) {
                     builder.append(", ");
                 }

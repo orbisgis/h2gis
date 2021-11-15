@@ -32,7 +32,6 @@ import org.locationtech.jts.geom.*;
 public class ST_AsGeoJSON extends DeterministicScalarFunction {
 
     static  int maxdecimaldigits = 9;
-
     public ST_AsGeoJSON() {
         addProperty(PROP_REMARKS, "Return the geometry as a Geometry Javascript Object Notation (GeoJSON 1.0) element.\n"
                 + "2D and 3D Geometries are both supported.\n"

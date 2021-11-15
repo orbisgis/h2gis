@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.EmptyProgressVisitor;
+
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
@@ -134,7 +134,6 @@ public class SHPDriverFunction implements DriverFunction {
             copyProgress.endOfProgress();
             return files;
         }
-
     }
 
     /**
@@ -341,7 +340,6 @@ public class SHPDriverFunction implements DriverFunction {
                             preparedStatement.executeBatch();
                             connection.commit();
                         }
-
                         connection.setAutoCommit(true);
                         return new String[]{outputTableName};
                     }

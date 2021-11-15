@@ -123,7 +123,6 @@ public class MeshFunctionTest {
         }
     }
 
-
     @Test
     public void test_ST_ConstrainedDelaunayNullValue() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(null);")) {
@@ -222,7 +221,7 @@ public class MeshFunctionTest {
                 "drop table if exists voro;\n" +
                 "create table voro as select ST_VORONOI(st_accum(the_geom), 2, " +
                 "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
-         try (ResultSet rs = st.executeQuery("select  ST_NUMGEOMETRIES(the_geom) cpt,st_perimeter(the_geom) lngth," +
+        try (ResultSet rs = st.executeQuery("select  ST_NUMGEOMETRIES(the_geom) cpt,st_perimeter(the_geom) lngth," +
                 "st_npoints(the_geom) numpts  from voro;")) {
             assertTrue(rs.next());
             assertEquals(1071, rs.getInt(1));
@@ -230,7 +229,6 @@ public class MeshFunctionTest {
             assertEquals(7390, rs.getInt(3));
         }
     }
-
 
     @Test
     public void test_EdgeST_VORONOI() throws Exception {
@@ -254,7 +252,6 @@ public class MeshFunctionTest {
             assertEquals(3, rs.getInt("num"));
         }
     }
-
 
     @Test
     /**
