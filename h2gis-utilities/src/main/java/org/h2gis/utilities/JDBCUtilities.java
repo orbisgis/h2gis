@@ -894,7 +894,11 @@ public class JDBCUtilities {
                                                 .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
                                     }
                                 }
-                            } else {
+                            }
+                            else if (columnTypeName.equalsIgnoreCase("decfloat")) {
+                                builder.append(columnName).append(" FLOAT");
+                            }
+                            else {
                                 builder.append(columnName).append(" ").append(columnTypeName);
                             }
                         }
@@ -989,7 +993,11 @@ public class JDBCUtilities {
                     builder.append(columnName).append(" ").append("DOUBLE PRECISION");
                 } else if (columnTypeName.equalsIgnoreCase("geometry")) {
                     builder.append(columnName).append(" ").append(columnTypeName);
-                } else {
+                }
+                else if (columnTypeName.equalsIgnoreCase("decfloat")) {
+                    builder.append(columnName).append(" FLOAT");
+                }
+                else {
                     builder.append(columnName).append(" ").append(columnTypeName);
                 }
             }
