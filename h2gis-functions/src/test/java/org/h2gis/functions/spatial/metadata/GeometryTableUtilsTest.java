@@ -123,24 +123,7 @@ public class GeometryTableUtilsTest {
     @Test
     public void testGeometryMetadataFunctions() throws Exception {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY)");
-        st.execute("DROP VIEW IF EXISTS geo_cols; CREATE VIEW geo_cols AS "
-                + "SELECT  f_table_catalog, "
-                + " f_table_schema, "
-                + " f_table_name, "
-                + " f_geometry_column, "
-                + "1 storage_type, "
-                + "t[1] as geometry_type, "
-                + "t[2] as coord_dimension, "
-                + "t[3] as srid, "
-                + "t[4] as type "
-                + "FROM (SELECT TABLE_CATALOG f_table_catalog, "
-                + "TABLE_SCHEMA f_table_schema, "
-                + "TABLE_NAME f_table_name, "
-                + "COLUMN_NAME f_geometry_column, "
-                + "1 storage_type, FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, "
-                + " COLUMN_NAME, COLUMN_TYPE) as t FROM INFORMATION_SCHEMA.COLUMNS"
-                + " WHERE TYPE_NAME = 'GEOMETRY'); ");
-        ResultSet rs = st.executeQuery("SELECT * FROM geo_cols");
+        ResultSet rs = st.executeQuery("SELECT * FROM geometry_columns where f_table_name= 'GEO_POINT'");
         rs.next();
         assertEquals("DBH2GEOMETRYTABLEUTILSTEST", rs.getString("f_table_catalog"));
         assertEquals("PUBLIC", rs.getString("f_table_schema"));
@@ -154,7 +137,7 @@ public class GeometryTableUtilsTest {
 
         //Alter the geometry
         st.execute("ALTER TABLE GEO_POINT ALTER COLUMN THE_GEOM type geometry(POINT Z, 4326)");
-        rs = st.executeQuery("SELECT * FROM geo_cols");
+        rs = st.executeQuery("SELECT * FROM geometry_columns where f_table_name= 'GEO_POINT'");
         rs.next();
         assertEquals("DBH2GEOMETRYTABLEUTILSTEST", rs.getString("f_table_catalog"));
         assertEquals("PUBLIC", rs.getString("f_table_schema"));
@@ -167,7 +150,7 @@ public class GeometryTableUtilsTest {
         assertEquals("POINTZ", rs.getString("type"));
 
         st.execute("drop table if exists geo_linestring; CREATE TABLE geo_linestring (the_geom GEOMETRY(LINESTRINGZM, 4326))");
-        rs = st.executeQuery("SELECT * FROM geo_cols where f_table_name= 'GEO_LINESTRING' ");
+        rs = st.executeQuery("SELECT * FROM geometry_columns where f_table_name= 'GEO_LINESTRING' ");
         rs.next();
         assertEquals("DBH2GEOMETRYTABLEUTILSTEST", rs.getString("f_table_catalog"));
         assertEquals("PUBLIC", rs.getString("f_table_schema"));
@@ -842,11 +825,11 @@ public class GeometryTableUtilsTest {
         assertEquals("CREATE TABLE PERSTABLE", JDBCUtilities.createTableDDL(connection,location));
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
-                + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
+                + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64), size_geom DECFLOAT(10))");
         String ddl = JDBCUtilities.createTableDDL(connection, location);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute(ddl);
-        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME VARCHAR,CITY VARCHAR(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND VARCHAR(64))",
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64),SIZE_GEOM FLOAT)",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
@@ -1275,24 +1258,13 @@ public class GeometryTableUtilsTest {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (id int, the_geom GEOMETRY)");
         st.execute("INSERT INTO geo_point VALUES(1, 'POINT(1 2)')");
         st.execute("create spatial index geotable_sp_index on geo_point(the_geom)");
-        String query  = String.format("SELECT I.*,C.* FROM INFORMATION_SCHEMA.INDEXES AS I , " +
-                "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
-                "INFORMATION_SCHEMA.INDEXES WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
-                "WHERE I.TABLE_SCHEMA=C.TABLE_SCHEMA AND I.TABLE_NAME=C.TABLE_NAME and C.COLUMN_NAME='%s'", "PUBLIC", "GEO_POINT", "THE_GEOM","THE_GEOM");
-        ResultSet rs = st.executeQuery(query);
-        rs.next();
-        TestUtilities.printValues(rs);
+        assertTrue(JDBCUtilities.isSpatialIndexed(connection, "geo_point", "the_geom"));
+
         st.execute("DROP TABLE IF EXISTS shptable");
         st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         System.out.println("The table exists "+ JDBCUtilities.tableExists(connection, TableLocation.parse("SHPTABLE")));
         st.execute("create spatial index on shptable(the_geom)");
-        query  = String.format("SELECT I.*,C.* FROM INFORMATION_SCHEMA.INDEXES AS I , " +
-                "(SELECT COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA  FROM " +
-                "INFORMATION_SCHEMA.INDEXES WHERE TABLE_SCHEMA='%s' and TABLE_NAME='%s' AND COLUMN_NAME='%s') AS C " +
-                "WHERE I.TABLE_SCHEMA=C.TABLE_SCHEMA AND I.TABLE_NAME=C.TABLE_NAME and C.COLUMN_NAME='%s'", "PUBLIC", "SHPTABLE", "THE_GEOM","THE_GEOM");
-        rs = st.executeQuery(query);
-        rs.next();
-        TestUtilities.printValues(rs);
+        assertTrue(JDBCUtilities.isSpatialIndexed(connection, "shptable", "the_geom"));
     }
     
     @Test
