@@ -1,0 +1,57 @@
+name: CI snapshot
+
+on:
+  push:
+    branches: [ master ]
+  workflow_run:
+    workflows: ["CI release"]
+    branches: [ master ]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Upload Snapshot
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the source code of the project
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Setup the jdk using version 8 of adoptOpenJDK
+      - name: Java setup
+        uses: actions/setup-java@v2
+        with:
+          distribution: adopt
+          java-version: 8
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      # Set up the postgis database
+      - name: Postigs install
+        uses: SPalominos/PostGIS-Installer-Action@v1.0.1
+        with:
+          psql_version: '9.6'
+          pgis_version: '2.5'
+          docker_image: 'postgis/postgis'
+          db_password: 'orbisgis'
+          db_user: 'orbisgis'
+          db_name: 'orbisgis_db'
+          
+      # Install the GPG secret key
+      - name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+
+      # Deploy the snapshot
+      - name: Deploy
+        run: mvn deploy --no-transfer-progress --batch-mode
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_PASSWORD }}

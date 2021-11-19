@@ -1,0 +1,72 @@
+name: CI release
+
+on:
+  workflow_dispatch:
+    inputs:
+      next-version:
+        required: false
+        description: "Next version"
+
+jobs:
+  build:
+    name: Release and next iteration
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the source code of the project
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Setup the jdk using version 8 of adoptOpenJDK
+      - name: Java setup
+        uses: actions/setup-java@v2
+        with:
+          distribution: adopt
+          java-version: 8
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      # Set up the postgis database
+      - name: Postigs install
+        uses: SPalominos/PostGIS-Installer-Action@v1.0.1
+        with:
+          psql_version: '9.6'
+          pgis_version: '2.5'
+          docker_image: 'postgis/postgis'
+          db_password: 'orbisgis'
+          db_user: 'orbisgis'
+          db_name: 'orbisgis_db'
+
+      # Configure git user in order to sign release with OrbisGIS user.
+      - name: Configure Git User
+        run: |
+          git config user.email "info@orbisgis.org"
+          git config user.name OrbisGIS
+
+      #Install the GPG secret key
+      - name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+
+      # Create the release :
+      #   - move from Snapshot version to Release
+      #   - commit and tag release
+      #   - move to next Snapshot
+      #   - upload release to maven repo
+      - name: Release
+        run: |
+          mvn \
+            --no-transfer-progress \
+            --batch-mode \
+            -P deploy \
+            release:prepare release:perform \
+            -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN -DtagNameFormat=v@{project.version} \
+            ${VERSION:+-DreleaseVersion VERSION}
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_PASSWORD }}
+          VERSION: $next-version

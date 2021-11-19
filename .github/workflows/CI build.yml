@@ -1,0 +1,46 @@
+name: CI build
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_run:
+    workflows: ["CI release"]
+    branches: [ master ]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Main build job used to
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the source code of the project
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Setup the jdk using version 8 of adoptOpenJDK
+      - name: Setup java 8 using adoptOpenJDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: adopt
+          java-version: 8
+
+      # Set up the postgis database
+      - name: Postigs install
+        uses: SPalominos/PostGIS-Installer-Action@v1.0.1
+        with:
+          psql_version: '9.6'
+          pgis_version: '2.5'
+          docker_image: 'postgis/postgis'
+          db_password: 'orbisgis'
+          db_user: 'orbisgis'
+          db_name: 'orbisgis_db'
+
+      # Build the project using
+      #   - clean : clean up the workspace
+      #   - verify : perform different check like the dependency and plugin version update
+      #   - package : bundle the project into pom or jar.
+      - name: Build
+        run: mvn clean validate compile test
