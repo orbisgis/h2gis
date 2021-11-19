@@ -7,8 +7,8 @@
     <!-- Maven Coordinates -->
     <parent>
         <groupId>org.orbisgis</groupId>
-        <artifactId>orbisparent</artifactId>
-        <version>1.0.3</version>
+        <artifactId>orbisgis-nexus</artifactId>
+        ."<version>3</version>
     </parent>
 
     <artifactId>h2gis-parent</artifactId>
