@@ -2,10 +2,10 @@ name: CI build
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ 1.5.X ]
   workflow_run:
     workflows: ["CI release"]
-    branches: [ master ]
+    branches: [ 1.5.X ]
     types:
       - completed
   workflow_dispatch:
