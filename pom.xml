@@ -34,7 +34,7 @@
         <commons-io-version>2.8.0</commons-io-version>
         <cts-version>1.6.0-SNAPSHOT</cts-version>
         <h2-version>2.0.201-SNAPSHOT</h2-version>
-        <jackson-core-version>2.12.1</jackson-core-version>
+        <jackson-core-version>2.13.0</jackson-core-version>
         <java-network-analyzer-version>0.1.8-SNAPSHOT</java-network-analyzer-version>
         <jts-core-version>1.18.2</jts-core-version>
         <junit-version>5.7.0-M1</junit-version>

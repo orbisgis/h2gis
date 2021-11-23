@@ -779,7 +779,7 @@ public class GeoJsonReaderDriver {
                     case VALUE_NUMBER_INT:
                         if (!hasField || dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.BIGINT);
-                        } else if (hasField && dataType != Types.BIGINT) {
+                        } else if (hasField && dataType != Types.BIGINT && dataType!=Types.DOUBLE) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         break;

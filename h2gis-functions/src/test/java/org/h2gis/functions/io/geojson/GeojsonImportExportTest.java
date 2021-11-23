@@ -27,6 +27,7 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -36,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.*;
+import java.util.List;
 import java.util.Properties;
 
 import org.h2gis.unitTest.GeometryAsserts;
@@ -631,7 +633,7 @@ public class GeojsonImportExportTest {
             stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("complex.geojson").getPath()) + ", 'TABLE_COMPLEX_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_COMPLEX_READ;");
             ResultSetMetaData metadata = res.getMetaData();
-            assertEquals(15, metadata.getColumnCount());
+            assertEquals(16, metadata.getColumnCount());
             assertEquals("GEOMETRY", metadata.getColumnTypeName(1));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(2));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(3));
@@ -647,10 +649,12 @@ public class GeojsonImportExportTest {
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(13));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(14));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(15));
+            assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(16));
             res.next();
             assertNull(res.getObject(1));
             assertEquals(79.04200463708992, res.getDouble(2));
             assertEquals("#C5E805", res.getString(7));
+            assertEquals(0, res.getDouble(13));
             assertNull(res.getObject(14));
             assertNull(res.getObject(15));
             res.next();
@@ -660,11 +664,12 @@ public class GeojsonImportExportTest {
             assertEquals("12.0", res.getString(10));
             assertNull(res.getObject(11));
             assertTrue(res.getBoolean(12));
+            assertEquals(0.5, res.getDouble(13));
             res.next();
             assertEquals(10.2d, ((Geometry) res.getObject(1)).getCoordinate().getZ(), 0);
-            assertNull(res.getObject(13));
-            assertEquals(0.87657195d, res.getDouble(14), 0);
-            assertEquals(234.16d, res.getDouble(15), 0);
+            assertNull(res.getObject(14));
+            assertEquals(0.87657195d, res.getDouble(15), 0);
+            assertEquals(234.16d, res.getDouble(16), 0);
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
