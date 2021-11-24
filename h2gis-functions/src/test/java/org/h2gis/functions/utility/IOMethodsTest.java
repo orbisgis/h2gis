@@ -551,4 +551,24 @@ public class IOMethodsTest {
             res.close();
         }
     }
+
+    @Test
+    public void test_importExportFileUpperCase() throws Exception {
+        File shpFile = new File("target/area_export_upper_case.SHP");
+        st.execute("DROP TABLE IF EXISTS AREA");
+        st.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+        st.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
+        // Create a shape file using table area
+        IOMethods ioMethods = new IOMethods();
+        ioMethods.exportToFile(connection, "AREA", "target/area_export_upper_case.SHP", null, true);
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        String[] tableNames = ioMethods.importFile(connection, shpFile.getAbsolutePath(), "test_table", null, true);
+        assertEquals("TEST_TABLE", tableNames[0]);
+        ResultSet res = st.executeQuery("SELECT * FROM test_table");
+        assertTrue(res.next());
+        assertEquals(1, res.getInt(1));
+        assertGeometryEquals("MULTIPOLYGON (((-10 9, -10 109, 90 109, 90 9, -10 9)))", (Geometry) res.getObject(2));
+        res.close();
+    }
 }

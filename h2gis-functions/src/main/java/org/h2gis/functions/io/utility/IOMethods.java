@@ -569,7 +569,7 @@ public class IOMethods {
         String path = file.getAbsolutePath();
         for (DriverFunction f : driverFunctionList) {
             for (String ext : f.getExportFormats()) {
-                if (path.endsWith("." + ext)) {
+                if (path.toLowerCase().endsWith("." + ext)) {
                     return f;
                 }
             }
@@ -587,7 +587,7 @@ public class IOMethods {
         String path = file.getAbsolutePath();
         for (DriverFunction f : driverFunctionList) {
             for (String ext : f.getImportFormats()) {
-                if (path.endsWith(ext)) {
+                if (path.toLowerCase().endsWith(ext)) {
                     return f;
                 }
             }
