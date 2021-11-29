@@ -1116,4 +1116,87 @@ public class SpatialFunction2Test {
     }
 
 
+    @Test
+    public void test_ST_SUBDIVIDE1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_subdivide('POLYGON ((120 330, 162 330, 207 330, 258 330, 300 330, 300 277, 300 208, 300 150, 257 150, 196 150, 120 150, 120 198, 120 256, 120 330))'::GEOMETRY, "
+                + "8);");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTIPOLYGON (((120 150, 120 198, 120 240, 210 240, 210 150, 196 150, 120 150)), ((210 150, 210 240, 300 240, 300 208, 300 150, 257 150, 210 150)), ((120 240, 120 256, 120 330, 162 330, 207 330, 210 330, 210 240, 120 240)), ((210 240, 210 330, 258 330, 300 330, 300 277, 300 240, 210 240)))",
+                rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SUBDIVIDE2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_subdivide('POLYGON ((100 300, 200 300, 200 200, 100 200, 100 300), \n" +
+                "  (110 290, 153.5 290, 153.5 252.5, 110 252.5, 110 290))'::GEOMETRY, "
+                + "8);");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTIPOLYGON (((100 200, 100 250, 150 250, 150 200, 100 200)), ((100 250, 100 300, 150 300, 150 290, 110 290, 110 252.5, 150 252.5, 150 250, 100 250)), ((150 200, 150 250, 200 250, 200 200, 150 200)), ((150 250, 150 252.5, 153.5 252.5, 153.5 290, 150 290, 150 300, 200 300, 200 250, 150 250)))",
+                rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SUBDIVIDE3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_subdivide('POLYGON((132 10,119 23,85 35,68 29,66 28,49 42,32 56,22 64,32 110,40 119,36 150,\n" +
+                "57 158,75 171,92 182,114 184,132 186,146 178,176 184,179 162,184 141,190 122,\n" +
+                "190 100,185 79,186 56,186 52,178 34,168 18,147 13,132 10))'::GEOMETRY, "
+                + "10);");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTIPOLYGON (((22 64, 29.391304347826086 98, 106 98, 106 27.58823529411765, 85 35, 68 29, 66 28, 49 42, 32 56, 22 64)), \n" +
+                        "  ((29.391304347826086 98, 32 110, 40 119, 36 150, 57 158, 75 171, 92 182, 106 183.27272727272728, 106 98, 29.391304347826086 98)), \n" +
+                        "  ((106 27.58823529411765, 106 54, 147.76190476190476 54, 147.76190476190476 13.18140589569161, 147 13, 132 10, 119 23, 106 27.58823529411765)), \n" +
+                        "  ((106 54, 106 98, 147.76190476190476 98, 147.76190476190476 54, 106 54)), \n" +
+                        "  ((106 98, 106 142, 148 142, 148 98, 106 98)), \n" +
+                        "  ((106 142, 106 183.27272727272728, 114 184, 132 186, 146 178, 148 178.4, 148 142, 106 142)), \n" +
+                        "  ((147.76190476190476 13.18140589569161, 147.76190476190476 54, 186 54, 186 52, 178 34, 168 18, 147.76190476190476 13.18140589569161)), \n" +
+                        "  ((147.76190476190476 54, 147.76190476190476 98, 189.52380952380952 98, 185 79, 186 56, 186 54, 147.76190476190476 54)), \n" +
+                        "  ((148 98, 148 142, 183.76190476190476 142, 184 141, 190 122, 190 100, 189.52380952380952 98, 148 98)), \n" +
+                        "  ((148 142, 148 178.4, 176 184, 179 162, 183.76190476190476 142, 148 142)))",
+                rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SUBDIVIDE4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_subdivide('POLYGON ((100 300, 200 300, 200 200, 100 200, 100 300), \n" +
+                "  (110 290, 153.5 290, 153.5 252.5, 110 252.5, 110 290))'::GEOMETRY);");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTIPOLYGON (((100 200, 100 250, 150 250, 150 200, 100 200)), ((100 250, 100 300, 150 300, 150 290, 110 290, 110 252.5, 150 252.5, 150 250, 100 250)), \n" +
+                        "  ((150 200, 150 250, 200 250, 200 200, 150 200)),   ((150 250, 150 252.5, 153.5 252.5, 153.5 290, 150 290, 150 300, 200 300, 200 250, 150 250)))",
+                rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SUBDIVIDE5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_subdivide('LINESTRING (-200 200, 200 200)'::GEOMETRY);");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTILINESTRING ((-200 200, 0 200), (0 200, 200 200))",
+                rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SUBDIVIDE6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_subdivide('GEOMETRYCOLLECTION (LINESTRING (-200 200, 200 200)," +
+                "  POINT (-103 273)," +
+                "  POINT (-40 254))'::GEOMETRY);");
+        assertTrue(rs.next());
+        assertGeometryEquals("GEOMETRYCOLLECTION (POINT (-103 273), POINT (-40 254), LINESTRING (-200 200, 0 200), LINESTRING (0 200, 200 200))",
+                rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SUBDIVIDE7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_subdivide('SRID=4326;LINESTRING (-200 200, 200 200)'::GEOMETRY);");
+        assertTrue(rs.next());
+        assertGeometryEquals("SRID=4326;MULTILINESTRING ((-200 200, 0 200), (0 200, 200 200))",
+                rs.getObject(1));
+        rs.close();
+    }
+
+
 }

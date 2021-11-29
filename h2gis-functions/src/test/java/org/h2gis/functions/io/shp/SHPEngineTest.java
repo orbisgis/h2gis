@@ -26,6 +26,7 @@ import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
@@ -310,8 +311,12 @@ public class SHPEngineTest {
         } finally {
             rs.close();
         }
+
+        assertFalse(JDBCUtilities.isIndexed(connection, "SHPTABLE", "GID"));
         // Query plan test with index
         st.execute("CREATE INDEX ON shptable(gid)");
+        assertTrue(JDBCUtilities.isIndexed(connection, "SHPTABLE", "GID"));
+
         rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE gid = 201");
         try{
             assertTrue(rs.next());
