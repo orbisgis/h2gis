@@ -73,6 +73,7 @@ import org.h2gis.functions.spatial.properties.*;
 import org.h2gis.functions.spatial.snap.ST_Snap;
 import org.h2gis.functions.spatial.split.ST_LineIntersector;
 import org.h2gis.functions.spatial.split.ST_Split;
+import org.h2gis.functions.spatial.split.ST_SubDivide;
 import org.h2gis.functions.spatial.topography.*;
 import org.h2gis.functions.spatial.topology.ST_Graph;
 import org.h2gis.functions.spatial.topology.ST_Node;
@@ -316,7 +317,8 @@ public class H2GISFunctions {
                 new JTSVersion(),
                 new ST_Force4D(),
                 new ST_Force3DM(),
-                new ST_VariableBuffer()
+                new ST_VariableBuffer(),
+                new ST_SubDivide()
         };
     }
 
