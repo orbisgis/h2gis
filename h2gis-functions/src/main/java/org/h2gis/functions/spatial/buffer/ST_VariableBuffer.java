@@ -46,7 +46,7 @@ public class ST_VariableBuffer extends DeterministicScalarFunction {
      */
     public ST_VariableBuffer() {
         addProperty(PROP_REMARKS, "Create a buffer polygon along a line with the buffer distance interpolated\n" +
-                "   * between a start distance and an end distance.");
+                " between a start distance and an end distance.");
     }
 
     @Override
