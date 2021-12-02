@@ -3,10 +3,7 @@ package org.h2gis.functions.spatial.split;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.*;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Stack;
+import java.util.*;
 
 public class ST_SubDivide extends DeterministicScalarFunction {
 
@@ -51,7 +48,7 @@ public class ST_SubDivide extends DeterministicScalarFunction {
      * @param maxvertices number of vertices in the final geometry
      * @return
      */
-    public static ArrayList<Geometry> subdivide_recursive(Geometry geom, int maxvertices) {
+    public static List<Geometry> subdivide_recursive(Geometry geom, int maxvertices) {
         if(geom ==null){
             return null;
         }
@@ -61,7 +58,7 @@ public class ST_SubDivide extends DeterministicScalarFunction {
         for (int i = 0; i < size; i++) {
             stack.add(geom.getGeometryN(i));
         }
-        ArrayList<Geometry> results = new ArrayList<>();
+        List<Geometry> results = new ArrayList<>();
         while (!stack.isEmpty()) {
             final Geometry slice = stack.pop();
             int nbPts = 0;
@@ -117,7 +114,7 @@ public class ST_SubDivide extends DeterministicScalarFunction {
         if(geom ==null){
             return null;
         }
-        ArrayList<Geometry> results = new ArrayList();
+        List<Geometry> results = new ArrayList();
         int size = geom.getNumGeometries();
         for (int i = 0; i < size; i++) {
             Geometry subGeom = geom.getGeometryN(i);
@@ -176,7 +173,7 @@ public class ST_SubDivide extends DeterministicScalarFunction {
      * @param stack
      * @param ret
      */
-    public static void filterGeom(Geometry geom, int maxvertices, Stack stack, ArrayList ret) {
+    public static void filterGeom(Geometry geom, int maxvertices, Stack stack, List ret) {
         int size = geom.getNumGeometries();
         for (int i = 0; i < size; i++) {
             Geometry subGeom = geom.getGeometryN(i);
