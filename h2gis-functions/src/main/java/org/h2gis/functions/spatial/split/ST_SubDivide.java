@@ -4,7 +4,9 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.*;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Stack;
 
 public class ST_SubDivide extends DeterministicScalarFunction {
 
@@ -49,17 +51,17 @@ public class ST_SubDivide extends DeterministicScalarFunction {
      * @param maxvertices number of vertices in the final geometry
      * @return
      */
-    public static HashSet<Geometry> subdivide_recursive(Geometry geom, int maxvertices) {
+    public static ArrayList<Geometry> subdivide_recursive(Geometry geom, int maxvertices) {
         if(geom ==null){
             return null;
         }
         maxvertices = Math.max(0, maxvertices);
-        ArrayDeque<Geometry> stack = new ArrayDeque<>();
+        Stack<Geometry> stack = new Stack<>();
         int size = geom.getNumGeometries();
         for (int i = 0; i < size; i++) {
             stack.add(geom.getGeometryN(i));
         }
-        HashSet<Geometry> results = new HashSet<>();
+        ArrayList<Geometry> results = new ArrayList<>();
         while (!stack.isEmpty()) {
             final Geometry slice = stack.pop();
             int nbPts = 0;
@@ -76,14 +78,28 @@ public class ST_SubDivide extends DeterministicScalarFunction {
                 final double minY = envelope.getMinY();
                 final double maxY = envelope.getMaxY();
                 final double midY = minY + (maxY - minY) / 2.0;
-                Envelope llEnv = new Envelope(minX, midX, minY, midY);
-                Envelope lrEnv = new Envelope(midX, maxX, minY, midY);
-                Envelope ulEnv = new Envelope(minX, midX, midY, maxY);
-                Envelope urEnv = new Envelope(midX, maxX, midY, maxY);
-                filterGeom(FACTORY.toGeometry(llEnv).intersection(slice), maxvertices, stack, results);
-                filterGeom(FACTORY.toGeometry(lrEnv).intersection(slice), maxvertices, stack, results);
-                filterGeom(FACTORY.toGeometry(ulEnv).intersection(slice), maxvertices, stack, results);
-                filterGeom(FACTORY.toGeometry(urEnv).intersection(slice), maxvertices, stack, results);
+                if(envelope.getHeight()==0){
+                    Envelope ulEnv = new Envelope(minX, midX, midY, maxY);
+                    Envelope urEnv = new Envelope(midX, maxX, midY, maxY);
+                    filterGeom(FACTORY.toGeometry(ulEnv).intersection(slice), maxvertices, stack, results);
+                    filterGeom(FACTORY.toGeometry(urEnv).intersection(slice), maxvertices, stack, results);
+                }
+                else if(envelope.getWidth()==0){
+                    Envelope llEnv = new Envelope(minX, midX, minY, midY);
+                    filterGeom(FACTORY.toGeometry(llEnv).intersection(slice), maxvertices, stack, results);
+                    Envelope lrEnv = new Envelope(midX, maxX, minY, midY);
+                    filterGeom(FACTORY.toGeometry(lrEnv).intersection(slice), maxvertices, stack, results);
+                }
+                else{
+                    Envelope ulEnv = new Envelope(minX, midX, midY, maxY);
+                    Envelope urEnv = new Envelope(midX, maxX, midY, maxY);
+                    Envelope llEnv = new Envelope(minX, midX, minY, midY);
+                    Envelope lrEnv = new Envelope(midX, maxX, minY, midY);
+                    filterGeom(FACTORY.toGeometry(ulEnv).intersection(slice), maxvertices, stack, results);
+                    filterGeom(FACTORY.toGeometry(urEnv).intersection(slice), maxvertices, stack, results);
+                    filterGeom(FACTORY.toGeometry(llEnv).intersection(slice), maxvertices, stack, results);
+                    filterGeom(FACTORY.toGeometry(lrEnv).intersection(slice), maxvertices, stack, results);
+                }
             } else {
                 results.add(slice);
             }
@@ -101,7 +117,7 @@ public class ST_SubDivide extends DeterministicScalarFunction {
         if(geom ==null){
             return null;
         }
-        HashSet<Geometry> results = new HashSet();
+        ArrayList<Geometry> results = new ArrayList();
         int size = geom.getNumGeometries();
         for (int i = 0; i < size; i++) {
             Geometry subGeom = geom.getGeometryN(i);
@@ -113,18 +129,35 @@ public class ST_SubDivide extends DeterministicScalarFunction {
                 double minY = envelope.getMinY();
                 double maxY = envelope.getMaxY();
                 double midY = minY + (maxY - minY) / 2.0;
-                Envelope llEnv = new Envelope(minX, midX, minY, midY);
-                Envelope lrEnv = new Envelope(midX, maxX, minY, midY);
-                Envelope ulEnv = new Envelope(minX, midX, midY, maxY);
-                Envelope urEnv = new Envelope(midX, maxX, midY, maxY);
-                Geometry ll = FACTORY.toGeometry(llEnv).intersection(subGeom);
-                Geometry lr = FACTORY.toGeometry(lrEnv).intersection(subGeom);
-                Geometry ul = FACTORY.toGeometry(ulEnv).intersection(subGeom);
-                Geometry ur = FACTORY.toGeometry(urEnv).intersection(subGeom);
-                results.add(ll);
-                results.add(lr);
-                results.add(ul);
-                results.add(ur);
+                if(envelope.getHeight()==0){
+                    Envelope ulEnv = new Envelope(minX, midX, midY, maxY);
+                    Envelope urEnv = new Envelope(midX, maxX, midY, maxY);
+                    Geometry ul = FACTORY.toGeometry(ulEnv).intersection(subGeom);
+                    Geometry ur = FACTORY.toGeometry(urEnv).intersection(subGeom);
+                    results.add(ul);
+                    results.add(ur);
+                }
+                else if(envelope.getWidth()==0){
+                    Envelope llEnv = new Envelope(minX, midX, minY, midY);
+                    Geometry ll = FACTORY.toGeometry(llEnv).intersection(subGeom);
+                    Envelope lrEnv = new Envelope(midX, maxX, minY, midY);
+                    Geometry lr = FACTORY.toGeometry(lrEnv).intersection(subGeom);
+                    results.add(ll);
+                    results.add(lr);
+                } else{
+                    Envelope ulEnv = new Envelope(minX, midX, midY, maxY);
+                    Envelope urEnv = new Envelope(midX, maxX, midY, maxY);
+                    Geometry ul = FACTORY.toGeometry(ulEnv).intersection(subGeom);
+                    Geometry ur = FACTORY.toGeometry(urEnv).intersection(subGeom);
+                    results.add(ul);
+                    results.add(ur);
+                    Envelope llEnv = new Envelope(minX, midX, minY, midY);
+                    Geometry ll = FACTORY.toGeometry(llEnv).intersection(subGeom);
+                    Envelope lrEnv = new Envelope(midX, maxX, minY, midY);
+                    Geometry lr = FACTORY.toGeometry(lrEnv).intersection(subGeom);
+                    results.add(ll);
+                    results.add(lr);
+                }
             } else {
                 results.add(subGeom);
             }
@@ -143,19 +176,19 @@ public class ST_SubDivide extends DeterministicScalarFunction {
      * @param stack
      * @param ret
      */
-    public static void filterGeom(Geometry geom, int maxvertices, ArrayDeque<Geometry> stack, HashSet ret) {
+    public static void filterGeom(Geometry geom, int maxvertices, Stack stack, ArrayList ret) {
         int size = geom.getNumGeometries();
         for (int i = 0; i < size; i++) {
             Geometry subGeom = geom.getGeometryN(i);
             int nbPts = 0;
-            if (geom instanceof Polygon) {
+            if (subGeom.getDimension()==2) {
                 nbPts = subGeom.getNumPoints() - 1;
                 if (nbPts <= maxvertices) {
                     ret.add(subGeom);
                 } else {
                     stack.add(subGeom);
                 }
-            } else if (geom instanceof LineString) {
+            } else if (subGeom.getDimension()==1) {
                 nbPts = subGeom.getNumPoints();
                 if (nbPts <= maxvertices) {
                     ret.add(subGeom);

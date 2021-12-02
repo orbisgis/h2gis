@@ -1197,6 +1197,4 @@ public class SpatialFunction2Test {
                 rs.getObject(1));
         rs.close();
     }
-
-
 }
