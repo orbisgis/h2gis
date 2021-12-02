@@ -48,10 +48,7 @@ import org.h2gis.functions.spatial.affine_transformations.ST_Translate;
 import org.h2gis.functions.spatial.aggregate.ST_Accum;
 import org.h2gis.functions.spatial.aggregate.ST_Collect;
 import org.h2gis.functions.spatial.aggregate.ST_LineMerge;
-import org.h2gis.functions.spatial.buffer.ST_Buffer;
-import org.h2gis.functions.spatial.buffer.ST_OffSetCurve;
-import org.h2gis.functions.spatial.buffer.ST_RingSideBuffer;
-import org.h2gis.functions.spatial.buffer.ST_SideBuffer;
+import org.h2gis.functions.spatial.buffer.*;
 import org.h2gis.functions.spatial.clean.ST_MakeValid;
 import org.h2gis.functions.spatial.convert.*;
 import org.h2gis.functions.spatial.create.*;
@@ -318,7 +315,8 @@ public class H2GISFunctions {
                 new ST_InsertPoint(),
                 new JTSVersion(),
                 new ST_Force4D(),
-                new ST_Force3DM()
+                new ST_Force3DM(),
+                new ST_VariableBuffer()
         };
     }
 
