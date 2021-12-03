@@ -160,18 +160,17 @@ public class DbaseFileWriter {
      * @throws DbaseFileException If the entry doesn't comply to the header.
      */
     public void write(Object[] record) throws IOException, DbaseFileException {
-
-        if (record.length != header.getNumFields()) {
+        int numFields = header.getNumFields();
+        if (record.length != numFields) {
             throw new DbaseFileException("Wrong number of fields "
                     + record.length + " expected " + header.getNumFields());
         }
-
         buffer.position(0);
 
         // put the 'not-deleted' marker
         buffer.put((byte) ' ');
 
-        for (int i = 0; i < header.getNumFields(); i++) {
+        for (int i = 0; i < numFields; i++) {
             Object value = record[i];
             if (value == null) {
                 buffer.put(nullValues[i]);

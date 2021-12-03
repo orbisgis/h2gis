@@ -370,9 +370,9 @@ public class SHPImportExportTest {
         assertEquals(1, shpDriver.getField(0, 0).getInt());
         // The driver can not create POLYGON
         WKTWriter toText = new WKTWriter(3);
-        assertEquals("MULTIPOLYGON Z(((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", toText.write(((ValueGeometry)shpDriver.getField(0, 1)).getGeometry()));
+        assertGeometryEquals("MULTIPOLYGON Z(((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", ((ValueGeometry)shpDriver.getField(0, 1)).getGeometry());
         assertEquals(2, shpDriver.getField(1, 0).getInt());
-        assertEquals("MULTIPOLYGON Z(((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write(((ValueGeometry) shpDriver.getField(1, 1)).getGeometry()));
+        assertGeometryEquals("MULTIPOLYGON Z(((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", ((ValueGeometry) shpDriver.getField(1, 1)).getGeometry());
     }
 
     @Test
@@ -784,6 +784,7 @@ public class SHPImportExportTest {
             stat.execute("CALL SHPRead('target/points.shp', 'TABLE_POINTS_READ', true);");
             WKTReader wKTReader = new WKTReader();
             Geometry geomOutPut = wKTReader.read("POINT(10 10)").buffer(10);
+            geomOutPut.normalize();
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
             res.next();
             Geometry geom = (Geometry) res.getObject("THE_GEOM");
@@ -926,5 +927,24 @@ public class SHPImportExportTest {
         Coordinate coord = geom.getCoordinate();
         assertEquals(coord.z, 5, 10E-1);
         res.close();
+    }
+
+    @Test
+    public void exportPolygonWithHoles() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/polygon_with_holes.shp");
+        stat.execute("DROP TABLE IF EXISTS GEOTABLE");
+        stat.execute("create table GEOTABLE(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+        stat.execute("insert into GEOTABLE values(1, 'POLYGON ((-3.38562125 47.752285, -3.385295 47.752285, -3.385295 47.75199375, -3.38562125 47.75199375, -3.38562125 47.752285)," +
+                "  (-3.3855775 47.75222625, -3.38548875 47.75222625, -3.38548875 47.7521275, -3.3855775 47.7521275, -3.3855775 47.75222625)," +
+                "  (-3.385395 47.752145, -3.3853175 47.752145, -3.3853175 47.7520575, -3.385395 47.7520575, -3.385395 47.752145))'::GEOMETRY)");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/polygon_with_holes.shp', 'GEOTABLE', true)");
+        stat.execute("CALL SHPRead('target/polygon_with_holes.shp', 'IMPORT_GEOTABLE')");
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_GEOTABLE;");
+        res.next();
+        assertGeometryEquals("MULTIPOLYGON (((-3.38562125 47.75199375, -3.38562125 47.752285, -3.385295 47.752285, -3.385295 47.75199375, -3.38562125 47.75199375), (-3.3855775 47.7521275, -3.38548875 47.7521275, -3.38548875 47.75222625, -3.3855775 47.75222625, -3.3855775 47.7521275), (-3.385395 47.7520575, -3.3853175 47.7520575, -3.3853175 47.752145, -3.385395 47.752145, -3.385395 47.7520575)))", res.getObject(1));
+        res.close();
+
     }
 }

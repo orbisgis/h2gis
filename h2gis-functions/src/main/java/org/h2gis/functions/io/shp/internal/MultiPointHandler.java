@@ -67,7 +67,7 @@ public class MultiPointHandler implements ShapeHandler {
          * @return int The length of the record that this shapepoint will take up in a shapefile
          **/
         @Override
-        public int getLength(Object geometry) {
+        public int getLength(Geometry geometry) {
                 MultiPoint mp = (MultiPoint) geometry;
                 int numGeom = mp.getNumGeometries();
                 int length;
@@ -119,26 +119,21 @@ public class MultiPointHandler implements ShapeHandler {
         }
 
         @Override
-        public void write(WriteBufferManager buffer, Object geometry) throws IOException {
-                MultiPoint mp = (MultiPoint) geometry;
-                Envelope box = mp.getEnvelopeInternal();
+        public void write(WriteBufferManager buffer, Geometry geometry) throws IOException {
+                Envelope box = geometry.getEnvelopeInternal();
                 buffer.putDouble(box.getMinX());
                 buffer.putDouble(box.getMinY());
                 buffer.putDouble(box.getMaxX());
                 buffer.putDouble(box.getMaxY());
-                int numGeom = mp.getNumGeometries();
+                int numGeom = geometry.getNumGeometries();
                 buffer.putInt(numGeom);
-
-
                 for (int t = 0, tt = numGeom; t < tt; t++) {
-                        Coordinate c = (mp.getGeometryN(t)).getCoordinate();
+                        Coordinate c = geometry.getGeometryN(t).getCoordinate();
                         buffer.putDouble(c.x);
                         buffer.putDouble(c.y);
                 }
-
-
                 if (shapeType == ShapeType.MULTIPOINTZ) {
-                        double[] zExtreame = CoordinatesUtils.zMinMax(mp.getCoordinates());
+                        double[] zExtreame = CoordinatesUtils.zMinMax(geometry.getCoordinates());
 
                         if (Double.isNaN(zExtreame[0])) {
                                 buffer.putDouble(0.0);
@@ -148,7 +143,7 @@ public class MultiPointHandler implements ShapeHandler {
                                 buffer.putDouble(zExtreame[1]);
                         }
                         for (int t = 0; t < numGeom; t++) {
-                                Coordinate c = (mp.getGeometryN(t)).getCoordinate();
+                                Coordinate c = (geometry.getGeometryN(t)).getCoordinate();
                                 double z = c.z;
                                 if (Double.isNaN(z)) {
                                         buffer.putDouble(0.0);
