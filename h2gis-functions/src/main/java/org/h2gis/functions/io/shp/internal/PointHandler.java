@@ -103,7 +103,7 @@ public class PointHandler implements ShapeHandler {
 
     @Override
     public void write(WriteBufferManager buffer, Geometry geometry) throws IOException {
-        Coordinate c = geometry.getCoordinate();
+        Coordinate c = ((Point) geometry).getCoordinate();
         buffer.putDouble(c.x);
         buffer.putDouble(c.y);
 

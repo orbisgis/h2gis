@@ -429,6 +429,9 @@ public class PolygonHandler implements ShapeHandler {
         @Override
         public void write(WriteBufferManager buffer, Geometry geometry)
                 throws IOException {
+                if (geometry.getDimension() != 2) {
+                        throw new IllegalArgumentException("Only Polygon and MultiPolygon are managed by the shapefile driver");
+                }
                 Envelope box = geometry.getEnvelopeInternal();
                 buffer.putDouble(box.getMinX());
                 buffer.putDouble(box.getMinY());

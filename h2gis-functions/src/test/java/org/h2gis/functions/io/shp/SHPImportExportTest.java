@@ -225,7 +225,7 @@ public class SHPImportExportTest {
             stat.execute("insert into area values('POINT (-10 109)', 1)");
             stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
             // Create a shape file using table area
-            stat.execute("CALL SHPWrite('target/area_export_ex.shp', 'AREA')");
+            stat.execute("CALL SHPWrite('target/area_export_ex.shp', 'AREA', true)");
         });
     }
 

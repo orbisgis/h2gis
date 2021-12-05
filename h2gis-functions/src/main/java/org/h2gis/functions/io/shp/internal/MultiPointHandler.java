@@ -120,21 +120,21 @@ public class MultiPointHandler implements ShapeHandler {
 
         @Override
         public void write(WriteBufferManager buffer, Geometry geometry) throws IOException {
-                Envelope box = geometry.getEnvelopeInternal();
+                MultiPoint mp = (MultiPoint) geometry;
+                Envelope box = mp.getEnvelopeInternal();
                 buffer.putDouble(box.getMinX());
                 buffer.putDouble(box.getMinY());
                 buffer.putDouble(box.getMaxX());
                 buffer.putDouble(box.getMaxY());
-                int numGeom = geometry.getNumGeometries();
+                int numGeom = mp.getNumGeometries();
                 buffer.putInt(numGeom);
                 for (int t = 0, tt = numGeom; t < tt; t++) {
-                        Coordinate c = geometry.getGeometryN(t).getCoordinate();
+                        Coordinate c = mp.getGeometryN(t).getCoordinate();
                         buffer.putDouble(c.x);
                         buffer.putDouble(c.y);
                 }
                 if (shapeType == ShapeType.MULTIPOINTZ) {
-                        double[] zExtreame = CoordinatesUtils.zMinMax(geometry.getCoordinates());
-
+                        double[] zExtreame = CoordinatesUtils.zMinMax(mp.getCoordinates());
                         if (Double.isNaN(zExtreame[0])) {
                                 buffer.putDouble(0.0);
                                 buffer.putDouble(0.0);
@@ -143,7 +143,7 @@ public class MultiPointHandler implements ShapeHandler {
                                 buffer.putDouble(zExtreame[1]);
                         }
                         for (int t = 0; t < numGeom; t++) {
-                                Coordinate c = (geometry.getGeometryN(t)).getCoordinate();
+                                Coordinate c = (mp.getGeometryN(t)).getCoordinate();
                                 double z = c.z;
                                 if (Double.isNaN(z)) {
                                         buffer.putDouble(0.0);
