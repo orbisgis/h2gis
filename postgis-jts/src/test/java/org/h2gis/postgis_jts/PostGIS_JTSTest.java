@@ -21,6 +21,7 @@ package org.h2gis.postgis_jts;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.locationtech.jts.geom.Geometry;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Erwan Bocher
  */
+@Disabled
 public class PostGIS_JTSTest {
 
     private static Connection connection;

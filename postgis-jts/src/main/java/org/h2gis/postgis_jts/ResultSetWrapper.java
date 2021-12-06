@@ -23,8 +23,8 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKBWriter;
-import org.postgis.PGboxbase;
-import org.postgis.Point;
+import net.postgis.jdbc.PGboxbase;
+import net.postgis.jdbc.geometry.Point;
 import org.postgresql.util.PGobject;
 
 import java.io.InputStream;

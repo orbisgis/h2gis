@@ -9,7 +9,7 @@
         <artifactId>h2gis-parent</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>postgis-jts</artifactId>
@@ -27,15 +27,10 @@
         </license>
     </licenses>
 
-    <!-- Properties -->
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
         <dependency>

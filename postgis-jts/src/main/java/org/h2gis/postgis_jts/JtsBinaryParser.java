@@ -21,8 +21,8 @@ package org.h2gis.postgis_jts;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequence.Double;
-import org.postgis.binary.ByteGetter;
-import org.postgis.binary.ValueGetter;
+import net.postgis.jdbc.geometry.binary.ByteGetter;
+import net.postgis.jdbc.geometry.binary.ValueGetter;
 
 import java.util.Arrays;
 
@@ -39,12 +39,12 @@ public class JtsBinaryParser {
     public JtsBinaryParser() {}
 
     /**
-     * Return the {@link org.postgis.binary.ValueGetter} for the endian from the given
-     * {@link org.postgis.binary.ByteGetter}.
+     * Return the {@link net.postgis.jdbc.geometry.binary.ValueGetter} for the endian from the given
+     * {@link net.postgis.jdbc.geometry.binary.ByteGetter}.
      *
-     * @param bytes {@link org.postgis.binary.ByteGetter} to read.
+     * @param bytes {@link net.postgis.jdbc.geometry.binary.ByteGetter} to read.
      *
-     * @return The {@link org.postgis.binary.ValueGetter} for the endian
+     * @return The {@link net.postgis.jdbc.geometry.binary.ValueGetter} for the endian
      */
     public static ValueGetter valueGetterForEndian(ByteGetter bytes) {
         if (bytes.get(0) == 0) {
@@ -81,10 +81,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse data from the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse data from the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.Geometry}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      *
      * @return Parsed JTS {@link org.locationtech.jts.geom.Geometry}.
      */
@@ -94,10 +94,10 @@ public class JtsBinaryParser {
 
 
     /**
-     * Parse data from the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse data from the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.Geometry} with the given SRID.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param srid SRID to give to the parsed geometry (different of the inherited SRID).
      * @param inheritSrid Make the new {@link org.locationtech.jts.geom.Geometry} inherit its SRID if set to true,
      *                    otherwise use the parameter given SRID.
@@ -115,7 +115,7 @@ public class JtsBinaryParser {
             boolean haveM = (typeword & 1073741824) != 0;
             boolean haveS = (typeword & 536870912) != 0;
             if (haveS) {
-                int newsrid = org.postgis.Geometry.parseSRID(data.getInt());
+                int newsrid = net.postgis.jdbc.geometry.Geometry.parseSRID(data.getInt());
                 if (inheritSrid && newsrid != srid) {
                     throw new IllegalArgumentException("Inconsistent srids in complex geometry: " + srid + ", " + newsrid);
                 }
@@ -158,9 +158,9 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS {@link org.locationtech.jts.geom.Point}.
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS {@link org.locationtech.jts.geom.Point}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param haveZ True if the {@link org.locationtech.jts.geom.Point} has a Z component.
      * @param haveM True if the {@link org.locationtech.jts.geom.Point} has a M component.
      *
@@ -185,10 +185,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into an array of JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into an array of JTS
      * {@link org.locationtech.jts.geom.Geometry} with the given SRID.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param container Array of {@link org.locationtech.jts.geom.Geometry} which will contains the parsed ones.
      * @param srid SRID of the parsed geometries.
      */
@@ -200,10 +200,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.CoordinateSequence}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param haveZ True if the {@link org.locationtech.jts.geom.CoordinateSequence} has a Z component.
      * @param haveM True if the {@link org.locationtech.jts.geom.CoordinateSequence} has a M component.
      *
@@ -230,10 +230,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.MultiPoint}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param srid SRID of the parsed geometries.
      *
      * @return The parsed {@link org.locationtech.jts.geom.MultiPoint}.
@@ -245,10 +245,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.LineString}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param haveZ True if the {@link org.locationtech.jts.geom.LineString} has a Z component.
      * @param haveM True if the {@link org.locationtech.jts.geom.LineString} has a M component.
      *
@@ -259,10 +259,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.LinearRing}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param haveZ True if the {@link org.locationtech.jts.geom.LinearRing} has a Z component.
      * @param haveM True if the {@link org.locationtech.jts.geom.LinearRing} has a M component.
      *
@@ -274,10 +274,10 @@ public class JtsBinaryParser {
 
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.Polygon}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param haveZ True if the {@link org.locationtech.jts.geom.Polygon} has a Z component.
      * @param haveM True if the {@link org.locationtech.jts.geom.Polygon} has a M component.
      *
@@ -298,10 +298,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.MultiLineString}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param srid SRID of the parsed geometries.
      *
      * @return The parsed {@link org.locationtech.jts.geom.MultiLineString}.
@@ -314,10 +314,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.MultiPolygon}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param srid SRID of the parsed geometries.
      *
      * @return The parsed {@link org.locationtech.jts.geom.MultiPolygon}.
@@ -330,10 +330,10 @@ public class JtsBinaryParser {
     }
 
     /**
-     * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
+     * Parse the given {@link net.postgis.jdbc.geometry.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.GeometryCollection}.
      *
-     * @param data {@link org.postgis.binary.ValueGetter} to parse.
+     * @param data {@link net.postgis.jdbc.geometry.binary.ValueGetter} to parse.
      * @param srid SRID of the parsed geometries.
      *
      * @return The parsed {@link org.locationtech.jts.geom.GeometryCollection}.

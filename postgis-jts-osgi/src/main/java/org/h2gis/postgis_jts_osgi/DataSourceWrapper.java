@@ -21,8 +21,8 @@ package org.h2gis.postgis_jts_osgi;
 
 import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.JtsGeometry;
-import org.postgis.PGbox2d;
-import org.postgis.PGbox3d;
+import net.postgis.jdbc.PGbox2d;
+import net.postgis.jdbc.PGbox3d;
 import org.postgresql.PGConnection;
 
 import javax.sql.DataSource;
