@@ -67,7 +67,7 @@ public class MultiPointHandler implements ShapeHandler {
          * @return int The length of the record that this shapepoint will take up in a shapefile
          **/
         @Override
-        public int getLength(Object geometry) {
+        public int getLength(Geometry geometry) {
                 MultiPoint mp = (MultiPoint) geometry;
                 int numGeom = mp.getNumGeometries();
                 int length;
@@ -119,7 +119,7 @@ public class MultiPointHandler implements ShapeHandler {
         }
 
         @Override
-        public void write(WriteBufferManager buffer, Object geometry) throws IOException {
+        public void write(WriteBufferManager buffer, Geometry geometry) throws IOException {
                 MultiPoint mp = (MultiPoint) geometry;
                 Envelope box = mp.getEnvelopeInternal();
                 buffer.putDouble(box.getMinX());
@@ -128,18 +128,13 @@ public class MultiPointHandler implements ShapeHandler {
                 buffer.putDouble(box.getMaxY());
                 int numGeom = mp.getNumGeometries();
                 buffer.putInt(numGeom);
-
-
                 for (int t = 0, tt = numGeom; t < tt; t++) {
-                        Coordinate c = (mp.getGeometryN(t)).getCoordinate();
+                        Coordinate c = mp.getGeometryN(t).getCoordinate();
                         buffer.putDouble(c.x);
                         buffer.putDouble(c.y);
                 }
-
-
                 if (shapeType == ShapeType.MULTIPOINTZ) {
                         double[] zExtreame = CoordinatesUtils.zMinMax(mp.getCoordinates());
-
                         if (Double.isNaN(zExtreame[0])) {
                                 buffer.putDouble(0.0);
                                 buffer.putDouble(0.0);

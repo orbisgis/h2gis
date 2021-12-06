@@ -292,6 +292,7 @@ public class SHPDriverFunction implements DriverFunction {
             shpDriver.initDriverFromFile(fileName, options);
             ProgressVisitor copyProgress = progress.subProcess((int) (shpDriver.getRowCount() / BATCH_MAX_SIZE));
             String lastSql = "";
+            int dbfNumFields =0;
             try {
                 DbaseFileHeader dbfHeader = shpDriver.getDbaseFileHeader();
                 ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
@@ -300,7 +301,8 @@ public class SHPDriverFunction implements DriverFunction {
                 try (
                     // Build CREATE TABLE sql request
                     Statement st = connection.createStatement()) {
-                    List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
+                    dbfNumFields = dbfHeader.getNumFields();
+                    List<Column> otherCols = new ArrayList<Column>(dbfNumFields + 1);
                     otherCols.add(new Column("THE_GEOM", TypeInfo.TYPE_GEOMETRY));
                     String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, DBUtils.getDBType(connection), otherCols);
                     if (!types.isEmpty()) {
@@ -315,9 +317,9 @@ public class SHPDriverFunction implements DriverFunction {
                 }
                 try {
                     lastSql = String.format("INSERT INTO %s VALUES (?, %s )", outputTableName,
-                            DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
+                            DBFDriverFunction.getQuestionMark(dbfNumFields + 1));
                     connection.setAutoCommit(false);
-                    final int columnCount = shpDriver.getFieldCount();
+                    final int columnCount = dbfNumFields+1;
                     try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {

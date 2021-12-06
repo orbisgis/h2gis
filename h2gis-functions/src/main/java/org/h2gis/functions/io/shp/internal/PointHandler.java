@@ -67,7 +67,7 @@ public class PointHandler implements ShapeHandler {
 
 
     @Override
-    public int getLength(Object geometry) {
+    public int getLength(Geometry geometry) {
         int length;
         if (shapeType == ShapeType.POINT) {
             length = 20;
@@ -102,7 +102,7 @@ public class PointHandler implements ShapeHandler {
     }
 
     @Override
-    public void write(WriteBufferManager buffer, Object geometry) throws IOException {
+    public void write(WriteBufferManager buffer, Geometry geometry) throws IOException {
         Coordinate c = ((Point) geometry).getCoordinate();
         buffer.putDouble(c.x);
         buffer.putDouble(c.y);
