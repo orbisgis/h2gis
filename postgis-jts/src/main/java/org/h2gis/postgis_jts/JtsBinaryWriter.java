@@ -20,8 +20,8 @@
 package org.h2gis.postgis_jts;
 
 import org.locationtech.jts.geom.*;
-import org.postgis.binary.ByteSetter;
-import org.postgis.binary.ValueSetter;
+import net.postgis.jdbc.geometry.binary.ByteSetter;
+import net.postgis.jdbc.geometry.binary.ValueSetter;
 
 /**
  * Parser class able to convert a JTS {@link org.locationtech.jts.geom.Geometry} into binary or literal data.

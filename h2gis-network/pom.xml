@@ -9,7 +9,7 @@
         <artifactId>h2gis-parent</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>h2gis-network</artifactId>
@@ -31,15 +31,10 @@
         </license>
     </licenses>
 
-    <!-- Properties -->
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
         <dependency>
@@ -101,22 +96,6 @@
                         <Import-Package>!org.h2.command.ddl,!org.h2.engine,!org.h2.message,!org.h2.index,!org.h2.table,!org.h2.result,*</Import-Package>
                     </instructions>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
