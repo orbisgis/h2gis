@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests the parsing methods of {@link org.h2gis.network.graph_creator.GraphFunctionParser}.
+ * Tests the parsing methods of {@link org.h2gis.network.functions.GraphFunctionParser}.
  *
  * @author Adam Gouge
  * @author Erwan Bocher
