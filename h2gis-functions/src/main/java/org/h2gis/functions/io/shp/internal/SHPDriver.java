@@ -73,15 +73,16 @@ public class SHPDriver implements FileDriver {
      */
     @Override
     public void insertRow(Object[] values) throws IOException {
-        if(!(values[geometryFieldIndex] instanceof Geometry)) {
-            if(values[geometryFieldIndex]==null) {
+        Object geomValue = values[geometryFieldIndex];
+        if(!(geomValue instanceof Geometry)) {
+            if(geomValue==null) {
                 throw new IOException("Shape files do not support NULL Geometry values.");
             } else {
                 throw new IllegalArgumentException("Field at "+geometryFieldIndex+" should be an instance of Geometry," +
-                        " found "+values[geometryFieldIndex].getClass()+" instead.");
+                        " found "+geomValue.getClass()+" instead.");
             }
         }
-        shapefileWriter.writeGeometry((Geometry)values[geometryFieldIndex]);
+        shapefileWriter.writeGeometry((Geometry)geomValue);
         // Extract the DBF part of the row
         Object[] dbfValues = new Object[values.length - 1];
         // Copy DBF data before geometryFieldIndex

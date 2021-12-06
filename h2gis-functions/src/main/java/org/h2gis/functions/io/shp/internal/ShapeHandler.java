@@ -67,7 +67,7 @@ public interface ShapeHandler {
      * @param shapeBuffer The ByteBuffer to write to.
      * @param geometry The geometry to write.
      */
-    void write(WriteBufferManager shapeBuffer, Object geometry) throws IOException;
+    void write(WriteBufferManager shapeBuffer, Geometry geometry) throws IOException;
 
     /**
      * Get the length of the given geometry Object in <b>bytes</b> not 16-bit
@@ -77,5 +77,5 @@ public interface ShapeHandler {
      * @param geometry The geometry to analyze.
      * @return The number of <b>bytes</b> the shape will take up.
      */
-    int getLength(Object geometry);
+    int getLength(Geometry geometry);
 }

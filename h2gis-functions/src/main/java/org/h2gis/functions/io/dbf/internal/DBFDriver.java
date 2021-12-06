@@ -73,9 +73,6 @@ public class DBFDriver implements FileDriver {
     @Override
     public void insertRow(Object[] values) throws IOException {
         checkWriter();
-        if(values.length != getDbaseFileHeader().getNumFields()) {
-            throw new IllegalArgumentException("Incorrect field count "+values.length+" expected "+getFieldCount());
-        }
         try {
             dbaseFileWriter.write(values);
         } catch (DbaseFileException ex) {
