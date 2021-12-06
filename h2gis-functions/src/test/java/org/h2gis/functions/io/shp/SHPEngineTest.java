@@ -371,7 +371,7 @@ public class SHPEngineTest {
     }
 
     /**
-     * Check the call of special case {@link H2TableIndex#find(org.h2.engine.Session, org.h2.result.SearchRow, org.h2.result.SearchRow)} with null at first and last
+     * Check the call of special case {@link H2TableIndex#find(org.h2.engine.SessionLocal, org.h2.result.SearchRow, org.h2.result.SearchRow)} with null at first and last
      * @throws SQLException
      */
     @Test
@@ -402,7 +402,7 @@ public class SHPEngineTest {
     }
 
     /**
-     * Check the call of special case {@link H2TableIndex#find(org.h2.engine.Session, org.h2.result.SearchRow, org.h2.result.SearchRow)} with null at last part only.
+     * Check the call of special case {@link H2TableIndex#find(org.h2.engine.SessionLocal, org.h2.result.SearchRow, org.h2.result.SearchRow)} with null at last part only.
      * @throws SQLException
      */
     @Test
