@@ -19,18 +19,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Setup the jdk using version 8 of adoptOpenJDK
+      # Setup the jdk using version 11 of adoptOpenJDK
       - name: Java setup
         uses: actions/setup-java@v2
         with:
           distribution: adopt
-          java-version: 8
+          java-version: 11
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-          
+
+      # Setup postgis test DB
+      - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
+        with:
+          psql_version: '9.6'
+          pgis_version: '2.5'
+          docker_image: 'postgis/postgis'
+          db_password: 'orbisgis'
+          db_user: 'orbisgis'
+          db_name: 'orbisgis_db'
+
       # Install the GPG secret key
       - name: Install gpg secret key
         run: |
@@ -39,7 +49,7 @@ jobs:
 
       # Deploy the snapshot
       - name: Deploy
-        run: mvn deploy --no-transfer-progress --batch-mode -P maven-deploy
+        run: mvn deploy -ntp --batch-mode
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}

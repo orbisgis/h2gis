@@ -55,7 +55,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+@Disabled
 public class GeometryTableUtilsTest {
 
     private static Connection connection;

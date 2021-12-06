@@ -3,9 +3,9 @@ name: CI release
 on:
   workflow_dispatch:
     inputs:
-      next-version:
+      nextVersion:
         required: false
-        description: "Next version"
+        description: "Next version (optional)"
 
 jobs:
   build:
@@ -16,17 +16,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Setup the jdk using version 8 of adoptOpenJDK
+      # Setup the jdk using version 11 of adoptOpenJDK
       - name: Java setup
         uses: actions/setup-java@v2
         with:
           distribution: adopt
-          java-version: 8
+          java-version: 11
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      # Setup postgis test DB
+      - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
+        with:
+          psql_version: '9.6'
+          pgis_version: '2.5'
+          docker_image: 'postgis/postgis'
+          db_password: 'orbisgis'
+          db_user: 'orbisgis'
+          db_name: 'orbisgis_db'
 
       # Configure git user in order to sign release with OrbisGIS user.
       - name: Configure Git User
@@ -40,6 +50,10 @@ jobs:
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
 
+      # Test build
+      - name: Build test
+        run: mvn -ntp clean validate compile test javadoc:test-javadoc
+
       # Create the release :
       #   - move from Snapshot version to Release
       #   - commit and tag release
@@ -47,13 +61,55 @@ jobs:
       #   - upload release to maven repo
       - name: Release
         run: |
+          VERSION=${{ github.event.inputs.nextVersion }}
           mvn \
-            --no-transfer-progress \
+            -ntp \
             --batch-mode \
-            -P maven-deploy \
+            -P deploy \
+            -Dmaven.test.skip=true \
             release:prepare release:perform \
-            -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN -DtagNameFormat=v@{project.version}
+            -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN ${VERSION:+"-DdevelopmentVersion="$VERSION"-SNAPSHOT"}
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_PASSWORD }}
+
+      # Export the last git tag into env.
+      - name: Export env values
+        run: echo "GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
+
+      # Make the github release from the last created tag. Write in its body the content of the changelog file.
+      - name: Make github release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ env.GIT_TAG }}
+          release_name: ${{ env.GIT_TAG }}
+          body_path: docs/CHANGELOG.md
+          draft: false
+          prerelease: false
+
+      # Clear the changelog file and add its header
+      - name: Clear changelog
+        run: |
+          echo "## Changelog for v$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)" > docs/CHANGELOG.md
+          git commit -a -m "Empty changelog."
+          git push origin master
+
+
+      # If the version change is a major or minor, create a branch from the previous tag for future revisions.
+      - name: Branch fork
+        run: |
+          GIT_TAG="${GIT_TAG:1}"
+          CUR_TAG="$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)"
+          SPLIT0=(${GIT_TAG//./ })
+          SPLIT1=(${CUR_TAG//./ })
+          if [ "${SPLIT0[0]}" = "${SPLIT1[0]}" ] && [ "${SPLIT0[1]}" = "${SPLIT1[1]}" ]; then
+            echo "Revision change"
+          else
+            echo "Minor or Major change"
+            BRANCH="${SPLIT0[0]}.${SPLIT0[1]}.X"
+            git checkout -b "$BRANCH" "v${GIT_TAG}"
+            git push -u origin "$BRANCH"
+          fi

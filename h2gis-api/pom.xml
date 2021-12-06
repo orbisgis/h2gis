@@ -9,7 +9,7 @@
         <artifactId>h2gis-parent</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>h2gis-api</artifactId>
     <packaging>bundle</packaging>
@@ -30,11 +30,6 @@
         </license>
     </licenses>
 
-    <!-- Properties -->
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <!-- Build Settings -->
     <build>
         <plugins>
@@ -50,11 +45,6 @@
                         <Bundle-Category>JDBC</Bundle-Category>
                     </instructions>
                 </configuration>
-            </plugin>
-            <!-- Plugin for the compilation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

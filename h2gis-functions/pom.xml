@@ -9,6 +9,7 @@
         <groupId>org.orbisgis</groupId>
         <artifactId>h2gis-parent</artifactId>
         <version>2.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>h2gis</artifactId>
@@ -31,11 +32,6 @@
         </license>
     </licenses>
 
-    <!-- Properties -->
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <!-- Dependencies -->
     <dependencies>
         <dependency>
@@ -47,7 +43,7 @@
             <artifactId>cts</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
         <dependency>
@@ -60,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>poly2tri-core</artifactId>
+            <artifactId>poly2tri</artifactId>
         </dependency>
 
         <dependency>
@@ -142,22 +138,6 @@
                         </Import-Package>
                     </instructions>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
         </plugins>
 
