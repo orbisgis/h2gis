@@ -28,6 +28,16 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
+      # Setup postgis test DB
+      - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
+        with:
+          psql_version: '9.6'
+          pgis_version: '2.5'
+          docker_image: 'postgis/postgis'
+          db_password: 'orbisgis'
+          db_user: 'orbisgis'
+          db_name: 'orbisgis_db'
+
       # Configure git user in order to sign release with OrbisGIS user.
       - name: Configure Git User
         run: |

@@ -146,7 +146,7 @@ public class GraphCreatorTest {
         st.execute("INSERT INTO COPY_EDGES_ALL VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1, 11, 6, 7)," +
                 "('LINESTRING (4 2, 5 2)', 12, 2.0, 1, 12, 7, 8)");
         st.execute("ALTER TABLE COPY_EDGES_ALL ALTER COLUMN ID SET NOT NULL");
-        st.execute("CREATE PRIMARY KEY ON COPY_EDGES_ALL(ID)");
+        st.execute("ALTER TABLE COPY_EDGES_ALL ADD PRIMARY KEY (ID)");
         // Here we create a copy with edges 3, 4, 6, 8, 10 having a weight of
         // Infinity. Setting an edge's weight to Infinity is equivalent to
         // deleting the edge from the graph.
@@ -167,7 +167,7 @@ public class GraphCreatorTest {
         st.execute("UPDATE INF_EDGES_ALL SET WEIGHT=POWER(0, -1) WHERE " +
                 "EDGE_ID=3 OR EDGE_ID=4 OR EDGE_ID=6 OR EDGE_ID=8 OR EDGE_ID=10;");
         st.execute("ALTER TABLE INF_EDGES_ALL ALTER COLUMN ID SET NOT NULL");
-        st.execute("CREATE PRIMARY KEY ON INF_EDGES_ALL(ID)");
+        st.execute("ALTER TABLE INF_EDGES_ALL ADD PRIMARY KEY (ID)");
     }
 
     @Test
