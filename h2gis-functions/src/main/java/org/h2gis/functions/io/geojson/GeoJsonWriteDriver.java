@@ -521,7 +521,7 @@ public class GeoJsonWriteDriver {
         for (int i = 1; i <= columnCount; i++) {
             final String fieldTypeName = resultSetMetaData.getColumnTypeName(i);
             String columnName = resultSetMetaData.getColumnName(i);
-            if (!fieldTypeName.equalsIgnoreCase("geometry")
+            if (!fieldTypeName.toLowerCase().startsWith("geometry")
                     && isSupportedPropertyType(columnName, resultSetMetaData.getColumnType(i), fieldTypeName)) {
                 cachedColumnIndex.put(columnName, i);
                 columnCountProperties++;

@@ -403,8 +403,7 @@ public class DBFDriverFunction implements DriverFunction {
         int columnCount = metaData.getColumnCount();
         for(int fieldId= 1; fieldId <= columnCount; fieldId++) {
             final String fieldTypeName = metaData.getColumnTypeName(fieldId);
-            // TODO postgis check field type
-            if(!fieldTypeName.equalsIgnoreCase("geometry")) {
+            if(!fieldTypeName.toLowerCase().startsWith("geometry")) {
                 DBFType dbfType = getDBFType(metaData.getColumnType(fieldId), fieldTypeName, metaData.getColumnDisplaySize(fieldId), metaData.getPrecision(fieldId));
                 try {
                     dbaseFileHeader.addColumn(metaData.getColumnName(fieldId),dbfType.type, dbfType.fieldLength, dbfType.decimalCount);

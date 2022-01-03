@@ -19,16 +19,17 @@
  */
 package org.h2gis.utilities;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import static org.h2gis.utilities.dbtypes.DBTypes.*;
 import static org.h2gis.utilities.dbtypes.DBUtils.getDBType;
 
@@ -108,8 +109,9 @@ public class GeometryTableUtilities {
         ResultSetMetaData metadata = resultSet.getMetaData();
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
-            if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                return new Tuple<>(metadata.getColumnName(i), new GeometryMetaData());
+            GeometryMetaData geomMeta = GeometryMetaData.getMetaDataFromTablePattern(metadata.getColumnTypeName(i));
+            if (geomMeta != null) {
+                return new Tuple<>(metadata.getColumnName(i), geomMeta);
             }
         }
         throw new SQLException("The query does not contain a geometry field");
@@ -128,8 +130,9 @@ public class GeometryTableUtilities {
         ResultSetMetaData metadata = resultSet.getMetaData();
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
-            if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                geometryMetaDatas.put(metadata.getColumnName(i), new GeometryMetaData());
+            GeometryMetaData geomMeta = GeometryMetaData.getMetaDataFromTablePattern(metadata.getColumnTypeName(i));
+            if (geomMeta != null) {
+                geometryMetaDatas.put(metadata.getColumnName(i), geomMeta);
             }
         }
         return geometryMetaDatas;
@@ -605,7 +608,7 @@ public class GeometryTableUtilities {
         ResultSetMetaData meta = resultSet.getMetaData();
         int columnCount = meta.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
-            if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+            if (meta.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
                 return new Tuple<>(meta.getColumnName(i), i);
             }
         }
@@ -625,7 +628,7 @@ public class GeometryTableUtilities {
         ResultSetMetaData meta = resultSet.getMetaData();
         int columnCount = meta.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
-            if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+            if (meta.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
                 return true;
             }
         }
@@ -665,7 +668,7 @@ public class GeometryTableUtilities {
                 ResultSetMetaData meta = resultSet.getMetaData();
                 int columnCount = meta.getColumnCount();
                 for (int i = 1; i <= columnCount; i++) {
-                    if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                    if (meta.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
                         return true;
                     }
                 }
@@ -962,7 +965,7 @@ public class GeometryTableUtilities {
         LinkedHashMap<String, Integer> namesWithIndexes = new LinkedHashMap<>();
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
-            if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+            if (metadata.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
                 namesWithIndexes.put(metadata.getColumnName(i), i);
             }
         }
@@ -1016,7 +1019,7 @@ public class GeometryTableUtilities {
         ArrayList<String> namesWithIndexes = new ArrayList<>();
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
-            if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+            if (metadata.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
                 namesWithIndexes.add(metadata.getColumnName(i));
             }
         }
@@ -1068,9 +1071,9 @@ public class GeometryTableUtilities {
     public static Tuple<String, Integer> getFirstGeometryColumnNameAndIndex(ResultSetMetaData metadata) throws SQLException {
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
-            if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                return new Tuple<>(metadata.getColumnName(i), i);
-            }
+                if (metadata.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
+                    return new Tuple<>(metadata.getColumnName(i), i);
+                }
         }
         throw new SQLException("The query doesn't contain any geometry field");
     }

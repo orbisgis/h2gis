@@ -606,12 +606,12 @@ public class GeometryTableUtilsTest {
         Tuple<String, GeometryMetaData> metadata = GeometryTableUtilities.getFirstColumnMetaData(st.executeQuery("select * from POINT3D"));
         assertEquals("THE_GEOM", metadata.first());
         GeometryMetaData geomMet = metadata.second();
-        assertEquals(0, geomMet.SRID);
-        assertEquals(2, geomMet.dimension);
+        assertEquals(4326, geomMet.SRID);
+        assertEquals(3, geomMet.dimension);
         assertFalse(geomMet.hasM);
-        assertFalse(geomMet.hasZ);
-        assertEquals("GEOMETRY", geomMet.geometryType);
-        assertEquals(GeometryTypeCodes.GEOMETRY, geomMet.geometryTypeCode);
+        assertTrue(geomMet.hasZ);
+        assertEquals("POINTZ", geomMet.geometryType);
+        assertEquals(GeometryTypeCodes.POINTZ, geomMet.geometryTypeCode);
         st.execute("DROP TABLE IF EXISTS POINT3D");
         st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
         st.execute("insert into POINT3D VALUES(1, 'SRID=4326;POINTZ(0 0 0)')");
@@ -638,12 +638,12 @@ public class GeometryTableUtilsTest {
         Map.Entry<String, GeometryMetaData> entry = iterator.next();
         assertEquals("GEOM", entry.getKey());
         GeometryMetaData geomMet = entry.getValue();
-        assertEquals(0, geomMet.SRID);
-        assertEquals(2, geomMet.dimension);
+        assertEquals(4326, geomMet.SRID);
+        assertEquals(3, geomMet.dimension);
         assertFalse(geomMet.hasM);
-        assertFalse(geomMet.hasZ);
-        assertEquals("GEOMETRY", geomMet.geometryType);
-        assertEquals(GeometryTypeCodes.GEOMETRY, geomMet.geometryTypeCode);
+        assertTrue(geomMet.hasZ);
+        assertEquals("POINTZ", geomMet.geometryType);
+        assertEquals(GeometryTypeCodes.POINTZ, geomMet.geometryTypeCode);
         entry = iterator.next();
         assertEquals("THE_GEOM", entry.getKey());
         geomMet = entry.getValue();
@@ -841,9 +841,9 @@ public class GeometryTableUtilsTest {
                 JDBCUtilities.createTableDDL(connection, location));
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(GEOMETRY, 0))");
-        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY)",
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY(GEOMETRY, 0))",
                 JDBCUtilities.createTableDDL(connection, location));
-        assertEquals("CREATE TABLE MYTABLE (THE_GEOM GEOMETRY)",
+        assertEquals("CREATE TABLE MYTABLE (THE_GEOM GEOMETRY(GEOMETRY, 0))",
                 JDBCUtilities.createTableDDL(st.executeQuery("SELECT the_geom from PERSTABLE"), "MYTABLE"));
     }
 
@@ -1284,4 +1284,46 @@ public class GeometryTableUtilsTest {
 
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
     }
+
+    @Test
+    public void testFirstGeometryTableName1() throws Exception {
+        st.execute("DROP TABLE IF EXISTS POINT_TABLE");
+        st.execute("CREATE TABLE POINT_TABLE (gid int , the_geom GEOMETRY)");
+        st.execute("INSERT INTO POINT_TABLE (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
+        Tuple<String, Integer> geomField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, "POINT_TABLE");
+        assertEquals("THE_GEOM", geomField.first());
+        assertEquals(2, geomField.second());
+    }
+
+    @Test
+    public void testFirstGeometryTableName2() throws Exception {
+        st.execute("DROP TABLE IF EXISTS POINT_TABLE");
+        st.execute("CREATE TABLE POINT_TABLE (gid int , the_geom GEOMETRY(POINT))");
+        st.execute("INSERT INTO POINT_TABLE (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
+        Tuple<String, Integer> geomField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, "POINT_TABLE");
+        assertEquals("THE_GEOM", geomField.first());
+        assertEquals(2, geomField.second());
+    }
+
+    @Test
+    public void testFirstGeometryTableName3() throws Exception {
+        st.execute("DROP TABLE IF EXISTS POINT_TABLE");
+        st.execute("CREATE TABLE POINT_TABLE (gid int , the_geom GEOMETRY(POINT,27582))");
+        st.execute("INSERT INTO POINT_TABLE (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
+        Tuple<String, Integer> geomField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, "POINT_TABLE");
+        assertEquals("THE_GEOM", geomField.first());
+        assertEquals(2, geomField.second());
+    }
+
+    @Test
+    public void testFirstGeometryTableNamePostGIS() throws Exception {
+        Statement postGISST = conPost.createStatement();
+        postGISST.execute("DROP TABLE IF EXISTS POINT_TABLE");
+        postGISST.execute("CREATE TABLE POINT_TABLE (gid int , the_geom GEOMETRY(POINT,27582))");
+        postGISST.execute("INSERT INTO POINT_TABLE (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
+        Tuple<String, Integer> geomField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(conPost, "POINT_TABLE");
+        assertEquals("the_geom", geomField.first());
+        assertEquals(2, geomField.second());
+    }
+
 }

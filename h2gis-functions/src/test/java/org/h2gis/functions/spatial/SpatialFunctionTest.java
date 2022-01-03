@@ -99,7 +99,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExplodeEmptyGeometryCollection() throws Exception {
-        st.execute("create table test(the_geom GEOMETRY, val Integer);"
+        st.execute("DROP TABLE TEST IF EXISTS;  create table test(the_geom GEOMETRY, val Integer);"
                 + "insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108),"
                 + " (ST_GeomFromText('MULTIPOINT EMPTY'),109),"
                 + " (ST_GeomFromText('MULTIPOLYGON EMPTY'),110),"
@@ -123,7 +123,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExplodeWithQuery1() throws Exception {
-        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+        st.execute("DROP TABLE forests IF EXISTS;  CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
                 + " boundary GEOMETRY(MULTIPOLYGON));"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
@@ -135,7 +135,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExplodeWithQuery3() throws Exception {
-        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+        st.execute("DROP TABLE forests IF EXISTS; CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
                 + " boundary GEOMETRY(MULTIPOLYGON));"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
@@ -147,7 +147,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExplodeWithQuery4() throws Exception {
-        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+        st.execute("DROP TABLE forests IF EXISTS;  CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
                 + " boundary GEOMETRY(MULTIPOLYGON), \"LIMIT\" INTEGER);"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101), 666);");
@@ -159,7 +159,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExplodeWithQuery2() throws Exception {
-        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+        st.execute("DROP TABLE forests IF EXISTS;  CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
                 + " boundary GEOMETRY(MULTIPOLYGON));"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");

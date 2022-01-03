@@ -102,6 +102,11 @@ public class GeometryMetaData {
      */
     public int sfs_geometryTypeCode = 0;
 
+    /**
+     * Geometry pattern used by create table
+     */
+    static Pattern GEOMETRY_TABLE_PATTERN =null;
+
     public GeometryMetaData() {
 
     }
@@ -365,10 +370,16 @@ public class GeometryMetaData {
     }
 
     /**
-     * Read the metadata from its string representation The folowing signatures
-     * are allowed :
+     * Read the metadata from its string representation
+     * The following signatures are allowed :
      *
-     * SRID=4326, POINT(0 0) POINT(0 0) GEOMETRY GEOMETRY(POINTZ, 4326)
+     * SRID=4326,
+     * POINT(0 0)
+     * POINT(0 0)
+     *
+     * GEOMETRY
+     *  GEOMETRY(POINTZ)
+     * GEOMETRY(POINTZ, 4326)
      *
      * @param geometry string representation
      *
@@ -377,8 +388,10 @@ public class GeometryMetaData {
     public static GeometryMetaData getMetaData(String geometry) {
         if (geometry != null && !geometry.isEmpty()) {
             if (geometry.toUpperCase().startsWith("GEOMETRY")) {
-                Pattern CREATE_TABLE_PATTERN = Pattern.compile("(?:(?:GEOMETRY\\s*\\(\\s*([a-zA-Z]+\\s*(?:[ZM]+)?)\\s*(?:,\\s*([\\d]+))?\\))|^\\s*([a-zA-Z]+\\s*(?:[ZM]+)?))", Pattern.CASE_INSENSITIVE);
-                Matcher matcher = CREATE_TABLE_PATTERN.matcher(geometry);
+                if(GEOMETRY_TABLE_PATTERN==null) {
+                    GEOMETRY_TABLE_PATTERN = Pattern.compile("(?:(?:GEOMETRY\\s*\\(\\s*([a-zA-Z]+\\s*(?:[ZM]+)?)\\s*(?:,\\s*([\\d]+))?\\))|^\\s*([a-zA-Z]+\\s*(?:[ZM]+)?))", Pattern.CASE_INSENSITIVE);
+                }
+                Matcher matcher = GEOMETRY_TABLE_PATTERN.matcher(geometry);
                 if (matcher.find()) {
                     String type = matcher.group(1);
                     if (type == null) {
@@ -399,6 +412,44 @@ public class GeometryMetaData {
         }
         return null;
     }
+
+    /**
+     * Read the metadata from its string representation
+     * The following signatures is allowed :
+     *
+     * GEOMETRY
+     * GEOMETRY(POINTZ)
+     * GEOMETRY(POINTZ, 4326)
+     *
+     * @param geometry_pattern pattern representation
+     *
+     * @return Geometry MetaData
+     */
+    public static GeometryMetaData getMetaDataFromTablePattern(String geometry_pattern) {
+        if (geometry_pattern != null && !geometry_pattern.isEmpty()) {
+            if (geometry_pattern.toUpperCase().startsWith("GEOMETRY")) {
+                if(GEOMETRY_TABLE_PATTERN==null) {
+                    GEOMETRY_TABLE_PATTERN = Pattern.compile("(?:(?:GEOMETRY\\s*\\(\\s*([a-zA-Z]+\\s*(?:[ZM]+)?)\\s*(?:,\\s*([\\d]+))?\\))|^\\s*([a-zA-Z]+\\s*(?:[ZM]+)?))", Pattern.CASE_INSENSITIVE);
+                }
+                Matcher matcher = GEOMETRY_TABLE_PATTERN.matcher(geometry_pattern);
+                if (matcher.find()) {
+                    String type = matcher.group(1);
+                    if (type == null) {
+                        return new GeometryMetaData();
+                    } else {
+                        String srid = matcher.group(2);
+                        if (srid != null && !srid.isEmpty()) {
+                            return createMetadataFromGeometryType(type, Integer.valueOf(srid));
+                        } else {
+                            return createMetadataFromGeometryType(type);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Find geometry metadata according the EWKT canonical form

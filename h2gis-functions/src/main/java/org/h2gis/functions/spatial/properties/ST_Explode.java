@@ -281,7 +281,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
                 columnCount = metadata.getColumnCount();
                 for (int i = 1; i <= columnCount; i++) {
                     String type = metadata.getColumnTypeName(i);
-                    if (type.equalsIgnoreCase("geometry")&& spatialFieldIndex==-1) {
+                    if (type.toLowerCase().startsWith("geometry")&& spatialFieldIndex==-1) {
                         spatialFieldIndex = i;
                     }
                     String columnName =metadata.getColumnName(i);

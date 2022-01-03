@@ -439,7 +439,7 @@ public class IOMethods {
                     for (int i = 0; i < columnsCount; i++) {
                         int index = i + 1;
                         Object value = inputRes.getObject(index);
-                        if (inputMetadata.getColumnTypeName(index).equalsIgnoreCase("GEOMETRY")) {
+                        if (inputMetadata.getColumnTypeName(index).toLowerCase().startsWith("geometry")) {
                             geomColumnAndSRID.put(inputMetadata.getColumnName(index), ((Geometry) value).getSRID());
                         }
                         preparedStatement.setObject(index, value);
