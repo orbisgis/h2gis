@@ -60,9 +60,21 @@ public class TableUtilities {
                 ResultSetMetaData metadata = resultSet.getMetaData();
                 int columnCount = metadata.getColumnCount();
                 for (int columnId = 1; columnId <= columnCount; columnId++) {
-                    rs.addColumn(metadata.getColumnName(columnId), metadata.getColumnType(columnId),
-                    metadata.getColumnTypeName(columnId), metadata.getPrecision(columnId)
-                    , metadata.getScale(columnId));
+                    String type = metadata.getColumnTypeName(columnId);
+                    String columnName =metadata.getColumnName(columnId);
+                    String label = metadata.getColumnLabel(columnId);
+                    if(label!=null){
+                        columnName = label;
+                    }
+                    //TODO : workarround due to the geometry type signature returned by H2  eg. GEOMETRY(POLYGON)
+                    if (type.toLowerCase().startsWith("geometry")) {
+                        rs.addColumn(columnName, metadata.getColumnType(columnId),
+                                "GEOMETRY", metadata.getPrecision(columnId), metadata.getScale(columnId));
+                    }
+                    else{
+                        rs.addColumn(columnName, metadata.getColumnType(columnId),
+                                type, metadata.getPrecision(columnId), metadata.getScale(columnId));
+                    }
                 }
             } finally {
                 resultSet.close();
