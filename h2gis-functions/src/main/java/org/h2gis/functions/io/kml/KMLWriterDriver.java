@@ -295,7 +295,7 @@ public class KMLWriterDriver {
             kmlFields = new HashMap<Integer, String>();
             for (int fieldId = 1; fieldId <= columnCount; fieldId++) {
                 final String fieldTypeName = metaData.getColumnTypeName(fieldId);
-                if (!fieldTypeName.equalsIgnoreCase("geometry")) {
+                if (!fieldTypeName.toLowerCase().startsWith("geometry")) {
                     String fieldName = metaData.getColumnName(fieldId);
                     writeSimpleField(xmlOut, fieldName, getKMLType(metaData.getColumnType(fieldId), fieldTypeName));
                     kmlFields.put(fieldId, fieldName);

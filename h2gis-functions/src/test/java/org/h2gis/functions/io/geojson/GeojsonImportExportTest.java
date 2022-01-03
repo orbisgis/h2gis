@@ -634,7 +634,7 @@ public class GeojsonImportExportTest {
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_COMPLEX_READ;");
             ResultSetMetaData metadata = res.getMetaData();
             assertEquals(16, metadata.getColumnCount());
-            assertEquals("GEOMETRY", metadata.getColumnTypeName(1));
+            assertEquals("GEOMETRY(POINT Z, 0)", metadata.getColumnTypeName(1));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(2));
             assertEquals("DOUBLE PRECISION", metadata.getColumnTypeName(3));
             assertEquals("BIGINT", metadata.getColumnTypeName(4));

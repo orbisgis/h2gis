@@ -46,7 +46,7 @@ public class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper imple
         if(firstGeometryFieldIndex==-1) {
             int columnCount =getColumnCount();
             for(int idColumn=1;idColumn<=columnCount;idColumn++) {
-                if(getColumnTypeName(idColumn).equalsIgnoreCase("geometry")) {
+                if(getColumnTypeName(idColumn).toLowerCase().startsWith("geometry")) {
                     firstGeometryFieldIndex = idColumn;
                     break;
                 }

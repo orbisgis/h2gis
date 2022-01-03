@@ -882,7 +882,7 @@ public class JDBCUtilities {
                                 builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
                             } else if (columnType == Types.DOUBLE) {
                                 builder.append(columnName).append(" ").append("DOUBLE PRECISION");
-                            } else if (columnTypeName.equalsIgnoreCase("geometry")) {
+                            } else if (columnTypeName.toLowerCase().startsWith("geometry")) {
                                 if (geomMetadatas.isEmpty()) {
                                     builder.append(columnName).append(" ").append(columnTypeName);
                                 } else {
@@ -890,7 +890,7 @@ public class JDBCUtilities {
                                     if (geomMetadata.getGeometryTypeCode() == GeometryTypeCodes.GEOMETRY && geomMetadata.getSRID() == 0) {
                                         builder.append(columnName).append(" ").append(columnTypeName);
                                     } else {
-                                        builder.append(columnName).append(" ").append(columnTypeName)
+                                        builder.append(columnName).append(" ").append("GEOMETRY")
                                                 .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
                                     }
                                 }
@@ -991,7 +991,7 @@ public class JDBCUtilities {
                     builder.append("(").append(metadata.getColumnDisplaySize(i)).append(")");
                 } else if (columnType == Types.DOUBLE) {
                     builder.append(columnName).append(" ").append("DOUBLE PRECISION");
-                } else if (columnTypeName.equalsIgnoreCase("geometry")) {
+                } else if (columnTypeName.toLowerCase().startsWith("geometry")) {
                     builder.append(columnName).append(" ").append(columnTypeName);
                 }
                 else if (columnTypeName.equalsIgnoreCase("decfloat")) {
