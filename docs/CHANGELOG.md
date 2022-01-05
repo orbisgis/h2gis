@@ -9,3 +9,6 @@
 + Update H2 from 2.0.202 to 2.0.204
 + Added a workaround due to the new column type name returned for geometry data type
 eg GEOMETRY(POINT) instead of only GEOMETRY
++ Update H2 from 2.0.204 to 2.0.206 to fix the 
+create linked table command when the table contains a Geometry with a data type specified 
+
