@@ -56,7 +56,7 @@ public class DummyMVTable extends MVTable {
     }
 
     @Override
-    public boolean lock(SessionLocal session, boolean exclusive, boolean force) {
+    public boolean lock(SessionLocal session, int lockType) {
         return false;
     }
 
