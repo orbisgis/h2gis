@@ -43,7 +43,7 @@
             <artifactId>cts</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
         <dependency>
