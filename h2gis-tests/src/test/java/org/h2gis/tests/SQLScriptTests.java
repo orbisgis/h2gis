@@ -30,9 +30,10 @@ public class SQLScriptTests {
     @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS WATERNETWORK");
-        final String path = StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("waternetwork.gz").getPath());
-        st.execute("CALL GeoJsonRead(" + path + ", 'WATERNETWORK');");
+        st.execute("DROP TABLE IF EXISTS hedges");
+        st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("hedgerow.geojson").getPath()) + ", 'hedges');");
+        st.execute("DROP TABLE IF EXISTS landcover");
+        st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("landcover.geojson").getPath()) + ", 'landcover');");
     }
 
     @AfterEach
