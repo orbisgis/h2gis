@@ -3,10 +3,13 @@ package org.h2gis.tests;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -15,6 +18,7 @@ public class SQLScriptTests {
 
     private static Connection connection;
     private Statement st;
+    private static final Logger log = LoggerFactory.getLogger(SQLScriptTests.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -34,11 +38,23 @@ public class SQLScriptTests {
         st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("hedgerow.geojson").getPath()) + ", 'hedges');");
         st.execute("DROP TABLE IF EXISTS landcover");
         st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("landcover.geojson").getPath()) + ", 'landcover');");
+        st.execute("DROP TABLE IF EXISTS contourlines");
+        //st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("contourlines.geojson").getPath()) + ", 'contourlines');");
+        st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL("/tmp/contourlines.geojson") + ", 'contourlines');");
     }
 
     @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
+    }
+
+    @Disabled
+    @Test
+    public  void  debug() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS contour_tin;"+
+        "CREATE TABLE contour_tin AS  SELECT *  FROM ST_EXPLODE('(SELECT ST_DELAUNAY(ST_ACCUM(ST_UpdateZ(ST_FORCE3D(the_geom), Z))) as the_geom from contourlines)');" +
+                "CALL GEOJSONWRITE('/tmp/delaunay.geojson', 'contour_tin')");
+
     }
 
     @Test
@@ -55,8 +71,10 @@ public class SQLScriptTests {
         File[] filesList = directoryPath.listFiles(sqlFilter);
         for(File fileName : filesList) {
             assertDoesNotThrow(() -> {
+                long start = System.currentTimeMillis();
                 st.execute("RUNSCRIPT FROM '" + fileName.getAbsolutePath() + "'");
-            });
+                log.info("The script "+ fileName.getName() +" has been executed in  : " + ((System.currentTimeMillis()-start)/1000)+" s");
+            } );
         }
     }
 
