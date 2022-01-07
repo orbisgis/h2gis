@@ -39,8 +39,8 @@ public class SQLScriptTests {
         st.execute("DROP TABLE IF EXISTS landcover");
         st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("landcover.geojson").getPath()) + ", 'landcover');");
         st.execute("DROP TABLE IF EXISTS contourlines");
-        //st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("contourlines.geojson").getPath()) + ", 'contourlines');");
-        st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL("/tmp/contourlines.geojson") + ", 'contourlines');");
+        st.execute("CALL GeoJsonRead(" +  StringUtils.quoteStringSQL(SQLScriptTests.class.getResource("contourlines.geojson").getPath()) + ", 'contourlines');");
+
     }
 
     @AfterEach
@@ -48,14 +48,6 @@ public class SQLScriptTests {
         st.close();
     }
 
-    @Disabled
-    @Test
-    public  void  debug() throws SQLException {
-        st.execute("DROP TABLE IF EXISTS contour_tin;"+
-        "CREATE TABLE contour_tin AS  SELECT *  FROM ST_EXPLODE('(SELECT ST_DELAUNAY(ST_ACCUM(ST_UpdateZ(ST_FORCE3D(the_geom), Z))) as the_geom from contourlines)');" +
-                "CALL GEOJSONWRITE('/tmp/delaunay.geojson', 'contour_tin')");
-
-    }
 
     @Test
     public void runSQLScript(){
