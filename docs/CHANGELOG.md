@@ -11,3 +11,4 @@
 eg GEOMETRY(POINT) instead of only GEOMETRY
 + Update H2 from 2.0.204 to 2.0.206
 + Add a new module to run sql script tests (disable by default)
++ Update ST_Force3D to be inline with PostGIS
