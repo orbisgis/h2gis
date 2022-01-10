@@ -220,15 +220,6 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
             }
             return new CoordinateArraySequence(coords, dim);
         }
-       /* else if(dim==3){
-            Coordinate[] coords = new Coordinate[cs.size()];
-            for (int i = 0; i < cs.size(); i++) {
-                Coordinate coord = cs.getCoordinate(i);
-                coord.setZ(zValue);
-                coords[i] = coord;
-            }
-            return new CoordinateArraySequence(coords, dim);
-        }*/
         else{
             if(cs.getMeasures() == 1){
                 Coordinate[] coords = new Coordinate[cs.size()];

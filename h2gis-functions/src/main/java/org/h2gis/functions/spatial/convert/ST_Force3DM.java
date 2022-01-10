@@ -233,27 +233,4 @@ public class ST_Force3DM extends DeterministicScalarFunction {
         }
         return new CoordinateArraySequence(coordsXYM, 2, 1);
     }
-
-    /**
-     * Create a new CoordinateArraySequence with XYZM
-     *
-     * @param cs a coordinate array
-     * @return a new CoordinateArraySequence
-     */
-    private static CoordinateArraySequence convertXYZMSequence(CoordinateSequence cs,int dimension) {
-        boolean hasM=false;
-        if(cs.getMeasures()==1){
-            hasM =true;
-        }
-        CoordinateXYM[] coordsXYM = new CoordinateXYM[cs.size()];
-        for (int i = 0; i < cs.size(); i++) {
-            Coordinate coordTmp = cs.getCoordinate(i);
-            CoordinateXYM coord = new CoordinateXYM(coordTmp);
-            if(hasM){
-                coord.setM(coordTmp.getM());
-            }
-            coordsXYM[i]=coord;
-        }
-        return new CoordinateArraySequence(coordsXYM, 2,1);
-    }
 }
