@@ -35,7 +35,8 @@ public class ST_Force3D extends DeterministicScalarFunction {
 
     public ST_Force3D() {
         addProperty(PROP_REMARKS, "Forces the geometries into XYZ mode.\n "
-                + "If a geometry has no Z component, then a 0 Z value is tacked on.");
+                + "If a geometry has no Z component, then a Z value is tacked on. \n" +
+                "Default z value is set to zero");
     }
 
     @Override
@@ -220,10 +221,6 @@ public class ST_Force3D extends DeterministicScalarFunction {
      * @return a new CoordinateArraySequence
      */
     private static CoordinateArraySequence convertSequence(CoordinateSequence cs, double zValue) {
-        int dim = cs.getDimension();
-        if(dim==4){
-
-        }
         Coordinate[] coords = new Coordinate[cs.size()];
         for (int i = 0; i < cs.size(); i++) {
             Coordinate coord = cs.getCoordinate(i);
