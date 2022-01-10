@@ -220,6 +220,10 @@ public class ST_Force3D extends DeterministicScalarFunction {
      * @return a new CoordinateArraySequence
      */
     private static CoordinateArraySequence convertSequence(CoordinateSequence cs, double zValue) {
+        int dim = cs.getDimension();
+        if(dim==4){
+
+        }
         Coordinate[] coords = new Coordinate[cs.size()];
         for (int i = 0; i < cs.size(); i++) {
             Coordinate coord = cs.getCoordinate(i);
