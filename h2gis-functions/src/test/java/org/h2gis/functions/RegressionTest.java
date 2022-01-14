@@ -4,6 +4,7 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
+import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -81,8 +82,8 @@ public class RegressionTest {
         statementLinked.execute("DROP TABLE IF EXISTS table_to_link;");
         statementLinked.execute("CREATE TABLE table_to_link  ( the_geom GEOMETRY, the_geom2  GEOMETRY(POINT Z)," +
                 "ID INTEGER,  TEMPERATURE DOUBLE PRECISION,  LANDCOVER  VARCHAR)");
-        statementLinked.execute("INSERT INTO table_to_link VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')" +
-                ",('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+        statementLinked.execute("INSERT INTO table_to_link VALUES ('POINT(0 0)', 'POINTZ(1 1 0)', 1, 2.3, 'Simple points')" +
+                ",('POINT(0 1)', 'POINTZ(10 11 12)', 2, 0.568, '3D point')");
         Statement stat = connection.createStatement();
         stat.execute("CREATE LINKED TABLE LINKED_TABLE('org.h2.Driver', 'jdbc:h2:mem:linked_db', 'sa', 'sa', 'TABLE_TO_LINK') FETCH_SIZE 100 ");
         ResultSet res = stat.executeQuery("SELECT COUNT(*) FROM LINKED_TABLE");
@@ -92,30 +93,6 @@ public class RegressionTest {
         linkedDBConnection.close();
     }
 
-    //TODO : waiting for https://github.com/orbisgis/h2gis/issues/1244
-    @Disabled
-    @Test
-    public void testST_IntersectionBehaviour() throws SQLException {
-        Statement stat = connection.createStatement();
-
-        stat.execute("DROP TABLE IF EXISTS PARCELS,TRIANGLES,slope_by_parcels;\n" +
-                "CREATE TABLE PARCELS (\n" +
-                "\tTHE_GEOM GEOMETRY(MULTIPOLYGON)\n" +
-                ");\n" +
-                "\n" +
-                "INSERT INTO PARCELS VALUES('MULTIPOLYGON (((184661.64063 2431733.5, 184652.21875 2431759.5, 184646.03125 2431775, 184641.5 2431787.75, 184632.45313 2431812, 184620.78125 2431842, 184604.10938 2431886.25, 184602.92188 2431891, 184617.45313 2431898.25, 184662.6875 2431917.75, 184666.26563 2431915.25, 184675.79688 2431920, 184669.35938 2431943.75, 184684.125 2431946.75, 184704.84375 2431948.75, 184728.17188 2431948, 184758.89063 2431945.75, 184784.85938 2431944.25, 184844.85938 2431946.5, 184856.70313 2431947.75, 184906.40625 2431832, 184923.65625 2431795, 184939.10938 2431757, 184951.89063 2431723.25, 184968.25 2431670.5, 184969.8125 2431666.5, 184949.8125 2431668, 184890.95313 2431674.5, 184832.6875 2431680.5, 184761.32813 2431689.75, 184695.03125 2431698, 184673.17188 2431700.25, 184672.21875 2431705.25, 184670.79688 2431710, 184666.26563 2431720.75, 184661.64063 2431733.5)))'::geometry);\n" +
-                "\n" +
-                "CREATE TABLE TRIANGLES (\n" +
-                "\tTHE_GEOM GEOMETRY(POLYGONZ)\n" +
-                ");\n" +
-                "\n" +
-                "\n" +
-                "INSERT INTO PUBLIC.TRIANGLES\n" +
-                "(THE_GEOM)\n" +
-                "VALUES('POLYGON Z((184635.3007232633 2431979.9689098285 30, 184674.17520872923 2431843.505908667 35, 184698.06594086462 2431990.7904990697 30, 184635.3007232633 2431979.9689098285 30))'::GEOMETRY);\n" +
-                "\n" +
-                "CREATE TABLE slope_by_parcels as SELECT st_intersection(a.the_geom, b.the_geom) as area_triangle FROM triangles as a, parcels as b;\n");
-    }
 
     //TODO : related to //TODO : waiting for https://github.com/orbisgis/h2gis/issues/1244
     @Disabled
@@ -123,14 +100,10 @@ public class RegressionTest {
     public void testJTS() throws ParseException {
         String geomA_wkt = "MULTIPOLYGON (((184661.64063 2431733.5, 184652.21875 2431759.5, 184646.03125 2431775, 184641.5 2431787.75, 184632.45313 2431812, 184620.78125 2431842, 184604.10938 2431886.25, 184602.92188 2431891, 184617.45313 2431898.25, 184662.6875 2431917.75, 184666.26563 2431915.25, 184675.79688 2431920, 184669.35938 2431943.75, 184684.125 2431946.75, 184704.84375 2431948.75, 184728.17188 2431948, 184758.89063 2431945.75, 184784.85938 2431944.25, 184844.85938 2431946.5, 184856.70313 2431947.75, 184906.40625 2431832, 184923.65625 2431795, 184939.10938 2431757, 184951.89063 2431723.25, 184968.25 2431670.5, 184969.8125 2431666.5, 184949.8125 2431668, 184890.95313 2431674.5, 184832.6875 2431680.5, 184761.32813 2431689.75, 184695.03125 2431698, 184673.17188 2431700.25, 184672.21875 2431705.25, 184670.79688 2431710, 184666.26563 2431720.75, 184661.64063 2431733.5)))";
         String geomB_wkt = "POLYGON Z((184635.3007232633 2431979.9689098285 30, 184674.17520872923 2431843.505908667 35, 184698.06594086462 2431990.7904990697 30, 184635.3007232633 2431979.9689098285 30))";
-
         WKTReader wktReader = new WKTReader();
         Geometry geomA = wktReader.read(geomA_wkt);
         Geometry geomB = wktReader.read(geomB_wkt);
-
         Geometry result = geomA.intersection(geomB);
-
         System.out.println(new WKTWriter(3).write(result));
-
     }
 }

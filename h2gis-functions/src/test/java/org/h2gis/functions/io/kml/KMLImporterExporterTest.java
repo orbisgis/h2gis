@@ -246,7 +246,7 @@ public class KMLImporterExporterTest {
     public void testST_AsKml2() throws SQLException {
         Statement stat = connection.createStatement();
         ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                + "    'LINESTRINGZ(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 2);");
         res.next();
         assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>relativeToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
@@ -258,7 +258,7 @@ public class KMLImporterExporterTest {
     public void testST_AsKml3() throws SQLException {
         Statement stat = connection.createStatement();
         ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                + "    'LINESTRINGZ(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 1);");
         res.next();
         assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>clampToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
@@ -270,7 +270,7 @@ public class KMLImporterExporterTest {
     public void testST_AsKml4() throws SQLException {
         Statement stat = connection.createStatement();
         ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                + "    'LINESTRINGZ(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 4);");
         res.next();
         assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>absolute</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
@@ -282,7 +282,7 @@ public class KMLImporterExporterTest {
     public void testST_AsKml5() throws SQLException {
         Statement stat = connection.createStatement();
         ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                + "    'LINESTRINGZ(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 8);");
         res.next();
         assertEquals("<LineString><extrude>1</extrude><gx:altitudeMode>clampToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
@@ -294,7 +294,7 @@ public class KMLImporterExporterTest {
     public void testST_AsKml6() throws SQLException {
         Statement stat = connection.createStatement();
         ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                + "    'LINESTRINGZ(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 16);");
         res.next();
         assertEquals("<LineString><extrude>1</extrude><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
@@ -309,7 +309,7 @@ public class KMLImporterExporterTest {
         assertThrows(JdbcSQLNonTransientException.class, () -> {
             try {
                 stat.execute("SELECT ST_AsKml(ST_Geomfromtext("
-                        + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                        + "    'LINESTRINGZ(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                         + "                -1.49 47.17 100)',4326), true, 666);");
             } catch (JdbcSQLException e) {
                 throw e.getNextException();

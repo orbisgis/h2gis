@@ -45,6 +45,7 @@ public class PropertiesFunctionTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(PropertiesFunctionTest.class.getSimpleName());
         WKT_READER = new WKTReader();
+        WKT_READER.setIsOldJtsCoordinateSyntaxAllowed(false);
     }
 
     @AfterAll

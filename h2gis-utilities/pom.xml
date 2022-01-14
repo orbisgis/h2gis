@@ -42,8 +42,9 @@
             <artifactId>jts-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2</artifactId>
+            <version>2.1.209-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>

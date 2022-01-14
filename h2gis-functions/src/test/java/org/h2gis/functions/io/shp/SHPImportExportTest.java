@@ -356,8 +356,8 @@ public class SHPImportExportTest {
         File shpFile = new File("target/area_export5.shp");
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON Z))");
-        stat.execute("insert into area values(1, 'POLYGON ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
-        stat.execute("insert into area values(2, 'POLYGON ((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3))')");
+        stat.execute("insert into area values(1, 'POLYGONZ ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
+        stat.execute("insert into area values(2, 'POLYGONZ ((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3))')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export5.shp', 'AREA', true)");
         // Read this shape file to check values
@@ -381,7 +381,7 @@ public class SHPImportExportTest {
         File shpFile = new File("target/area_export6.shp");
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON Z))");
-        stat.execute("insert into area values(1, 'POLYGON ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
+        stat.execute("insert into area values(1, 'POLYGONZ ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export6.shp', 'AREA', true)");
         // Read this shape file to check values
@@ -409,7 +409,7 @@ public class SHPImportExportTest {
         File shpFile = new File("target/punctual_export.shp");
         stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
         stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINT Z))");
-        stat.execute("insert into punctual values(1, 'POINT(-10 109 5)')");
+        stat.execute("insert into punctual values(1, 'POINTZ(-10 109 5)')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/punctual_export.shp', 'PUNCTUAL', true)");
         // Read this shape file to check values
@@ -430,7 +430,7 @@ public class SHPImportExportTest {
         File shpFile = new File("target/lineal_export.shp");
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 6 0)')");
+        stat.execute("insert into lineal values(1, 'LINESTRINGZ(-10 109 5, 12 6 0)')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/lineal_export.shp', 'LINEAL', true)");
         // Read this shape file to check values
@@ -453,7 +453,7 @@ public class SHPImportExportTest {
         File shpFile = new File("target/lineal_export.shp");
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 6 0)')");
+        stat.execute("insert into lineal values(1, 'LINESTRINGZ(-10 109 5, 12 6 0)')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/lineal_export.shp', 'LINEAL', true)");
         // Read this shape file to check values
@@ -914,7 +914,7 @@ public class SHPImportExportTest {
         File shpFile = new File("target/punctual_export.shp");
         stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
         stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINT Z))");
-        stat.execute("insert into punctual values(1, 'POINT(-10 109 5)')");
+        stat.execute("insert into punctual values(1, 'POINTZ(-10 109 5)')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/punctual_export.shp', 'punctual', true)");
         // Read this shape file to check values

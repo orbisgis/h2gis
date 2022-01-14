@@ -111,7 +111,7 @@ public class CRSFunctionTest {
 
     @Test
     public void testST_TransformProjectThenProjectBack() throws Exception {
-        final String inGeom = "SRID=4326;MULTILINESTRING ((0 0 0, 1 0 0))";
+        final String inGeom = "SRID=4326;MULTILINESTRINGZ ((0 0 0, 1 0 0))";
         final int inOutProj = 4326;
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM(ST_TRANSFORM(" +
                 "'" + inGeom + "'::GEOMETRY, 2154), " + inOutProj + ");");

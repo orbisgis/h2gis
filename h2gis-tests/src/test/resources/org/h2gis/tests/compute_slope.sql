@@ -1,12 +1,17 @@
 --This script shows how to compute the slope by parcels using a contour lines table and a landcover table
 
+
 --Triangulate the contour lines
-DROP TABLE IF EXISTS contour_tin;
-CREATE TABLE contour_tin AS  SELECT * FROM ST_EXPLODE('(SELECT ST_DELAUNAY(ST_ACCUM(ST_UpdateZ(ST_FORCE3D(the_geom), Z))) as the_geom from contourlines)');
+DROP TABLE IF EXISTS tin;
+CREATE TABLE tin AS  SELECT ST_DELAUNAY(ST_ACCUM(ST_UpdateZ(the_geom, Z))) as the_geom from contourlines;
+
+--Explode to triangles
+DROP TABLE IF EXISTS triangles;
+CREATE TABLE triangles AS  SELECT * FROM ST_EXPLODE('TIN');
 
 --Compute the slope for each triangles
 DROP TABLE IF EXISTS compute_slope;
-CREATE TABLE compute_slope as SELECT ST_TriangleSlope(the_geom) as slope, the_geom from contour_tin;
+CREATE TABLE compute_slope as SELECT ST_TriangleSlope(the_geom) as slope, the_geom from triangles;
 
 
 --Compute slope by parcels
@@ -24,4 +29,4 @@ CASE WHEN slope_class = 'moderate' then sum(area_triangle) end as moderate , pk
 FROM slope_by_parcels group by slope_class, pk;
 
 
-DROP TABLE compute_slope, contour_tin, slope_by_parcels, slope_by_parcels_classified;
+DROP TABLE if exists compute_slope, tin, triangles, slope_by_parcels, slope_by_parcels_classified;

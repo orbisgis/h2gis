@@ -182,22 +182,21 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_ExtrudeLineString() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('LINESTRING (0 0 0, 1 0 0)'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('LINESTRINGZ (0 0 0, 1 0 0)'::GEOMETRY, 10);");
         rs.next();
         //Test if the wall is created
-        assertGeometryEquals("MULTIPOLYGON(((0 0 0, 0 0 10, 1 0 10, 1 0 0, 0 0 0)))", ValueGeometry.getFromGeometry(((Geometry) rs.getObject(1)).getGeometryN(1)).getBytes());
+        assertGeometryEquals("MULTIPOLYGONZ(((0 0 0, 0 0 10, 1 0 10, 1 0 0, 0 0 0)))", ValueGeometry.getFromGeometry(((Geometry) rs.getObject(1)).getGeometryN(1)).getBytes());
         rs.close();
     }
 
     @Test
     public void test_ST_ExtrudePolygon() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGONZ((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10);");
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
         assertGeometryEquals("POLYGON Z((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
 
-        System.out.println(ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getString());
         //Test if the walls are created
         assertGeometryEquals("MULTIPOLYGON Z (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), ((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0)))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getBytes());
 
@@ -209,37 +208,37 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygonWithHole() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0),"
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGONZ ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0),"
                 + " (1 3 0, 3 3 0, 3 1 0, 1 1 0, 1 3 0))'::GEOMETRY, 10);");
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
-        assertGeometryEquals("POLYGON ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0), (1 3 0, 1 1 0, 3 1 0, 3 3 0, 1 3 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
+        assertGeometryEquals("POLYGON Z((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0), (1 3 0, 1 1 0, 3 1 0, 3 3 0, 1 3 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
 
         //Test if the walls are created
-        assertGeometryEquals("MULTIPOLYGON (((0 10 0, 0 10 10, 10 10 10, 10 10 0, 0 10 0)), ((10 10 0, 10 10 10, 10 0 10, 10 0 0, 10 10 0)), ((10 0 0, 10 0 10, 0 0 10, 0 0 0, 10 0 0)), ((0 0 0, 0 0 10, 0 10 10, 0 10 0, 0 0 0)), ((1 3 0, 1 3 10, 1 1 10, 1 1 0, 1 3 0)), ((1 1 0, 1 1 10, 3 1 10, 3 1 0, 1 1 0)), ((3 1 0, 3 1 10, 3 3 10, 3 3 0, 3 1 0)), ((3 3 0, 3 3 10, 1 3 10, 1 3 0, 3 3 0)))",
+        assertGeometryEquals("MULTIPOLYGONZ (((0 10 0, 0 10 10, 10 10 10, 10 10 0, 0 10 0)), ((10 10 0, 10 10 10, 10 0 10, 10 0 0, 10 10 0)), ((10 0 0, 10 0 10, 0 0 10, 0 0 0, 10 0 0)), ((0 0 0, 0 0 10, 0 10 10, 0 10 0, 0 0 0)), ((1 3 0, 1 3 10, 1 1 10, 1 1 0, 1 3 0)), ((1 1 0, 1 1 10, 3 1 10, 3 1 0, 1 1 0)), ((3 1 0, 3 1 10, 3 3 10, 3 3 0, 3 1 0)), ((3 3 0, 3 3 10, 1 3 10, 1 3 0, 3 3 0)))",
                 ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getBytes());
 
         //Test the roof
-        assertGeometryEquals("POLYGON ((0 10 10, 0 0 10, 10 0 10, 10 10 10, 0 10 10), (1 3 10, 3 3 10, 3 1 10, 1 1 10, 1 3 10))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(2)).getBytes());
+        assertGeometryEquals("POLYGONZ ((0 10 10, 0 0 10, 10 0 10, 10 10 10, 0 10 10), (1 3 10, 3 3 10, 3 1 10, 1 1 10, 1 3 10))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(2)).getBytes());
         rs.close();
     }
 
     @Test
     public void test_ST_ExtrudePolygonWalls() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10, 1);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGONZ((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10, 1);");
         rs.next();
         //Test if the walls are created
-        assertGeometryEquals("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), ((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGONz (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), ((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0)))", rs.getBytes(1));
         rs.close();
     }
 
     @Test
     public void test_ST_ExtrudePolygonRoof() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10, 2);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGONZ((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10, 2);");
         rs.next();
         //Test the roof
-        assertGeometryEquals("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", rs.getBytes(1));
+        assertGeometryEquals("POLYGONZ((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", rs.getBytes(1));
         rs.close();
     }
 
@@ -249,7 +248,7 @@ public class CreateFunctionTest {
                 + "ST_MakePoint(1.4, -3.7, 6.2);");
         assertTrue(rs.next());
         assertGeometryEquals("POINT(1.4 -3.7)", rs.getObject(1));
-        assertGeometryEquals("POINT(1.4 -3.7 6.2)", rs.getObject(2));
+        assertGeometryEquals("POINTZ(1.4 -3.7 6.2)", rs.getObject(2));
         assertFalse(rs.next());
         rs.close();
     }
@@ -260,7 +259,7 @@ public class CreateFunctionTest {
                 + "ST_Point(1.4, -3.7, 6.2);");
         assertTrue(rs.next());
         assertGeometryEquals("POINT(1.4 -3.7)", rs.getObject(1));
-        assertGeometryEquals("POINT(1.4 -3.7 6.2)", rs.getObject(2));
+        assertGeometryEquals("POINTZ(1.4 -3.7 6.2)", rs.getObject(2));
         assertFalse(rs.next());
         rs.close();
     }
@@ -309,13 +308,13 @@ public class CreateFunctionTest {
     @Test
     public void test_ST_MakeLine() throws Exception {
         ResultSet rs = st.executeQuery("SELECT "
-                + "ST_MakeLine('POINT(1 2 3)'::Geometry, 'POINT(4 5 6)'::Geometry), "
+                + "ST_MakeLine('POINTZ(1 2 3)'::Geometry, 'POINTZ(4 5 6)'::Geometry), "
                 + "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry), "
                 + "ST_MakeLine('POINT(1 2)'::Geometry, 'MULTIPOINT(4 5, 12 9)'::Geometry), "
                 + "ST_MakeLine('MULTIPOINT(1 2, 17 6)'::Geometry, 'MULTIPOINT(4 5, 7 9, 18 -1)'::Geometry), "
                 + "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry, 'POINT(7 8)'::Geometry);");
         assertTrue(rs.next());
-        assertGeometryEquals("LINESTRING(1 2 3, 4 5 6)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRINGZ(1 2 3, 4 5 6)", rs.getBytes(1));
         assertGeometryEquals("LINESTRING(1 2, 4 5)", rs.getBytes(2));
         assertGeometryEquals("LINESTRING(1 2, 4 5, 12 9)", rs.getBytes(3));
         assertGeometryEquals("LINESTRING(1 2, 17 6, 4 5, 7 9, 18 -1)", rs.getBytes(4));
@@ -367,14 +366,14 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_MakeLineNull() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_MakeLine(null, 'POINT(4 5 6)')");
+        ResultSet rs = st.executeQuery("SELECT ST_MakeLine(null, 'POINTZ(4 5 6)')");
         try {
             assertTrue(rs.next());
             assertNull(rs.getObject(1));
         } finally {
             rs.close();
         }
-        rs = st.executeQuery("SELECT ST_MakeLine('POINT(4 5 6)', null)");
+        rs = st.executeQuery("SELECT ST_MakeLine('POINTZ(4 5 6)', null)");
         try {
             assertTrue(rs.next());
             assertNull(rs.getObject(1));
@@ -1004,7 +1003,7 @@ public class CreateFunctionTest {
     public void test_ST_RingBufferComplex3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, -10, 3,'endcap=ROUND');");
         assertTrue(rs.next());
-        assertTrue(rs.getString(1).equalsIgnoreCase("MULTIPOLYGON (EMPTY, EMPTY, EMPTY)"));
+        assertTrue(rs.getString(1).equalsIgnoreCase("MULTIPOLYGON Z (EMPTY, EMPTY, EMPTY)"));
         rs.close();
     }
 

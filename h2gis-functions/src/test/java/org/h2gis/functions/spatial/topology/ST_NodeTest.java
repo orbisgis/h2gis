@@ -96,9 +96,9 @@ public class ST_NodeTest {
         st.execute("DROP TABLE IF EXISTS TEST;");
         st.execute("CREATE TABLE test(the_geom GEOMETRY(LINESTRING Z));" +
                 "INSERT INTO test VALUES " +
-                "('LINESTRING (1 2 0, 3 2 4)'), " +
-                "('LINESTRING (3 2 4, 2 1 3)'), " +
-                "('LINESTRING (2 1 3, 2 3 0)');");
+                "('LINESTRINGZ (1 2 0, 3 2 4)'), " +
+                "('LINESTRINGZ (3 2 4, 2 1 3)'), " +
+                "('LINESTRINGZ (2 1 3, 2 3 0)');");
         ResultSet rs = st.executeQuery("SELECT ST_NODE(ST_ACCUM(the_geom)) FROM test");
         while(rs.next()){
             MultiLineString result = (MultiLineString)rs.getObject(1);

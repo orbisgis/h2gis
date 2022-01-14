@@ -254,6 +254,14 @@ public class IOMethods {
         if (dbType != DBTypes.H2 && dbType != DBTypes.H2GIS) {
             throw new SQLException("Link file is only supported with an H2GIS database");
         }
+        if(filePath==null || filePath.isEmpty()){
+            throw new SQLException("The path to the file cannot be null or empty");
+        }
+
+        if(tableName==null || tableName.isEmpty()){
+            throw new SQLException("The name of the table cannot be null or empty");
+        }
+
         if (delete) {
             try {
                 try (Statement statement = connection.createStatement()) {
