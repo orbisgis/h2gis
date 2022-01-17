@@ -13,5 +13,5 @@ eg GEOMETRY(POINT) instead of only GEOMETRY
 + Add a new module to run sql script tests (disable by default)
 + Update ST_Force3D, ST_Force4D and ST_Force3DM to be inline with PostGIS
 + Update ST_UpdateZ to force the dimension when the z value is updated.
-+ Upate H2 from 2.0.206 to 2.0.209 to fix a memory issue and improve Geometry dimension check
++ Upate H2 from 2.0.206 to 2.1.210 to fix a memory issue and improve Geometry dimension check
   (#1233 and #1243)
