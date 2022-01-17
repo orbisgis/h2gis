@@ -29,7 +29,7 @@ public class RegressionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
     @AfterAll
