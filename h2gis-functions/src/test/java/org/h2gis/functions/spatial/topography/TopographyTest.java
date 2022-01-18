@@ -65,7 +65,7 @@ public class TopographyTest {
 
     @Test
     public void test_ST_TriangleAspect1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGONZ ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 0);
         rs.close();
@@ -73,7 +73,7 @@ public class TopographyTest {
 
     @Test
     public void test_ST_TriangleAspect2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGONZ ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 90);
         rs.close();
@@ -82,7 +82,7 @@ public class TopographyTest {
     @Test
     public void test_ST_TriangleAspect3() {
         assertThrows(SQLException.class, ()-> {
-            ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
+            ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 , 10 0 , 0 10 , 0 0 ))'::GEOMETRY);");
             rs.close();
         });
     }
@@ -104,10 +104,10 @@ public class TopographyTest {
     public void test_ST_TriangleAspect() throws Exception {
         ResultSet rs = st.executeQuery(
                 "SELECT " +
-                        "ST_TriangleAspect('POLYGON((0 0 0, 3 0 0, 0 3 0, 0 0 0))')," +
-                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 0 3 1, 0 0 1))')," +
-                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 1, 0 3 0, 0 0 1))')," +
-                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');");
+                        "ST_TriangleAspect('POLYGONZ((0 0 0, 3 0 0, 0 3 0, 0 0 0))')," +
+                        "ST_TriangleAspect('POLYGONZ((0 0 1, 3 0 0, 0 3 1, 0 0 1))')," +
+                        "ST_TriangleAspect('POLYGONZ((0 0 1, 3 0 1, 0 3 0, 0 0 1))')," +
+                        "ST_TriangleAspect('POLYGONZ((0 0 1, 3 0 0, 3 3 1, 0 0 1))');");
         assertTrue(rs.next());
         assertEquals(0, rs.getDouble(1), 1e-12);
         assertEquals(90, rs.getDouble(2), 1e-12);
@@ -119,7 +119,7 @@ public class TopographyTest {
 
     @Test
     public void test_ST_TriangleSlope1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGONZ ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 0);
         rs.close();
@@ -127,7 +127,7 @@ public class TopographyTest {
 
     @Test
     public void test_ST_TriangleSlope2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGONZ ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'::GEOMETRY);");
         rs.next();
         assertEquals(127.27, rs.getDouble(1), 10E-2);
         rs.close();
@@ -139,7 +139,7 @@ public class TopographyTest {
      */
     @Test
     public void test_ST_TriangleSlope3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGONZ ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
         rs.next();
         assertEquals(10, rs.getDouble(1), 10E-2);
         rs.close();
@@ -151,7 +151,7 @@ public class TopographyTest {
      */
     @Test
     public void test_ST_TriangleSlope4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON((0 0 -5, 4 0 -5, 2 3 1, 0 0 -5))');");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGONZ((0 0 -5, 4 0 -5, 2 3 1, 0 0 -5))');");
         rs.next();
         assertEquals(200, rs.getDouble(1), 10E-2);
         rs.close();
@@ -208,38 +208,38 @@ public class TopographyTest {
         Statement st = connection.createStatement();
         try {
             st.execute("DROP TABLE IF EXISTS TIN");
-            st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom");
+            st.execute("CREATE TABLE TIN AS SELECT 'POLYGONZ ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom");
             ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN', 2,3,4,5) order by idiso");
             assertEquals(2, rs.getMetaData().getColumnCount());
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
             assertEquals(0, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -6.05 -0.56 3, -6.4 3.03 2, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -6.05 -0.56 3, -6.4 3.03 2, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -6.4 3.03 2, -8.02 1.09 2, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -6.4 3.03 2, -8.02 1.09 2, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.05 -0.56 3, -3.61 2.35 3, -6.4 3.03 2, -6.05 -0.56 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.05 -0.56 3, -3.61 2.35 3, -6.4 3.03 2, -6.05 -0.56 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -5.7 -4.15 4, -6.05 -0.56 3, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -5.7 -4.15 4, -6.05 -0.56 3, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, -0.82 1.68 4, -6.05 -0.56 3, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, -0.82 1.68 4, -6.05 -0.56 3, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-0.82 1.68 4, -3.61 2.35 3, -6.05 -0.56 3, -0.82 1.68 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-0.82 1.68 4, -3.61 2.35 3, -6.05 -0.56 3, -0.82 1.68 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, -6.05 -0.56 3, -5.7 -4.15 4, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, -6.05 -0.56 3, -5.7 -4.15 4, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, 0.3 1.41 4.4, -0.82 1.68 4, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, 0.3 1.41 4.4, -0.82 1.68 4, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertFalse(rs.next());
         } finally {
@@ -254,38 +254,38 @@ public class TopographyTest {
         Statement st = connection.createStatement();
         try {
             st.execute("DROP TABLE IF EXISTS TIN");
-            st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom, 1.0 as m1, 4.4 as m2, 4.0 as m3");
+            st.execute("CREATE TABLE TIN AS SELECT 'POLYGONZ ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom, 1.0 as m1, 4.4 as m2, 4.0 as m3");
             ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN','m1','m2','m3',2,3,4,5) order by idiso");
             assertEquals(5, rs.getMetaData().getColumnCount());
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
             assertEquals(0, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -6.05 -0.56 3, -6.4 3.03 2, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -6.05 -0.56 3, -6.4 3.03 2, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -6.4 3.03 2, -8.02 1.09 2, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -6.4 3.03 2, -8.02 1.09 2, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.05 -0.56 3, -3.61 2.35 3, -6.4 3.03 2, -6.05 -0.56 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.05 -0.56 3, -3.61 2.35 3, -6.4 3.03 2, -6.05 -0.56 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -5.7 -4.15 4, -6.05 -0.56 3, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -5.7 -4.15 4, -6.05 -0.56 3, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, -0.82 1.68 4, -6.05 -0.56 3, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, -0.82 1.68 4, -6.05 -0.56 3, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-0.82 1.68 4, -3.61 2.35 3, -6.05 -0.56 3, -0.82 1.68 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-0.82 1.68 4, -3.61 2.35 3, -6.05 -0.56 3, -0.82 1.68 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, -6.05 -0.56 3, -5.7 -4.15 4, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, -6.05 -0.56 3, -5.7 -4.15 4, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, 0.3 1.41 4.4, -0.82 1.68 4, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, 0.3 1.41 4.4, -0.82 1.68 4, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertFalse(rs.next());
         } finally {
@@ -299,38 +299,38 @@ public class TopographyTest {
         Statement st = connection.createStatement();
         try {
             st.execute("DROP TABLE IF EXISTS TIN");
-            st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom");
+            st.execute("CREATE TABLE TIN AS SELECT 'POLYGONZ ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom");
             ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN', DOUBLERANGE(2,6,1)) order by idiso");
             assertEquals(2, rs.getMetaData().getColumnCount());
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.4 3.03 2, -9.19 3.7 1, -8.02 1.09 2, -6.4 3.03 2))", rs.getObject(1));
             assertEquals(0, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -6.05 -0.56 3, -6.4 3.03 2, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -6.05 -0.56 3, -6.4 3.03 2, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -6.4 3.03 2, -8.02 1.09 2, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -6.4 3.03 2, -8.02 1.09 2, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.05 -0.56 3, -3.61 2.35 3, -6.4 3.03 2, -6.05 -0.56 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.05 -0.56 3, -3.61 2.35 3, -6.4 3.03 2, -6.05 -0.56 3))", rs.getObject(1));
             assertEquals(1, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-6.86 -1.53 3, -5.7 -4.15 4, -6.05 -0.56 3, -6.86 -1.53 3))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-6.86 -1.53 3, -5.7 -4.15 4, -6.05 -0.56 3, -6.86 -1.53 3))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, -0.82 1.68 4, -6.05 -0.56 3, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, -0.82 1.68 4, -6.05 -0.56 3, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-0.82 1.68 4, -3.61 2.35 3, -6.05 -0.56 3, -0.82 1.68 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-0.82 1.68 4, -3.61 2.35 3, -6.05 -0.56 3, -0.82 1.68 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, -6.05 -0.56 3, -5.7 -4.15 4, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, -6.05 -0.56 3, -5.7 -4.15 4, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(2, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-1.52 0.85 4, 0.3 1.41 4.4, -0.82 1.68 4, -1.52 0.85 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-1.52 0.85 4, 0.3 1.41 4.4, -0.82 1.68 4, -1.52 0.85 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertTrue(rs.next());
-            assertGeometryBarelyEquals("POLYGON ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
+            assertGeometryBarelyEquals("POLYGONZ ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertFalse(rs.next());
         } finally {
@@ -347,8 +347,8 @@ public class TopographyTest {
         try {
             st.execute("DROP TABLE IF EXISTS TIN");
             st.execute("CREATE TABLE TIN(pk INT PRIMARY KEY, THE_GEOM GEOMETRY);");
-            st.execute("INSERT INTO TIN VALUES (1,'POLYGON((0 0 5, 3 0 5, 3 3 10, 0 0 10))')");
-            st.execute("INSERT INTO TIN VALUES (2,'POLYGON((0 0 0, 3 0 0, 3 3 3, 0 0 0))')");
+            st.execute("INSERT INTO TIN VALUES (1,'POLYGONZ((0 0 5, 3 0 5, 3 3 10, 0 0 10))')");
+            st.execute("INSERT INTO TIN VALUES (2,'POLYGONZ((0 0 0, 3 0 0, 3 3 3, 0 0 0))')");
             ResultSet rs = st.executeQuery("SELECT pk FROM ST_TriangleContouring('TIN', -1 ,1 , 4)");
             Set<Integer> pk = new HashSet<Integer>();
             while(rs.next()) {
@@ -413,7 +413,7 @@ public class TopographyTest {
     public void testST_Drape5() throws SQLException {
         Statement st = connection.createStatement();
         try {
-            ResultSet rs = st.executeQuery("select st_drape('MULTIPOINT ((8 5.1 0), (5 2 0), (9 2 0), (6.1 4 0), (3 9 0), (0.3 7.2 0), (3.8 6.7 0), (11.5 7.4 0), (12.1 3 0), (0 0 0))'::GEOMETRY, 'POLYGON Z((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            ResultSet rs = st.executeQuery("select st_drape('MULTIPOINTZ ((8 5.1 0), (5 2 0), (9 2 0), (6.1 4 0), (3 9 0), (0.3 7.2 0), (3.8 6.7 0), (11.5 7.4 0), (12.1 3 0), (0 0 0))'::GEOMETRY, 'POLYGON Z((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();            
             assertGeometryEquals("MULTIPOINT Z ((8 5.1 5.1), (5 2 2), (9 2 2), (6.1 4 4), (3 9 0), (0.3 7.2 0), (3.8 6.7 0), (11.5 7.4 0), (12.1 3 0), (0 0 0))", rs.getObject(1));
         } finally {

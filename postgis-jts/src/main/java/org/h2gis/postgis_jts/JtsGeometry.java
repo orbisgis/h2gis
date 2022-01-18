@@ -135,6 +135,7 @@ public class JtsGeometry extends PGobject {
         csfac = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
         geofac = new GeometryFactory(prec, 0, csfac);
         reader = new WKTReader(geofac);
+        reader.setIsOldJtsCoordinateSyntaxAllowed(false);
     }
 }
 

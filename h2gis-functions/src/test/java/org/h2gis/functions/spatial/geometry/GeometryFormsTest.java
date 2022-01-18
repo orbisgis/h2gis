@@ -78,12 +78,12 @@ public class GeometryFormsTest {
     
     @Test
     public void testJTSWKTForms() throws SQLException{     
-        checkFormAndResult("POINT (0 0 3)", "POINT Z (0 0 3)");    
-        checkFormAndResult("POINT (0 0 3 4)", "POINT ZM (0 0 3 4)");
-        checkFormAndResult("LINESTRING (0 0 1, 1 1 1)", "LINESTRING Z (0 0 1, 1 1 1)"); 
-        checkFormAndResult("LINESTRING (0 0 1 2, 1 1 1 2)", "LINESTRING ZM (0 0 1 2, 1 1 1 2)"); 
-        checkFormAndResult("POLYGON ((140 250 1, 176 250 1, 176 214 1, 140 214 1, 140 250 1))", "POLYGON Z((140 250 1, 176 250 1, 176 214 1, 140 214 1, 140 250 1))"); 
-        checkFormAndResult("POLYGON ((140 250 1 1, 176 250 1 1, 176 214 1 1, 140 214 1 1, 140 250 1 1))", "POLYGON ZM((140 250 1 1, 176 250 1 1, 176 214 1 1, 140 214 1 1, 140 250 1 1))"); 
+        checkFormAndResult("POINT Z (0 0 3)", "POINT Z (0 0 3)");
+        checkFormAndResult("POINT ZM (0 0 3 4)", "POINT ZM (0 0 3 4)");
+        checkFormAndResult("LINESTRING Z (0 0 1, 1 1 1)", "LINESTRING Z (0 0 1, 1 1 1)");
+        checkFormAndResult("LINESTRING ZM (0 0 1 2, 1 1 1 2)", "LINESTRING ZM (0 0 1 2, 1 1 1 2)");
+        checkFormAndResult("POLYGON Z ((140 250 1, 176 250 1, 176 214 1, 140 214 1, 140 250 1))", "POLYGON Z((140 250 1, 176 250 1, 176 214 1, 140 214 1, 140 250 1))");
+        checkFormAndResult("POLYGON ZM ((140 250 1 1, 176 250 1 1, 176 214 1 1, 140 214 1 1, 140 250 1 1))", "POLYGON ZM((140 250 1 1, 176 250 1 1, 176 214 1 1, 140 214 1 1, 140 250 1 1))");
    }
     
     @Test
@@ -105,19 +105,19 @@ public class GeometryFormsTest {
     
     @Test
     public void testDummySpatialFunction() throws SQLException{
-        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY)");
+        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('POINTz (0 0 3)'::GEOMETRY)");
         rs.next();
         GeometryAsserts.assertGeometryEquals("POINT Z(0 0 3)", rs.getObject(1));
         
-        rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY)");
+        rs = st.executeQuery("SELECT DummySpatialFunction('POINTZ (0 0 3)'::GEOMETRY)");
         rs.next();
-        GeometryAsserts.assertGeometryEquals("POINT (0 0 3)", rs.getObject(1));
+        GeometryAsserts.assertGeometryEquals("POINTZ (0 0 3)", rs.getObject(1));
     }
     
     
     @Test
     public void testDummySpatialFunctionZNaN() throws SQLException{
-        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY, true)");
+        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('POINTZ (0 0 3)'::GEOMETRY, true)");
         rs.next();
         GeometryAsserts.assertGeometryEquals("POINT(0 0)", rs.getObject(1));
     }

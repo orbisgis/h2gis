@@ -71,7 +71,6 @@ public class BasicTest {
         public void testPoints3D() throws Exception {
 
                 WKTReader wktReader = new WKTReader();
-
                 Geometry geom = wktReader.read("POINT(0 1 3)");
 
                 Coordinate coord = geom.getCoordinates()[0];

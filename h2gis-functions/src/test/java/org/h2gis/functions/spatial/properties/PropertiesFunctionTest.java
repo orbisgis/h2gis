@@ -2,18 +2,18 @@
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
- *
+ * <p>
  * This code is part of the H2GIS project. H2GIS is free software; you can
  * redistribute it and/or modify it under the terms of the GNU Lesser General
  * Public License as published by the Free Software Foundation; version 3.0 of
  * the License.
- *
+ * <p>
  * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details <http://www.gnu.org/licenses/>.
- *
- *
+ * <p>
+ * <p>
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
@@ -45,6 +45,7 @@ public class PropertiesFunctionTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(PropertiesFunctionTest.class.getSimpleName());
         WKT_READER = new WKTReader();
+        WKT_READER.setIsOldJtsCoordinateSyntaxAllowed(false);
     }
 
     @AfterAll
@@ -77,7 +78,7 @@ public class PropertiesFunctionTest {
         geometriesToTest.put("MULTILINESTRINGZ", "SRID=4326;MULTILINESTRINGZ((0 0 0, 10 15 0), (56 50 0, 10 15 0))");
         geometriesToTest.put("MULTILINESTRINGM", "SRID=4326;MULTILINESTRINGM((0 0 0, 10 15 0), (56 50 0, 10 15 0))");
         geometriesToTest.put("MULTILINESTRINGZM", "SRID=4326;MULTILINESTRINGZM((0 0 0 0, 10 15 0 0), (56 50 0 0, 10 15 0 0))");
-        
+
         for (Map.Entry<String, String> entry : geometriesToTest.entrySet()) {
             String key = entry.getKey();
             String val = entry.getValue();
@@ -86,6 +87,38 @@ public class PropertiesFunctionTest {
             assertEquals(key, rs.getString(1));
             rs.close();
         }
+    }
+
+    @Test
+    public void testST_MemSize() throws Exception {
+        ResultSet res = st.executeQuery("SELECT ST_MEmSIZE(null)");
+        res.next();
+        assertNull(res.getObject(1));
+        res.close();
+    }
+
+    @Test
+    public void testST_MemSize1() throws Exception {
+        ResultSet res = st.executeQuery("SELECT ST_MemSize(ST_GeomFromText('POINT(0 0)'))");
+        res.next();
+        assertEquals(21, res.getObject(1));
+        res.close();
+    }
+
+    @Test
+    public void testST_MemSize2() throws Exception {
+        ResultSet res = st.executeQuery("SELECT ST_MemSize(ST_GeomFromText('POINT(0 0)', 4326))");
+        res.next();
+        assertEquals(25, res.getObject(1));
+        res.close();
+    }
+
+    @Test
+    public void testST_MemSize3() throws Exception {
+        ResultSet res = st.executeQuery("SELECT ST_MemSize(ST_GeomFromText('POINT EMPTY'))");
+        res.next();
+        assertEquals(21, res.getObject(1));
+        res.close();
     }
 
 }

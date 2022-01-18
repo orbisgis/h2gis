@@ -76,50 +76,50 @@ public class MeshFunctionTest {
 
     @Test
     public void test_ST_DelaunayWithPoints1() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1))'::GEOMETRY);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINTZ ((0 0 1), (10 0 1), (10 10 1))'::GEOMETRY);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGON (((0 0 1, 10 0 1, 10 10 1, 0 0 1)))",rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((0 0 1, 10 0 1, 10 10 1, 0 0 1)))",rs.getBytes(1));
         }
     }
 
     @Test
     public void test_ST_DelaunayWithPoints2() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINTZ ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGON (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))",  rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))",  rs.getBytes(1));
         }
     }
 
     @Test
     public void test_ST_DelaunayWithCollection() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('GEOMETRYCOLLECTION (POLYGON ((150 380 1, 110 230 1, 180 190 1, 230 300 1, 320 280 1, 320 380 1, 150 380 1)),"
-                + "  LINESTRING (70 330 1, 280 220 1))'::GEOMETRY);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('GEOMETRYCOLLECTIONZ (POLYGONZ ((150 380 1, 110 230 1, 180 190 1, 230 300 1, 320 280 1, 320 380 1, 150 380 1)),"
+                + "  LINESTRINGZ (70 330 1, 280 220 1))'::GEOMETRY);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGON (((70 330 1, 150 380 1, 110 230 1, 70 330 1)), ((110 230 1, 150 380 1, 230 300 1, 110 230 1)), ((110 230 1, 230 300 1, 180 190 1, 110 230 1)), ((150 380 1, 320 380 1, 230 300 1, 150 380 1)), ((180 190 1, 230 300 1, 280 220 1, 180 190 1)), ((230 300 1, 320 280 1, 280 220 1, 230 300 1)), ((230 300 1, 320 380 1, 320 280 1, 230 300 1)))", rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((70 330 1, 150 380 1, 110 230 1, 70 330 1)), ((110 230 1, 150 380 1, 230 300 1, 110 230 1)), ((110 230 1, 230 300 1, 180 190 1, 110 230 1)), ((150 380 1, 320 380 1, 230 300 1, 150 380 1)), ((180 190 1, 230 300 1, 280 220 1, 180 190 1)), ((230 300 1, 320 280 1, 280 220 1, 230 300 1)), ((230 300 1, 320 380 1, 320 280 1, 230 300 1)))", rs.getBytes(1));
         }
     }
 
     @Test
     public void test_ST_DelaunayWithLines() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTILINESTRING ((1.1 8 1, 8 8 1), (2 3.1 1, 8 5.1 1))'::GEOMETRY);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTILINESTRINGZ ((1.1 8 1, 8 8 1), (2 3.1 1, 8 5.1 1))'::GEOMETRY);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGON (((1.1 8 1, 2 3.1 1, 8 5.1 1, 1.1 8 1)), ((1.1 8 1, 8 5.1 1, 8 8 1, 1.1 8 1)))", rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((1.1 8 1, 2 3.1 1, 8 5.1 1, 1.1 8 1)), ((1.1 8 1, 8 5.1 1, 8 8 1, 1.1 8 1)))", rs.getBytes(1));
         }
     }
 
     @Test
     public void test_ST_DelaunayAsMultiPolygon() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 0);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGONZ ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 0);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGON (((5 8 1, 1.1 3 1, 5.1 1.1 1, 5 8 1)), ((5 8 1, 5.1 1.1 1, 9.5 6.4 1, 5 8 1)), ((1.1 9 1, 1.1 3 1, 5 8 1, 1.1 9 1)), ((8.8 9.9 1, 5 8 1, 9.5 6.4 1, 8.8 9.9 1)), ((1.1 9 1, 5 8 1, 8.8 9.9 1, 1.1 9 1)))\n",  rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((5 8 1, 1.1 3 1, 5.1 1.1 1, 5 8 1)), ((5 8 1, 5.1 1.1 1, 9.5 6.4 1, 5 8 1)), ((1.1 9 1, 1.1 3 1, 5 8 1, 1.1 9 1)), ((8.8 9.9 1, 5 8 1, 9.5 6.4 1, 8.8 9.9 1)), ((1.1 9 1, 5 8 1, 8.8 9.9 1, 1.1 9 1)))\n",  rs.getBytes(1));
         }
     }
 
     @Test
     public void test_ST_DelaunayAsMultiLineString() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGONZ ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);")) {
             rs.next();
-            assertGeometryEquals("MULTILINESTRING ((5.1 1.1 1, 9.5 6.4 1), (1.1 3 1, 1.1 9 1), (1.1 9 1, 8.8 9.9 1), (1.1 3 1, 5 8 1), (1.1 9 1, 5 8 1), (5 8 1, 8.8 9.9 1), (8.8 9.9 1, 9.5 6.4 1), (1.1 3 1, 5.1 1.1 1), (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1))", rs.getBytes(1));
+            assertGeometryEquals("MULTILINESTRINGZ ((5.1 1.1 1, 9.5 6.4 1), (1.1 3 1, 1.1 9 1), (1.1 9 1, 8.8 9.9 1), (1.1 3 1, 5 8 1), (1.1 9 1, 5 8 1), (5 8 1, 8.8 9.9 1), (8.8 9.9 1, 9.5 6.4 1), (1.1 3 1, 5.1 1.1 1), (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1))", rs.getBytes(1));
         }
     }
 
@@ -133,9 +133,9 @@ public class MeshFunctionTest {
 
     @Test
     public void test_ST_ConstrainedDelaunayWithPoints() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTIPOINTZ ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGON (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))", rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))", rs.getBytes(1));
         }
     }
 
@@ -165,17 +165,17 @@ public class MeshFunctionTest {
 
     @Test
     public void test_ST_ConstrainedDelaunayWithLines3() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRING (0 0 0, 10 0 0, 10 10 0, 0 10 0, 0 0 0)'::GEOMETRY, 1);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRINGZ (0 0 0, 10 0 0, 10 10 0, 0 10 0, 0 0 0)'::GEOMETRY, 1);")) {
             rs.next();
-            assertGeometryEquals("MULTILINESTRING ((0 10 0, 10 10 0), (0 0 0, 10 0 0), (0 10 0, 10 0 0), (0 0 0, 0 10 0), (10 0 0, 10 10 0))", rs.getBytes(1));
+            assertGeometryEquals("MULTILINESTRINGZ ((0 10 0, 10 10 0), (0 0 0, 10 0 0), (0 10 0, 10 0 0), (0 0 0, 0 10 0), (10 0 0, 10 10 0))", rs.getBytes(1));
         }
     }
 
     @Test
     public void test_ST_ConstrainedDelaunayWithLines4() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRING (0 0 1, 10 0 1, 10 10 1, 0 10 1, 0 0 1)'::GEOMETRY, 1);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRINGZ (0 0 1, 10 0 1, 10 10 1, 0 10 1, 0 0 1)'::GEOMETRY, 1);")) {
             rs.next();
-            assertGeometryEquals("MULTILINESTRING ((0 10 1, 10 10 1), (0 0 1, 10 0 1), (0 10 1, 10 0 1), (0 0 1, 0 10 1), (10 0 1, 10 10 1))", rs.getBytes(1));
+            assertGeometryEquals("MULTILINESTRINGZ ((0 10 1, 10 10 1), (0 0 1, 10 0 1), (0 10 1, 10 0 1), (0 0 1, 0 10 1), (10 0 1, 10 10 1))", rs.getBytes(1));
         }
     }
 
@@ -190,9 +190,9 @@ public class MeshFunctionTest {
 
     @Test
     public void test_ST_ConstrainedDelaunayWithCollection1() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('GEOMETRYCOLLECTION(POINT (0 0 1), POINT (10 0 1), POINT (10 10 1), POINT (5 5 1))'::GEOMETRY);")) {
+        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('GEOMETRYCOLLECTIONZ(POINTZ (0 0 1), POINTZ (10 0 1), POINTZ (10 10 1), POINTZ (5 5 1))'::GEOMETRY);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGON (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))", rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))", rs.getBytes(1));
         }
     }
 
@@ -259,7 +259,7 @@ public class MeshFunctionTest {
      */
     public void test_ST_VORONOIInvalid() throws Exception {
         st.execute("drop table if exists pts;\n" +
-                "create table pts as select ST_GeomFromText('MULTIPOINT(0 0 0, 1 0 0, 2 0 0)') the_geom;\n" +
+                "create table pts as select ST_GeomFromText('MULTIPOINTZ(0 0 0, 1 0 0, 2 0 0)') the_geom;\n" +
                 "drop table if exists voro;");
         try (ResultSet rs = st.executeQuery("select ST_VORONOI(ST_DELAUNAY(st_accum(the_geom)), 2, " +
                 "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;")) {

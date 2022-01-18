@@ -318,7 +318,8 @@ public class H2GISFunctions {
                 new ST_Force4D(),
                 new ST_Force3DM(),
                 new ST_VariableBuffer(),
-                new ST_SubDivide()
+                new ST_SubDivide(),
+                new ST_MemSize()
         };
     }
 
@@ -342,9 +343,9 @@ public class H2GISFunctions {
      */
     public static void load(Connection connection) throws SQLException {
         org.locationtech.jts.JTSVersion jtsVersion = org.locationtech.jts.JTSVersion.CURRENT_VERSION;
-        if (jtsVersion.getMinor() < 16) {
+        if (jtsVersion.getMinor() < 18) {
             LOGGER.warn("Some spatial functions will not be compatible with your version of JTS (" + jtsVersion.toString() + ")\n"
-                    + "Please a JTS version greater or equals to 1.16");
+                    + "Please a JTS version greater or equals to 1.18");
         }
         registerH2GISFunctions(connection, "");
         registerSpatialTables(connection);

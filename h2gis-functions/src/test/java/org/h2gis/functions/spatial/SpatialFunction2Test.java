@@ -82,7 +82,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('LINESTRING (10 5, 10 10)'::GEOMETRY, "
                 + "radians(90),radians(45), 2);");
         assertTrue(rs.next());
-        assertGeometryEquals("POLYGON ((10 5 0, 10 10 0, 8 10 0, 8 5 0, 10 5 0))", rs.getBytes(1));
+        assertGeometryEquals("POLYGONZ ((10 5 0, 10 10 0, 8 10 0, 8 5 0, 10 5 0))", rs.getBytes(1));
         rs.close();
     }
 
@@ -91,16 +91,16 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('LINESTRING (10 5, 10 10)'::GEOMETRY, "
                 + "radians(270),radians(45), 2 );");
         assertTrue(rs.next());
-        assertGeometryEquals("POLYGON ((10 5 0, 10 10 0, 12 10 0, 12 5 0, 10 5 0))", rs.getBytes(1));
+        assertGeometryEquals("POLYGONZ ((10 5 0, 10 10 0, 12 10 0, 12 5 0, 10 5 0))", rs.getBytes(1));
         rs.close();
     }
 
     @Test
     public void test_ST_Shadow2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POINT (10 5 0)'::GEOMETRY, "
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POINTZ (10 5 0)'::GEOMETRY, "
                 + "radians(270),radians(45), 2 );");
         assertTrue(rs.next());
-        assertGeometryEquals("LINESTRING (10 5 0, 12 5 0)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRINGZ (10 5 0, 12 5 0)", rs.getBytes(1));
         rs.close();
     }
 
@@ -109,7 +109,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('LINESTRING (10 5, 10 10, 12 10, 12 11.5)'::GEOMETRY, "
                 + "radians(270),radians(45), 2 );");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((10 5 0, 10 10 0, 12 10 0, 12 5 0, 10 5 0)),"
+        assertGeometryEquals("MULTIPOLYGONZ (((10 5 0, 10 10 0, 12 10 0, 12 5 0, 10 5 0)),"
                 + "  ((12 10 0, 12 11.5 0, 14 11.5 0, 14 10 0, 12 10 0)))", rs.getBytes(1));
         rs.close();
     }
@@ -119,7 +119,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((10 10, 10 5, 8 5, 8 10, 10 10))'::GEOMETRY, "
                 + "radians(270),radians(45), 2 );");
         assertTrue(rs.next());
-        assertGeometryEquals("POLYGON ((10 5 0, 10 10 0, 12 10 0, 12 5 0, 10 5 0))", rs.getBytes(1));
+        assertGeometryEquals("POLYGONZ ((10 5 0, 10 10 0, 12 10 0, 12 5 0, 10 5 0))", rs.getBytes(1));
         rs.close();
     }
 
@@ -128,7 +128,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON Z((10 10 1, 10 5 0, 8 5 10, 8 10 0, 10 10 0))'::GEOMETRY, "
                 + "radians(225),radians(45), 2 );");
         assertTrue(rs.next());
-        assertGeometryEquals("POLYGON ((8 10 0, 9.414213562373096 11.414213562373096 0, 11.414213562373096 11.414213562373096 0, 11.414213562373096 6.414213562373096 0, 10 5 0, 10 6.414213562373096 0.14142135623730961, 10 10 0, 9.414213562373096 10 0, 8 10 0))", rs.getBytes(1));
+        assertGeometryEquals("POLYGONZ ((8 10 0, 9.414213562373096 11.414213562373096 0, 11.414213562373096 11.414213562373096 0, 11.414213562373096 6.414213562373096 0, 10 5 0, 10 6.414213562373096 0.14142135623730961, 10 10 0, 9.414213562373096 10 0, 8 10 0))", rs.getBytes(1));
         rs.close();
     }
 
@@ -138,7 +138,7 @@ public class SpatialFunction2Test {
                 + "  (8.5 8, 9.5 8, 9.5 6, 8.5 6, 8.5 8))'::GEOMETRY, "
                 + "radians(270),radians(45), 0.5);");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((10 5 0, 10 10 0, 10.5 10 0, 10.5 5 0, 10 5 0)), ((8.5 6 0, 8.5 8 0, 9 8 0, 9 6 0, 8.5 6 0)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGONZ (((10 5 0, 10 10 0, 10.5 10 0, 10.5 5 0, 10 5 0)), ((8.5 6 0, 8.5 8 0, 9 8 0, 9 6 0, 8.5 6 0)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -147,7 +147,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((6 12, 6 9, 8 9, 8 8.1, 10.9 8.1, 10.9 9, 10 9, 10 11, 9 11, 9 9, 8.5 9, 8.5 12, 6 12), (6.7 11.1, 7.6 11.1, 7.6 10.3, 6.7 10.3, 6.7 11.1))'::GEOMETRY, "
                 + "radians(270),radians(45), 0.5);");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((10.9 8.1 0, 10.9 9 0, 11.4 9 0, 11.4 8.1 0, 10.9 8.1 0)), ((10 9 0, 10 11 0, 10.5 11 0, 10.5 9 0, 10 9 0)), ((8.5 9 0, 8.5 12 0, 9 12 0, 9 11 0, 9 9 0, 8.5 9 0)), ((6.7 10.3 0, 6.7 11.1 0, 7.2 11.1 0, 7.2 10.3 0, 6.7 10.3 0)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGONZ (((10.9 8.1 0, 10.9 9 0, 11.4 9 0, 11.4 8.1 0, 10.9 8.1 0)), ((10 9 0, 10 11 0, 10.5 11 0, 10.5 9 0, 10 9 0)), ((8.5 9 0, 8.5 12 0, 9 12 0, 9 11 0, 9 9 0, 8.5 9 0)), ((6.7 10.3 0, 6.7 11.1 0, 7.2 11.1 0, 7.2 10.3 0, 6.7 10.3 0)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -156,7 +156,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((6 12, 6 9, 8 9, 8 8.1, 10.9 8.1, 10.9 9, 10 9, 10 11, 9 11, 9 9, 8.5 9, 8.5 12, 6 12), (6.7 11.1, 7.6 11.1, 7.6 10.3, 6.7 10.3, 6.7 11.1))'::GEOMETRY, "
                 + "radians(315),radians(45), 0.5);");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((8 8.1 0, 8.353553390593273 8.1 0, 10.9 8.1 0, 10.9 8.646446609406727 0, 10.9 9 0, 11.253553390593273 8.646446609406727 0, 11.253553390593273 7.746446609406726 0, 8.353553390593273 7.746446609406726 0, 8 8.1 0)), ((10 9 0, 10 10.646446609406727 0, 10 11 0, 10.353553390593273 10.646446609406727 0, 10.353553390593273 9 0, 10 9 0)), ((8.5 9 0, 8.5 11.646446609406727 0, 8.5 12 0, 8.853553390593273 11.646446609406727 0, 8.853553390593273 9 0, 8.5 9 0)), ((6 9 0, 6.353553390593274 9 0, 8 9 0, 8 8.646446609406727 0, 6.353553390593274 8.646446609406727 0, 6 9 0)), ((6.7 10.3 0, 6.7 11.1 0, 7.6 11.1 0, 7.6 10.746446609406727 0, 7.053553390593274 10.746446609406727 0, 7.053553390593274 10.3 0, 6.7 10.3 0)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGONZ (((8 8.1 0, 8.353553390593273 8.1 0, 10.9 8.1 0, 10.9 8.646446609406727 0, 10.9 9 0, 11.253553390593273 8.646446609406727 0, 11.253553390593273 7.746446609406726 0, 8.353553390593273 7.746446609406726 0, 8 8.1 0)), ((10 9 0, 10 10.646446609406727 0, 10 11 0, 10.353553390593273 10.646446609406727 0, 10.353553390593273 9 0, 10 9 0)), ((8.5 9 0, 8.5 11.646446609406727 0, 8.5 12 0, 8.853553390593273 11.646446609406727 0, 8.853553390593273 9 0, 8.5 9 0)), ((6 9 0, 6.353553390593274 9 0, 8 9 0, 8 8.646446609406727 0, 6.353553390593274 8.646446609406727 0, 6 9 0)), ((6.7 10.3 0, 6.7 11.1 0, 7.6 11.1 0, 7.6 10.746446609406727 0, 7.053553390593274 10.746446609406727 0, 7.053553390593274 10.3 0, 6.7 10.3 0)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -165,7 +165,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((354610.6 6689345.5, 354626.2 6689342.7, 354627.2 6689342.2, 354639.5 6689334.4, 354640.3 6689333, 354640.6 6689331.4, 354640.2 6689330, 354639.6 6689328.6, 354634 6689322.2, 354633.1 6689321.1, 354628 6689314.4, 354626.7 6689313.5, 354625.4 6689313.4, 354622.4 6689313.7, 354621 6689314.4, 354608.7 6689341.9, 354610.6 6689345.5), (354624.2 6689335.3, 354623.8 6689333.7, 354622.1 6689329, 354625.1 6689322.1, 354628.7 6689326.5, 354632.4 6689331, 354624.2 6689335.3))'::GEOMETRY, "
                 + "radians(270),radians(45), 2);");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((354610.6 6689345.5 0, 354612.6 6689345.5 0, 354628.2 6689342.7 0, 354629.2 6689342.2 0, 354641.5 6689334.4 0, 354642.3 6689333 0, 354642.6 6689331.4 0, 354642.2 6689330 0, 354641.6 6689328.6 0, 354636 6689322.2 0, 354635.1 6689321.1 0, 354630 6689314.4 0, 354628.7 6689313.5 0, 354627.4 6689313.4 0, 354625.4 6689313.4 0, 354626.7 6689313.5 0, 354628 6689314.4 0, 354633.1 6689321.1 0, 354634 6689322.2 0, 354639.6 6689328.6 0, 354640.2 6689330 0, 354640.6 6689331.4 0, 354640.3 6689333 0, 354639.5 6689334.4 0, 354627.2 6689342.2 0, 354626.2 6689342.7 0, 354610.6 6689345.5 0)), ((354622.1 6689329 0, 354623.8 6689333.7 0, 354624.2 6689335.3 0, 354625.96819407004 6689334.37277628 0, 354625.8 6689333.7 0, 354624.1 6689329 0, 354626.40599369083 6689323.696214511 0, 354625.1 6689322.1 0, 354622.1 6689329 0)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGONZ (((354610.6 6689345.5 0, 354612.6 6689345.5 0, 354628.2 6689342.7 0, 354629.2 6689342.2 0, 354641.5 6689334.4 0, 354642.3 6689333 0, 354642.6 6689331.4 0, 354642.2 6689330 0, 354641.6 6689328.6 0, 354636 6689322.2 0, 354635.1 6689321.1 0, 354630 6689314.4 0, 354628.7 6689313.5 0, 354627.4 6689313.4 0, 354625.4 6689313.4 0, 354626.7 6689313.5 0, 354628 6689314.4 0, 354633.1 6689321.1 0, 354634 6689322.2 0, 354639.6 6689328.6 0, 354640.2 6689330 0, 354640.6 6689331.4 0, 354640.3 6689333 0, 354639.5 6689334.4 0, 354627.2 6689342.2 0, 354626.2 6689342.7 0, 354610.6 6689345.5 0)), ((354622.1 6689329 0, 354623.8 6689333.7 0, 354624.2 6689335.3 0, 354625.96819407004 6689334.37277628 0, 354625.8 6689333.7 0, 354624.1 6689329 0, 354626.40599369083 6689323.696214511 0, 354625.1 6689322.1 0, 354622.1 6689329 0)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -188,9 +188,9 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_FlipCoordinates2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_FlipCoordinates('LINESTRING (10 5 0, 12 5 0)');");
+        ResultSet rs = st.executeQuery("SELECT ST_FlipCoordinates('LINESTRINGZ (10 5 0, 12 5 0)');");
         assertTrue(rs.next());
-        assertGeometryEquals("LINESTRING (5 10 0, 5 12 0)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING Z (5 10 0, 5 12 0)", rs.getBytes(1));
         rs.close();
     }
 
@@ -322,7 +322,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_3DArea2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON((1 1 0, 3 1 0, 3 2 0, 1 2 0, 1 1 0))'::GEOMETRY)");
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGONZ((1 1 0, 3 1 0, 3 2 0, 1 2 0, 1 1 0))'::GEOMETRY)");
         rs.next();
         assertEquals(2, rs.getDouble(1), 1e-3);
         rs.close();
@@ -330,7 +330,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_3DArea3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON((1 1 1, 3 1 1, 3 2 1, 1 2 1, 1 1 1))'::GEOMETRY)");
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGONZ((1 1 1, 3 1 1, 3 2 1, 1 2 1, 1 1 1))'::GEOMETRY)");
         rs.next();
         assertEquals(2, rs.getDouble(1), 1e-3);
         rs.close();
@@ -338,7 +338,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_3DArea4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((0 0 0, 10 0 0, 0 10 0,0 0 0))'::GEOMETRY)");
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGONZ ((0 0 0, 10 0 0, 0 10 0,0 0 0))'::GEOMETRY)");
         rs.next();
         assertEquals(50, rs.getDouble(1), 1e-1);
         rs.close();
@@ -346,7 +346,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_3DArea5() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((0 0 0, 10 0 10, 0 10 0,0 0 0))'::GEOMETRY)");
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGONZ ((0 0 0, 10 0 10, 0 10 0,0 0 0))'::GEOMETRY)");
         rs.next();
         assertEquals(70.711, rs.getDouble(1), 1e-3);
         rs.close();
@@ -354,7 +354,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_3DArea6() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1 0, 2 1 1, 3 1 0, 3 2 0, 2 2 1, 1 2 0, 1 1 0))'::GEOMETRY)");
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGONZ ((1 1 0, 2 1 1, 3 1 0, 3 2 0, 2 2 1, 1 2 0, 1 1 0))'::GEOMETRY)");
         rs.next();
         assertEquals(2.828, rs.getDouble(1), 1e-3);
         rs.close();
@@ -372,7 +372,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_3DArea8() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1 0, 2 1 1, 3 1 0, 3 2 0, 2 2 1, 1 2 0, 1 1 0),"
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGONZ ((1 1 0, 2 1 1, 3 1 0, 3 2 0, 2 2 1, 1 2 0, 1 1 0),"
                 + "  (1.2 1.8 0, 1.7 1.8 0, 1.7 1.5 0, 1.2 1.5 0, 1.2 1.8 0),"
                 + "  (2.2 1.5 0, 2.8 1.5 0, 2.8 1.2 0, 2.2 1.2 0, 2.2 1.5 0))'::GEOMETRY)");
         rs.next();
@@ -382,7 +382,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_3DArea9() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_3DArea('MULTIPOLYGON(((0 0 0, 10 0 10, 0 10 0,0 0 0)),  ((0 0 0, 10 0 10, 0 10 0,0 0 0)))');");
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('MULTIPOLYGONZ(((0 0 0, 10 0 10, 0 10 0,0 0 0)),  ((0 0 0, 10 0 10, 0 10 0,0 0 0)))');");
         rs.next();
         assertEquals(141.422, rs.getDouble(1), 1e-3);
         rs.close();
@@ -390,7 +390,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_3DArea10() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_3DArea('GEOMETRYCOLLECTION("
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('GEOMETRYCOLLECTIONZ("
                 + "MULTIPOINT Z((4 4 0), (1 1 0), (1 0 0), (0 3 0)),"
                 + "LINESTRING Z(2 1 0, 1 3 0, 5 2 0),"
                 + "POLYGON Z((0 0 0, 10 0 10, 0 10 0,0 0 0)))');");
@@ -423,8 +423,8 @@ public class SpatialFunction2Test {
                 + "(ST_GeomFromText('POLYGON Z((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1),"
                 + "  (1.235 1.83 0, 1.825 1.83 0, 1.825 1.605 0, 1.235 1.605 0, 1.235 1.83 0),"
                 + "  (2.235 1.63 0, 2.635 1.63 0, 2.635 1.155 0, 2.235 1.155 0, 2.235 1.63 0))',2249)),"
-                + "(ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),"
-                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))',2249));");
+                + "(ST_GeomFromText('GEOMETRYCOLLECTIONZ(LINESTRINGZ(1 4 3, 15 7 9, 16 17 22),"
+                + "POLYGONZ((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))',2249));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_3DPerimeter(geom) FROM input_table;");
         assertTrue(rs.next());
@@ -562,7 +562,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_NPoints3() throws Exception {
         ResultSet rs = st.executeQuery(
-                "SELECT ST_NPoints('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))'::GEOMETRY);");
+                "SELECT ST_NPoints('POLYGONZ((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))'::GEOMETRY);");
         rs.next();
         assertEquals(5, rs.getInt(1));
         rs.close();
@@ -571,7 +571,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_NumInteriorRings1() throws Exception {
         ResultSet rs = st.executeQuery(
-                "SELECT ST_NumInteriorRings('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))'::GEOMETRY);");
+                "SELECT ST_NumInteriorRings('POLYGONZ((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))'::GEOMETRY);");
         rs.next();
         assertEquals(0, rs.getInt(1));
         rs.close();
@@ -667,7 +667,7 @@ public class SpatialFunction2Test {
 
     @Test
     public void test_ST_MakeValid4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POINT(0 1 2)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POINTZ(0 1 2)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).getCoordinate().z == 2);
         rs.close();
@@ -902,7 +902,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF2() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'POLYGON ((10 -1 10, 20 -1 10, 20 20 10, 10 20 10, 10 -1 10))'::GEOMETRY, 50, 8) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINTZ(0 0 0)'::GEOMETRY, 'POLYGONZ ((10 -1 10, 20 -1 10, 20 20 10, 10 20 10, 10 -1 10))'::GEOMETRY, 50, 8) as result");
         assertTrue(rs.next());
         double dTheta = Math.toRadians(45);
         double sinGamma0 = Math.sin(Math.atan(10/Math.sqrt(200)));
@@ -914,7 +914,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF3() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, ST_FORCE3D(ST_buffer('POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINTZ(0 0 0)'::GEOMETRY, ST_FORCE3D(ST_buffer('POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
         assertTrue(rs.next());
         double svfTest = 0.4098;
         assertEquals(svfTest, rs.getDouble(1), 0.01);
@@ -923,7 +923,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF4() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTILINESTRING((-10 -1000 12, -10 1000 12), (10 -1000 12, 10 1000 12))'::GEOMETRY, 100, 120) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINTZ(0 0 0)'::GEOMETRY, 'MULTILINESTRINGZ((-10 -1000 12, -10 1000 12), (10 -1000 12, 10 1000 12))'::GEOMETRY, 100, 120) as result");
         assertTrue(rs.next());
         double svfTest = 0.6402;
         assertEquals(svfTest, rs.getDouble(1), 0.01);
@@ -932,7 +932,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF5() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTIPOLYGON(((10 -5 2, 10 5 2, 15 5 2, 15 -5 2, 10 -5 2)), ((15 -5 20, 15 5 20, 20 5 20, 20 -5 20, 15 -5 20)))'::GEOMETRY, 100, 8) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINTZ(0 0 0)'::GEOMETRY, 'MULTIPOLYGONZ(((10 -5 2, 10 5 2, 15 5 2, 15 -5 2, 10 -5 2)), ((15 -5 20, 15 5 20, 20 5 20, 20 -5 20, 15 -5 20)))'::GEOMETRY, 100, 8) as result");
         assertTrue(rs.next());
         double dTheta = Math.toRadians(45);
         double sinGamma = Math.sin(Math.atan2(20, 15));
@@ -943,7 +943,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF6() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTILINESTRING ((-10 -1000 12, -10 1000 12), (10 -1000 12, 10 1000 12),   (330 -185 10, 325 190 10))'::GEOMETRY, 100, 120) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINTZ(0 0 0)'::GEOMETRY, 'MULTILINESTRINGZ ((-10 -1000 12, -10 1000 12), (10 -1000 12, 10 1000 12),   (330 -185 10, 325 190 10))'::GEOMETRY, 100, 120) as result");
         assertTrue(rs.next());
         double svfTest = 0.6402;
         assertEquals(svfTest, rs.getDouble(1), 0.01);
@@ -952,7 +952,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF7() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTILINESTRING ( (330 -185, 325 190))'::GEOMETRY, 100, 120) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINTZ(0 0 0)'::GEOMETRY, 'MULTILINESTRING ( (330 -185, 325 190))'::GEOMETRY, 100, 120) as result");
         assertTrue(rs.next());
         assertEquals(1, rs.getDouble(1), 0.01);
     }
@@ -969,7 +969,7 @@ public class SpatialFunction2Test {
     public void test_ST_SVF9() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(
-                "SELECT ST_svf('SRID=2154;POINT(0 0 0)'::GEOMETRY, " +
+                "SELECT ST_svf('SRID=2154;POINTZ(0 0 0)'::GEOMETRY, " +
                         "ST_FORCE3D(ST_buffer('SRID=2154;POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
         assertTrue(rs.next());
         double svfTest = 0.4098;
@@ -979,7 +979,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF10() throws Exception {
         assertThrows(SQLException.class, () -> {
-            st.execute("SELECT ST_svf('SRID=27572;POINT(0 0 0)'::GEOMETRY, " +
+            st.execute("SELECT ST_svf('SRID=27572;POINTZ(0 0 0)'::GEOMETRY, " +
                     "ST_FORCE3D(ST_buffer('SRID=2154;POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
         });
     }

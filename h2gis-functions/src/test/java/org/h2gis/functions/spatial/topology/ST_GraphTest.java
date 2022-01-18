@@ -329,15 +329,15 @@ public class ST_GraphTest {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
                 + "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0 0, 1 0 0)', 'road1', DEFAULT);");
+                + "('LINESTRINGZ (0 0 0, 1 0 0)', 'road1', DEFAULT);");
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
         ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (0 0 0)");
-        checkNode(nodesResult, 2, "POINT (1 0 0)");
+        checkNode(nodesResult, 1, "POINTZ (0 0 0)");
+        checkNode(nodesResult, 2, "POINTZ (1 0 0)");
         assertFalse(nodesResult.next());
         nodesResult.close();
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
@@ -352,7 +352,7 @@ public class ST_GraphTest {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
                 + "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0 1, 1 0 0)', 'road1', DEFAULT);");
+                + "('LINESTRINGZ (0 0 1, 1 0 0)', 'road1', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -361,10 +361,10 @@ public class ST_GraphTest {
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt("NODE_ID"));
-        assertGeometryEquals("POINT (0 0 1)", nodesResult.getBytes("THE_GEOM"));
+        assertGeometryEquals("POINTZ (0 0 1)", nodesResult.getBytes("THE_GEOM"));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt("NODE_ID"));
-        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes("THE_GEOM"));
+        assertGeometryEquals("POINTZ (1 0 0)", nodesResult.getBytes("THE_GEOM"));
         assertFalse(nodesResult.next());
         nodesResult.close();
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
@@ -379,15 +379,15 @@ public class ST_GraphTest {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
                 + "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);");
+                + "('LINESTRINGZ (0 0 0, 1 0 1)', 'road1', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
         nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (0 0 0)");
-        checkNode(nodesResult, 2, "POINT (1 0 1)");
+        checkNode(nodesResult, 1, "POINTZ (0 0 0)");
+        checkNode(nodesResult, 2, "POINTZ (1 0 1)");
         assertFalse(nodesResult.next());
         nodesResult.close();
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");

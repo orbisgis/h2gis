@@ -410,7 +410,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(line GEOMETRY(Linestring Z));"
                 + "INSERT INTO input_table VALUES("
-                + "ST_LineFromText('LINESTRING(1 2 3, 4 5 6)', 101));");
+                + "ST_LineFromText('LINESTRINGZ(1 2 3, 4 5 6)', 101));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_XMin(line), ST_XMax(line), "
                         + "ST_YMin(line), ST_YMax(line),"
@@ -481,7 +481,7 @@ public class SpatialFunctionTest {
                 + "CREATE TABLE input_table(twoDLine Geometry(GEOMETRY, 4326), threeDLine Geometry);"
                 + "INSERT INTO input_table VALUES("
                 + "ST_GeomFromText('LINESTRING(1 2, 4 5)', 4326),"
-                + "ST_GeomFromText('LINESTRING(1 2 3, 4 5 6)'));");
+                + "ST_GeomFromText('LINESTRINGZ(1 2 3, 4 5 6)'));");
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_Scale(twoDLine, 0.5, 0.75), ST_Scale(threeDLine, 0.5, 0.75), "
                 + "ST_Scale(threeDLine, 0.5, 0.75, 1.2), ST_Scale(threeDLine, 0.0, -1.0, 2.0) "
@@ -517,15 +517,15 @@ public class SpatialFunctionTest {
                 + "CREATE TABLE input_table(geom Geometry);"
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('LINESTRING(1 4, 15 7, 16 17)',2249)),"
-                + "(ST_GeomFromText('LINESTRING(1 4 3, 15 7 9, 16 17 22)',2249)),"
-                + "(ST_GeomFromText('MULTILINESTRING((1 4 3, 15 7 9, 16 17 22),"
+                + "(ST_GeomFromText('LINESTRINGZ(1 4 3, 15 7 9, 16 17 22)',2249)),"
+                + "(ST_GeomFromText('MULTILINESTRINGZ((1 4 3, 15 7 9, 16 17 22),"
                 + "(0 0 0, 1 0 0, 1 2 0, 0 2 1))',2249)),"
                 + "(ST_GeomFromText('POLYGON((1 1, 3 1, 3 2, 1 2, 1 1))',2249)),"
-                + "(ST_GeomFromText('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))',2249)),"
-                + "(ST_GeomFromText('MULTIPOLYGON(((0 0 0, 3 2 0, 3 2 2, 0 0 2, 0 0 0),"
+                + "(ST_GeomFromText('POLYGONZ((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))',2249)),"
+                + "(ST_GeomFromText('MULTIPOLYGONZ(((0 0 0, 3 2 0, 3 2 2, 0 0 2, 0 0 0),"
                 + "(-1 1 0, -1 3 0, -1 3 4, -1 1 4, -1 1 0)))',2249)),"
-                + "(ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),"
-                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))',2249));");
+                + "(ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRINGZ(1 4 3, 15 7 9, 16 17 22),"
+                + "POLYGONZ((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))',2249));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_3DLength(geom) FROM input_table;");
         assertTrue(rs.next());
@@ -607,7 +607,7 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText(" + MULTIPOLYGON2D + ")),"
                 + "(ST_GeomFromText('POINT(1 2)')),"
                 + "(ST_GeomFromText(" + LINESTRING2D + ")),"
-                + "(ST_GeomFromText('POLYGON((0 0 0, 3 0 0, 3 2 0, 0 2 1, 0 0 0))'));");
+                + "(ST_GeomFromText('POLYGONZ((0 0 0, 3 0 0, 3 2 0, 0 2 1, 0 0 0))'));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_CompactnessRatio(geom) FROM input_table;");
         assertTrue(rs.next());
@@ -689,8 +689,8 @@ public class SpatialFunctionTest {
                 + "ST_MPolyFromText('MULTIPOLYGON(((28 26,28 0,84 0,84 42,28 26),"
                 + "(52 18,66 23,73 9,48 6,52 18)),"
                 + "((59 18,67 18,67 13,59 13,59 18)))',2154),"
-                + "ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),"
-                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'),"
+                + "ST_GeomFromText('GEOMETRYCOLLECTIONZ(LINESTRINGZ(1 4 3, 15 7 9, 16 17 22),"
+                + "POLYGONZ((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'),"
                 + "ST_GEOMFROMTEXT('LINESTRING(5 5, 1 2, 3 4, 99 3)',2154));");
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_ToMultiLine(point), "
@@ -779,7 +779,7 @@ public class SpatialFunctionTest {
                 + "ST_PointFromText('POINT(5 5)', 2154),"
                 + "ST_GeomFromText('LINESTRING EMPTY',2154),"
                 + "ST_LineFromText('LINESTRING(5 5, 1 2, 3 4, 99 3)',2154),"
-                + "ST_GeomFromText('MULTILINESTRING((1 4 3, 15 7 9, 16 17 22),"
+                + "ST_GeomFromText('MULTILINESTRINGZ((1 4 3, 15 7 9, 16 17 22),"
                 + "(0 0 0, 1 0 0, 1 2 0, 0 2 1))',2249),"
                 + "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))',2154),"
                 + "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),"
@@ -804,7 +804,7 @@ public class SpatialFunctionTest {
         assertTrue(((MultiLineString) rs.getObject(2)).isEmpty());
         assertTrue(WKT_READER.read("MULTILINESTRING((5 5, 1 2), (1 2, 3 4), (3 4, 99 3))")
                 .equalsExact((MultiLineString) rs.getObject(3), TOLERANCE));
-        assertTrue(WKT_READER.read("MULTILINESTRING((1 4 3, 15 7 9), (15 7 9, 16 17 22),"
+        assertTrue(WKT_READER.read("MULTILINESTRINGZ((1 4 3, 15 7 9), (15 7 9, 16 17 22),"
                         + "(0 0 0, 1 0 0), (1 0 0, 1 2 0), (1 2 0, 0 2 1))")
                 .equalsExact((MultiLineString) rs.getObject(4), TOLERANCE));
         assertTrue(WKT_READER.read("MULTILINESTRING((0 0, 10 0), (10 0, 10 5), (10 5, 0 5), (0 5, 0 0))")
@@ -1303,7 +1303,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_InterpolateLine2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine('POINT(0 0 0)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine('POINTZ(0 0 0)'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getObject(1) == null);
         rs.close();
@@ -1612,17 +1612,17 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Translate3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(0 0 0)'::GEOMETRY, 5, 12, 3);");
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINTZ(0 0 0)'::GEOMETRY, 5, 12, 3);");
         rs.next();
-        assertGeometryEquals("POINT(5 12 3)", rs.getBytes(1));
+        assertGeometryEquals("POINTZ(5 12 3)", rs.getBytes(1));
         rs.close();
     }
 
     @Test
     public void test_ST_Translate4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(1 2 3)'::GEOMETRY, 10, 20, 30);");
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINTZ(1 2 3)'::GEOMETRY, 10, 20, 30);");
         rs.next();
-        assertGeometryEquals("POINT(11 22 33)", rs.getBytes(1));
+        assertGeometryEquals("POINTZ(11 22 33)", rs.getBytes(1));
         rs.close();
     }
 
@@ -1642,13 +1642,13 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT " +
                 "ST_Translate('LINESTRING(0 0, 1 0)', 1, 2), " +
                 "ST_Translate('LINESTRING(0 0, 1 0)', 1, 2, 3), " +
-                "ST_Translate('LINESTRING(0 0 0, 1 0 0)', 1, 2), " +
-                "ST_Translate('LINESTRING(0 0 0, 1 0 0)', 1, 2, 3);");
+                "ST_Translate('LINESTRINGZ(0 0 0, 1 0 0)', 1, 2), " +
+                "ST_Translate('LINESTRINGZ(0 0 0, 1 0 0)', 1, 2, 3);");
         rs.next();
         assertGeometryEquals("LINESTRING(1 2, 2 2)", rs.getBytes(1));
         assertGeometryEquals("LINESTRING(1 2, 2 2)", rs.getBytes(2));
-        assertGeometryEquals("LINESTRING(1 2 0, 2 2 0)", rs.getBytes(3));
-        assertGeometryEquals("LINESTRING(1 2 3, 2 2 3)", rs.getBytes(4));
+        assertGeometryEquals("LINESTRINGZ(1 2 0, 2 2 0)", rs.getBytes(3));
+        assertGeometryEquals("LINESTRINGZ(1 2 3, 2 2 3)", rs.getBytes(4));
         rs.close();
     }
 
@@ -1726,7 +1726,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse3DLine1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('LINESTRING (105 353 10, 150 180 0, 300 280 0)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('LINESTRINGZ (105 353 10, 150 180 0, 300 280 0)'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("LINESTRING Z(300 280 0, 150 180 0,105 353 10)", rs.getBytes(1));
         rs.close();
@@ -1750,7 +1750,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse3DLine4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('LINESTRING (105 353 0, 150 180 0, 300 280 10)'::GEOMETRY, 'desc');");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('LINESTRINGZ (105 353 0, 150 180 0, 300 280 10)'::GEOMETRY, 'desc');");
         rs.next();
         assertGeometryEquals("LINESTRING Z (300 280 10, 150 180 0,105 353 0 )", rs.getBytes(1));
         rs.close();
@@ -1766,7 +1766,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse3DLine6() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('SRID=2154;LINESTRING (105 353 10, 150 180 0, 300 280 0)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('SRID=2154;LINESTRINGZ (105 353 10, 150 180 0, 300 280 0)'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("SRID=2154;LINESTRING Z(300 280 0, 150 180 0,105 353 10)", rs.getBytes(1));
         rs.close();
@@ -1817,7 +1817,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_UpdateZ1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('POINT (190 300 0)'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('POINTZ (190 300 0)'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("POINT Z (190 300 10)", rs.getBytes(1));
         rs.close();
@@ -1825,7 +1825,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_UpdateZ2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('MULTIPOINT( (190 300 0), (10 11 2))'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('MULTIPOINTZ( (190 300 0), (10 11 2))'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("MULTIPOINT Z( (190 300 10), (10 11 10))", rs.getBytes(1));
         rs.close();
@@ -1865,7 +1865,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_FORCE3D1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_FORCE3D('POINT (190 300 0)'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_FORCE3D('POINTZ (190 300 0)'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("POINT Z (190 300 0)", rs.getBytes(1));
         rs.close();
@@ -1873,7 +1873,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_FORCE3D2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_FORCE3D('MULTIPOINT( (190 300 0), (10 11 2))'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_FORCE3D('MULTIPOINTZ( (190 300 0), (10 11 2))'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("MULTIPOINT Z( (190 300 0), (10 11 2))", rs.getBytes(1));
         rs.close();
@@ -1937,26 +1937,26 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MultiplyZ3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ('MULTIPOINT( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
+        ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ('MULTIPOINTZ( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
         rs.next();
-        assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11 5))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOINTZ( (190 300 10), (10 11 5))", rs.getBytes(1));
         rs.close();
     }
 
 
     @Test
     public void test_ST_ZUpdateExtremities1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRING (250 250 0, 280 290 0)'::GEOMETRY, 40, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRINGZ (250 250 0, 280 290 0)'::GEOMETRY, 40, 10);");
         rs.next();
-        assertGeometryEquals("LINESTRING (250 250 40, 280 290 10)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRINGZ (250 250 40, 280 290 10)", rs.getBytes(1));
         rs.close();
     }
 
     @Test
     public void test_ST_ZUpdateExtremities2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0 0, 5 0 0, 10 0 0)'::GEOMETRY, 0, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRINGZ(0 0 0, 5 0 0, 10 0 0)'::GEOMETRY, 0, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRINGZ(0 0 0, 5 0 5, 10 0 10)")));
         rs.close();
     }
 
@@ -1978,7 +1978,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 0, 10 0 2))'::GEOMETRY, 0, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRINGZ((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 0, 10 0 2))'::GEOMETRY, 0, 10);");
         rs.next();
         assertGeometryEquals("MULTILINESTRING Z((0 0 0, 5 0 5, 10 0 10),(0 0 0, 5 0 5, 10 0 10))", rs.getBytes(1));
         rs.close();
@@ -1986,7 +1986,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities5() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 0, 10 0 2))'::GEOMETRY, 0, 10, true);");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRINGZ((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 0, 10 0 2))'::GEOMETRY, 0, 10, true);");
         rs.next();
         assertGeometryEquals("MULTILINESTRING Z((0 0 0, 5 0 5, 10 0 10),(0 0 0, 5 0 5, 10 0 10))", rs.getBytes(1));
         rs.close();
@@ -1994,7 +1994,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities6() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 0, 10 0 2))'::GEOMETRY, 0, 10, false);");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRINGZ((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 0, 10 0 2))'::GEOMETRY, 0, 10, false);");
         rs.next();
         assertGeometryEquals("MULTILINESTRING Z((0 0 0, 5 0 200, 10 0 10),(0 0 0, 5 0 0, 10 0 10))", rs.getBytes(1));
         rs.close();
@@ -2345,7 +2345,7 @@ public class SpatialFunctionTest {
     public void test_ST_Force3D3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Force3D('POINT (-10 10)'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("POINT (-10 10 0)", rs.getBytes(1));
+        assertGeometryEquals("POINTZ (-10 10 0)", rs.getBytes(1));
         rs.close();
     }
 
@@ -2375,7 +2375,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Force2D1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Force2D('LINESTRING (-10 10 2, 10 10 3)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('LINESTRINGZ (-10 10 2, 10 10 3)'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("LINESTRING (-10 10, 10 10)", rs.getBytes(1));
         rs.close();
@@ -2384,7 +2384,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Force2D2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Force2D('POINT (-10 10 2)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('POINTZ (-10 10 2)'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("POINT (-10 10)", rs.getBytes(1));
         rs.close();

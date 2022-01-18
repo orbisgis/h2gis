@@ -59,6 +59,7 @@ public class ST_GeomFromText extends DeterministicScalarFunction {
             return null;
         }
         WKTReader wktReader = new WKTReader();
+        wktReader.setIsOldJtsCoordinateSyntaxAllowed(false);
         try {
             return wktReader.read(wkt);
         } catch (ParseException ex) {
@@ -79,6 +80,7 @@ public class ST_GeomFromText extends DeterministicScalarFunction {
         }
         try {
             WKTReader wktReaderSRID = new WKTReader(new GeometryFactory(new PrecisionModel(),srid));
+            wktReaderSRID.setIsOldJtsCoordinateSyntaxAllowed(false);
             return wktReaderSRID.read(wkt);
         } catch (ParseException ex) {
             throw new SQLException(ex);

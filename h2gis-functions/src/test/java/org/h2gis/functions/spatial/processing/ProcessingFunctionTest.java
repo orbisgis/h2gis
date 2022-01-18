@@ -149,7 +149,7 @@ public class ProcessingFunctionTest {
         assertThrows(JdbcSQLNonTransientException.class, ()-> {
             try {
                 st.execute("SELECT ST_LineIntersector( 'MULTIPOLYGON (((0.9 2.3, 4.2 2.3, 4.2 -1.8, 0.9 -1.8, 0.9 2.3)),((6 2, 8.5 2, 8.5 -1.6, 6 -1.6, 6 2)))'::GEOMETRY,"
-                        + "'LINESTRING (0 0 0, 10 0 0)'::GEOMETRY);");
+                        + "'LINESTRINGZ (0 0 0, 10 0 0)'::GEOMETRY);");
             } catch (JdbcSQLException e) {
                 throw e.getCause();
             }
@@ -287,23 +287,23 @@ public class ProcessingFunctionTest {
 
     @Test
     public void test_ST_PrecisionReducer1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINTZ( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
         rs.next();
-        assertGeometryEquals("MULTIPOINT( (190 300 100), (10 11 50))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOINTZ( (190 300 100), (10 11 50))", rs.getBytes(1));
         rs.close();
     }
 
     @Test
     public void test_ST_PrecisionReducer2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 1);");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINTZ( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 1);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 100), (10.5 11 50))")));
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINTZ( (190 300 100), (10.5 11 50))")));
         rs.close();
     }
 
     @Test
     public void test_ST_PrecisionReducer3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 4);");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINTZ( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 4);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190.005 300 100), (10.534 11 50))")));
         rs.close();
@@ -311,7 +311,7 @@ public class ProcessingFunctionTest {
     
     @Test
     public void test_ST_PrecisionReducer4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('SRID=4326;MULTIPOINT( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('SRID=4326;MULTIPOINTz( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
         rs.next();
         assertGeometryEquals("SRID=4326;MULTIPOINT Z( (190 300 100), (10 11 50))", rs.getBytes(1));
         rs.close();

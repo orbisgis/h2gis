@@ -62,7 +62,7 @@ public class ST_MakeValidTest {
         coords = new Coordinate[]{new Coordinate(4.2, 2.3, 5.6)};
         point = new Point(new CoordinateArraySequence(coords), geometryFactory);
         result = ST_MakeValid.validGeom(point);
-        GeometryAsserts.assertGeometryEquals("POINT(4.2 2.3 5.6)", result);
+        GeometryAsserts.assertGeometryEquals("POINTZ(4.2 2.3 5.6)", result);
 
         coords = new Coordinate[]{new Coordinate(4.2, 2.3, NaN)};
         point = new Point(new CoordinateArraySequence(coords), geometryFactory);
