@@ -199,7 +199,6 @@ public class CSVDriverFunction implements DriverFunction{
             // Skip how many nodes in order to update progression at a step of 1%
             long readFileSizeEachNode = Math.max(1, (fileSize / AVERAGE_NODE_SIZE) / 100);
             int average_row_size = 0;
-            connection.setAutoCommit(false);
             Csv csv = new Csv();
             if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
                 csv.setOptions(csvOptions);
@@ -243,7 +242,6 @@ public class CSVDriverFunction implements DriverFunction{
                     batchSize++;
                     if (batchSize >= BATCH_MAX_SIZE) {
                         pst.executeBatch();
-                        connection.commit();
                         pst.clearBatch();
                         batchSize = 0;
                     }
@@ -259,12 +257,10 @@ public class CSVDriverFunction implements DriverFunction{
                 if (batchSize > 0) {
                     pst.executeBatch();
                     pst.clearBatch();
-                    connection.commit();
                 }
 
             } finally {
                 pst.close();
-                connection.setAutoCommit(true);
             }
             return new String[]{outputTable};
         }

@@ -19,10 +19,7 @@
  */
 package org.h2gis.functions.io.geojson;
 
-import org.h2.value.Value;
-import org.h2.value.ValueBoolean;
-import org.h2.value.ValueNull;
-import org.h2.value.ValueVarchar;
+
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;

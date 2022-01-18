@@ -101,7 +101,7 @@ public class PropertiesFunctionTest {
     public void testST_MemSize1() throws Exception {
         ResultSet res = st.executeQuery("SELECT ST_MemSize(ST_GeomFromText('POINT(0 0)'))");
         res.next();
-        assertEquals(21, res.getObject(1));
+        assertEquals(21l, res.getObject(1));
         res.close();
     }
 
@@ -109,7 +109,7 @@ public class PropertiesFunctionTest {
     public void testST_MemSize2() throws Exception {
         ResultSet res = st.executeQuery("SELECT ST_MemSize(ST_GeomFromText('POINT(0 0)', 4326))");
         res.next();
-        assertEquals(25, res.getObject(1));
+        assertEquals(25l, res.getObject(1));
         res.close();
     }
 
@@ -117,7 +117,7 @@ public class PropertiesFunctionTest {
     public void testST_MemSize3() throws Exception {
         ResultSet res = st.executeQuery("SELECT ST_MemSize(ST_GeomFromText('POINT EMPTY'))");
         res.next();
-        assertEquals(21, res.getObject(1));
+        assertEquals(21l, res.getObject(1));
         res.close();
     }
 
