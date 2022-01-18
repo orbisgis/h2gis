@@ -34,9 +34,8 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.1.209-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
