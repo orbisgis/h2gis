@@ -32,7 +32,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.1.210</version>
         </dependency>
         <dependency>
             <groupId>net.postgis</groupId>
