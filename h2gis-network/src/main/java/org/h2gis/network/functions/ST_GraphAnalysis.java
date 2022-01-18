@@ -134,11 +134,8 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             createTables(connection, nodesName, edgesName);
             final KeyedGraph graph =
                     doAnalysisAndReturnGraph(connection, inputTable, orientation, weight);
-            final boolean previousAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
             storeNodeCentrality(connection, nodesName, graph);
             storeEdgeCentrality(connection, edgesName, graph);
-            connection.setAutoCommit(previousAutoCommit);
         } catch (SQLException e) {
             LOGGER.error("Problem creating centrality tables.");
             final Statement statement = connection.createStatement();
@@ -209,7 +206,6 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 nodeSt.executeBatch();
                 nodeSt.clearBatch();
             }
-            connection.commit();
         } finally {
             nodeSt.close();
         }
@@ -237,7 +233,6 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 edgeSt.executeBatch();
                 edgeSt.clearBatch();
             }
-            connection.commit();
         } finally {
             edgeSt.close();
         }

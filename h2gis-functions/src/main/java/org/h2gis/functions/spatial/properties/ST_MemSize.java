@@ -20,12 +20,15 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.h2.util.geometry.JTSUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Geometry;
+
+import java.sql.SQLException;
 
 /**
- * Compute the amount of memory space (in bytes) for the input geometry
+ * Compute the amount of memory space (in bytes) for the input value
  */
 public class ST_MemSize extends DeterministicScalarFunction {
 
@@ -40,13 +43,15 @@ public class ST_MemSize extends DeterministicScalarFunction {
     }
 
     /**
-     * @param geometry Geometry instance or null
+     * @param value Geometry instance or null
      * @return  the amount of memory space (in bytes)
      */
-    public static Integer memsize(Geometry geometry) {
-        if (geometry == null) {
+    public static Long memsize(Value value) throws SQLException {
+        if(value== ValueNull.INSTANCE ){
             return null;
+        }else if(value instanceof ValueGeometry) {
+            return value.octetLength();
         }
-        return JTSUtils.geometry2ewkb(geometry).length;
+        throw new SQLException("ST_MenSize only support geometry value ");
     }
 }

@@ -127,7 +127,6 @@ public class OSMParser extends DefaultHandler {
         this.progress = progress.subProcess(100);
         // Initialisation
         final DBTypes dbType = DBUtils.getDBType(connection);
-        connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, dbType);
         String osmTableName = requestedTable.toString();
         if(deleteTable){
@@ -217,8 +216,7 @@ public class OSMParser extends DefaultHandler {
             }
             if (relationMemberPreparedStmt != null) {
                 relationMemberPreparedStmt.close();
-            }            
-            connection.setAutoCommit(true);
+            }
         }
         return null;
     }
@@ -489,7 +487,6 @@ public class OSMParser extends DefaultHandler {
     private int insertBatch(PreparedStatement st, int batchSize, int maxBatchSize) throws SQLException {
         if(batchSize >= maxBatchSize) {
             st.executeBatch();
-            connection.commit();
             st.clearBatch();
             return 0;
         } else {

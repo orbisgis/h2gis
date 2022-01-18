@@ -152,7 +152,6 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                 connection.prepareStatement("INSERT INTO " + nodesName + " VALUES(?,?)");
         try {
             final boolean previousAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
             int componentNumber = 0;
             for (Set<VUCent> component : componentsList) {
                 componentNumber++;
@@ -172,9 +171,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                     nodeSt.executeBatch();
                     nodeSt.clearBatch();
                 }
-                connection.commit();
             }
-            connection.setAutoCommit(previousAutoCommit);
         } catch (SQLException e) {
             cancel(connection, nodesName, edgesName, e, "Could not store node connected components.");
             return false;

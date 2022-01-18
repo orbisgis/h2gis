@@ -333,7 +333,6 @@ public class H2GISFunctions {
     public static void load(Connection connection, String BundleSymbolicName, String BundleVersion) throws SQLException {
         String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
         registerH2GISFunctions(connection,packagePrepend);
-        connection.commit();
     }
 
     /**
