@@ -15,4 +15,4 @@ eg GEOMETRY(POINT) instead of only GEOMETRY
 + Update ST_UpdateZ to force the dimension when the z value is updated.
 + Upate H2 from 2.0.206 to 2.1.210 to fix a memory issue and improve Geometry dimension check
   (#1233 and #1243)
-+ Fixe ST_MenSize to avoid expensive conversion (#1247)
++ Fix ST_MenSize to avoid expensive conversion (#1247)
