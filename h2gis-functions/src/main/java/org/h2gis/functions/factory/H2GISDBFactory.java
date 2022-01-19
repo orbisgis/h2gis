@@ -94,14 +94,45 @@ public class H2GISDBFactory {
         return createDataSource(dbName, initSpatial, H2_PARAMETERS);
     }
 
-    /**
-     * Create a database and return a DataSource
-     * @param dbName
-     * @param initSpatial
-     * @param h2Parameters
-     * @return
+     /**
+     * Create a database, init spatial funcyion and return a DataSource
+     * @param properties for the opening of the DataBase.
+     * @return a DataSource
      * @throws SQLException
      */
+    public static DataSource createDataSource(Properties properties) throws SQLException {
+        return createDataSource(properties, true);
+    }
+
+    /**
+     * Create a database and return a DataSource
+     * @param properties for the opening of the DataBase.
+     * @param initSpatial true to load the spatial functions
+     * @return a DataSource
+     * @throws SQLException
+     */
+    public static DataSource createDataSource(Properties properties, boolean initSpatial) throws SQLException {
+        // Create H2 memory DataSource
+        org.h2.Driver driver = org.h2.Driver.load();
+        OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
+        DataSource dataSource = dataSourceFactory.createDataSource(properties);
+        // Init spatial ext
+        if(initSpatial) {
+            try (Connection connection = dataSource.getConnection()) {
+                H2GISFunctions.load(connection);
+            }
+        }
+        return dataSource;
+    }
+
+        /**
+         * Create a database and return a DataSource
+         * @param dbName
+         * @param initSpatial
+         * @param h2Parameters
+         * @return
+         * @throws SQLException
+         */
     public static DataSource createDataSource(String dbName ,boolean initSpatial, String h2Parameters) throws SQLException {
         // Create H2 memory DataSource
         org.h2.Driver driver = org.h2.Driver.load();
