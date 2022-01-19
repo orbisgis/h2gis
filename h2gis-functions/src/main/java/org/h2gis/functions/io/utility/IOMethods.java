@@ -380,6 +380,7 @@ public class IOMethods {
             }
             PreparedStatement preparedStatement = null;
             try {
+                targetConnection.setAutoCommit(false);
                 int columnsCount = inputMetadata.getColumnCount();
                 HashMap<String, Integer> geomColumnAndSRID = new HashMap<>();
                 StringBuilder insertTable = new StringBuilder("INSERT INTO ");
@@ -421,13 +422,16 @@ public class IOMethods {
                         batchSize++;
                         if (batchSize >= batch_size) {
                             preparedStatement.executeBatch();
+                            targetConnection.commit();
                             preparedStatement.clearBatch();
                             batchSize = 0;
                         }
                     }
                     if (batchSize > 0) {
                         preparedStatement.executeBatch();
+                        targetConnection.commit();
                     }
+                    targetConnection.setAutoCommit(true);
                     //Alter SRID
                     if (!geomColumnAndSRID.isEmpty()) {
                         StringBuilder querySRID = new StringBuilder();

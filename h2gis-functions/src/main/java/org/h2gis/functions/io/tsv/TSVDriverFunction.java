@@ -326,6 +326,7 @@ public class TSVDriverFunction implements DriverFunction {
                 stmt.execute(createTable.toString());
             }
 
+            connection.setAutoCommit(false);
             PreparedStatement pst = connection.prepareStatement(insertTable.toString());
             long batchSize = 0;
             try {
@@ -341,6 +342,7 @@ public class TSVDriverFunction implements DriverFunction {
                     batchSize++;
                     if (batchSize >= BATCH_MAX_SIZE) {
                         pst.executeBatch();
+                        connection.commit();
                         pst.clearBatch();
                         batchSize = 0;
                     }
@@ -356,7 +358,9 @@ public class TSVDriverFunction implements DriverFunction {
                 }
                 if (batchSize > 0) {
                     pst.executeBatch();
+                    connection.commit();
                 }
+                connection.setAutoCommit(true);
                 return new String[]{table};
             } finally {
                 pst.close();
@@ -399,6 +403,7 @@ public class TSVDriverFunction implements DriverFunction {
                     stmt.execute(createTable.toString());
                 }
 
+                connection.setAutoCommit(false);
                 PreparedStatement pst = connection.prepareStatement(insertTable.toString());
                 long batchSize = 0;
                 try {
@@ -414,15 +419,18 @@ public class TSVDriverFunction implements DriverFunction {
                         batchSize++;
                         if (batchSize >= BATCH_MAX_SIZE) {
                             pst.executeBatch();
+                            connection.commit();
                             pst.clearBatch();
                             batchSize = 0;
                         }
                     }
                     if (batchSize > 0) {
                         pst.executeBatch();
+                        connection.commit();
                     }
                     return new String[]{table};
                 } finally {
+                    connection.setAutoCommit(true);
                     pst.close();
                 }
             }
