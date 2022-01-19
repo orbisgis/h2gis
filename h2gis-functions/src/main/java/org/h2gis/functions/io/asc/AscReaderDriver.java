@@ -275,25 +275,31 @@ public class AscReaderDriver {
             // Read HEADER
             readHeader(scanner);
             // Read values
+            connection.setAutoCommit(false);
             Statement st = connection.createStatement();
             PreparedStatement preparedStatement;
             if (as3DPoint) {
                 if (zType == 1) {
                     st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
+                    connection.commit();
                 } else {
                     st.execute("CREATE TABLE " + outputTable+ "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
+                    connection.commit();
                 }
                 preparedStatement = connection.prepareStatement("INSERT INTO " + outputTable
                         + "(PK, the_geom, Z) VALUES (?, ?, ?)");
             } else {
                 if (zType == 1) {
                     st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
+                    connection.commit();
                 } else {
                     st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
+                    connection.commit();
                 }
                 preparedStatement = connection.prepareStatement("INSERT INTO " + outputTable
                         + "(PK,the_geom, Z) VALUES (?, ?, ?)");
             }
+
             // Read data
             GeometryFactory factory = new GeometryFactory();
             int batchSize = 0;
@@ -360,6 +366,7 @@ public class AscReaderDriver {
                         }
                         if (batchSize >= BATCH_MAX_SIZE) {
                             preparedStatement.executeBatch();
+                            connection.commit();
                             preparedStatement.clearBatch();
                             batchSize = 0;
                         }
@@ -372,7 +379,9 @@ public class AscReaderDriver {
             }
             if (batchSize > 0) {
                 preparedStatement.executeBatch();
+                connection.commit();
             }
+            connection.setAutoCommit(true);
             return outputTable;
         } catch (NoSuchElementException | NumberFormatException | IOException | SQLException ex) {
             throw new SQLException("Unexpected word " + lastWord, ex);
