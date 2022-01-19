@@ -32,8 +32,14 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
+
+import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -163,6 +169,30 @@ public class BasicTest {
                 throw e.getCause();
             }
         });
-    }   
+    }
+
+    @Test
+    public void testCreateDataSource() throws Exception {
+        Properties properties = new Properties();
+        properties.put("databaseName","./target/datasource_db");
+        properties.put("user", "sa");
+        properties.put("password", "sa");
+        DataSource ds = H2GISDBFactory.createDataSource(properties);
+        assertNotNull(ds);
+        Connection con = ds.getConnection();
+        assertTrue(con.createStatement().execute("SELECT H2GISVERSION()"));
+    }
+
+    @Test
+    public void testCreateDataSourceNoSpatial() throws Exception {
+        Properties properties = new Properties();
+        properties.put("databaseName","./target/datasource_db_nospatial");
+        properties.put("user", "sa");
+        properties.put("password", "sa");
+        DataSource ds = H2GISDBFactory.createDataSource(properties, false);
+        assertNotNull(ds);
+        Connection con = ds.getConnection();
+        assertThrows(SQLException.class, () -> con.createStatement().execute("SELECT H2GISVERSION()"));
+    }
    
 }
