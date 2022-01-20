@@ -227,7 +227,6 @@ public class DBFDriverFunction implements DriverFunction {
             if (deleteTables) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + outputTable);
-
                 stmt.close();
             }
             DBFDriver dbfDriver = new DBFDriver();
@@ -284,6 +283,7 @@ public class DBFDriverFunction implements DriverFunction {
                     connection.setAutoCommit(true);
                     dbfDriver.close();
                     copyProgress.endOfProgress();
+                    connection.setAutoCommit(true);
                 }
                 return new String[]{outputTable};
             }
