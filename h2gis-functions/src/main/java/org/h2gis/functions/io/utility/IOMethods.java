@@ -471,12 +471,14 @@ public class IOMethods {
                         batchSize++;
                         if (batchSize >= batch_size) {
                             preparedStatement.executeBatch();
+                            targetConnection.commit();
                             preparedStatement.clearBatch();
                             batchSize = 0;
                         }
                     }
                     if (batchSize > 0) {
                         preparedStatement.executeBatch();
+                        targetConnection.commit();
                     }
                     //Alter SRID
                     if (!geomColumnAndSRID.isEmpty()) {
