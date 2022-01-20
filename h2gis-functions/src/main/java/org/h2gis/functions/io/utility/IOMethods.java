@@ -430,6 +430,7 @@ public class IOMethods {
             }
             PreparedStatement preparedStatement = null;
             try {
+                targetConnection.setAutoCommit(false);
                 int columnsCount = inputMetadata.getColumnCount();
                 HashMap<String, Integer> geomColumnAndSRID = new HashMap<>();
                 StringBuilder insertTable = new StringBuilder("INSERT INTO ");
@@ -480,6 +481,7 @@ public class IOMethods {
                         preparedStatement.executeBatch();
                         targetConnection.commit();
                     }
+                    targetConnection.setAutoCommit(true);
                     //Alter SRID
                     if (!geomColumnAndSRID.isEmpty()) {
                         StringBuilder querySRID = new StringBuilder();

@@ -1017,6 +1017,7 @@ public class GeoJsonReaderDriver {
             firstParam = skipCRS(jp);
         }
         if (firstParam.equalsIgnoreCase(GeoJsonField.FEATURES)) {
+            connection.setAutoCommit(false);
             jp.nextToken(); // START_ARRAY [
             JsonToken token = jp.nextToken(); // START_OBJECT {
             long batchSize = 0;
@@ -1036,6 +1037,7 @@ public class GeoJsonReaderDriver {
                     batchSize++;
                     if (batchSize >= BATCH_MAX_SIZE) {
                         preparedStatement.executeBatch();
+                        connection.commit();
                         preparedStatement.clearBatch();
                         batchSize = 0;
                     }
@@ -1046,15 +1048,18 @@ public class GeoJsonReaderDriver {
                     if (batchSize > 0) {
                         try {
                             preparedStatement.executeBatch();
+                            connection.commit();
                             preparedStatement.clearBatch();
                         }catch (SQLException ex){
                             throw new SQLException(ex.getNextException());
                         }
                     }
                 } else {
+                    connection.setAutoCommit(true);
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
                 }
             }
+            connection.setAutoCommit(true);
             //LOOP END_ARRAY ]
             log.info(featureCounter-1 + " geojson features have been imported.");
         } else {
