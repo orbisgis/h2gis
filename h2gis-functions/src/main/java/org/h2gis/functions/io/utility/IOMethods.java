@@ -201,7 +201,15 @@ public class IOMethods {
                         try ( //Drop table if exists
                               Statement stmt = targetConnection.createStatement()) {
                             stmt.execute("DROP TABLE IF EXISTS " + ouputTableName);
+                            if (!targetConnection.getAutoCommit()) {
+                                targetConnection.commit();
+                            }
                         } catch (SQLException e) {
+                            try {
+                                targetConnection.rollback();
+                            } catch (SQLException e1) {
+                                throw new SQLException("Unable to rollback.", e1);
+                            }
                             throw new SQLException("Cannot drop the table", e);
                         }
                     }
@@ -209,7 +217,15 @@ public class IOMethods {
                     try (Statement statement = targetConnection.createStatement()) {
                         statement.execute(String.format("CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s') FETCH_SIZE %s %s",
                                 ouputTableName, driverName, jdbc_url, user, password, sourceTable, fetchSize, autocommit_linkedTable));
+                        if (!targetConnection.getAutoCommit()) {
+                            targetConnection.commit();
+                        }
                     } catch (SQLException e) {
+                        try {
+                            targetConnection.rollback();
+                        } catch (SQLException e1) {
+                            throw new SQLException("Unable to rollback.", e1);
+                        }
                         throw new SQLException("Cannot linked the table", e);
                     }
                     return ouputTableName;
@@ -250,8 +266,16 @@ public class IOMethods {
             try {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute("DROP TABLE IF EXISTS " + tableName);
+                    if (!connection.getAutoCommit()) {
+                        connection.commit();
+                    }
                 }
             } catch (SQLException e) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e1) {
+                    throw new SQLException("Unable to rollback.", e1);
+                }
                 throw new SQLException("Cannot drop the table", e);
             }
         }
@@ -259,8 +283,16 @@ public class IOMethods {
         try {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(String.format("CALL FILE_TABLE('%s','%s')", filePath, tableName));
+                if (!connection.getAutoCommit()) {
+                    connection.commit();
+                }
             }
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                throw new SQLException("Unable to rollback.", e1);
+            }
             throw new SQLException("Cannot link the file", e);
         }
         return tableName;
@@ -336,13 +368,20 @@ public class IOMethods {
             Statement inputStat = sourceConnection.createStatement();
             ResultSet inputRes = inputStat.executeQuery(query);
             ResultSetMetaData inputMetadata = inputRes.getMetaData();
+            boolean isTargetAutoCommit = targetConnection.getAutoCommit();
+            targetConnection.setAutoCommit(false);
 
             if (mode == -1) {
                 try ( //Drop table if exists
                       Statement stmt = targetConnection.createStatement()) {
                     stmt.execute("DROP TABLE IF EXISTS " + ouputTableName);
-
+                    targetConnection.commit();
                 } catch (SQLException e) {
+                    try {
+                        targetConnection.rollback();
+                    } catch (SQLException e1) {
+                        throw new SQLException("Unable to rollback.", e1);
+                    }
                     throw new SQLException("Cannot drop the table", e);
                 }
                 //Re-create the table
@@ -350,7 +389,13 @@ public class IOMethods {
                 if (!ddlCommand.isEmpty()) {
                     try (Statement outputST = targetConnection.createStatement()) {
                         outputST.execute(ddlCommand);
+                        targetConnection.commit();
                     } catch (SQLException e) {
+                        try {
+                            targetConnection.rollback();
+                        } catch (SQLException e1) {
+                            throw new SQLException("Unable to rollback.", e1);
+                        }
                         throw new SQLException("Cannot create the output table", e);
                     }
                 }
@@ -364,8 +409,13 @@ public class IOMethods {
                 if (!ddlCommand.isEmpty()) {
                     try (Statement outputST = targetConnection.createStatement()) {
                         outputST.execute(ddlCommand);
-
+                        targetConnection.commit();
                     } catch (SQLException e) {
+                        try {
+                            targetConnection.rollback();
+                        } catch (SQLException e1) {
+                            LOGGER.error("Unable to rollback.", e1);
+                        }
                         throw new SQLException("Cannot create the output table", e);
                     }
                 } else if (mode == 1) {
@@ -431,7 +481,6 @@ public class IOMethods {
                         preparedStatement.executeBatch();
                         targetConnection.commit();
                     }
-                    targetConnection.setAutoCommit(true);
                     //Alter SRID
                     if (!geomColumnAndSRID.isEmpty()) {
                         StringBuilder querySRID = new StringBuilder();
@@ -444,18 +493,30 @@ public class IOMethods {
 
                         try (Statement outputST = targetConnection.createStatement()) {
                             outputST.execute(querySRID.toString());
+                            targetConnection.commit();
                         } catch (SQLException e) {
+                            try {
+                                targetConnection.rollback();
+                            } catch (SQLException e1) {
+                                LOGGER.error("Unable to rollback.", e1);
+                            }
                             throw new SQLException("Cannot alter the table with the SRID", e);
                         }
 
                     }
                 }
             } catch (SQLException e) {
+                try {
+                    targetConnection.rollback();
+                } catch (SQLException e1) {
+                    LOGGER.error("Unable to rollback.", e1);
+                }
                 throw new SQLException("Cannot insert the data in the table", e);
             } finally {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
+                targetConnection.setAutoCommit(isTargetAutoCommit);
 
             }
         } catch (SQLException e) {
