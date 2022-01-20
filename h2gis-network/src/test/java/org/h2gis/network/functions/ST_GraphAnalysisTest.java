@@ -477,6 +477,7 @@ public class ST_GraphAnalysisTest {
             final PreparedStatement ps =
                     connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?, ?, ?);");
             try {
+                connection.setAutoCommit(false);
                 for (int i = 1; i < n; i++) {
                     ps.setInt(1, i);
                     ps.setInt(2, i);
@@ -484,11 +485,13 @@ public class ST_GraphAnalysisTest {
                     ps.addBatch();
                 }
                 ps.executeBatch();
+                connection.commit();
             } finally {
                 ps.close();
             }
             return tableName;
         } finally {
+            connection.setAutoCommit(true);
             st.close();
         }
     }

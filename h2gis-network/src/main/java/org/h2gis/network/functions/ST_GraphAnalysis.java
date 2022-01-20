@@ -189,6 +189,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         final PreparedStatement nodeSt =
                 connection.prepareStatement("INSERT INTO " + nodesName + " VALUES(?,?,?)");
         try {
+            connection.setAutoCommit(false);
             int count = 0;
             for (VCent v : (Set<VCent>) graph.vertexSet()) {
                 nodeSt.setInt(1, v.getID());
@@ -198,15 +199,18 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 count++;
                 if (count >= BATCH_SIZE) {
                     nodeSt.executeBatch();
+                    connection.commit();
                     nodeSt.clearBatch();
                     count = 0;
                 }
             }
             if (count > 0) {
                 nodeSt.executeBatch();
+                connection.commit();
                 nodeSt.clearBatch();
             }
         } finally {
+            connection.setAutoCommit(true);
             nodeSt.close();
         }
     }
@@ -217,6 +221,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         final PreparedStatement edgeSt =
                 connection.prepareStatement("INSERT INTO " + edgesName + " VALUES(?,?)");
         try {
+            connection.setAutoCommit(false);
             int count = 0;
             for (EdgeCent e : (Set<EdgeCent>) graph.edgeSet()) {
                 edgeSt.setInt(1, e.getID());
@@ -225,15 +230,18 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 count++;
                 if (count >= BATCH_SIZE) {
                     edgeSt.executeBatch();
+                    connection.commit();
                     edgeSt.clearBatch();
                     count = 0;
                 }
             }
             if (count > 0) {
                 edgeSt.executeBatch();
+                connection.commit();
                 edgeSt.clearBatch();
             }
         } finally {
+            connection.setAutoCommit(true);
             edgeSt.close();
         }
     }

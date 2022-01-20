@@ -247,6 +247,7 @@ public class DBFDriverFunction implements DriverFunction {
                                 types));
                     }
                     try {
+                        connection.setAutoCommit(false);
                         int columnCount = dbfDriver.getFieldCount();
                         try (PreparedStatement preparedStatement = connection.prepareStatement(
                                 String.format("INSERT INTO %s VALUES ( %s )", outputTable,
@@ -262,6 +263,7 @@ public class DBFDriverFunction implements DriverFunction {
                                 batchSize++;
                                 if (batchSize >= BATCH_MAX_SIZE) {
                                     preparedStatement.executeBatch();
+                                    connection.commit();
                                     preparedStatement.clearBatch();
                                     batchSize = 0;
                                     copyProgress.endStep();
@@ -269,14 +271,17 @@ public class DBFDriverFunction implements DriverFunction {
                             }
                             if (batchSize > 0) {
                                 preparedStatement.executeBatch();
+                                connection.commit();
                                 preparedStatement.clearBatch();
                             }
                         }
                     } catch (Exception ex) {
+                        connection.setAutoCommit(true);
                         connection.createStatement().execute("DROP TABLE IF EXISTS " + outputTable);
                         throw new SQLException(ex.getLocalizedMessage(), ex);
                     }
                 } finally {
+                    connection.setAutoCommit(true);
                     dbfDriver.close();
                     copyProgress.endOfProgress();
                 }

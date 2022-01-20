@@ -114,7 +114,7 @@ To use the current snapshot add in the pom
 
 The H2GIS team uses open source software. Specifically, we would like to thank  :
 
-* Thomas Mueller, Noel Grandin and  from the [H2 database community](http://www.h2database.com).
+* Thomas Mueller, Noel Grandin and Evgenij Ryazanov from the [H2 database community](http://www.h2database.com).
 * Martin Davis from the [JTS Topology Suite community](https://github.com/locationtech/jts).
 * Michaël Michaud from [OpenJump community](https://github.com/openjump-gis)
 
