@@ -319,6 +319,7 @@ public class SHPDriverFunction implements DriverFunction {
                     lastSql = String.format("INSERT INTO %s VALUES (?, %s )", outputTableName,
                             DBFDriverFunction.getQuestionMark(dbfNumFields + 1));
                     final int columnCount = dbfNumFields+1;
+                    connection.setAutoCommit(false);
                     try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
@@ -331,6 +332,7 @@ public class SHPDriverFunction implements DriverFunction {
                             batchSize++;
                             if (batchSize >= BATCH_MAX_SIZE) {
                                 preparedStatement.executeBatch();
+                                connection.commit();
                                 preparedStatement.clearBatch();
                                 batchSize = 0;
                                 copyProgress.endStep();
@@ -338,11 +340,13 @@ public class SHPDriverFunction implements DriverFunction {
                         }
                         if (batchSize > 0) {
                             preparedStatement.executeBatch();
+                            connection.commit();
                         }
                         return new String[]{outputTableName};
                     }
                 } catch (Exception ex) {
                     connection.createStatement().execute("DROP TABLE IF EXISTS " + outputTableName);
+                    connection.commit();
                     throw new SQLException(ex.getLocalizedMessage(), ex);
                 }
             } catch (SQLException ex) {
@@ -350,6 +354,7 @@ public class SHPDriverFunction implements DriverFunction {
             } finally {
                 shpDriver.close();
                 copyProgress.endOfProgress();
+                connection.setAutoCommit(true);
             }
         }
         return null;
