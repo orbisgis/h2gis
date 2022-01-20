@@ -481,7 +481,6 @@ public class IOMethods {
                         preparedStatement.executeBatch();
                         targetConnection.commit();
                     }
-                    targetConnection.setAutoCommit(true);
                     //Alter SRID
                     if (!geomColumnAndSRID.isEmpty()) {
                         StringBuilder querySRID = new StringBuilder();
