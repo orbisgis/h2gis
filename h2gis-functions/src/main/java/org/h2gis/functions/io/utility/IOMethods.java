@@ -368,7 +368,6 @@ public class IOMethods {
             Statement inputStat = sourceConnection.createStatement();
             ResultSet inputRes = inputStat.executeQuery(query);
             ResultSetMetaData inputMetadata = inputRes.getMetaData();
-            boolean isTargetAutoCommit = targetConnection.getAutoCommit();
             targetConnection.setAutoCommit(false);
 
             if (mode == -1) {
@@ -516,7 +515,7 @@ public class IOMethods {
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
-                targetConnection.setAutoCommit(isTargetAutoCommit);
+                targetConnection.setAutoCommit(true);
 
             }
         } catch (SQLException e) {
