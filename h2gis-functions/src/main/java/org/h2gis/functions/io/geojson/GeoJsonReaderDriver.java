@@ -1020,6 +1020,7 @@ public class GeoJsonReaderDriver {
             firstParam = skipCRS(jp);
         }
         if (firstParam.equalsIgnoreCase(GeoJsonField.FEATURES)) {
+            connection.setAutoCommit(false);
             jp.nextToken(); // START_ARRAY [
             JsonToken token = jp.nextToken(); // START_OBJECT {
             long batchSize = 0;
@@ -1053,9 +1054,11 @@ public class GeoJsonReaderDriver {
                             preparedStatement.clearBatch();
                     }
                 } else {
+                    connection.setAutoCommit(true);
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
                 }
             }
+            connection.setAutoCommit(true);
             //LOOP END_ARRAY ]
             log.info(featureCounter-1 + " geojson features have been imported.");
         } else {

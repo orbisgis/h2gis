@@ -516,7 +516,6 @@ public class IOMethods {
                     preparedStatement.close();
                 }
                 targetConnection.setAutoCommit(true);
-
             }
         } catch (SQLException e) {
             throw new SQLException("Cannot save the table " + sourceTable + " to the " + targetTable + "\n", e);

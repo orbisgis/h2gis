@@ -316,6 +316,7 @@ public class SHPDriverFunction implements DriverFunction {
 
                 }
                 try {
+                    connection.setAutoCommit(false);
                     lastSql = String.format("INSERT INTO %s VALUES (?, %s )", outputTableName,
                             DBFDriverFunction.getQuestionMark(dbfNumFields + 1));
                     final int columnCount = dbfNumFields+1;
@@ -352,6 +353,7 @@ public class SHPDriverFunction implements DriverFunction {
             } catch (SQLException ex) {
                 throw new SQLException(lastSql + "\n" + ex.getLocalizedMessage(), ex);
             } finally {
+                connection.setAutoCommit(true);
                 shpDriver.close();
                 copyProgress.endOfProgress();
                 connection.setAutoCommit(true);

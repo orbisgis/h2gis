@@ -261,7 +261,6 @@ public class CSVDriverFunction implements DriverFunction{
                     connection.commit();
                     pst.clearBatch();
                 }
-
             } finally {
                 pst.close();
                 connection.setAutoCommit(true);

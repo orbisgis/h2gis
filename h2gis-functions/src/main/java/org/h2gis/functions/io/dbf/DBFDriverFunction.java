@@ -280,6 +280,7 @@ public class DBFDriverFunction implements DriverFunction {
                         throw new SQLException(ex.getLocalizedMessage(), ex);
                     }
                 } finally {
+                    connection.setAutoCommit(true);
                     dbfDriver.close();
                     copyProgress.endOfProgress();
                     connection.setAutoCommit(true);
