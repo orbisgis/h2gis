@@ -18,3 +18,4 @@ eg GEOMETRY(POINT) instead of only GEOMETRY
 + Fix ST_MenSize to avoid expensive conversion (#1247)
 + Add method to create a datasource object
 + Update the dependencies Poly2Tri and java-network-analyzer
++ Restore transaction with batch setAutoCommit to false
