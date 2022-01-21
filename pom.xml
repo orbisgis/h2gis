@@ -76,8 +76,8 @@
     <!-- Properties -->
     <properties>
         <cts-version>1.6.0-SNAPSHOT</cts-version>
-        <poly2tri-version>0.3.0</poly2tri-version>
-        <java-network-analyzer-version>0.2.0</java-network-analyzer-version>
+        <poly2tri-version>0.4.0-SNAPSHOT</poly2tri-version>
+        <java-network-analyzer-version>0.3.0-SNAPSHOT</java-network-analyzer-version>
     </properties>
 
     <!-- Dependencies -->
