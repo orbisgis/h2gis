@@ -23,8 +23,29 @@
         <module>h2gis-functions-osgi</module>
         <module>postgis-jts</module>
         <module>postgis-jts-osgi</module>
-        <!--<module>h2gis-tests</module>-->
-</modules>
+        <module>h2gis-benchmark</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>standalone</id>
+            <modules>
+                <module>h2gis-dist</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>benchmark</id>
+            <modules>
+                <module>h2gis-benchmark</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>integration</id>
+            <modules>
+                <module>h2gis-tests</module>
+            </modules>
+        </profile>
+    </profiles>
 
 <!-- Project Information -->
     <name>H2GIS</name>
@@ -154,13 +175,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>standalone</id>
-            <modules>
-                <module>h2gis-dist</module>
-            </modules>
-        </profile>
-    </profiles>
 </project>
