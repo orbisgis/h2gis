@@ -144,9 +144,11 @@ public class GeoJsonReaderDriver {
                 init();
                 FileInputStream fis = new FileInputStream(fileName);
                 if (parseMetadata(new GZIPInputStream(fis))) {
+                    connection.setAutoCommit(false);
                     GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
                     fis = new FileInputStream(fileName);
                     parseData(new GZIPInputStream(fis));
+                    connection.setAutoCommit(true);
                     return tableLocation;
                 } else {
                     throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
@@ -189,9 +191,10 @@ public class GeoJsonReaderDriver {
         this.progress = progress.subProcess(100);
         init();
         if (parseMetadata(new FileInputStream(fileName))) {
+            connection.setAutoCommit(false);
             GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
             parseData(new FileInputStream(fileName));
-
+            connection.setAutoCommit(true);
         } else {
             throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
         }
@@ -1046,13 +1049,9 @@ public class GeoJsonReaderDriver {
                     featureCounter++;
                     progress.setStep((featureCounter / nbFeature) * 100);
                     if (batchSize > 0) {
-                        try {
                             preparedStatement.executeBatch();
                             connection.commit();
                             preparedStatement.clearBatch();
-                        }catch (SQLException ex){
-                            throw new SQLException(ex.getNextException());
-                        }
                     }
                 } else {
                     connection.setAutoCommit(true);
