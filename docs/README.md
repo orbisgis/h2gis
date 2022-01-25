@@ -17,29 +17,52 @@ management library. It contains tools to run geometry analysis and read/write ge
 
 H2GIS is licensed under the LGPL 3 license terms.
 
-#### h2gis-functions
+####  GEOMETRY datatype
+
+Since H2 2.2.X version, the [geometry](https://h2database.com/html/datatypes.html?highlight=geometry&search=geometry#geometry_type) encoding to store the value in H2 is the EWKB (extended well-known binary) format. The [EWKB](https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT) format is not an OGC standard, but a PostGIS specific format that includes the spatial reference system (SRID) identifier.
+Its textual representation using the WKT (well-known text) uses the pattern :
+```
+'SRID=4326;POINT(0 0)'
+```
+H2 supports POINT, LINESTRING, POLYGON, MULTIPOINT, MULTILINESTRING, MULTIPOLYGON, and GEOMETRYCOLLECTION geometries with the following coordinate dimension 2D (XY), Z (XYZ), M (XYM), and ZM (XYZM).
+
+H2 provides the same syntax as PostGIS to build a table with a geometry data type.
+
+```
+e.g
+CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY);
+CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINT));
+CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINT, 4326));
+CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINTZ, 4326));
+CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINTZM, 4326));
+CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINTM, 4326));
+```
+
+#### Spatial functions
 h2gis-functions is the main module of the H2GIS distribution. 
-It extends H2 by adding spatial storage and analysis capabilities,including
-- a constraint on `Geometry` data type storing `POINT`, `LINE` and `SURFACE` types in WKB representations
+It extends H2 by adding analysis capabilities,including
 - spatial operators (`ST_Intersection`, `ST_Difference`, etc.)
 - spatial predicates (`ST_Intersects`, `ST_Contains`, etc.)
 - additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
 
 Ex: `ST_Extent`, `ST_Explode`, `ST_MakeGrid`
 
-It contains a set of driver functions (I/O)) to read/write file formats such as .shp, .dbf, .geojson, .gpx
+H2GIS contains a set of driver functions (I/O)) to read/write file formats such as .shp, .dbf, .geojson, .gpx
 
 This I/O package include 2 implementation of TableEngine that allow you to immediatly 'link' a table with a shape file.
 
 It include also file copy functions (import):
 * SHPREAD( ) and SHPWRITE( ) to read and write Esri shape files.
 * DBFREAD( ) and DBFWRITE( ) to read and write DBase III files.
-* GeoJsonRead() and GeoJsonWrite() to read and write GeoJSON files.
+* GeoJsonRead() and GeoJsonWrite() 
+* to read and write GeoJSON files.
 * GPXRead() to read GPX files.
+
+
 
 ### Usage
 
-For now, H2GIS requires Java 8. Run `maven clean install -P standalone` in the H2GIS's root directory.
+H2GIS requires Java 11. Run `maven clean install -P standalone` in the H2GIS's root directory.
 
 In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`.Unzip the file then open `h2gis-dist-xxx.jar` It will open a browser based console application.
 
