@@ -17,7 +17,7 @@ management library. It contains tools to run geometry analysis and read/write ge
 
 H2GIS is licensed under the LGPL 3 license terms.
 
-####  GEOMETRY datatype
+####  GEOMETRY data type
 
 Since H2 2.2.X version, the [geometry](https://h2database.com/html/datatypes.html?highlight=geometry&search=geometry#geometry_type) encoding to store the value in H2 is the EWKB (extended well-known binary) format. The [EWKB](https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT) format is not an OGC standard, but a PostGIS specific format that includes the spatial reference system (SRID) identifier.
 Its textual representation using the WKT (well-known text) uses the pattern :
