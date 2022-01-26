@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisparent</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
     </parent>
     <artifactId>h2gis-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
@@ -75,9 +75,9 @@
 
     <!-- Properties -->
     <properties>
-        <cts-version>1.6.0-SNAPSHOT</cts-version>
-        <poly2tri-version>0.4.0-SNAPSHOT</poly2tri-version>
-        <java-network-analyzer-version>0.3.0-SNAPSHOT</java-network-analyzer-version>
+        <cts-version>1.6.0</cts-version>
+        <poly2tri-version>0.4.0</poly2tri-version>
+        <java-network-analyzer-version>0.3.0</java-network-analyzer-version>
     </properties>
 
     <!-- Dependencies -->
