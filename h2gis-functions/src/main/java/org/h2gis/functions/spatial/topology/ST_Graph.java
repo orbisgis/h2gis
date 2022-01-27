@@ -93,10 +93,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     /**
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs.
-     * <p/>
+     * 
      * Since no column is specified in this signature, we take the first
      * geometry column we find.
-     * <p/>
+     * 
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
@@ -113,7 +113,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     /**
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs in the given column.
-     * <p/>
+     * 
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
@@ -134,7 +134,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs in the given column and using the given
      * tolerance.
-     * <p/>
+     * 
      * The tolerance value is used specify the side length of a square Envelope
      * around each node used to snap together other nodes within the same
      * Envelope. Note, however, that edge geometries are left untouched.
@@ -143,7 +143,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * coordinates of a geometry are considered to be potential nodes, and
      * only nodes within a given tolerance of each other are snapped
      * together. The tolerance works only in metric units.
-     * <p/>
+     * 
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
@@ -166,7 +166,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs in the given column and using the given
      * tolerance, and potentially orienting edges by slope.
-     * <p/>
+     * 
      * The tolerance value is used specify the side length of a square Envelope
      * around each node used to snap together other nodes within the same
      * Envelope. Note, however, that edge geometries are left untouched.
@@ -175,10 +175,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * coordinates of a geometry are considered to be potential nodes, and
      * only nodes within a given tolerance of each other are snapped
      * together. The tolerance works only in metric units.
-     * <p/>
+     * 
      * The boolean orientBySlope is set to true if edges should be oriented by
      * the z-value of their first and last coordinates (decreasing).
-     * <p/>
+     * 
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
@@ -203,7 +203,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs in the given column and using the given
      * tolerance, and potentially orienting edges by slope.
-     * <p/>
+     * 
      * The tolerance value is used specify the side length of a square Envelope
      * around each node used to snap together other nodes within the same
      * Envelope. Note, however, that edge geometries are left untouched.
@@ -212,10 +212,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * coordinates of a geometry are considered to be potential nodes, and
      * only nodes within a given tolerance of each other are snapped
      * together. The tolerance works only in metric units.
-     * <p/>
+     * 
      * The boolean orientBySlope is set to true if edges should be oriented by
      * the z-value of their first and last coordinates (decreasing).
-     * <p/>
+     * 
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *

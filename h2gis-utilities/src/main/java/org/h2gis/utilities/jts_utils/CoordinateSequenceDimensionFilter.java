@@ -27,7 +27,7 @@ import org.locationtech.jts.geom.Geometry;
 /**
  * Filter on the dimension of each coordinate of the CoordinateSequence to determine
  * the maximum coordinate dimension as well as whether the CoordinateSequence contains
- * only 2D coordinates or mixed 2D and >2D coordinates.
+ * only 2D coordinates or mixed 2D and &gt; 2D coordinates.
  *
  * @author Erwan Bocher
  * @author Adam Gouge

@@ -23,6 +23,7 @@ package org.h2gis.functions.spatial.create;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 
 /**
  * Gets the minimum rectangular POLYGON which encloses the input geometry. See

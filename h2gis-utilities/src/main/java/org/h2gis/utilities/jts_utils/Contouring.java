@@ -169,11 +169,11 @@ public class Contouring {
     /**
      * Use interval to split the triangle into severals ones
      *
-     * @param[in] beginIncluded Begin of iso level value
-     * @param[in] endExcluded End of iso level value
-     * @param[in] currentTriangle Triangle to process
-     * @param[out] outsideTriangles Split triangles outside of the region
-     * @param[out] intervalTriangles Split triangles covered by the region
+     * @param beginIncluded Begin of iso level value
+     * @param endExcluded End of iso level value
+     * @param currentTriangle Triangle to process
+     * @param outsideTriangles Split triangles outside of the region
+     * @param intervalTriangles Split triangles covered by the region
      * @return False if the entire geometry is outside of the region, true if
      * outsideTriangles or intervalTriangles has been updated.
      */

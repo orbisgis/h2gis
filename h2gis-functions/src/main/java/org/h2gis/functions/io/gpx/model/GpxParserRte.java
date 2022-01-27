@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * Specific parser for routes. It will be call each time a <rte> markup is
+ * Specific parser for routes. It will be call each time a {@code <rte>} markup is
  * found. It is for the 1.1 version
  *
  * @author Antonin
@@ -45,8 +45,8 @@ public final class GpxParserRte extends AbstractGpxParserRte {
 
     /**
      * Fires whenever an XML start markup is encountered. It creates a new
-     * routePoint when a <rtept> markup is encountered. It saves informations
-     * about <link> in currentPoint or currentLine.
+     * routePoint when a {@code <rtept>} markup is encountered. It saves informations
+     * about {@code <link>} in currentPoint or currentLine.
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)

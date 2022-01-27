@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * Specific parser for tracks. It will be call each time a <trk> markup is
+ * Specific parser for tracks. It will be call each time a {@code <trk>} markup is
  * found. It is for the 1.1 version
  *
  * @author Erwan Bocher and Antonin Piasco
@@ -45,9 +45,9 @@ public final class GpxParserTrk extends AbstractGpxParserTrk {
 
     /**
      * Fires whenever an XML start markup is encountered. It creates a new
-     * trackSegment when a <trkseg> markup is encountered. It creates a new
-     * trackPoint when a <trkpt> markup is encountered. It saves informations
-     * about <link> in currentPoint or currentLine.
+     * trackSegment when a {@code <trkseg>} markup is encountered. It creates a new
+     * trackPoint when a {@code <trkpt>} markup is encountered. It saves informations
+     * about {@code <link>} in currentPoint or currentLine.
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)

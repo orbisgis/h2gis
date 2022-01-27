@@ -23,7 +23,7 @@ package org.h2gis.functions.io.shp.internal;
 /** Not much but a type safe enumeration of file types as ints and names. The
  * descriptions can easily be tied to a ResourceBundle if someone wants to do that.
  * @author Ian Schneider
- * @source $URL: http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapeType.java $
+ * @see <a href="http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapeType.java">ShapeType.java</a>
  */
 public final class ShapeType {
   

@@ -78,9 +78,9 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
 
     /**
      * Fires whenever an XML start markup is encountered. It creates a new
-     * trackSegment when a <trkseg> markup is encountered. It creates a new
-     * trackPoint when a <trkpt> markup is encountered. It saves informations
-     * about <link> in currentPoint or currentLine.
+     * trackSegment when a {@code <trkseg>} markup is encountered. It creates a new
+     * trackPoint when a {@code <trkpt>} markup is encountered. It saves informations
+     * about {@code <link>} in currentPoint or currentLine.
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)
