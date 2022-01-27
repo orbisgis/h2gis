@@ -37,8 +37,7 @@ import java.io.IOException;
  * The default JTS handler for shapefile. Currently uses the default JTS
  * GeometryFactory, since it doesn't seem to matter.
  *
- * @source $URL:
- *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/MultiLineHandler.java $
+ * @see <a href="http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/MultiLineHandler.java">MultiLineHandler.java</a>
  */
 public class MultiLineHandler implements ShapeHandler {
     final ShapeType shapeType;

@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * Thrown when an error relating to the shapefile
  * occures
- * @source $URL: http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileException.java $
+ * @see <a href="http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileException.java">ShapefileException.java</a>
  */
 public class ShapefileException extends IOException {
 

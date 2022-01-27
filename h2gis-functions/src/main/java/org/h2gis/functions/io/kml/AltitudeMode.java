@@ -21,11 +21,11 @@
 package org.h2gis.functions.io.kml;
 
 /**
- * Specifies how altitude components in the <coordinates> element are
+ * Specifies how altitude components in the {@code <coordinates>} element are
  * interpreted. Possible values are
  *
  * - clampToGround - (default) Indicates to ignore an altitude specification
- * (for example, in the <coordinates> tag).
+ * (for example, in the {@code <coordinates>} tag).
  *
  * - relativeToGround - Sets the altitude of the element relative to the actual
  * ground elevation of a particular location. For example, if the ground

@@ -72,7 +72,7 @@ public class KMLGeometry {
      * altitude.
      *
      * Syntax :
-     *
+     * {@code
      * <Point id="ID">
      * <!-- specific to Point -->
      * <extrude>0</extrude> <!-- boolean -->
@@ -83,14 +83,15 @@ public class KMLGeometry {
      * -->
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </Point>
-     *
+     * }
      * Supported syntax :
+     * {@code
      * <Point>
      * <extrude>0</extrude>
      * <altitudeMode>clampToGround</altitudeMode>
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </Point>
-     *
+     * }
      * @param point
      * @param extrude
      * @param altitudeModeEnum
@@ -112,7 +113,7 @@ public class KMLGeometry {
      * Defines a connected set of line segments.
      *
      * Syntax :
-     *
+     * {@code
      * <LineString id="ID">
      * <!-- specific to LineString -->
      * <gx:altitudeOffset>0</gx:altitudeOffset> <!-- double -->
@@ -126,15 +127,15 @@ public class KMLGeometry {
      * <gx:drawOrder>0</gx:drawOrder> <!-- integer -->
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </LineString>
-     *
+     * }
      * Supported syntax :
-     *
+     * {@code
      * <LineString>
      * <extrude>0</extrude>
      * <altitudeMode>clampToGround</altitudeMode>
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </LineString>
-     *
+     * }
      * @param lineString
      */
     public static void toKMLLineString(LineString lineString, ExtrudeMode extrude, int altitudeModeEnum, StringBuilder sb) {
@@ -149,7 +150,7 @@ public class KMLGeometry {
      * Defines a closed line string, typically the outer boundary of a Polygon.
      *
      * Syntax :
-     *
+     * {@code
      * <LinearRing id="ID">
      * <!-- specific to LinearRing -->
      * <gx:altitudeOffset>0</gx:altitudeOffset> <!-- double -->
@@ -162,14 +163,15 @@ public class KMLGeometry {
      * -->
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
      * </LinearRing>
-     *
+     * }
      * Supported syntax :
-     *
+     * {@code
      * <LinearRing>
      * <extrude>0</extrude>
      * <altitudeMode>clampToGround</altitudeMode>
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </LinearRing>
+     * }
      *
      * @param lineString
      */
@@ -186,7 +188,7 @@ public class KMLGeometry {
      * The boundaries, in turn, are defined by LinearRings.
      *
      * Syntax :
-     *
+     * {@code
      * <Polygon id="ID">
      * <!-- specific to Polygon -->
      * <extrude>0</extrude> <!-- boolean -->
@@ -207,9 +209,9 @@ public class KMLGeometry {
      * </LinearRing>
      * </innerBoundaryIs>
      * </Polygon>
-     *
+     * }
      * Supported syntax :
-     *
+     * {@code
      * <Polygon>
      * <extrude>0</extrude>
      * <altitudeMode>clampToGround</altitudeMode>
@@ -224,6 +226,7 @@ public class KMLGeometry {
      * </LinearRing>
      * </innerBoundaryIs>
      * </Polygon>
+     * }
      *
      * @param polygon
      */
@@ -247,11 +250,12 @@ public class KMLGeometry {
      *
      * A container for zero or more geometry primitives associated with the same
      * feature.
-     *
+     *  {@code
      * <MultiGeometry id="ID">
      * <!-- specific to MultiGeometry -->
      * <!-- 0 or more Geometry elements -->
      * </MultiGeometry>
+     * }
      *
      * @param gc
      */
@@ -275,9 +279,9 @@ public class KMLGeometry {
      * Build a string represention to kml coordinates
      *
      * Syntax :
-     *
+     * {@code
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
-     *
+     * }
      * @param coords
      */
     public static void appendKMLCoordinates(Coordinate[] coords, StringBuilder sb) {

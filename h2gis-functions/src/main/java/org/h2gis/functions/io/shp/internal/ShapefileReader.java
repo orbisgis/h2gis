@@ -31,13 +31,13 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 
 /**
- * The general use of this class is: <CODE><PRE>
- *
+ * The general use of this class is:
+ * {@code
  * FileChannel in = new FileInputStream("thefile.dbf").getChannel();
  * ShapefileReader r = new ShapefileReader( in ) while (r.hasNext()) { Geometry
  * shape = (Geometry) r.nextRecord().shape() // do stuff } r.close();
- *
- * </PRE></CODE> You don't have to immediately ask for the shape from the record. The
+ * }
+ * You don't have to immediately ask for the shape from the record. The
  * record will contain the bounds of the shape and will only read the shape when
  * the shape() method is called. This ShapefileReader.Record is the same object
  * every time, so if you need data from the Record, be sure to copy it.
@@ -45,8 +45,7 @@ import java.nio.channels.ReadableByteChannel;
  * @author jamesm
  * @author aaime
  * @author Ian Schneider
- * @source $URL:
- *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileReader.java $
+ * @see <a href="http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileReader.java">ShapefileReader.java</a>
  */
 public class ShapefileReader {
 

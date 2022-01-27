@@ -225,8 +225,8 @@ public class TriMarkers extends Triangle {
     
     /**
      * Test if a coordinate intersects the triangle
-     * <p/>
-     * {@see http://www.blackpawn.com/texts/pointinpoly/default.html}
+     *
+     * @see <a href=http://www.blackpawn.com/texts/pointinpoly/default.html>www.blackpawn.com</a>
      *
      * @param p Coordinate of the point
      * @param t input triangle

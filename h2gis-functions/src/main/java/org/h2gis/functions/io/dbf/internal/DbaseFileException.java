@@ -23,7 +23,7 @@ package org.h2gis.functions.io.dbf.internal;
 /**
  * Thrown when an error relating to the shapefile
  * occurs.
- * @source $URL: http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/dbf/DbaseFileException.java $
+ * @see <a href="http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/dbf/DbaseFileException.java">DbaseFileException.java</a>
  */
 public class DbaseFileException extends Exception {
 

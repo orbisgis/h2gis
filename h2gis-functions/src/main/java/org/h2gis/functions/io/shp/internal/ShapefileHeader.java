@@ -30,8 +30,7 @@ import java.nio.ByteOrder;
  *
  * @author jamesm
  * @author Ian Schneider
- * @source $URL:
- *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileHeader.java $
+ * @see <a href="http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileHeader.java">ShapefileHeader.java</a>
  */
 public class ShapefileHeader {
         

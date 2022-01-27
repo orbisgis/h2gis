@@ -28,6 +28,14 @@
         </license>
     </licenses>
 
+    <!-- Dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+    </dependencies>
+
     <!-- Build Settings -->
     <build>
         <plugins>
