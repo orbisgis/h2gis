@@ -33,7 +33,8 @@ import java.util.Locale;
 
 /**
  * A DbaseFileReader is used to read a dbase III format file. The general use of
- * this class is: <CODE><PRE>
+ * this class is:
+ * {@code
  * DbaseFileHeader header = ...
  * WritableFileChannel out = new FileOutputStream(&quot;thefile.dbf&quot;).getChannel();
  * DbaseFileWriter w = new DbaseFileWriter(header,out);
@@ -41,13 +42,12 @@ import java.util.Locale;
  *   w.write( getMyRecord() );
  * }
  * w.close();
- * </PRE></CODE> You must supply the <CODE>moreRecords</CODE> and
- * <CODE>getMyRecord()</CODE> logic...
+ * }
+ * You must supply the {@code moreRecords} and
+ * {@code getMyRecord()} logic...
  *
  * @author Ian Schneider
- * @source $URL:
- * http://svn.geotools.org/geotools/trunk/gt/modules/plugin/shapefile/src/main/java/org/geotools/data/shapefile/dbf/DbaseFileWriter.java
- * $
+ * @see <a href="http://svn.geotools.org/geotools/trunk/gt/modules/plugin/shapefile/src/main/java/org/geotools/data/shapefile/dbf/DbaseFileWriter.java">DbaseFileWriter.java</a>
  */
 public class DbaseFileWriter {
 

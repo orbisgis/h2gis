@@ -46,9 +46,7 @@ import java.nio.channels.FileChannel;
  * @author aaime
  * @author Ian Schneider
  *
- * @source $URL:
- * http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileWriter.java
- * $
+ * @see <a href="http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileWriter.java">ShapefileWriter.java</a>
  */
 public class ShapefileWriter {
 

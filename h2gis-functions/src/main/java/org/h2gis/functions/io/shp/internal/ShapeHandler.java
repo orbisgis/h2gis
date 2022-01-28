@@ -31,9 +31,7 @@ import java.io.IOException;
  *
  * @author aaime
  * @author Ian Schneider
- * @source $URL:
- * http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapeHandler.java
- * $
+ * @see <a href="http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapeHandler.java">ShapeHandler.java</a>
  *
  */
 public interface ShapeHandler {

@@ -40,7 +40,7 @@ import static org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory.*;
 
 /**
  * Operator to make a geometry valid.
- * <br/>
+ * 
  * Making a geometry valid will remove duplicate points although duplicate points
  * do not make a geometry invalid.
  *
@@ -109,20 +109,20 @@ public class MakeValidOp {
 
     /**
      * Repair an invalid geometry.
-     * <br/>
+     * 
      * If preserveGeomDim is true, makeValid will remove degenerated geometries
      * from the result, i.e geometries which dimension is lower than the input
      * geometry dimension (except for mixed GeometryCollection).
-     * <br/>
+     * 
      * A multi-geometry will always produce a multi-geometry (eventually empty
      * or made of a single component). A simple geometry may produce a
      * multi-geometry (ex. polygon with self-intersection will generally produce
      * a multi-polygon). In this case, it is up to the client to explode
      * multi-geometries if he needs to.
-     * <br/>
+     * 
      * If preserveGeomDim is off, it is up to the client to filter degenerate
      * geometries.
-     * <br/>
+     * 
      * WARNING : for geometries of dimension 1 (linear), duplicate coordinates
      * are preserved as much as possible. For geometries of dimension 2 (areal),
      * duplicate coordinates are generally removed due to the use of overlay
@@ -650,7 +650,7 @@ public class MakeValidOp {
      * Nodes a LineString and returns a List of Noded LineString's. Used to
      * repare auto-intersecting LineString and Polygons. This method cannot
      * process CoordinateSequence. The noding process is limited to 3d
-     * geometries.<br/>
+     * geometries.
      * Preserves duplicate coordinates.
      *
      * @param coords coordinate array to be noded
