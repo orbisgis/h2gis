@@ -68,7 +68,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
 
     /**
      * Fires whenever an XML start markup is encountered. It creates a new
-     * routePoint when a <rtept> markup is encountered.
+     * routePoint when a {@code <rtept>} markup is encountered.
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)

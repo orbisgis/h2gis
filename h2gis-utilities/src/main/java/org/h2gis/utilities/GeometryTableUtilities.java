@@ -1180,8 +1180,11 @@ public class GeometryTableUtilities {
      * Note that the geometry column can be an expression.
      *
      *
-     * Supported syntaxes the_geom -> Column name st_buffer(the_geom, 20) ->
+     * Supported syntaxes
+     * {@code
+     * the_geom -> Column name st_buffer(the_geom, 20) ->
      * Geometry function
+     * }
      *
      * @param connection Active connection (not closed by this function)
      * @param location Location of the table
@@ -1205,9 +1208,11 @@ public class GeometryTableUtilities {
      *
      * Note that the geometry column can be an expression.
      *
-     * Supported syntaxes the_geom -> Column name st_buffer(the_geom, 20) ->
+     * Supported syntaxes
+     * {@code
+     * the_geom -> Column name st_buffer(the_geom, 20) ->
      * Geometry function
-     *
+     * }
      *
      *
      * @param connection Active connection (not closed by this function)
@@ -1306,10 +1311,11 @@ public class GeometryTableUtilities {
      *
      * Note that the geometry column can be an expression.
      *
-     * Supported syntaxes 
+     * Supported syntaxes
+     * {@code
      * the_geom -> Column name 
      * st_buffer(the_geom, 20) -> Geometry function
-     *
+     * }
      *
      *
      * @param connection Active connection (not closed by this function)
@@ -1334,10 +1340,11 @@ public class GeometryTableUtilities {
      *
      * Note that the geometry column can be an expression.
      *
-     * Supported syntaxes 
+     * Supported syntaxes
+     * {@code
      * the_geom -> Column name 
      * st_buffer(the_geom, 20) -> Geometry function
-     *
+     * }
      *
      *
      * @param connection Active connection (not closed by this function)

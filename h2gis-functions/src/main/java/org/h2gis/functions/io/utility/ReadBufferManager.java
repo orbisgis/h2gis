@@ -288,7 +288,7 @@ public final class ReadBufferManager {
          * Gets the number of remaining bytes in the current file, starting from the
          * current position
          *
-         * @return a number of bytes >=0
+         * @return a number of bytes &gt;=0
          * @throws java.io.IOException
          */
         public long remaining() throws IOException {

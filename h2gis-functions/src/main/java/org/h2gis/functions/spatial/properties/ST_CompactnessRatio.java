@@ -28,11 +28,11 @@ import org.locationtech.jts.geom.Polygon;
  * ST_CompactnessRatio computes the perimeter of a circle whose area is equal to the
  * given polygon's area, and returns the ratio of this computed perimeter to the given
  * polygon's perimeter.
- * <p/>
+ * 
  * Equivalent definition: ST_CompactnessRatio returns the square root of the
  * polygon's area divided by the area of the circle with circumference equal to
  * the polygon's perimeter.
- * <p/>
+ * 
  * Note: This uses the 2D perimeter/area of the polygon.
  *
  * @author Adam Gouge
