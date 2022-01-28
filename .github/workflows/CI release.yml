@@ -95,7 +95,7 @@ jobs:
         run: |
           echo "## Changelog for v$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)" > docs/CHANGELOG.md
           git commit -a -m "Empty changelog."
-          git push origin master
+          git push origin 2.0.X
 
 
       # If the version change is a major or minor, create a branch from the previous tag for future revisions.
