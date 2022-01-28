@@ -57,5 +57,5 @@ jobs:
 
       - if: steps.changes.outputs.changelog == 'false' && github.event_name != 'workflow_dispatch'
         run: |
-          echo "Please update the Readme.md file."
+          echo "Please update the Changelog.md file."
           exit 1
