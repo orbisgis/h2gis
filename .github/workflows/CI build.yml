@@ -43,7 +43,7 @@ jobs:
       #   - compile : compile the source code.
       #   - test : Perform the tests.
       - name: Build
-        run: mvn -ntp clean validate compile test javadoc:test-javadoc javadoc:jar
+        run: mvn -ntp -P standalone,integration clean validate compile test javadoc:test-javadoc javadoc:jar
 
       # Check changelog update
       - name: Check changelog update
@@ -56,4 +56,6 @@ jobs:
         if: github.event_name != 'workflow_dispatch'
 
       - if: steps.changes.outputs.changelog == 'false' && github.event_name != 'workflow_dispatch'
-        run: exit 1
+        run: |
+          echo "Please update the Readme.md file."
+          exit 1
