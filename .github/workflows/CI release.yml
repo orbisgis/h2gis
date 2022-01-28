@@ -52,13 +52,12 @@ jobs:
 
       # Test build
       - name: Build test
-        run: mvn -ntp clean validate compile test javadoc:test-javadoc javadoc:jar
+        run: mvn -ntp -P standalone,integration clean validate compile test javadoc:test-javadoc javadoc:jar
 
       # Create the release :
       #   - move from Snapshot version to Release
       #   - commit and tag release
       #   - move to next Snapshot
-      #   - upload release to maven repo
       - name: Release
         run: |
           VERSION=${{ github.event.inputs.nextVersion }}
@@ -68,6 +67,7 @@ jobs:
             -P deploy \
             -Dmaven.test.skip=true \
             release:prepare release:perform \
+            -P standalone,integration \
             -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN ${VERSION:+"-DdevelopmentVersion="$VERSION"-SNAPSHOT"}
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
@@ -78,38 +78,22 @@ jobs:
       - name: Export env values
         run: echo "GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
 
-      # Make the github release from the last created tag. Write in its body the content of the changelog file.
+      # Make the Github release from the last created tag. Write in its body the content of the changelog file.
       - name: Make github release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.GIT_TAG }}
           release_name: ${{ env.GIT_TAG }}
-          body_path: docs/CHANGELOG.md
+          bodyFile: "docs/CHANGELOG.md"
           draft: false
           prerelease: false
+          artifacts: "h2gis-dist/target/h2gis-standalone-bin.zip"
 
       # Clear the changelog file and add its header
       - name: Clear changelog
         run: |
           echo "## Changelog for v$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)" > docs/CHANGELOG.md
           git commit -a -m "Empty changelog."
-          git push origin master
-
-
-      # If the version change is a major or minor, create a branch from the previous tag for future revisions.
-      - name: Branch fork
-        run: |
-          GIT_TAG="${GIT_TAG:1}"
-          CUR_TAG="$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)"
-          SPLIT0=(${GIT_TAG//./ })
-          SPLIT1=(${CUR_TAG//./ })
-          if [ "${SPLIT0[0]}" = "${SPLIT1[0]}" ] && [ "${SPLIT0[1]}" = "${SPLIT1[1]}" ]; then
-            echo "Revision change"
-          else
-            echo "Minor or Major change"
-            BRANCH="${SPLIT0[0]}.${SPLIT0[1]}.X"
-            git checkout -b "$BRANCH" "v${GIT_TAG}"
-            git push -u origin "$BRANCH"
-          fi
+          git push origin 2.0.X
