@@ -58,6 +58,7 @@ jobs:
       #   - move from Snapshot version to Release
       #   - commit and tag release
       #   - move to next Snapshot
+      #   - upload release to maven repo
       - name: Release
         run: |
           VERSION=${{ github.event.inputs.nextVersion }}
@@ -66,8 +67,8 @@ jobs:
             --batch-mode \
             -P deploy \
             -Dmaven.test.skip=true \
-            release:prepare release:perform \
             -P standalone,integration \
+            release:prepare release:perform \
             -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN ${VERSION:+"-DdevelopmentVersion="$VERSION"-SNAPSHOT"}
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
