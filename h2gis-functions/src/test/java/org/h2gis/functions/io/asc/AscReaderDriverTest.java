@@ -23,6 +23,9 @@ package org.h2gis.functions.io.asc;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,6 +94,68 @@ public class AscReaderDriverTest {
         try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  ST_SETSRID(ST_MAKEPOINT(-177.25, -84.25), 4326))")) {
             assertFalse(rs.next());
         }
+    }
+
+
+    /**
+     * Test reading two time the same asc by pushing more lines
+     * asc files may be tiled, it is interesting to have a method to read all asc files into the same output table
+     * @throws IOException
+     * @throws SQLException
+     */
+    @Test
+    public void testReadPrecipTwoTimes() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS PRECIP30MIN");
+        AscReaderDriver reader = new AscReaderDriver();
+        reader.setDeleteTable(true);
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
+
+        // Check number of read cells
+        assertEquals(299, JDBCUtilities.getRowCount(connection, TableLocation.parse("PRECIP30MIN", DBTypes.H2GIS)));
+
+        // Check first read cell
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-179.75,-80.25), 4326))")) {
+            assertTrue(rs.next());
+            assertEquals(234, rs.getInt("Z"));
+        }
+
+        // Check last read cell
+        st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-172.75, -89.75), 4326))")) {
+            assertTrue(rs.next());
+            assertEquals(114, rs.getInt("Z"));
+        }
+        // Check nodata cell
+        st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  ST_SETSRID(ST_MAKEPOINT(-177.25, -84.25), 4326))")) {
+            assertFalse(rs.next());
+        }
+
+        // Push the same file as a new tile
+        reader.setDeleteTable(false);
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
+
+        // Check first read cell
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-179.75,-80.25), 4326))")) {
+            assertTrue(rs.next());
+            assertEquals(234, rs.getInt("Z"));
+        }
+
+        // Check last read cell
+        st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-172.75, -89.75), 4326))")) {
+            assertTrue(rs.next());
+            assertEquals(114, rs.getInt("Z"));
+        }
+        // Check nodata cell
+        st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  ST_SETSRID(ST_MAKEPOINT(-177.25, -84.25), 4326))")) {
+            assertFalse(rs.next());
+        }
+
+        // Check number of read cells
+        assertEquals(299 * 2, JDBCUtilities.getRowCount(connection, TableLocation.parse("PRECIP30MIN", DBTypes.H2GIS)));
     }
 
     @Test
