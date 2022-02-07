@@ -2,3 +2,4 @@
 
 + Fix javadoc issues.
 + Fix geometry_columns view function in order to escape table name with reserved database word (#1269)
++  Change batch size to use the optimal size (#1275) 
