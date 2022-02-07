@@ -32,6 +32,7 @@ import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 public class FindGeometryMetadata extends DeterministicScalarFunction{
 
@@ -71,7 +72,7 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
             try ( // Fetch the first geometry to find a stored SRID
                   Statement st = connection.createStatement();
                   ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
-                          StringUtils.quoteJavaString(columnName.toUpperCase()), new TableLocation(catalogName, schemaName, tableName)))) {
+                          StringUtils.quoteJavaString(columnName.toUpperCase()), new TableLocation(catalogName, schemaName, tableName, DBUtils.getDBType(connection))))) {
                 if (rs.next()) {
                     srid = rs.getString(1);
                 }
