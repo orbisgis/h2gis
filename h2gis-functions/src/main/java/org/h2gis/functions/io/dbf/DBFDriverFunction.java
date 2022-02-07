@@ -55,7 +55,7 @@ import org.h2gis.utilities.dbtypes.DBUtils;
 public class DBFDriverFunction implements DriverFunction {
 
     public static String DESCRIPTION = "dBase III format";
-    private static final int BATCH_MAX_SIZE = 200;
+    private static final int BATCH_MAX_SIZE = 100;
 
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
