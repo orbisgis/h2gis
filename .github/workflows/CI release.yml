@@ -16,12 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Setup the jdk using version 11 of adoptOpenJDK
-      - name: Java setup
+      # Setup the jdk using version 11 of Adoptium Temurin
+      - name: Setup java 11 using Adoptium Temurin
         uses: actions/setup-java@v2
         with:
-          distribution: adopt
-          java-version: 11
+          distribution: 'temurin'
+          java-version: '11'
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
@@ -67,6 +67,7 @@ jobs:
             --batch-mode \
             -P deploy \
             -Dmaven.test.skip=true \
+            -P standalone,integration \
             release:prepare release:perform \
             -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN ${VERSION:+"-DdevelopmentVersion="$VERSION"-SNAPSHOT"}
         env:
@@ -78,17 +79,18 @@ jobs:
       - name: Export env values
         run: echo "GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
 
-      # Make the github release from the last created tag. Write in its body the content of the changelog file.
-      - name: Make github release
-        uses: actions/create-release@v1
+      # Make the Github release from the last created tag. Write in its body the content of the changelog file.
+      - name: Make Github release
+        uses: ncipollo/release-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.GIT_TAG }}
           release_name: ${{ env.GIT_TAG }}
-          body_path: docs/CHANGELOG.md
+          bodyFile: "docs/CHANGELOG.md"
           draft: false
           prerelease: false
+          artifacts: "h2gis-dist/target/h2gis-standalone-bin.zip"
 
       # Clear the changelog file and add its header
       - name: Clear changelog
@@ -111,5 +113,7 @@ jobs:
             echo "Minor or Major change"
             BRANCH="${SPLIT0[0]}.${SPLIT0[1]}.X"
             git checkout -b "$BRANCH" "v${GIT_TAG}"
+            mvn versions:set -DnewVersion="${SPLIT0[0]}.${SPLIT0[1]}.$((${SPLIT0[2]}+1))-SNAPSHOT"
+            git commit -a -m "Set next version."
             git push -u origin "$BRANCH"
           fi
