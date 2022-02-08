@@ -46,7 +46,7 @@ import org.h2gis.utilities.dbtypes.DBUtils;
 public class CSVDriverFunction implements DriverFunction{
 
     public static String DESCRIPTION = "CSV file (Comma Separated Values)";
-    private static final int BATCH_MAX_SIZE = 200;
+    private static final int BATCH_MAX_SIZE = 100;
     private static final int AVERAGE_NODE_SIZE = 500;
     
     @Override
