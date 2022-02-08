@@ -245,6 +245,18 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ReservervedKeyWordTable() throws Exception {
+        // Test with reserved keyword named table
+        st.execute("DROP TABLE IF EXISTS \"NATURAL\"");
+        st.execute("CREATE TABLE \"NATURAL\" (geom GEOMETRY)");
+        st.execute("INSERT INTO \"NATURAL\" VALUES (ST_SETSRID('POINT(1 1)', 4326))");
+        try(ResultSet rs = st.executeQuery("select srid from geometry_columns where f_table_name = 'NATURAL'")) {
+            assertTrue(rs.next());
+            assertEquals(4326, rs.getInt(1));
+        }
+    }
+
+    @Test
     public void test_ST_Extent() throws Exception {
         st.execute("drop table if exists ptClouds");
         st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom GEOMETRY(MultiPoint));"

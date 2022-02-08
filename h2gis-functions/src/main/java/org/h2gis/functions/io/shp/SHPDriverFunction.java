@@ -63,7 +63,7 @@ import org.locationtech.jts.geom.Geometry;
 public class SHPDriverFunction implements DriverFunction {
 
     public static String DESCRIPTION = "ESRI shapefile";
-    private static final int BATCH_MAX_SIZE = 200;
+    private static final int BATCH_MAX_SIZE = 100;
 
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
