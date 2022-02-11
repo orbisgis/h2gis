@@ -133,6 +133,7 @@ public class OSMParser extends DefaultHandler {
             OSMTablesFactory.dropOSMTables(connection, requestedTable.toString());
         }
         checkOSMTables(connection, dbType, requestedTable, osmTableName);
+        connection.setAutoCommit(false);
         String[] outputOSMTableNames = createOSMDatabaseModel(connection, dbType, requestedTable, osmTableName);
 
 
@@ -217,6 +218,7 @@ public class OSMParser extends DefaultHandler {
             if (relationMemberPreparedStmt != null) {
                 relationMemberPreparedStmt.close();
             }
+            connection.setAutoCommit(true);
         }
         return null;
     }
@@ -487,6 +489,7 @@ public class OSMParser extends DefaultHandler {
     private int insertBatch(PreparedStatement st, int batchSize, int maxBatchSize) throws SQLException {
         if(batchSize >= maxBatchSize) {
             st.executeBatch();
+            connection.commit();
             st.clearBatch();
             return 0;
         } else {

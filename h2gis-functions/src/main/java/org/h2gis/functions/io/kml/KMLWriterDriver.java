@@ -330,31 +330,30 @@ public class KMLWriterDriver {
 
     /**
      * A Placemark is a Feature with associated Geometry.Syntax :
-
-    <Placemark id="ID">
-    <!-- inherited from Feature element -->
-    <name>...</name> <!-- string -->
-    <visibility>1</visibility> <!-- boolean -->
-    <open>0</open> <!-- boolean -->
-    <atom:author>...<atom:author> <!-- xmlns:atom -->
-    <atom:link href=" "/> <!-- xmlns:atom -->
-    <address>...</address> <!-- string -->
-    <xal:AddressDetails>...</xal:AddressDetails> <!-- xmlns:xal -->
-    <phoneNumber>...</phoneNumber> <!-- string -->
-    <Snippet maxLines="2">...</Snippet> <!-- string -->
-    <description>...</description> <!-- string -->
-    <AbstractView>...</AbstractView> <!-- Camera or LookAt -->
-    <TimePrimitive>...</TimePrimitive>
-    <styleUrl>...</styleUrl> <!-- anyURI -->
-    <StyleSelector>...</StyleSelector>
-    <Region>...</Region>
-    <Metadata>...</Metadata> <!-- deprecated in KML 2.2 -->
-    <ExtendedData>...</ExtendedData> <!-- new in KML 2.2 -->
-
-    <!-- specific to Placemark element -->
-    <Geometry>...</Geometry>
-    </Placemark>
-     *
+     * {@code
+     * <Placemark id="ID">
+     * <!-- inherited from Feature element -->
+     * <name>...</name> <!-- string -->
+     * <visibility>1</visibility> <!-- boolean -->
+     * <open>0</open> <!-- boolean -->
+     * <atom:author>...<atom:author> <!-- xmlns:atom -->
+     * <atom:link href=" "/> <!-- xmlns:atom -->
+     * <address>...</address> <!-- string -->
+     * <xal:AddressDetails>...</xal:AddressDetails> <!-- xmlns:xal -->
+     * <phoneNumber>...</phoneNumber> <!-- string -->
+     * <Snippet maxLines="2">...</Snippet> <!-- string -->
+     * <description>...</description> <!-- string -->
+     * <AbstractView>...</AbstractView> <!-- Camera or LookAt -->
+     * <TimePrimitive>...</TimePrimitive>
+     * <styleUrl>...</styleUrl> <!-- anyURI -->
+     * <StyleSelector>...</StyleSelector>
+     * <Region>...</Region>
+     * <Metadata>...</Metadata> <!-- deprecated in KML 2.2 -->
+     * <ExtendedData>...</ExtendedData> <!-- new in KML 2.2 -->
+     * <!-- specific to Placemark element -->
+     * <Geometry>...</Geometry>
+     * </Placemark>
+     * }
      *
      * @param xmlOut
      * @param rs
@@ -384,9 +383,9 @@ public class KMLWriterDriver {
      * to a KML Feature (NetworkLink, Placemark, GroundOverlay, PhotoOverlay,
      * ScreenOverlay, Document, Folder). These techniques are
      *
-     * Adding untyped data/value pairs using the <Data> element (basic)
-     * Declaring new typed fields using the <Schema> element and then instancing
-     * them using the <SchemaData> element (advanced) Referring to XML elements
+     * Adding untyped data/value pairs using the {@code Data} element (basic)
+     * Declaring new typed fields using the {@code Schema} element and then instancing
+     * them using the {@code <SchemaData>} element (advanced) Referring to XML elements
      * defined in other namespaces by referencing the external namespace within
      * the KML file (basic)
      *
@@ -394,7 +393,7 @@ public class KMLWriterDriver {
      * different pieces of data.
      *
      * Syntax :
-     *
+     * {@code
      * <ExtendedData>
      * <Data name="string">
      * <displayName>...</displayName> <!-- string -->
@@ -405,6 +404,7 @@ public class KMLWriterDriver {
      * </SchemaData>
      * <namespace_prefix:other>...</namespace_prefix:other>
      * </ExtendedData>
+     * }
      *
      * @param xmlOut
      */

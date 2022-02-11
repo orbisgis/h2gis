@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Maven Coordinates -->
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisparent</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
     </parent>
     <artifactId>h2gis-parent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -23,8 +21,22 @@
         <module>h2gis-functions-osgi</module>
         <module>postgis-jts</module>
         <module>postgis-jts-osgi</module>
-        <!--<module>h2gis-tests</module>-->
-</modules>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>standalone</id>
+            <modules>
+                <module>h2gis-dist</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>integration</id>
+            <modules>
+                <module>h2gis-tests</module>
+            </modules>
+        </profile>
+    </profiles>
 
 <!-- Project Information -->
     <name>H2GIS</name>
@@ -75,9 +87,9 @@
 
     <!-- Properties -->
     <properties>
-        <cts-version>1.6.0-SNAPSHOT</cts-version>
-        <poly2tri-version>0.3.0</poly2tri-version>
-        <java-network-analyzer-version>0.2.0</java-network-analyzer-version>
+        <cts-version>1.6.0</cts-version>
+        <poly2tri-version>0.4.0</poly2tri-version>
+        <java-network-analyzer-version>0.3.0</java-network-analyzer-version>
     </properties>
 
     <!-- Dependencies -->
@@ -154,13 +166,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>standalone</id>
-            <modules>
-                <module>h2gis-dist</module>
-            </modules>
-        </profile>
-    </profiles>
 </project>

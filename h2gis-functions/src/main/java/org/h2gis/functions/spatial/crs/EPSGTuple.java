@@ -21,6 +21,7 @@
 package org.h2gis.functions.spatial.crs;
 
 import org.cts.cs.CoordinateSystem;
+import org.cts.op.CoordinateOperation;
 
 /**
  * A simple tuple to manage both input and output CRSes used to build a

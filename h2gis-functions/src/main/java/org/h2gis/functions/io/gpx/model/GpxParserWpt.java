@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * Specific parser for waypoints. It will be call each time a <wpt> markup is
+ * Specific parser for waypoints. It will be call each time a {@code <wpt>} markup is
  * found. It is for the 1.1 version
  *
  * @author Erwan Bocher and Antonin Piasco 
@@ -45,7 +45,7 @@ public class GpxParserWpt extends AbstractGpxParserWpt {
 
     /**
      * Fires whenever an XML start markup is encountered. It saves informations
-     * about <link> in currentPoint.
+     * about {@code <link>} in currentPoint.
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)

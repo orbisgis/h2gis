@@ -2,10 +2,10 @@ name: CI build
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ '**' ]
   workflow_run:
     workflows: ["CI release"]
-    branches: [ master ]
+    branches: [ '**' ]
     types:
       - completed
   workflow_dispatch:
@@ -20,12 +20,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Setup the jdk using version 11 of adoptOpenJDK
-      - name: Setup java 11 using adoptOpenJDK
+      # Setup the jdk using version 11 of Adoptium Temurin
+      - name: Setup java 11 using Adoptium Temurin
         uses: actions/setup-java@v2
         with:
-          distribution: adopt
-          java-version: 11
+          distribution: 'temurin'
+          java-version: '11'
 
       # Setup postgis test DB
       - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
@@ -43,7 +43,7 @@ jobs:
       #   - compile : compile the source code.
       #   - test : Perform the tests.
       - name: Build
-        run: mvn -ntp clean validate compile test javadoc:test-javadoc
+        run: mvn -ntp clean validate compile test javadoc:test-javadoc javadoc:jar
 
       # Check changelog update
       - name: Check changelog update
@@ -53,7 +53,13 @@ jobs:
           filters: |
             changelog:
               - 'docs/CHANGELOG.md'
+            sources:
+              - '**/pom.xml'
+              - '**/README.md'
+              - '**/src/**'
         if: github.event_name != 'workflow_dispatch'
 
-      - if: steps.changes.outputs.changelog == 'false' && github.event_name != 'workflow_dispatch'
-        run: exit 1
+      - if: steps.changes.outputs.changelog == 'false' && github.event_name != 'workflow_dispatch' && steps.changes.outputs.sources == 'true'
+        run: |
+          echo "Please update the Changelog.md file."
+          exit 1

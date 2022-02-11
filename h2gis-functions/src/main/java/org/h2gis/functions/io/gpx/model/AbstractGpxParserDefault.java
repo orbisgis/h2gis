@@ -252,7 +252,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Fires whenever an XML start markup is encountered. It takes general
      * information about the document. It change the ContentHandler to parse
-     * specific informations when <wpt>, <rte> or <trk> markup are found.
+     * specific informations when {@code <wpt>}, {@code <rte>} or {@code <trk>} markup are found.
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)
@@ -338,7 +338,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     }
 
     /**
-     * Gives the minimum longitude given by <bounds> element.
+     * Gives the minimum longitude given by {@code <bounds>} element.
      *
      * @return
      */
@@ -347,7 +347,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     }
 
     /**
-     * Gives the maximum longitude given by <bounds> element.
+     * Gives the maximum longitude given by {@code <bounds>} element.
      *
      * @return
      */
@@ -356,7 +356,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     }
 
     /**
-     * Gives the minimum latitude given by <bounds> element.
+     * Gives the minimum latitude given by {@code <bounds>} element.
      *
      * @return
      */
@@ -365,7 +365,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     }
 
     /**
-     * Gives the maximum latitude given by <bounds> element.
+     * Gives the maximum latitude given by {@code <bounds>} element.
      *
      * @return
      */

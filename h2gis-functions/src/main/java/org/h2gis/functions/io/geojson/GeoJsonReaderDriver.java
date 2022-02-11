@@ -99,11 +99,7 @@ public class GeoJsonReaderDriver {
      *
      * @param progress
      * @param tableReference
-<<<<<<< HEAD
-     * @return 
-=======
      * @return
->>>>>>> f17753e8b57767967bf0b70caf35a42b79d92059
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
@@ -144,9 +140,11 @@ public class GeoJsonReaderDriver {
                 init();
                 FileInputStream fis = new FileInputStream(fileName);
                 if (parseMetadata(new GZIPInputStream(fis))) {
+                    connection.setAutoCommit(false);
                     GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
                     fis = new FileInputStream(fileName);
                     parseData(new GZIPInputStream(fis));
+                    connection.setAutoCommit(true);
                     return tableLocation;
                 } else {
                     throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
@@ -189,9 +187,10 @@ public class GeoJsonReaderDriver {
         this.progress = progress.subProcess(100);
         init();
         if (parseMetadata(new FileInputStream(fileName))) {
+            connection.setAutoCommit(false);
             GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
             parseData(new FileInputStream(fileName));
-
+            connection.setAutoCommit(true);
         } else {
             throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
         }
@@ -1017,6 +1016,7 @@ public class GeoJsonReaderDriver {
             firstParam = skipCRS(jp);
         }
         if (firstParam.equalsIgnoreCase(GeoJsonField.FEATURES)) {
+            connection.setAutoCommit(false);
             jp.nextToken(); // START_ARRAY [
             JsonToken token = jp.nextToken(); // START_OBJECT {
             long batchSize = 0;
@@ -1036,6 +1036,7 @@ public class GeoJsonReaderDriver {
                     batchSize++;
                     if (batchSize >= BATCH_MAX_SIZE) {
                         preparedStatement.executeBatch();
+                        connection.commit();
                         preparedStatement.clearBatch();
                         batchSize = 0;
                     }
@@ -1044,17 +1045,16 @@ public class GeoJsonReaderDriver {
                     featureCounter++;
                     progress.setStep((featureCounter / nbFeature) * 100);
                     if (batchSize > 0) {
-                        try {
                             preparedStatement.executeBatch();
+                            connection.commit();
                             preparedStatement.clearBatch();
-                        }catch (SQLException ex){
-                            throw new SQLException(ex.getNextException());
-                        }
                     }
                 } else {
+                    connection.setAutoCommit(true);
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
                 }
             }
+            connection.setAutoCommit(true);
             //LOOP END_ARRAY ]
             log.info(featureCounter-1 + " geojson features have been imported.");
         } else {

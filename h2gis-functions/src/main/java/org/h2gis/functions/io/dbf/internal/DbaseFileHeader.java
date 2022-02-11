@@ -166,14 +166,13 @@ public class DbaseFileHeader {
 	 * character, number, logical(true/false), or date. The Field length is the
 	 * total length in bytes reserved for this column. The decimal count only
 	 * applies to numbers(N), and floating point values (F), and refers to the
-	 * number of characters to reserve after the decimal point. <B>Don't expect
-	 * miracles from this...</B>                         "02" => "cp850",       # International MS–DOS
+	 * number of characters to reserve after the decimal point.
+	 * Don't expect miracles from this...
+	 * "02" =&gt; "cp850",       # International MS–DOS
 	 *
-	 * <PRE>
-	 *
+	 * {@code
 	 * Field Type MaxLength ---------- --------- C 254 D 8 F 20 N 18
-	 *
-	 * </PRE>
+	 * }
 	 *
 	 * @param inFieldName
 	 *            The name of the new field, must be less than 10 characters or
@@ -185,7 +184,7 @@ public class DbaseFileHeader {
 	 *            The length of the field, in bytes ( see above )
 	 * @param inDecimalCount
 	 *            For numeric fields, the number of decimal places to track.
-     * @throws DbaseFileException                        "02" => "cp850",       # International MS–DOS
+     * @throws DbaseFileException                        "02" =&gt; "cp850",       # International MS–DOS
 	 *             If the type is not recognized.
 	 */
 	public void addColumn(String inFieldName, char inFieldType,
@@ -312,7 +311,7 @@ public class DbaseFileHeader {
 	/**
 	 * Remove a column from this DbaseFileHeader.
 	 *
-	 * @todo This is really ugly, don't know who wrote it, but it needs fixin...
+	 * TODO: This is really ugly, don't know who wrote it, but it needs fixin...
 	 * @param inFieldName
 	 *            The name of the field, will ignore case and trim.
 	 * @return index of the removed column, -1 if no found

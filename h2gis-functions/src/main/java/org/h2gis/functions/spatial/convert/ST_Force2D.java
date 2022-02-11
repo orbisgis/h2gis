@@ -25,7 +25,7 @@ import org.locationtech.jts.geom.Geometry;
 
 /**
  * Forces a Geometry into 2D mode by returning a copy with 
- * its z-coordinate set to {@link Double.NaN}.
+ * its z-coordinate set to NaN.
  *
  * @author Erwan Bocher
  */

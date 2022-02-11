@@ -72,9 +72,11 @@ public class OSMTablesFactory {
     /**
      * Create the nodes table that will be used to import OSM nodes 
      * Example :
+     * {@code
      * <node id="298884269" lat="54.0901746" lon="12.2482632" user="SvenHRO"
      * uid="46882" visible="true" version="1" changeset="676636"
      * timestamp="2008-09-21T21:37:45Z"/>
+     * }
      *
      * @param connection
      * @param nodeTableName
@@ -122,8 +124,10 @@ public class OSMTablesFactory {
     /**
      * Create the ways table that will be used to import OSM ways 
      * Example :
+     * {@code
      * <way id="26659127" user="Masch" uid="55988" visible="true" version="5"
      * changeset="4142606" timestamp="2010-03-16T11:47:08Z">
+     * }
      *
      * @param connection
      * @param wayTableName

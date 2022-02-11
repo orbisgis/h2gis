@@ -328,7 +328,6 @@ public class GeometryMetaData {
      * It's better to use getMetaData(geometry) to get all metadata
      * @param bytes WKB Bytes
      * @return Geometry MetaData
-     * @throws IOException If WKB meta is invalid (do not check the Geometry)
      */
     public static GeometryMetaData getMetaData(byte[] bytes)  {
         try {

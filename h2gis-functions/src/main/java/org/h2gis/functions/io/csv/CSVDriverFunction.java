@@ -46,7 +46,7 @@ import org.h2gis.utilities.dbtypes.DBUtils;
 public class CSVDriverFunction implements DriverFunction{
 
     public static String DESCRIPTION = "CSV file (Comma Separated Values)";
-    private static final int BATCH_MAX_SIZE = 200;
+    private static final int BATCH_MAX_SIZE = 100;
     private static final int AVERAGE_NODE_SIZE = 500;
     
     @Override
@@ -227,6 +227,7 @@ public class CSVDriverFunction implements DriverFunction{
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute(createTable.toString());
             }
+            connection.setAutoCommit(false);
             PreparedStatement pst = connection.prepareStatement(insertTable.toString());
             long batchSize = 0;
             try {
@@ -242,6 +243,7 @@ public class CSVDriverFunction implements DriverFunction{
                     batchSize++;
                     if (batchSize >= BATCH_MAX_SIZE) {
                         pst.executeBatch();
+                        connection.commit();
                         pst.clearBatch();
                         batchSize = 0;
                     }
@@ -256,11 +258,12 @@ public class CSVDriverFunction implements DriverFunction{
                 }
                 if (batchSize > 0) {
                     pst.executeBatch();
+                    connection.commit();
                     pst.clearBatch();
                 }
-
             } finally {
                 pst.close();
+                connection.setAutoCommit(true);
             }
             return new String[]{outputTable};
         }
