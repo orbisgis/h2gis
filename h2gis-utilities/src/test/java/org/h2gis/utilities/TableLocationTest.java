@@ -198,7 +198,7 @@ public class TableLocationTest {
     @Test
     public void testNoTableCstr(){
         assertThrows(IllegalArgumentException.class,() ->
-                new TableLocation("catalog", "schema", null));
+                new TableLocation("catalog", "schema", ""));
     }
 
     @Test
