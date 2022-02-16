@@ -3,4 +3,5 @@
 + Fix javadoc issues.
 + Remove `slf4j-simple` dependency (#1261)
 + Fix geometry_columns view function in order to escape table name with reserved database word (#1269)
-+  Change batch size to use the optimal size (#1275) 
++ Change batch size to use the optimal size (#1275) 
++ Fix GeoJSON driver on H2GIS does not use the good object type for geometry (#1277)
