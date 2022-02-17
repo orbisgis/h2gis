@@ -21,8 +21,11 @@
 package org.h2gis.functions.spatial.convert;
 
 import org.h2.util.geometry.JTSUtils;
+import org.h2.value.Value;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
+
+import java.sql.SQLException;
 
 /**
  * Convert a Geometry value into an Extended Well-Known Binary.
@@ -43,17 +46,16 @@ public class ST_AsEWKB extends DeterministicScalarFunction {
 
     /**
      * Convert a Geometry value into an Extended Well-Known Binary.
-     * @param geometry Geometry instance
+     * @param value Geometry instance
      * @return The bytes representation
      */
-    public static byte[] asEWKB(Geometry geometry) {
-        if(geometry==null) {
-            return null;
+    public static byte[] asEWKB(Value value) throws SQLException {
+        switch (value.getValueType()) {
+            case Value.NULL:
+            case Value.GEOMETRY:
+                return value.getBytes();
+            default:
+                throw new SQLException("ST_AsEWKB only supports geometry value");
         }
-        byte[] b =   JTSUtils.geometry2ewkb(geometry);
-        if(b!=null) {
-            return b;
-        }
-        return null;
     }
 }
