@@ -4,4 +4,5 @@
 + Remove `slf4j-simple` dependency (#1261)
 + Fix geometry_columns view function in order to escape table name with reserved database word (#1269)
 + Change batch size to use the optimal size (#1275) 
++ Add new constructors to TableLocation (#1264)
 + Add ST_AsEWKB function(#1271)
