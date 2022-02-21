@@ -321,6 +321,7 @@ public class H2GISFunctions {
                 new ST_SubDivide(),
                 new ST_MemSize(),
                 new ST_Multi()
+                new ST_AsEWKB()
         };
     }
 
