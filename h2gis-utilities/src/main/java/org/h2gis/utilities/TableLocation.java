@@ -55,6 +55,7 @@ public class TableLocation {
      * @param catalog Catalog name without quotes
      * @param schema Schema name without quotes
      * @param table Table name without quotes
+     * @param dbTypes The database type e.g : H2GIS, POSTGIS...
      */
     public TableLocation(String catalog, String schema, String table, DBTypes dbTypes) {
         if(table == null) {
@@ -73,8 +74,8 @@ public class TableLocation {
      * @param table Table name without quotes
      */
     public TableLocation(String catalog, String schema, String table) {
-        if(table == null) {
-            throw new IllegalArgumentException("Cannot construct table location with null table");
+        if(table == null || table.isEmpty()) {
+            throw new IllegalArgumentException("Cannot construct table location with null or empty table");
         }
         this.catalog = catalog == null ? "" : catalog;
         this.schema = schema  == null || schema.isEmpty() ? "" : schema;
@@ -87,6 +88,23 @@ public class TableLocation {
      */
     public TableLocation(String schema, String table) {
         this("",schema,table);
+    }
+
+    /**
+     * @param schema Schema name without quotes
+     * @param table Table name without quotes
+     * @param dbTypes The database type e.g : H2GIS, POSTGIS...
+     */
+    public TableLocation(String schema, String table, DBTypes dbTypes) {
+        this("",schema,table, dbTypes);
+    }
+
+    /**
+     * @param table Table name without quotes
+     * @param dbTypes The database type e.g : H2GIS, POSTGIS...
+     */
+    public TableLocation(String table, DBTypes dbTypes) {
+        this("", table,dbTypes);
     }
 
     /**
