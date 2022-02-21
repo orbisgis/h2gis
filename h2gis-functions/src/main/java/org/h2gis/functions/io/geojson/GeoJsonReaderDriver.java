@@ -898,8 +898,7 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // FIELD_NAME type     
             jp.nextToken(); //VALUE_STRING Point
             String geometryType = jp.getText();
-            Geometry geom = parseGeometry(jp, geometryType);
-            values[0] = ValueGeometry.getFromGeometry(geom).getBytesNoCopy();
+            values[0] = parseGeometry(jp, geometryType);
         }
     }
 
