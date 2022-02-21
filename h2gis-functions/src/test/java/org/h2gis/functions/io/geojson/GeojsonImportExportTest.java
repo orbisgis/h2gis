@@ -35,6 +35,7 @@ import org.locationtech.jts.io.WKTReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.nio.file.Files;
 import java.sql.*;
 import java.util.List;
@@ -42,6 +43,7 @@ import java.util.Properties;
 
 import org.h2gis.unitTest.GeometryAsserts;
 import org.osgi.service.jdbc.DataSourceFactory;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1151,6 +1153,49 @@ public class GeojsonImportExportTest {
             GeometryAsserts.assertGeometryEquals("SRID=4326;LINESTRING(1 10, 20 15)", geom);
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
+
+    @Test
+    public void testPostGISImport() throws Exception {
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        try (Connection con = dataSourceFactory.createDataSource(props).getConnection()) {
+            GeoJsonDriverFunction geoJsonDriverFunction = new GeoJsonDriverFunction();
+            geoJsonDriverFunction.importFile(con, "geojsontest", new File(GeojsonImportExportTest.class.getResource("data.geojson").getFile()), true, new EmptyProgressVisitor());
+            try(ResultSet res = con.createStatement().executeQuery("SELECT * FROM geojsontest;")) {
+                assertTrue(res.next());
+                assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POLYGON ((7.49587624983838 48.5342070572556, 7.49575955525988 48.5342516702309, 7.49564286068138 48.5342070572556, 7.49564286068138 48.534117831187, 7.49575955525988 48.5340732180938, 7.49587624983838 48.534117831187, 7.49587624983838 48.5342070572556))")));
+                assertEquals(-105576, res.getDouble(2), 0);
+                assertEquals(275386, res.getDouble(3), 0);
+                assertEquals(56.848998452816424, res.getDouble(4), 0);
+                assertEquals(55.87291487481895, res.getDouble(5), 0);
+                assertEquals(0.0, res.getDouble(6), 0);
+                assertNull(res.getString(7));
+                assertEquals(2, res.getDouble(8), 0);
+                assertEquals("2017-01-19T18:29:26+01:00", res.getString(9));
+                assertEquals("1484846966000", res.getBigDecimal(10).toString());
+                assertEquals("2017-01-19T18:29:27+01:00", res.getString(11));
+                assertEquals("1484846967000", res.getBigDecimal(12).toString());
+                assertEquals("{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}}", res.getString(13));
+                assertEquals("[49,40.0,{\"member1\":1,\"member2\":{\"member21\":21,\"member22\":22}},\"string\",[13,\"string\",{\"member3\":3,\"member4\":4}]]", res.getString(14));
+                assertEquals("[58,47,58,57,58,49,58,51,58,58,49,57,58,58,49,58,57,56,57,58,59,58,57,58,49,47,48,57,48,58,57,57,51,56,52,57,51,57,49,58,55,58,50,48,48,52,56,57,48,58,52,48,53,50,57,54,57,47,58,57,54,54,53,56,57,55,58,58,57,58,57,57]", res.getString(15));
+                res.next();
+            }
+        } catch (PSQLException ex) {
+            if (ex.getCause() == null || ex.getCause() instanceof ConnectException) {
+                // Connection issue ignore
+                log.warn("Connection error to local PostGIS, ignored", ex);
+            } else {
+                throw ex;
+            }
+        } catch (SQLException ex) {
+            log.error(ex.getLocalizedMessage(), ex.getNextException());
+            throw ex;
         }
     }
 

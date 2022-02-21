@@ -7,3 +7,4 @@
 + Add new constructors to TableLocation (#1264)
 + Add ST_AsEWKB function(#1271)
 + Add ST_Multi function (#1268)
++ Fix GeoJSON driver on H2GIS does not use the good object type for geometry (#1277)
