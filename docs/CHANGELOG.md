@@ -6,3 +6,4 @@
 + Change batch size to use the optimal size (#1275) 
 + Add new constructors to TableLocation (#1264)
 + Add ST_AsEWKB function(#1271)
++ Add ST_Multi function (#1268)
