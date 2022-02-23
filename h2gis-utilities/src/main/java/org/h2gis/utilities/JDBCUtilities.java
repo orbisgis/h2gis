@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
 
@@ -552,7 +553,21 @@ public class JDBCUtilities {
      * @throws java.sql.SQLException
      */
     public static boolean tableExists(Connection connection, TableLocation tableLocation) throws SQLException {
-        return tableExists(connection, tableLocation.toString());
+        List<String> tableNames = JDBCUtilities.getTableNames(connection,
+                tableLocation.getCatalog().isEmpty() ? null : tableLocation.getCatalog(),
+                tableLocation.getSchema().isEmpty() ? null : tableLocation.getSchema(),
+                null,
+                new String[]{"TABLE", "VIEW", "SYSTEM TABLE"});
+        for (String matchTableName : tableNames) {
+            TableLocation matchTableNameLocation = TableLocation.parse(matchTableName, tableLocation.getDbTypes());
+            if(tableLocation.getTable().equals(matchTableNameLocation.getTable()) &&
+                    ((tableLocation.getSchema().isEmpty() &&
+                            matchTableNameLocation.getSchema().equalsIgnoreCase("public")) ||
+                            tableLocation.getSchema().equals(matchTableNameLocation.getSchema()) )) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -564,12 +579,8 @@ public class JDBCUtilities {
      * @throws java.sql.SQLException
      */
     public static boolean tableExists(Connection connection, String tableName) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("SELECT * FROM " + tableName + " LIMIT 0;");
-            return true;
-        } catch (SQLException ex) {
-            return false;
-        }
+        DBTypes dbTypes = DBUtils.getDBType(connection);
+        return tableExists(connection, TableLocation.parse(tableName, dbTypes));
     }
 
     /**
@@ -586,7 +597,9 @@ public class JDBCUtilities {
      */
     public static List<String> getTableNames(Connection connection, TableLocation tableLocation, String[] types) throws SQLException {
         List<String> tableList = new ArrayList<>();
-        ResultSet rs = connection.getMetaData().getTables(tableLocation.getCatalog(), tableLocation.getSchema("PUBLIC"), tableLocation.getTable(), types);
+        ResultSet rs = connection.getMetaData().getTables(tableLocation.getCatalog(),
+                tableLocation.getSchema("PUBLIC"),
+                tableLocation.getTable().replace(TableLocation.QUOTE_CHAR, ""), types);
         try {
             while (rs.next()) {
                 tableList.add(new TableLocation(rs).toString(tableLocation.getDbTypes()));

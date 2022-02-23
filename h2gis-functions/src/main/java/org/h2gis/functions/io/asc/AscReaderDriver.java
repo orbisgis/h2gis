@@ -21,20 +21,15 @@ package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
@@ -230,7 +225,11 @@ public class AscReaderDriver {
                 stmt.close();
             }
             try (FileInputStream inputStream = new FileInputStream(fileName)) {
+                connection.setAutoCommit(false);
                 outputTableName = readAsc(connection, inputStream, progress, outputTableName, srid);
+                connection.commit();
+            } finally {
+                connection.setAutoCommit(true);
             }
             return new String[]{outputTableName};
         } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
@@ -246,7 +245,12 @@ public class AscReaderDriver {
                 stmt.close();
             }
             FileInputStream fis = new FileInputStream(fileName);
-            outputTableName = readAsc(connection, new GZIPInputStream(fis), progress, outputTableName, srid);
+            try {
+                connection.setAutoCommit(false);
+                outputTableName = readAsc(connection, new GZIPInputStream(fis), progress, outputTableName, srid);
+            } finally {
+                connection.setAutoCommit(true);
+            }
             return new String[]{outputTableName};
         } else {
             throw new SQLException("The asc read driver supports only asc or gz extensions");
@@ -268,40 +272,43 @@ public class AscReaderDriver {
 
     private String readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, String outputTable,
             int srid) throws UnsupportedEncodingException, SQLException {
-        final DBTypes dbType = DBUtils.getDBType(connection);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream, BUFFER_SIZE), encoding));
         try {
             Scanner scanner = new Scanner(reader);
             // Read HEADER
             readHeader(scanner);
             // Read values
-            connection.setAutoCommit(false);
             Statement st = connection.createStatement();
             PreparedStatement preparedStatement;
-            if (as3DPoint) {
-                if (zType == 1) {
-                    st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
-                    connection.commit();
+
+            int index=0;
+            if (!JDBCUtilities.tableExists(connection,outputTable)) {
+                if (as3DPoint) {
+                    if (zType == 1) {
+                        st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer)");
+                    } else {
+                        st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
+                    }
                 } else {
-                    st.execute("CREATE TABLE " + outputTable+ "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision)");
-                    connection.commit();
+                    if (zType == 1) {
+                        st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
+                    } else {
+                        st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
+                    }
                 }
-                preparedStatement = connection.prepareStatement("INSERT INTO " + outputTable
-                        + "(PK, the_geom, Z) VALUES (?, ?, ?)");
             } else {
-                if (zType == 1) {
-                    st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer)");
-                    connection.commit();
-                } else {
-                    st.execute("CREATE TABLE " + outputTable + "(PK INT PRIMARY KEY, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision)");
-                    connection.commit();
+                // restore the incremental index from the existing table
+                try(ResultSet rs = st.executeQuery("SELECT MAX(PK) FROM " +  outputTable)) {
+                    if(rs.next()) {
+                        index = rs.getInt(1) + 1;
+                    }
                 }
-                preparedStatement = connection.prepareStatement("INSERT INTO " + outputTable
-                        + "(PK,the_geom, Z) VALUES (?, ?, ?)");
             }
+            preparedStatement = connection.prepareStatement("INSERT INTO " + outputTable
+                    + "(PK, the_geom, Z) VALUES (?, ?, ?)");
 
             // Read data
-            GeometryFactory factory = new GeometryFactory();
+            GeometryFactory factory = new GeometryFactory(new PrecisionModel(),srid);
             int batchSize = 0;
             int firstRow = 0;
             int firstCol = 0;
@@ -318,7 +325,6 @@ public class AscReaderDriver {
             if (progress != null) {
                 cellProgress = progress.subProcess(lastRow);
             }
-            int index=0;
             for (int i = 0; i < nrows; i++) {
                 for (int j = 0; j < ncols; j++) {
                     if (readFirst) {
@@ -366,7 +372,6 @@ public class AscReaderDriver {
                         }
                         if (batchSize >= BATCH_MAX_SIZE) {
                             preparedStatement.executeBatch();
-                            connection.commit();
                             preparedStatement.clearBatch();
                             batchSize = 0;
                         }
@@ -379,9 +384,7 @@ public class AscReaderDriver {
             }
             if (batchSize > 0) {
                 preparedStatement.executeBatch();
-                connection.commit();
             }
-            connection.setAutoCommit(true);
             return outputTable;
         } catch (NoSuchElementException | NumberFormatException | IOException | SQLException ex) {
             throw new SQLException("Unexpected word " + lastWord, ex);
