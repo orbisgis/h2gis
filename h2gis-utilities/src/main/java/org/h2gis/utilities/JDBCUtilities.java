@@ -561,7 +561,8 @@ public class JDBCUtilities {
         for (String matchTableName : tableNames) {
             TableLocation matchTableNameLocation = TableLocation.parse(matchTableName, tableLocation.getDbTypes());
             if(tableLocation.getTable().equals(matchTableNameLocation.getTable()) &&
-                    (tableLocation.getSchema().isEmpty() ||
+                    ((tableLocation.getSchema().isEmpty() &&
+                            matchTableNameLocation.getSchema().equalsIgnoreCase("public")) ||
                             tableLocation.getSchema().equals(matchTableNameLocation.getSchema()) )) {
                 return true;
             }
