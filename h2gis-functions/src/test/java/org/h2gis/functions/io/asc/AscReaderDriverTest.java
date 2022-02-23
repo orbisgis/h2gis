@@ -372,7 +372,7 @@ public class AscReaderDriverTest {
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
             con = ds.getConnection();
-
+            con.setAutoCommit(false);
         } catch (SQLException e) {
             log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
         }

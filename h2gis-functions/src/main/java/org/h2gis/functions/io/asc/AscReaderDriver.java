@@ -29,6 +29,7 @@ import org.locationtech.jts.geom.*;
 
 import java.io.*;
 import java.sql.*;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
@@ -224,7 +225,11 @@ public class AscReaderDriver {
                 stmt.close();
             }
             try (FileInputStream inputStream = new FileInputStream(fileName)) {
+                connection.setAutoCommit(false);
                 outputTableName = readAsc(connection, inputStream, progress, outputTableName, srid);
+                connection.commit();
+            } finally {
+                connection.setAutoCommit(true);
             }
             return new String[]{outputTableName};
         } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
@@ -240,7 +245,12 @@ public class AscReaderDriver {
                 stmt.close();
             }
             FileInputStream fis = new FileInputStream(fileName);
-            outputTableName = readAsc(connection, new GZIPInputStream(fis), progress, outputTableName, srid);
+            try {
+                connection.setAutoCommit(false);
+                outputTableName = readAsc(connection, new GZIPInputStream(fis), progress, outputTableName, srid);
+            } finally {
+                connection.setAutoCommit(true);
+            }
             return new String[]{outputTableName};
         } else {
             throw new SQLException("The asc read driver supports only asc or gz extensions");

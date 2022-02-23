@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 public class TableLocation {
     private String catalog,schema,table;
     /** Recognized by H2 and Postgres */
-    private static final String QUOTE_CHAR = "\"";
+    public static final String QUOTE_CHAR = "\"";
     private String defaultSchema = "public";
     private DBTypes dbTypes = null;
     public static final Pattern QUOTE_PATTERN = Pattern.compile("\\\"([^\\\"]+)\\\"|'([^']+)'|\\\\S+");
