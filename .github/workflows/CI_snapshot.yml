@@ -57,7 +57,7 @@ jobs:
 
       # Build distribution artifact
       - name: Distribution
-        run: mvn -ntp --batch-mode -Dmaven.test.skip=true -P standalone
+        run: mvn -ntp --batch-mode -Dmaven.test.skip=true -P standalone package
 
       #Production of the archive
       - name: Archive production artifacts
