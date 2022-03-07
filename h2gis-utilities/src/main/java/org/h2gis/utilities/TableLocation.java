@@ -123,6 +123,23 @@ public class TableLocation {
         return QUOTE_CHAR+identifier.replace("\"","\"\"")+QUOTE_CHAR;
     }
 
+    public static String unFormat(String identifier, DBTypes dbTypes) {
+        if (identifier == null || identifier.isEmpty() || dbTypes==null) {
+            return identifier;
+        }
+        String identifierWithoutQuote = identifier.replace(QUOTE_CHAR, "");
+        if(QUOTE_PATTERN.matcher(identifierWithoutQuote).find()){
+            return identifierWithoutQuote;
+        }
+        if(dbTypes.getReservedWords().contains(identifierWithoutQuote.toUpperCase())){
+            return identifierWithoutQuote;
+        }
+        if(!Objects.requireNonNull(dbTypes.specialNamePattern()).matcher(identifierWithoutQuote).find()) {
+            return identifierWithoutQuote;
+        }else {
+            return identifier;
+        }
+    }
 
     /**
      * Format the identifier is necessary. Require database knowledge.
@@ -326,18 +343,18 @@ public class TableLocation {
         String[] values = parts.toArray(new String[0]);
         switch (values.length) {
             case 1:
-                table = values[0].trim();
+                table = unFormat(values[0].trim(), dbTypes);
                 break;
             case 2:
-                schema = values[0].trim();
-                table = values[1].trim();
+                schema = unFormat(values[0].trim(), dbTypes);
+                table = unFormat(values[1].trim(), dbTypes);
                 break;
             case 3:
-                catalog = values[0].trim();
-                schema = values[1].trim();
-                table = values[2].trim();
+                catalog = unFormat(values[0].trim(), dbTypes);
+                schema = unFormat(values[1].trim(), dbTypes);
+                table = unFormat(values[2].trim(), dbTypes);
         }
-        return new TableLocation(catalog,schema,table, dbTypes);
+        return new TableLocation(catalog, schema, table, dbTypes);
     }
 
     /**
@@ -387,10 +404,11 @@ public class TableLocation {
 
         TableLocation that = (TableLocation) o;
 
-        return  (catalog.equals(that.catalog) || catalog.isEmpty() || that.catalog.isEmpty()) &&
+        boolean atomicEqual =  (catalog.equals(that.catalog) || catalog.isEmpty() || that.catalog.isEmpty()) &&
                 (schema.equals(that.schema) || (schema.equals(defaultSchema) && that.schema.isEmpty()) ||
                         (that.schema.equals(defaultSchema) && schema.isEmpty())) &&
                 table.equals(that.table);
+        return  atomicEqual || toString().equals(o.toString());
     }
 
     @Override
