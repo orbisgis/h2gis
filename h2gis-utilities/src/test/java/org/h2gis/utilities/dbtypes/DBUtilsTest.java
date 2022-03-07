@@ -41,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Erwan Bocher (CNRS 2021)
  * @author Sylvein PALOMINOS (UBS Chaire GEOTERA 2021)
  */
-@Disabled
 public class DBUtilsTest {
 
     private static Connection h2Conn;

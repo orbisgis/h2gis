@@ -36,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Erwan Bocher
  */
-@Disabled
 public class PostGIS_JTSTest {
 
     private static Connection connection;
