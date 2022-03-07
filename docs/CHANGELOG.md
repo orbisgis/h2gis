@@ -10,3 +10,4 @@
 + Add ST_Multi function (#1268)
 + Fix GeoJSON driver on H2GIS does not use the good object type for geometry (#1277)
 + Fix estimated extend on schema (#1286)
++ TableLocation.parse now restore a TableLocation.toString() to the initial state
