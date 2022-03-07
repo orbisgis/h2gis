@@ -55,7 +55,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-@Disabled
+
 public class GeometryTableUtilsTest {
 
     private static Connection connection;
@@ -80,11 +80,11 @@ public class GeometryTableUtilsTest {
         connection.createStatement().execute("CREATE TABLE GEOMTABLE (geom GEOMETRY, pt GEOMETRY(POINTZM), linestr GEOMETRY(LINESTRING), "
                 + "plgn GEOMETRY(POLYGON), multipt GEOMETRY(MULTIPOINT), multilinestr GEOMETRY(MULTILINESTRING), multiplgn GEOMETRY(MULTIPOLYGON), "
                 + "geomcollection GEOMETRY(GEOMETRYCOLLECTION))");
-        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('POINT(1 1)', 'POINT(1 1 0 0)',"
+        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('POINT(1 1)', 'POINTZM(1 1 0 0)',"
                 + " 'LINESTRING(1 1, 2 2)', 'POLYGON((1 1, 1 2, 2 2, 2 1, 1 1))', 'MULTIPOINT((1 1))',"
                 + " 'MULTILINESTRING((1 1, 2 2))', 'MULTIPOLYGON(((1 1, 1 2, 2 2, 2 1, 1 1)))',"
                 + " 'GEOMETRYCOLLECTION(POINT(1 1))')");
-        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('LINESTRING(1 1, 2 2)', 'POINT(2 2 0 0)',"
+        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('LINESTRING(1 1, 2 2)', 'POINTZM(2 2 0 0)',"
                 + " 'LINESTRING(2 2, 1 1)', 'POLYGON((1 1, 1 3, 3 3, 3 1, 1 1))', 'MULTIPOINT((3 3))',"
                 + " 'MULTILINESTRING((1 1, 3 3))', 'MULTIPOLYGON(((1 1, 1 3, 3 3, 3 1, 1 1)))',"
                 + " 'GEOMETRYCOLLECTION(POINT(3 3))')");
@@ -543,6 +543,18 @@ public class GeometryTableUtilsTest {
         TableLocation tableLocation = TableLocation.parse("GEOMTABLE_INDEX", DBTypes.H2GIS);
         assertEquals(new Envelope(150.0, 240.0, 250.0, 360.0),
                 GeometryTableUtilities.getEstimatedExtent(connection, tableLocation, "THE_GEOM").getEnvelopeInternal());
+    }
+
+    @Test
+    public void testEstimatedExtentSchema() throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
+        statement.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
+        TableLocation tableLocation = TableLocation.parse("myschema.geomtable", DBTypes.H2GIS);
+        Geometry geom = GeometryTableUtilities.getEstimatedExtent(connection, tableLocation, "the_geom");
+        assertNotNull(geom);
+        assertEquals(4326, geom.getSRID());
+        statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
     }
 
     @Test

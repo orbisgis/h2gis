@@ -106,4 +106,17 @@ public class RegressionTest {
         Geometry result = geomA.intersection(geomB);
         System.out.println(new WKTWriter(3).write(result));
     }
+
+    @Disabled
+    @Test
+    public void testST_BufferBug() throws SQLException {
+        Statement stat = connection.createStatement();
+        assertDoesNotThrow(() -> {
+            try {
+                stat.execute("SELECT ST_BUFFER('LINESTRING (307095.4 6739498.8, 307113.6 6739493.1, 307172.2 6739471.6, 307246.5 6739446.4, 307283 6739433.5, 307346 6739414.1)'::GEOMETRY, 1,'endcap=flat') ;");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+    }
 }
