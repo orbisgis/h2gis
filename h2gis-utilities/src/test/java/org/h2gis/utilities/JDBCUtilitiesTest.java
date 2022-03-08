@@ -169,6 +169,11 @@ public class JDBCUtilitiesTest {
         assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
         assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
         assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("TEMPTABLE")));
+
+        TableLocation t = TableLocation.parse("NATURAL", DBTypes.H2GIS);
+        st.execute("DROP TABLE IF EXISTS " + t);
+        st.execute("CREATE TABLE " + t + "(id integer, name varchar)");
+        assertTrue(JDBCUtilities.tableExists(connection, t));
     }
 
     @Test
