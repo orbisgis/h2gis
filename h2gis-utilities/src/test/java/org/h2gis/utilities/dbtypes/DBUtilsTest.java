@@ -68,12 +68,10 @@ public class DBUtilsTest {
         DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
         DataSource ds = dataSourceFactory.createDataSource(props);
-        postConn = ds.getConnection();
-        if (postConn == null) {
-            System.setProperty("postgresql", "false");
-        } else {
-            System.setProperty("postgresql", "true");
-        }
+        try {
+            postConn = ds.getConnection();
+        } catch (SQLException ignored) {}
+        System.setProperty("test.postgis", Boolean.toString(postConn!=null));
     }
 
     @BeforeEach
@@ -97,7 +95,7 @@ public class DBUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void getDBTypeFromConnection2() throws SQLException {
         assertEquals(DBTypes.POSTGIS, DBUtils.getDBType(postConn));
     }

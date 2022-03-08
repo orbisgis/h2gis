@@ -27,6 +27,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +50,9 @@ public class PostGIS_JTSTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         Driver driver = new Driver();
-        connection = driver.connect(url, props);
+        try {
+            connection = driver.connect(url, props);
+        } catch (SQLException ignored) {}
         System.setProperty("test.postgis", Boolean.toString(connection!=null));
     }
 

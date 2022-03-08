@@ -97,12 +97,10 @@ public class GeometryTableUtilsTest {
         DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
         DataSource ds = dataSourceFactory.createDataSource(props);
-        conPost = ds.getConnection();
-        if (conPost == null) {
-            System.setProperty("postgresql", "false");
-        } else {
-            System.setProperty("postgresql", "true");
-        }
+        try {
+            conPost = ds.getConnection();
+        } catch (SQLException ignored) {}
+        System.setProperty("test.postgis", Boolean.toString(conPost!=null));
     }
 
     @AfterAll
@@ -275,7 +273,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testHasGeometryFieldPostGIS() throws SQLException {
         Statement stat = conPost.createStatement();
         stat.execute("DROP TABLE IF EXISTS POINT3D");
@@ -760,7 +758,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testEstimatedExtentPostGIS() throws SQLException {
         Statement statement = conPost.createStatement();
         statement.execute("DROP TABLE IF EXISTS PUBLIC.GEOMTABLE; CREATE TABLE PUBLIC.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
@@ -774,7 +772,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testEstimatedExtentSchemaPostGIS() throws SQLException {
         Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
@@ -788,7 +786,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testEnvelopeSchemaPostGIS() throws SQLException {
         Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
@@ -860,7 +858,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testCreateDDLPostGIS() throws SQLException {
         Statement stat = conPost.createStatement();
         stat.execute("DROP TABLE IF EXISTS perstable");
@@ -965,7 +963,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testGetEnvelopeFromGeometryFieldsPostGIS() throws SQLException, ParseException {
         String sqlData = "DROP TABLE IF EXISTS public.buildings;\n"
                 + "CREATE TABLE public.buildings (\n"
@@ -1065,7 +1063,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")    
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testGetEnvelopeFromGeometryFieldsWithFilterPostGIS() throws SQLException, ParseException {
         String sqlData = "DROP TABLE IF EXISTS public.buildings;\n"
                 + "CREATE TABLE public.buildings (\n"
@@ -1196,7 +1194,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")   
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testGetEnvelopeFromGeometryFieldsSubQueryFilterPostGIS() throws SQLException, ParseException {
         Statement stat = conPost.createStatement();
         String sqlData = "DROP TABLE IF EXISTS public.building_indicators;\n"
@@ -1253,7 +1251,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testPostGISIsSpatialIndexed() throws Exception {
         TableLocation tableLocation = TableLocation.parse("geo_point", DBTypes.POSTGIS);
         Statement stat = conPost.createStatement();
@@ -1280,7 +1278,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testGetSRIDSameTableNames() throws SQLException {
         Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; "
@@ -1328,6 +1326,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testFirstGeometryTableNamePostGIS() throws Exception {
         Statement postGISST = conPost.createStatement();
         postGISST.execute("DROP TABLE IF EXISTS POINT_TABLE");

@@ -49,7 +49,6 @@ public class RegressionTest {
         });
     }
 
-    @Disabled
     @Test
     public void testBigGeometryDelaunay() throws SQLException {
         Statement stat = connection.createStatement();
