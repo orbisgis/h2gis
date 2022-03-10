@@ -2,12 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Maven Coordinates -->
-    <parent>
-        <groupId>org.orbisgis</groupId>
-        <artifactId>orbisparent</artifactId>
-        <version>1.2.0</version>
-    </parent>
+    <groupId>org.orbisgis</groupId>
     <artifactId>h2gis-parent</artifactId>
     <version>2.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -23,6 +18,13 @@
         <module>postgis-jts-osgi</module>
     </modules>
 
+    <!-- Properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+    </properties>
+
     <profiles>
         <profile>
             <id>standalone</id>
@@ -36,12 +38,24 @@
                 <module>h2gis-tests</module>
             </modules>
         </profile>
+        <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
-<!-- Project Information -->
+    <!-- Project Information -->
     <name>H2GIS</name>
     <description>H2GIS is a spatial extension of the H2 database engine in the spirit of PostGIS. It adds support for
-        the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.</description>
+        the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.
+    </description>
 
     <licenses>
         <license>
@@ -85,13 +99,6 @@
         <url>https://github.com/orbisgis/h2gis/issues</url>
     </issueManagement>
 
-    <!-- Properties -->
-    <properties>
-        <cts-version>1.6.0</cts-version>
-        <poly2tri-version>0.4.0</poly2tri-version>
-        <java-network-analyzer-version>0.3.0</java-network-analyzer-version>
-    </properties>
-
     <!-- Dependencies -->
     <repositories>
         <repository>
@@ -111,20 +118,98 @@
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>poly2tri</artifactId>
-                <version>${poly2tri-version}</version>
+                <version>0.4.0</version>
             </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>java-network-analyzer</artifactId>
-                <version>${java-network-analyzer-version}</version>
+                <version>0.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>cts</artifactId>
-                <version>${cts-version}</version>
+                <version>1.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.21</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>2.1.210</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.13.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.locationtech.jts</groupId>
+                <artifactId>jts-core</artifactId>
+                <version>1.18.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.32</version>
+            </dependency>
+            <dependency>
+                <groupId>net.postgis</groupId>
+                <artifactId>postgis-jdbc</artifactId>
+                <version>2021.1.0</version>
+            </dependency>
+
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.11.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.8.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.8.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.32</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>5.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>6.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.enterprise</artifactId>
+                <version>5.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <!-- Build Settings -->
     <build>
@@ -132,7 +217,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven-jar-version}</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -145,25 +230,32 @@
                     </archive>
                 </configuration>
             </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+            <!-- Sign -->
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin-version}</version>
+                <configuration>
+                    <gpgArguments>
+                        <arg>--pinentry-mode</arg>
+                        <arg>loopback</arg>
+                    </gpgArguments>
+                </configuration>
                 <executions>
                     <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
                         <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
+                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
+            </plugins>
+        </pluginManagement>
     </build>
+
 </project>
