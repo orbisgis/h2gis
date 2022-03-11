@@ -114,14 +114,14 @@
             <id>oss-sonatype</id>
             <name>oss-sonatype-snapshot</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>orbisgis-release</id>
             <name>oss-sonatype-release</name>
             <url>https://oss.sonatype.org/content/repositories/releases/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
     </repositories>
 
