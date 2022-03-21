@@ -71,6 +71,7 @@
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-test-utilities</artifactId>
             <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
@@ -87,7 +88,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>5.1.2</version>
+                <version>${maven-bundle-version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
