@@ -135,7 +135,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.orbisgis</groupId>
-                <artifactId>poly2tri</artifactId>
+                <artifactId>poly2tri-core</artifactId>
                 <version>${poly2tri-version}</version>
             </dependency>
             <dependency>
