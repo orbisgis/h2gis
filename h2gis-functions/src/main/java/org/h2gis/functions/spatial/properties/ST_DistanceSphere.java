@@ -58,8 +58,11 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
      * @return minimum distance in meters between two geometries
      */
     public static Double distanceSphere(Connection connection, Geometry a,Geometry b) throws SQLException {
-        if(a==null || b==null || (a.getSRID()!=b.getSRID())) {
+        if(a==null || b==null) {
             return null;
+        }
+        if(a.getSRID()!=b.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
 
         if (crsf == null) {
