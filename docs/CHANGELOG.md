@@ -13,3 +13,4 @@
 + `TableLocation.parse` now restore a `TableLocation.toString()` to the initial state
 + Make test run again without PostGIS instance
 + ST_DistanceSphere throws an exception when the twon input srids are different (#1292)
++ Remove OrbisParent dependency

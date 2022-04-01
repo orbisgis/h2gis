@@ -753,7 +753,7 @@ public class GeometryTableUtilities {
      *
      * @param connection
      * @param tableLocation
-     * @return
+     * @return an estimated extend of the table as geometry
      * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation) throws SQLException {
@@ -774,7 +774,7 @@ public class GeometryTableUtilities {
      * @param connection
      * @param tableName
      * @param geometryColumnName
-     * @return
+     * @return an estimated extend of the table as geometry
      * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, String tableName, String geometryColumnName) throws SQLException {
@@ -790,7 +790,7 @@ public class GeometryTableUtilities {
      * @param connection
      * @param tableLocation
      * @param geometryColumnName
-     * @return
+     * @return  an estimated extend of the table as geometry
      * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {

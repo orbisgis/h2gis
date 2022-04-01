@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>poly2tri</artifactId>
+            <artifactId>poly2tri-core</artifactId>
         </dependency>
 
         <dependency>
@@ -66,20 +66,6 @@
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-
-        <!-- Provided dependencies -->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
         </dependency>
 
         <!-- Test dependencies -->
