@@ -88,6 +88,8 @@
         <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
         <poly2tri-version>0.1.2</poly2tri-version>
         <postgis-jdbc-version>2021.1.0</postgis-jdbc-version>
+        <jna-version>0.3.0</jna-version>
+        <cts-version>1.6.0</cts-version>
         <slf4j-version>1.7.32</slf4j-version>
 
         <!-- Plugins versions -->
@@ -134,17 +136,17 @@
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>poly2tri</artifactId>
-                <version>0.4.0</version>
+                <version>${poly2tri-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>java-network-analyzer</artifactId>
-                <version>0.3.0</version>
+                <version>${jna-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>cts</artifactId>
-                <version>1.6.0</version>
+                <version>${cts-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -154,7 +156,7 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>2.1.210</version>
+                <version>${h2-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -179,17 +181,17 @@
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
-                <version>5.0.0</version>
+                <version>${osgi-compendium-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>6.0.0</version>
+                <version>${osgi-core-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.enterprise</artifactId>
-                <version>5.0.0</version>
+                <version>${osgi-enterprise-version}</version>
             </dependency>
 
             <!-- Test dependencies -->

@@ -57,6 +57,12 @@
             <artifactId>cts</artifactId>
         </dependency>
 
+        <!-- Provided dependencies -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
