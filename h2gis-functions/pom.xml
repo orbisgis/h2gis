@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>poly2tri-core</artifactId>
+            <artifactId>poly2tri</artifactId>
         </dependency>
 
         <dependency>
