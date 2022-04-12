@@ -839,7 +839,7 @@ public class GeometryTableUtilsTest {
         String ddl = JDBCUtilities.createTableDDL(connection, location);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute(ddl);
-        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64),SIZE_GEOM FLOAT)",
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64),SIZE_GEOM FLOAT)",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
@@ -892,13 +892,13 @@ public class GeometryTableUtilsTest {
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         String ddl = JDBCUtilities.createTableDDL(connection, location, TableLocation.parse("orbisgis",DBTypes.H2));
-        assertEquals("CREATE TABLE ORBISGIS (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
+        assertEquals("CREATE TABLE ORBISGIS (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         ddl = JDBCUtilities.createTableDDL(connection, location, TableLocation.parse("\"OrbisGIS\"",DBTypes.H2));
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar(26))");       
@@ -908,7 +908,7 @@ public class GeometryTableUtilsTest {
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar)");       
         ddl = JDBCUtilities.createTableDDL(connection,location, TableLocation.parse("\"OrbisGIS\"",DBTypes.H2));
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(1048576))",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING)",
                 ddl);
     }   
   
