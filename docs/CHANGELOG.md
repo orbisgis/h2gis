@@ -14,5 +14,6 @@
 + Make test run again without PostGIS instance
 + ST_DistanceSphere throws an exception when the twon input srids are different (#1292)
 + Remove OrbisParent dependency
++ Update H2 to 2.1.212 and fix poly2tri dep
 + Move all OSGI dependencies to h2gis-functions-osgi and to postgis-jts-osgi
 + Move classes used for datasource creation (`H2GISOsgiDBFactory` and `DataSourceFactoryImpl`) to `*-osgi` package and keep test purpose class (`HGISSimpleDBFactory`) in `h2gis-functions`
