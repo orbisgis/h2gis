@@ -20,14 +20,9 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.spatial.geometry.DummySpatialFunction;
-import org.h2gis.functions.spatial.geometry.GeometryFormsTest;
-import org.h2gis.unitTest.GeometryAsserts;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -51,7 +46,7 @@ public class GeometryConvertTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(GeometryConvertTest.class.getSimpleName());
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(GeometryConvertTest.class.getSimpleName());
     }
 
     @AfterAll

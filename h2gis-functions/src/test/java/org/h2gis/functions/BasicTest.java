@@ -21,7 +21,7 @@
 package org.h2gis.functions;
 
 import org.h2.jdbc.JdbcSQLException;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.trigger.UpdateTrigger;
@@ -32,8 +32,6 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.h2gis.utilities.GeometryTableUtilities;
@@ -54,7 +52,7 @@ public class BasicTest {
         @BeforeAll
         public static void tearUp() throws Exception {
             // Keep a connection alive to not close the DataBase on each unit test
-            connection = H2GISDBFactory.createSpatialDataBase("BasicTest");
+            connection = H2GISSimpleDBFactory.createSpatialDataBase("BasicTest");
         }
         @AfterAll
         public static void tearDown() throws Exception {
@@ -177,7 +175,7 @@ public class BasicTest {
         properties.put("databaseName","./target/datasource_db");
         properties.put("user", "sa");
         properties.put("password", "sa");
-        DataSource ds = H2GISDBFactory.createDataSource(properties);
+        DataSource ds = H2GISSimpleDBFactory.createDataSource(properties);
         assertNotNull(ds);
         Connection con = ds.getConnection();
         assertTrue(con.createStatement().execute("SELECT H2GISVERSION()"));
@@ -189,7 +187,7 @@ public class BasicTest {
         properties.put("databaseName","./target/datasource_db_nospatial");
         properties.put("user", "sa");
         properties.put("password", "sa");
-        DataSource ds = H2GISDBFactory.createDataSource(properties, false);
+        DataSource ds = H2GISSimpleDBFactory.createDataSource(properties, false);
         assertNotNull(ds);
         Connection con = ds.getConnection();
         assertThrows(SQLException.class, () -> con.createStatement().execute("SELECT H2GISVERSION()"));

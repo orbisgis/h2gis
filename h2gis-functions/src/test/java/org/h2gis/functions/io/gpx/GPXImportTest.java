@@ -23,12 +23,11 @@ package org.h2gis.functions.io.gpx;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
 import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +52,12 @@ public class GPXImportTest {
     private static final String DB_NAME = "GPXImportTest";
     private Statement st;
     private static final Logger log = LoggerFactory.getLogger(GPXImportTest.class);
+    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new GPXRead(), "");
     }
 
@@ -263,7 +263,6 @@ public class GPXImportTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con= null;
         try {
             DataSource ds  = dataSourceFactory.createDataSource(props);

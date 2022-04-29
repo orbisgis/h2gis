@@ -23,7 +23,7 @@ package org.h2gis.functions.spatial.create;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
@@ -50,7 +50,7 @@ public class CreateFunctionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(CreateFunctionTest.class.getSimpleName());
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(CreateFunctionTest.class.getSimpleName());
     }
 
     @AfterAll

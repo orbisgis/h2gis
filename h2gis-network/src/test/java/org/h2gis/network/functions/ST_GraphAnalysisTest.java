@@ -20,7 +20,7 @@
 package org.h2gis.network.functions;
 
 
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.jupiter.api.*;
 
@@ -56,7 +56,7 @@ public class ST_GraphAnalysisTest {
     @BeforeAll
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase("ST_GraphAnalysisTest", true);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase("ST_GraphAnalysisTest", true);
         H2GISFunctions.registerFunction(connection.createStatement(), new ST_GraphAnalysis(), "");
         GraphCreatorTest.registerCormenGraph(connection);
     }

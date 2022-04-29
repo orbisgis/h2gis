@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.mesh;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
@@ -43,7 +43,7 @@ public class MeshFunctionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(MeshFunctionTest.class.getSimpleName());
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(MeshFunctionTest.class.getSimpleName());
     }
 
     @AfterAll

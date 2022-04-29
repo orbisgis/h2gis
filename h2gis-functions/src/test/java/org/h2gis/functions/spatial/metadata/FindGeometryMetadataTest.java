@@ -20,7 +20,7 @@
 package org.h2gis.functions.spatial.metadata;
 
 
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.spatial.properties.ST_SRID;
 import org.junit.jupiter.api.*;
@@ -40,7 +40,7 @@ public class FindGeometryMetadataTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(FindGeometryMetadataTest.class.getSimpleName(), false);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(FindGeometryMetadataTest.class.getSimpleName(), false);
         H2GISFunctions.registerFunction(connection.createStatement(), new FindGeometryMetadata(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new ST_SRID(), "");
     }

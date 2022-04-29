@@ -19,7 +19,7 @@
  */
 package org.h2gis.network.functions;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,7 +46,7 @@ public class GraphCreatorTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase("GraphCreatorTest");
+        connection = H2GISSimpleDBFactory.createSpatialDataBase("GraphCreatorTest");
         registerCormenGraph(connection);
     }
 

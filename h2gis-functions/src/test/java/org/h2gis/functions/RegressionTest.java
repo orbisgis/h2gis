@@ -2,10 +2,8 @@ package org.h2gis.functions;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.functions.io.utility.IOMethods;
-import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -29,7 +27,7 @@ public class RegressionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
     }
 
     @AfterAll

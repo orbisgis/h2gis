@@ -21,7 +21,7 @@
 package org.h2gis.functions.io.osm;
 
 import org.h2.util.StringUtils;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Point;
 
@@ -49,7 +49,7 @@ public class OSMImportTest {
 
     @BeforeAll
     public static void tearUp() throws Exception {
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
     }
 
     @AfterAll

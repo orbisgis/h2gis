@@ -23,9 +23,9 @@ package org.h2gis.functions.io.tsv;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
@@ -36,7 +36,7 @@ import java.util.Properties;
 import org.h2gis.unitTest.GeometryAsserts;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.osgi.service.jdbc.DataSourceFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +54,12 @@ public class TSVDriverTest {
     private Statement st;
 
     private static final Logger log = LoggerFactory.getLogger(TSVDriverTest.class);
+    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new TSVRead(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new TSVWrite(), "");
         
@@ -238,7 +239,6 @@ public class TSVDriverTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con= null;
         try {
             DataSource ds  = dataSourceFactory.createDataSource(props);

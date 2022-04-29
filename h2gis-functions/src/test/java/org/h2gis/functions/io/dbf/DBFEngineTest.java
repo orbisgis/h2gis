@@ -22,7 +22,7 @@ package org.h2gis.functions.io.dbf;
 
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.file_table.H2TableIndex;
@@ -46,7 +46,7 @@ public class  DBFEngineTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new DriverManager(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFRead(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFWrite(), "");
@@ -179,7 +179,7 @@ public class  DBFEngineTest {
             assertTrue(dstDbf.delete());
             // Reopen it
         } finally {
-            connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
+            connection = H2GISSimpleDBFactory.openSpatialDataBase(DB_NAME);
             st = connection.createStatement();
         }
         try (ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt FROM dbftable")) {
@@ -238,7 +238,7 @@ public class  DBFEngineTest {
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'dbftable');");
         // Close Db
         st.execute("SHUTDOWN");
-        connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
+        connection = H2GISSimpleDBFactory.openSpatialDataBase(DB_NAME);
         st = connection.createStatement();
         try (ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
             assertTrue(rs.next());

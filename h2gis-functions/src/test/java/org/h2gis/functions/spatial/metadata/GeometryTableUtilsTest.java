@@ -20,10 +20,9 @@
 package org.h2gis.functions.spatial.metadata;
 
 import org.h2.util.StringUtils;
-import org.h2gis.functions.TestUtilities;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 
@@ -46,7 +45,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
 import org.h2gis.functions.spatial.crs.UpdateGeometrySRID;
@@ -62,11 +60,12 @@ public class GeometryTableUtilsTest {
     private static Connection conPost;
     private Statement st;
     private static final Logger log = LoggerFactory.getLogger(GeometryTableUtilsTest.class);
+    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(GeometryTableUtilsTest.class.getSimpleName());
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(GeometryTableUtilsTest.class.getSimpleName());
         connection.createStatement().execute("DROP TABLE IF EXISTS NOGEOM");
         connection.createStatement().execute("CREATE TABLE NOGEOM (id INT, str VARCHAR(100))");
         connection.createStatement().execute("INSERT INTO NOGEOM VALUES (25, 'twenty five')");
@@ -94,7 +93,6 @@ public class GeometryTableUtilsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
         DataSource ds = dataSourceFactory.createDataSource(props);
         try {
@@ -839,7 +837,7 @@ public class GeometryTableUtilsTest {
         String ddl = JDBCUtilities.createTableDDL(connection, location);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute(ddl);
-        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64),SIZE_GEOM FLOAT)",
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64),SIZE_GEOM FLOAT)",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
@@ -892,13 +890,13 @@ public class GeometryTableUtilsTest {
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         String ddl = JDBCUtilities.createTableDDL(connection, location, TableLocation.parse("orbisgis",DBTypes.H2));
-        assertEquals("CREATE TABLE ORBISGIS (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
+        assertEquals("CREATE TABLE ORBISGIS (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         ddl = JDBCUtilities.createTableDDL(connection, location, TableLocation.parse("\"OrbisGIS\"",DBTypes.H2));
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar(26))");       
@@ -908,7 +906,7 @@ public class GeometryTableUtilsTest {
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar)");       
         ddl = JDBCUtilities.createTableDDL(connection,location, TableLocation.parse("\"OrbisGIS\"",DBTypes.H2));
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(1048576))",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING)",
                 ddl);
     }   
   

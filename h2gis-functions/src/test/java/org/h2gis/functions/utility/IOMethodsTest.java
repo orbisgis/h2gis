@@ -23,7 +23,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.h2gis.api.DriverFunction;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
@@ -43,12 +44,10 @@ import org.h2gis.functions.io.dbf.DBFWrite;
 import org.h2gis.functions.io.shp.SHPRead;
 import org.h2gis.functions.io.shp.SHPWrite;
 import org.h2gis.functions.io.utility.IOMethods;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.locationtech.jts.geom.Geometry;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +62,12 @@ public class IOMethodsTest {
     private static final String DB_NAME = "UtilityTest";
 
     private static final Logger log = LoggerFactory.getLogger(IOMethodsTest.class);
+    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new SHPRead(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new SHPWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFWrite(), "");
@@ -137,7 +137,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -184,7 +183,6 @@ public class IOMethodsTest {
         st.execute("DROP TABLE IF EXISTS AREA");
         st.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         st.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -210,7 +208,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -241,7 +238,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -274,7 +270,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -311,7 +306,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -346,7 +340,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -382,7 +375,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -431,7 +423,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -456,7 +447,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -488,7 +478,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -530,7 +519,6 @@ public class IOMethodsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);

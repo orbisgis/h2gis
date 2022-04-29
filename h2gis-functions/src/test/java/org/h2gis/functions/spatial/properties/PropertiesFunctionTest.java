@@ -19,7 +19,7 @@
  */
 package org.h2gis.functions.spatial.properties;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.io.WKTReader;
 
@@ -43,7 +43,7 @@ public class PropertiesFunctionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(PropertiesFunctionTest.class.getSimpleName());
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(PropertiesFunctionTest.class.getSimpleName());
         WKT_READER = new WKTReader();
         WKT_READER.setIsOldJtsCoordinateSyntaxAllowed(false);
     }

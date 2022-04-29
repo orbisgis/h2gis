@@ -22,11 +22,10 @@ package org.h2gis.functions.io.cvs;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
 import org.junit.jupiter.api.*;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,13 +51,14 @@ public class CSVDriverTest {
     private static Connection connection;
     private static final String DB_NAME = "CSVImportExportTest";
     private Statement st;
+    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
 
     private static final Logger log = LoggerFactory.getLogger(CSVDriverTest.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
     }
 
     @AfterAll
@@ -162,7 +162,6 @@ public class CSVDriverTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);

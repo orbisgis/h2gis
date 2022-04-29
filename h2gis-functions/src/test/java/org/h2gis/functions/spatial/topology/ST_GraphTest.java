@@ -22,7 +22,7 @@ package org.h2gis.functions.spatial.topology;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.jupiter.api.*;
 
@@ -49,7 +49,7 @@ public class ST_GraphTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME, true);
+        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME, true);
         H2GISFunctions.registerFunction(connection.createStatement(), new ST_Graph(), "");
     }
 

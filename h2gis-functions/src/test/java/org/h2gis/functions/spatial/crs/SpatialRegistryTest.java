@@ -21,7 +21,7 @@
 package org.h2gis.functions.spatial.crs;
 
 import org.cts.parser.proj.ProjKeyParameters;
-import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISSimpleDBFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ public class SpatialRegistryTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
+        connection = JDBCUtilities.wrapConnection(H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME));
         srr = new SpatialRefRegistry();
         srr.setConnection(connection);
     }

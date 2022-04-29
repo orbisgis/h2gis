@@ -19,6 +19,7 @@
  */
 package org.h2gis.utilities.dbtypes;
 
+import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
@@ -46,6 +47,7 @@ public class DBUtilsTest {
     private static Connection h2Conn;
     private static Connection postConn;
     private static Statement h2St;
+    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
 
     @BeforeAll
     public static void init() throws Exception {
@@ -65,7 +67,6 @@ public class DBUtilsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
         DataSource ds = dataSourceFactory.createDataSource(props);
         try {
