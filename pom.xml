@@ -86,7 +86,7 @@
         <osgi-compendium-version>5.0.0</osgi-compendium-version>
         <osgi-core-version>6.0.0</osgi-core-version>
         <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
-        <poly2tri-version>0.1.2</poly2tri-version>
+        <poly2tri-version>0.4.0</poly2tri-version>
         <postgis-jdbc-version>2021.1.0</postgis-jdbc-version>
         <jna-version>0.3.0</jna-version>
         <cts-version>1.6.0</cts-version>
@@ -135,7 +135,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.orbisgis</groupId>
-                <artifactId>poly2tri-core</artifactId>
+                <artifactId>poly2tri</artifactId>
                 <version>${poly2tri-version}</version>
             </dependency>
             <dependency>
