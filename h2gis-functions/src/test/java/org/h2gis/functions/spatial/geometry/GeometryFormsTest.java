@@ -21,7 +21,7 @@
 package org.h2gis.functions.spatial.geometry;
 
 import org.h2.jdbc.JdbcSQLDataException;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.unitTest.GeometryAsserts;
 import org.junit.jupiter.api.*;
@@ -45,7 +45,7 @@ public class GeometryFormsTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(GeometryFormsTest.class.getSimpleName());
+        connection = H2GISDBFactory.createSpatialDataBase(GeometryFormsTest.class.getSimpleName());
         H2GISFunctions.registerFunction(connection.createStatement(), new DummySpatialFunction(), "");
     }
 

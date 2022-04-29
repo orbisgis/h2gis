@@ -20,7 +20,7 @@
 package org.h2gis.functions.spatial.clean;
 
 
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.unitTest.GeometryAsserts;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +53,7 @@ public class ST_MakeValidTest {
     @BeforeAll
     static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME, true);
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME, true);
     }
 
     @BeforeEach

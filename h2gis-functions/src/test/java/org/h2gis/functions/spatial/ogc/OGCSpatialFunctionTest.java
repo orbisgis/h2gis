@@ -24,7 +24,7 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.DummyFunction;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.spatial.convert.ST_GeomFromText;
 import org.h2gis.functions.spatial.convert.ST_PointFromText;
@@ -54,7 +54,7 @@ public class OGCSpatialFunctionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(OGCSpatialFunctionTest.class.getSimpleName());
+        connection = H2GISDBFactory.createSpatialDataBase(OGCSpatialFunctionTest.class.getSimpleName());
         // Set up test data
         OGCConformance1Test.executeScript(connection, "ogc_conformance_test3.sql");
         OGCConformance1Test.executeScript(connection, "spatial_index_test_data.sql");

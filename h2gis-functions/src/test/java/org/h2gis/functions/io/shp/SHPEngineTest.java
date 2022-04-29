@@ -22,7 +22,7 @@ package org.h2gis.functions.io.shp;
 
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -49,13 +49,13 @@ public class SHPEngineTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
     @BeforeEach
     public void tearUp2() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.openSpatialDataBase(DB_NAME);
+        connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
     }
 
     @AfterEach
@@ -162,7 +162,7 @@ public class SHPEngineTest {
         assertEquals(382, rs.getInt(1));
         connection.close();
         Thread.sleep(50);
-        connection = H2GISSimpleDBFactory.openSpatialDataBase(DB_NAME);
+        connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
         st = connection.createStatement();
         rs = st.executeQuery("SELECT COUNT(*) FROM shptable");
         assertTrue(rs.next());
@@ -216,7 +216,7 @@ public class SHPEngineTest {
             assertTrue(dstShx.delete());
             // Reopen it
         } finally {
-            connection = H2GISSimpleDBFactory.openSpatialDataBase(DB_NAME);
+            connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
             st = connection.createStatement();
         }
         ResultSet rs = st.executeQuery("SELECT SUM(ST_LENGTH(the_geom)) sumlen FROM shptable");
@@ -234,7 +234,7 @@ public class SHPEngineTest {
             Thread.sleep(1000);
             // Reopen it
         } finally {
-            connection = H2GISSimpleDBFactory.openSpatialDataBase(DB_NAME);
+            connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
             st = connection.createStatement();
         }
         rs = st.executeQuery("SELECT SUM(ST_LENGTH(the_geom)) sumlen FROM shptable");

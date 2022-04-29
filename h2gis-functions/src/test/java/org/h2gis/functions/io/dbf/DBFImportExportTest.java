@@ -23,12 +23,12 @@ package org.h2gis.functions.io.dbf;
 import org.h2.util.StringUtils;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -52,12 +52,12 @@ public class DBFImportExportTest {
     private static Connection connection;
     private static final String DB_NAME = "DBFImportExportTest";
     private static final Logger log = LoggerFactory.getLogger(DBFImportExportTest.class);
-    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFRead(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFWrite(), "");
     }

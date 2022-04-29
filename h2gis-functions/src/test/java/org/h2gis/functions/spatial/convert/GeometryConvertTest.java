@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
 
@@ -46,7 +46,7 @@ public class GeometryConvertTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(GeometryConvertTest.class.getSimpleName());
+        connection = H2GISDBFactory.createSpatialDataBase(GeometryConvertTest.class.getSimpleName());
     }
 
     @AfterAll

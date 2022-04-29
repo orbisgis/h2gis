@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.topology;
 
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ public class ST_NodeTest {
     @BeforeAll
     static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME, true);
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME, true);
 
         Coordinate[] coord1 = new Coordinate[]{new Coordinate(1, 2, 0), new Coordinate(2, 2, 0.5)};
         Coordinate[] coord2 = new Coordinate[]{new Coordinate(2, 2, 1.75), new Coordinate(3, 2, 1.75)};

@@ -21,7 +21,7 @@ package org.h2gis.functions.io.json;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ public class JsonWriteDriverTest {
     @BeforeAll
     public static void beforeAll() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(
+        connection = H2GISDBFactory.createSpatialDataBase(
                 JsonWriteDriverTest.class.getSimpleName() + "_" + UUID.randomUUID().toString());
         Statement stat = connection.createStatement();
         stat.execute("CREATE TABLE TABLE_POINT(idarea INT PRIMARY KEY, the_geom GEOMETRY(POINT), codes INTEGER ARRAY[4])");

@@ -21,8 +21,8 @@
 package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
-import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
@@ -56,11 +56,11 @@ public class AscReaderDriverTest {
     private static final String DB_NAME = "ASCRead_db";
 
     private static final Logger log = LoggerFactory.getLogger(AscReaderDriverTest.class);
-    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeEach
     public void tearUp() throws Exception {
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
     @AfterEach

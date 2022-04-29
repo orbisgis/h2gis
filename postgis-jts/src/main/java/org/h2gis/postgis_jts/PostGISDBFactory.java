@@ -30,7 +30,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PostGISSimpleDBFactory {
+public class PostGISDBFactory {
     String JDBC_DATABASE_NAME = "databaseName";
     String JDBC_DATASOURCE_NAME = "dataSourceName";
     String JDBC_PASSWORD = "password";
@@ -47,7 +47,7 @@ public class PostGISSimpleDBFactory {
             properties = new Properties();
         }
         if(properties.getProperty(JDBC_DATASOURCE_NAME) == null) {
-            properties.setProperty(JDBC_DATASOURCE_NAME, PostGISSimpleDBFactory.class.getSimpleName() + "_" +
+            properties.setProperty(JDBC_DATASOURCE_NAME, PostGISDBFactory.class.getSimpleName() + "_" +
                     dataSourceCount.getAndAdd(1));
         }
         PGPoolingDataSource dataSource = PGPoolingDataSource.getDataSource(properties.getProperty(JDBC_DATASOURCE_NAME));

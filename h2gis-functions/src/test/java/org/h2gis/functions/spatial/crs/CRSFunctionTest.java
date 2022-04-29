@@ -22,7 +22,7 @@ package org.h2gis.functions.spatial.crs;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -52,7 +52,7 @@ public class CRSFunctionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = JDBCUtilities.wrapConnection(H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME));
+        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
     }
 
     @BeforeEach

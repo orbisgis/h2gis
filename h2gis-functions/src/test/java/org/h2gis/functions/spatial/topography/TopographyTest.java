@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.topography;
 
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
 
@@ -45,7 +45,7 @@ public class TopographyTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(TopographyTest.class.getSimpleName());
+        connection = H2GISDBFactory.createSpatialDataBase(TopographyTest.class.getSimpleName());
     }
 
     @AfterAll

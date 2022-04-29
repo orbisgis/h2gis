@@ -20,9 +20,7 @@
 
 package org.h2gis.functions.factory;
 
-import org.h2.engine.Constants;
 import org.h2.jdbcx.JdbcDataSource;
-import org.h2.util.OsgiDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -33,13 +31,13 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Used to create quickly a database on unit tests. Should be used for test purpose ONLY
+ * Used to create quickly a database.
  *
  * @author Nicolas Fortin
  * @author Erwan Bocher
  * @author Sylvain Palominos
  */
-public class H2GISSimpleDBFactory {
+public class H2GISDBFactory {
 
     public static final String H2_PARAMETERS = ";DB_CLOSE_ON_EXIT=FALSE";
 
@@ -55,7 +53,7 @@ public class H2GISSimpleDBFactory {
     public static final String DEFAULT_USER = "sa";
     public static final String DEFAULT_PASSWORD = "sa";
 
-    private H2GISSimpleDBFactory() {
+    private H2GISDBFactory() {
         // utility
     }
 

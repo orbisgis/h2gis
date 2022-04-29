@@ -21,7 +21,7 @@
 package org.h2gis.functions.spatial.ogc;
 
 import org.h2.tools.RunScript;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ public class OGCConformance1Test {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME, false);
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME, false);
         // Set up test data
         executeScript(connection, "ogc_conformance_test.sql");
     }

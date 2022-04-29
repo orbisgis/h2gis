@@ -23,8 +23,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.h2gis.api.DriverFunction;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
-import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
@@ -62,12 +62,12 @@ public class IOMethodsTest {
     private static final String DB_NAME = "UtilityTest";
 
     private static final Logger log = LoggerFactory.getLogger(IOMethodsTest.class);
-    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new SHPRead(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new SHPWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFWrite(), "");

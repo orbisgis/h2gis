@@ -20,9 +20,9 @@
 package org.h2gis.functions.spatial.metadata;
 
 import org.h2.util.StringUtils;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 
@@ -60,12 +60,12 @@ public class GeometryTableUtilsTest {
     private static Connection conPost;
     private Statement st;
     private static final Logger log = LoggerFactory.getLogger(GeometryTableUtilsTest.class);
-    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(GeometryTableUtilsTest.class.getSimpleName());
+        connection = H2GISDBFactory.createSpatialDataBase(GeometryTableUtilsTest.class.getSimpleName());
         connection.createStatement().execute("DROP TABLE IF EXISTS NOGEOM");
         connection.createStatement().execute("CREATE TABLE NOGEOM (id INT, str VARCHAR(100))");
         connection.createStatement().execute("INSERT INTO NOGEOM VALUES (25, 'twenty five')");

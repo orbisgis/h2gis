@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class SpatialIndexTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME);
+        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         // Set up test data
         OGCConformance1Test.executeScript(connection, "spatial_index_test_data.sql");
     }
@@ -89,7 +89,7 @@ public class SpatialIndexTest {
     private static void reopen()  throws Exception   {
         // Close and reopen database
         connection.close();
-        connection = H2GISSimpleDBFactory.openSpatialDataBase(DB_NAME);
+        connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
     }
 
 }

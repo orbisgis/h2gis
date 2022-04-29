@@ -19,11 +19,9 @@
  */
 package org.h2gis.utilities.dbtypes;
 
-import org.h2gis.postgis_jts.PostGISSimpleDBFactory;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
-import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -47,7 +45,7 @@ public class DBUtilsTest {
     private static Connection h2Conn;
     private static Connection postConn;
     private static Statement h2St;
-    private static final PostGISSimpleDBFactory dataSourceFactory = new PostGISSimpleDBFactory();
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void init() throws Exception {

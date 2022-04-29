@@ -20,7 +20,7 @@
 
 package org.h2gis.functions;
 
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SpatialResultSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,7 +46,7 @@ public class ConnectionWrapTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = JDBCUtilities.wrapConnection(H2GISSimpleDBFactory.createSpatialDataBase(DB_NAME));
+        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
     }
     @AfterAll
     public static void tearDown() throws Exception {

@@ -21,7 +21,7 @@ package org.h2gis.functions.io.utility;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.asc.AscDriverFunction;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
@@ -176,8 +176,8 @@ public class IOMethods {
             throw new SQLException("Link file is only supported with an H2GIS database");
         }
 
-        String user = databaseProperties.getOrDefault(H2GISSimpleDBFactory.JDBC_USER, "sa");
-        String password = databaseProperties.getOrDefault(H2GISSimpleDBFactory.JDBC_PASSWORD, "");
+        String user = databaseProperties.getOrDefault(H2GISDBFactory.JDBC_USER, "sa");
+        String password = databaseProperties.getOrDefault(H2GISDBFactory.JDBC_PASSWORD, "");
         String driverName = "";
         String jdbc_url = databaseProperties.get("url");
         String autocommit_linkedTable = "";

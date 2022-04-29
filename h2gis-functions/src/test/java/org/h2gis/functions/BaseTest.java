@@ -19,7 +19,7 @@
  */
 package org.h2gis.functions;
 
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.orbisgis.commons.annotations.Nullable;
@@ -506,7 +506,7 @@ public abstract class BaseTest {
      *                                driver class..
      */
     public Statement statementInit(@Nullable String prefix) throws SQLException, ClassNotFoundException {
-        Connection connection = H2GISSimpleDBFactory.createSpatialDataBase(
+        Connection connection = H2GISDBFactory.createSpatialDataBase(
                 "target/" + (prefix!=null?prefix:"") + UUID.randomUUID().toString());
         return connection.createStatement();
     }

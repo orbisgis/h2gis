@@ -25,7 +25,7 @@ import org.h2.jdbc.JdbcSQLDataException;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.spatial.affine_transformations.ST_Translate;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
@@ -63,7 +63,7 @@ public class SpatialFunctionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(SpatialFunctionTest.class.getSimpleName());
+        connection = H2GISDBFactory.createSpatialDataBase(SpatialFunctionTest.class.getSimpleName());
         FACTORY = new GeometryFactory();
         WKT_READER = new WKTReader();
     }

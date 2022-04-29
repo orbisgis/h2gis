@@ -19,7 +19,7 @@
  */
 package org.h2gis.network.functions;
 
-import org.h2gis.functions.factory.H2GISSimpleDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.junit.jupiter.api.AfterAll;
@@ -45,7 +45,7 @@ public class GraphFunctionParserTest {
     @BeforeAll
     public static void setUp() throws Exception {
         parser = new GraphFunctionParser();
-        connection = H2GISSimpleDBFactory.createSpatialDataBase(GraphFunctionParserTest.class.getSimpleName());
+        connection = H2GISDBFactory.createSpatialDataBase(GraphFunctionParserTest.class.getSimpleName());
     }
 
     @AfterAll
