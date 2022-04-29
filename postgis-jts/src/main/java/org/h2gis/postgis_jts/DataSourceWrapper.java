@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-package org.h2gis.postgis_jts_osgi;
+package org.h2gis.postgis_jts;
 
 import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.JtsGeometry;

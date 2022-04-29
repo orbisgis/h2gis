@@ -17,9 +17,8 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-package org.h2gis.postgis_jts_osgi;
+package org.h2gis.postgis_jts;
 
-import org.h2gis.postgis_jts.DataSourceWrapper;
 import org.postgresql.ds.PGPoolingDataSource;
 
 import javax.sql.ConnectionPoolDataSource;
@@ -31,7 +30,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DataSourceFactoryImpl {
+public class PostGISDBFactory {
     String JDBC_DATABASE_NAME = "databaseName";
     String JDBC_DATASOURCE_NAME = "dataSourceName";
     String JDBC_PASSWORD = "password";
@@ -48,7 +47,7 @@ public class DataSourceFactoryImpl {
             properties = new Properties();
         }
         if(properties.getProperty(JDBC_DATASOURCE_NAME) == null) {
-            properties.setProperty(JDBC_DATASOURCE_NAME, DataSourceFactoryImpl.class.getSimpleName() + "_" +
+            properties.setProperty(JDBC_DATASOURCE_NAME, PostGISDBFactory.class.getSimpleName() + "_" +
                     dataSourceCount.getAndAdd(1));
         }
         PGPoolingDataSource dataSource = PGPoolingDataSource.getDataSource(properties.getProperty(JDBC_DATASOURCE_NAME));

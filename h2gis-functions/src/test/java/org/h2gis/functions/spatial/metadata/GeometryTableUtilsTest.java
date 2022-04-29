@@ -20,10 +20,9 @@
 package org.h2gis.functions.spatial.metadata;
 
 import org.h2.util.StringUtils;
-import org.h2gis.functions.TestUtilities;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 
@@ -46,7 +45,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
 import org.h2gis.functions.spatial.crs.UpdateGeometrySRID;
@@ -62,6 +60,7 @@ public class GeometryTableUtilsTest {
     private static Connection conPost;
     private Statement st;
     private static final Logger log = LoggerFactory.getLogger(GeometryTableUtilsTest.class);
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -94,7 +93,6 @@ public class GeometryTableUtilsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
         DataSource ds = dataSourceFactory.createDataSource(props);
         try {

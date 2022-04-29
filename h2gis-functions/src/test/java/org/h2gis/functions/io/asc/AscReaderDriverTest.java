@@ -22,7 +22,7 @@ package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
@@ -43,7 +43,6 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import org.h2gis.unitTest.GeometryAsserts;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +56,7 @@ public class AscReaderDriverTest {
     private static final String DB_NAME = "ASCRead_db";
 
     private static final Logger log = LoggerFactory.getLogger(AscReaderDriverTest.class);
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeEach
     public void tearUp() throws Exception {
@@ -367,7 +367,6 @@ public class AscReaderDriverTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);

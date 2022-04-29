@@ -28,12 +28,11 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,7 @@ public class DBFImportExportTest {
     private static Connection connection;
     private static final String DB_NAME = "DBFImportExportTest";
     private static final Logger log = LoggerFactory.getLogger(DBFImportExportTest.class);
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -267,7 +267,6 @@ public class DBFImportExportTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);

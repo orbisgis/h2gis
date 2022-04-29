@@ -25,10 +25,9 @@ import org.h2.util.StringUtils;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,7 @@ public class GPXImportTest {
     private static final String DB_NAME = "GPXImportTest";
     private Statement st;
     private static final Logger log = LoggerFactory.getLogger(GPXImportTest.class);
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -263,7 +263,6 @@ public class GPXImportTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con= null;
         try {
             DataSource ds  = dataSourceFactory.createDataSource(props);

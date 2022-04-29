@@ -18,9 +18,11 @@
  * or contact directly: info_at_h2gis.org
  */
 
-package org.h2gis.functions.factory;
+package org.h2gis.functions.osgi;
 
-import org.h2.jdbcx.JdbcDataSource;
+import org.h2.util.OsgiDataSourceFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -31,29 +33,15 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Used to create quickly a database.
- *
+ * Used to create quickly a database on unit tests.
  * @author Nicolas Fortin
  * @author Erwan Bocher
- * @author Sylvain Palominos
  */
-public class H2GISDBFactory {
+public class H2GISOsgiDBFactory {
 
     public static final String H2_PARAMETERS = ";DB_CLOSE_ON_EXIT=FALSE";
 
-    public static final String JDBC_URL = "url";
-    public static final String JDBC_USER = "user";
-    public static final String JDBC_PASSWORD = "password";
-    public static final String START_URL = "jdbc:h2:";
-    public static final String JDBC_DATABASE_NAME = "databaseName";
-    public static final String JDBC_NETWORK_PROTOCOL = "networkProtocol";
-    public static final String JDBC_PORT_NUMBER = "portNumber";
-    public static final String JDBC_SERVER_NAME = "serverName";
-
-    public static final String DEFAULT_USER = "sa";
-    public static final String DEFAULT_PASSWORD = "sa";
-
-    private H2GISDBFactory() {
+    private H2GISOsgiDBFactory() {
         // utility
     }
 
@@ -62,21 +50,22 @@ public class H2GISDBFactory {
      * @param dbName
      * @return
      * @throws SQLException
+     * @throws ClassNotFoundException
      */
-    public static Connection openSpatialDataBase(String dbName) throws SQLException {
+    public static Connection openSpatialDataBase(String dbName) throws SQLException, ClassNotFoundException {
         String dbFilePath = getDataBasePath(dbName);       
         String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
         org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
         return DriverManager.getConnection(databasePath,
-                DEFAULT_USER, DEFAULT_PASSWORD);
+                "sa", "sa");
     }
     /**
      * Create a spatial database
      * @param dbName filename
      * @return Connection
-     * @throws java.sql.SQLException
-     * @throws java.lang.ClassNotFoundException
+     * @throws SQLException
+     * @throws ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName)throws SQLException, ClassNotFoundException {
         return createSpatialDataBase(dbName,true);
@@ -125,8 +114,9 @@ public class H2GISDBFactory {
      */
     public static DataSource createDataSource(Properties properties, boolean initSpatial) throws SQLException {
         // Create H2 memory DataSource
-        JdbcDataSource dataSource = new JdbcDataSource();
-        setupH2DataSource(dataSource, properties);
+        org.h2.Driver driver = org.h2.Driver.load();
+        OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
+        DataSource dataSource = dataSourceFactory.createDataSource(properties);
         // Init spatial ext
         if(initSpatial) {
             try (Connection connection = dataSource.getConnection()) {
@@ -146,13 +136,14 @@ public class H2GISDBFactory {
          */
     public static DataSource createDataSource(String dbName ,boolean initSpatial, String h2Parameters) throws SQLException {
         // Create H2 memory DataSource
+        org.h2.Driver driver = org.h2.Driver.load();
+        OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
         Properties properties = new Properties();
         String databasePath = initDBFile(dbName, h2Parameters);
-        properties.setProperty(JDBC_URL, databasePath);
-        properties.setProperty(JDBC_USER, DEFAULT_USER);
-        properties.setProperty(JDBC_PASSWORD, DEFAULT_PASSWORD);
-        JdbcDataSource dataSource = new JdbcDataSource();
-        setupH2DataSource(dataSource, properties);
+        properties.setProperty(DataSourceFactory.JDBC_URL, databasePath);
+        properties.setProperty(DataSourceFactory.JDBC_USER, "sa");
+        properties.setProperty(DataSourceFactory.JDBC_PASSWORD, "sa");
+        DataSource dataSource = dataSourceFactory.createDataSource(properties);
         // Init spatial ext
         if(initSpatial) {            
             try (Connection connection = dataSource.getConnection()) {
@@ -189,15 +180,15 @@ public class H2GISDBFactory {
      * @param initSpatial If true add spatial features to the database
      * @param h2Parameters Additional h2 parameters
      * @return Connection
-     * @throws java.sql.SQLException
-     * @throws java.lang.ClassNotFoundException
+     * @throws SQLException
+     * @throws ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName,boolean initSpatial, String h2Parameters )throws SQLException, ClassNotFoundException {
         String databasePath = initDBFile(dbName, h2Parameters);
         org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
         Connection connection = DriverManager.getConnection(databasePath,
-                DEFAULT_USER, DEFAULT_PASSWORD);
+                "sa", "sa");
         // Init spatial ext
         if(initSpatial) {
             H2GISFunctions.load(connection);
@@ -210,61 +201,10 @@ public class H2GISDBFactory {
      * @param dbName filename
      * @param initSpatial If true add spatial features to the database
      * @return Connection
-     * @throws java.sql.SQLException
-     * @throws java.lang.ClassNotFoundException
+     * @throws SQLException
+     * @throws ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName, boolean initSpatial )throws SQLException, ClassNotFoundException {
         return createSpatialDataBase(dbName, initSpatial, H2_PARAMETERS);
-    }
-
-    /**
-     * Function greatly inspired by H2 org.h2.util.OsgiDataSourceFactory#setupH2DataSource(JdbcDataSource, Properties)
-     * @param dataSource Datasource to set up.
-     * @param props Properties to apply.
-     */
-    private static void setupH2DataSource(JdbcDataSource dataSource, Properties props) {
-        if (props.containsKey(JDBC_USER)) {
-            dataSource.setUser(props.getProperty(JDBC_USER));
-        }
-        if (props.containsKey(JDBC_PASSWORD)) {
-            dataSource.setPassword(props.getProperty(JDBC_PASSWORD));
-        }
-        if (props.containsKey(JDBC_URL)) {
-            dataSource.setURL(props.getProperty(JDBC_URL));
-        } else {
-            StringBuilder connectionUrl = new StringBuilder();
-            connectionUrl.append(START_URL);
-            // Set network protocol (tcp/ssl) or DB type (mem/file)
-            String protocol = "";
-            if (props.containsKey(JDBC_NETWORK_PROTOCOL)) {
-                protocol = props.getProperty(JDBC_NETWORK_PROTOCOL);
-                connectionUrl.append(protocol).append(":");
-            }
-            // Host name and/or port
-            if (props.containsKey(JDBC_SERVER_NAME)) {
-                connectionUrl.append("//").append(props.getProperty(JDBC_SERVER_NAME));
-                if (props.containsKey(JDBC_PORT_NUMBER)) {
-                    connectionUrl.append(":").append(props.getProperty(JDBC_PORT_NUMBER));
-                }
-                connectionUrl.append("/");
-            } else if (props.containsKey(
-                    JDBC_PORT_NUMBER)) {
-                // Assume local host if only port was set
-                connectionUrl
-                        .append("//localhost:")
-                        .append(props.getProperty(JDBC_PORT_NUMBER))
-                        .append("/");
-            } else if (protocol.equals("tcp") || protocol.equals("ssl")) {
-                // Assume local host if network protocol is set, but no host or
-                // port is set
-                connectionUrl.append("//localhost/");
-            }
-
-            // DB path and name
-            if (props.containsKey(JDBC_DATABASE_NAME)) {
-                connectionUrl.append(props.getProperty(JDBC_DATABASE_NAME));
-            }
-            dataSource.setURL(connectionUrl.toString());
-        }
     }
 }

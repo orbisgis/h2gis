@@ -4,8 +4,6 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.functions.io.utility.IOMethods;
-import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
