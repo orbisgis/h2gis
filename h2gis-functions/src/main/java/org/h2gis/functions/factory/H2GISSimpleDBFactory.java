@@ -64,7 +64,6 @@ public class H2GISSimpleDBFactory {
      * @param dbName
      * @return
      * @throws SQLException
-     * @throws ClassNotFoundException
      */
     public static Connection openSpatialDataBase(String dbName) throws SQLException {
         String dbFilePath = getDataBasePath(dbName);       
