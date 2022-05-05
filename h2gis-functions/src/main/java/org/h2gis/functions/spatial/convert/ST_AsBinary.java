@@ -20,8 +20,11 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Convert a geometry into Well Known Binary..
@@ -40,13 +43,13 @@ public class ST_AsBinary extends DeterministicScalarFunction {
 
     /**
      * Convert a geometry into a binary value.
-     * @param geometry Geometry instance
+     * @param value Value (which should be a {@link ValueGeometry} instance)
      * @return Well Known Binary
      */
-    public static byte[] toBytes(ValueGeometry geometry) {
-        if(geometry==null) {
+    public static byte[] toBytes(Value value) {
+        if(!(value instanceof ValueGeometry)) {
             return null;
         }
-        return geometry.getBytes();
+        return value.getBytes();
     }
 }
