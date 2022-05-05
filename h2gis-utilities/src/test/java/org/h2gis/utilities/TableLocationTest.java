@@ -63,6 +63,14 @@ public class TableLocationTest {
     }
 
     @Test
+    public void testParseUnFormat() {
+        DBTypes dbType  = DBTypes.H2GIS;
+        TableLocation tableLocation = TableLocation.parse("NATURAL", dbType);
+        TableLocation tableLocation2 = TableLocation.parse(tableLocation.toString(dbType));
+        assertEquals(tableLocation, tableLocation2);
+    }
+
+    @Test
     public void testSplitCatalogSchemaTableNameWithQuotes() {
         check("`mytable`", null,
                 "", "", "\"mytable\"",
@@ -123,9 +131,7 @@ public class TableLocationTest {
     private void check(String input, DBTypes dbTypes, String catalog, String schema, String table,
                        String toString, String toH2, String toPOSTGRESQL) {
         TableLocation location = dbTypes == null ? TableLocation.parse(input) : TableLocation.parse(input, dbTypes);
-        assertEquals(catalog,location.getCatalog());
-        assertEquals(schema,location.getSchema());
-        assertEquals(table, location.getTable());
+        assertEquals(location, new TableLocation(catalog, schema, table));
         assertEquals(toString, location.toString());
         assertEquals(toH2, TableLocation.parse(input, DBTypes.H2).toString());
         assertEquals(toPOSTGRESQL, TableLocation.parse(input,DBTypes.POSTGRESQL).toString());

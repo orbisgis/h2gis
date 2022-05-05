@@ -26,8 +26,7 @@ import org.h2.util.StringUtils;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
-import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -38,17 +37,14 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.file.Files;
 import java.sql.*;
-import java.util.List;
 import java.util.Properties;
 
 import org.h2gis.unitTest.GeometryAsserts;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,6 +60,7 @@ public class GeojsonImportExportTest {
     private static final String DB_NAME = "GeojsonExportTest";
     private static final WKTReader WKTREADER = new WKTReader();
     private static final Logger log = LoggerFactory.getLogger(GeojsonImportExportTest.class);
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -1107,7 +1104,6 @@ public class GeojsonImportExportTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con= null;
         try {
             DataSource ds  = dataSourceFactory.createDataSource(props);
@@ -1163,7 +1159,6 @@ public class GeojsonImportExportTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         try (Connection con = dataSourceFactory.createDataSource(props).getConnection()) {
             GeoJsonDriverFunction geoJsonDriverFunction = new GeoJsonDriverFunction();
             geoJsonDriverFunction.importFile(con, "geojsontest", new File(GeojsonImportExportTest.class.getResource("data.geojson").getFile()), true, new EmptyProgressVisitor());
@@ -1206,7 +1201,6 @@ public class GeojsonImportExportTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);

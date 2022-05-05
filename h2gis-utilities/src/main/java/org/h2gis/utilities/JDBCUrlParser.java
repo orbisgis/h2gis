@@ -20,8 +20,6 @@
 
 package org.h2gis.utilities;
 
-import org.osgi.service.jdbc.DataSourceFactory;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Map;
@@ -35,14 +33,14 @@ import java.util.Properties;
 public class JDBCUrlParser {
     private JDBCUrlParser() {}
     private static final String URL_STARTS = "jdbc:";
-    /** If the property value of {@link DataSourceFactory#OSGI_JDBC_DRIVER_NAME} ends with SPATIAL_DATASOURCE_ENDSWITH
+    /** If the property value of DataSourceFactory#OSGI_JDBC_DRIVER_NAME ends with SPATIAL_DATASOURCE_ENDSWITH
      *  then it is the wrapped spatial version of a DataSourceFactory  */
     public static final String SPATIAL_DATASOURCE_ENDSWITH = "_spatial";
 
     /**
      * Convert JDBC URL into JDBC Connection properties
      * @param jdbcUrl JDBC connection path
-     * @return Properties to be used in OSGi DataSourceFactory that does not handle {@link DataSourceFactory#JDBC_URL}
+     * @return Properties to be used in OSGi DataSourceFactory that does not handle DataSourceFactory#JDBC_URL
      * @throws IllegalArgumentException Argument is not a valid JDBC connection URL or cannot be parsed by this class
      */
     public static Properties parse(String jdbcUrl) throws IllegalArgumentException {
@@ -53,7 +51,7 @@ public class JDBCUrlParser {
         Properties properties = new Properties();   
         URI uri = URI.create(driverAndURI.substring(driverAndURI.indexOf(':')+1));
         if(uri.getHost()!=null) {
-            properties.setProperty(DataSourceFactory.JDBC_SERVER_NAME,uri.getHost());
+            properties.setProperty("serverName",uri.getHost());
         }
         // Read DataBase name/path and options
         String path = uri.getPath();
@@ -62,7 +60,7 @@ public class JDBCUrlParser {
             if(uri.getHost()!=null && paths[0].startsWith("/")) {
                 paths[0] = paths[0].substring(1);
             }
-            properties.setProperty(DataSourceFactory.JDBC_DATABASE_NAME,paths[0]);
+            properties.setProperty("databaseName",paths[0]);
             for(int id=1;id<paths.length;id++) {
                 String[] option = paths[id].split("=");
                 if(option.length==2) {
@@ -82,10 +80,10 @@ public class JDBCUrlParser {
             }
         }
         if(uri.getPort()!=-1) {
-            properties.setProperty(DataSourceFactory.JDBC_PORT_NUMBER,String.valueOf(uri.getPort()));
+            properties.setProperty("portNumber",String.valueOf(uri.getPort()));
         }
         if(uri.getScheme()!=null && !"file".equalsIgnoreCase(uri.getScheme())) {
-            properties.setProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL, uri.getScheme());
+            properties.setProperty("networkProtocol", uri.getScheme());
         }
         return properties;
     }

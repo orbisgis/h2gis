@@ -4,8 +4,6 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.functions.io.utility.IOMethods;
-import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -49,7 +47,6 @@ public class RegressionTest {
         });
     }
 
-    @Disabled
     @Test
     public void testBigGeometryDelaunay() throws SQLException {
         Statement stat = connection.createStatement();
@@ -105,5 +102,18 @@ public class RegressionTest {
         Geometry geomB = wktReader.read(geomB_wkt);
         Geometry result = geomA.intersection(geomB);
         System.out.println(new WKTWriter(3).write(result));
+    }
+
+    @Disabled
+    @Test
+    public void testST_BufferBug() throws SQLException {
+        Statement stat = connection.createStatement();
+        assertDoesNotThrow(() -> {
+            try {
+                stat.execute("SELECT ST_BUFFER('LINESTRING (307095.4 6739498.8, 307113.6 6739493.1, 307172.2 6739471.6, 307246.5 6739446.4, 307283 6739433.5, 307346 6739414.1)'::GEOMETRY, 1,'endcap=flat') ;");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 }

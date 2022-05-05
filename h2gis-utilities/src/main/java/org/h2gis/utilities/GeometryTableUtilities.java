@@ -753,7 +753,7 @@ public class GeometryTableUtilities {
      *
      * @param connection
      * @param tableLocation
-     * @return
+     * @return an estimated extend of the table as geometry
      * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation) throws SQLException {
@@ -774,7 +774,7 @@ public class GeometryTableUtilities {
      * @param connection
      * @param tableName
      * @param geometryColumnName
-     * @return
+     * @return an estimated extend of the table as geometry
      * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, String tableName, String geometryColumnName) throws SQLException {
@@ -790,7 +790,7 @@ public class GeometryTableUtilities {
      * @param connection
      * @param tableLocation
      * @param geometryColumnName
-     * @return
+     * @return  an estimated extend of the table as geometry
      * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
@@ -818,7 +818,7 @@ public class GeometryTableUtilities {
             }
         } else {
             StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
-            query.append(tableLocation.toString()).append("','").append(geometryColumnName).append("')");
+            query.append(tableLocation.toString()).append("','").append(TableLocation.capsIdentifier(geometryColumnName, H2GIS)).append("')");
             try (ResultSet rs = connection.createStatement().executeQuery(query.toString())) {
                 if (rs.next()) {
                     result = (Geometry) rs.getObject(1);
@@ -828,8 +828,8 @@ public class GeometryTableUtilities {
                     }
                 }
             }
-            query = new StringBuilder("SELECT  ENVELOPE(");
-            query.append(TableLocation.quoteIdentifier(geometryColumnName)).append(") FROM ").append(tableLocation.getTable());
+            query = new StringBuilder("SELECT ENVELOPE(");
+            query.append(TableLocation.capsIdentifier(geometryColumnName, H2GIS)).append(") FROM ").append(tableLocation.toString(H2GIS));
             try (ResultSet rsEnv = connection.createStatement().executeQuery(query.toString())) {
                 if (rsEnv.next()) {
                     result = (Geometry) rsEnv.getObject(1);

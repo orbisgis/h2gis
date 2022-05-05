@@ -334,17 +334,14 @@ public class RobustLineIntersector3D extends RobustLineIntersector{
      */
     private Coordinate safeHCoordinateIntersection(Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
     {
-        Coordinate intPt = null;
-        try {
-            intPt = HCoordinate.intersection(p1, p2, q1, q2);
-        }
-        catch (NotRepresentableException e) {
+        Coordinate intPt = Intersection.intersection(p1, p2, q1, q2);
             //    	System.out.println("Not calculable: " + this);
             // compute an approximate result
             //      intPt = CentralEndpointIntersector.getIntersection(p1, p2, q1, q2);
+        if(intPt == null) {
             intPt = nearestEndpoint(p1, p2, q1, q2);
-            //     System.out.println("Snapped to " + intPt);
         }
+            //     System.out.println("Snapped to " + intPt);
         return intPt;
     }
 

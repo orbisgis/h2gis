@@ -19,10 +19,9 @@
  */
 package org.h2gis.utilities.dbtypes;
 
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
-import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -41,12 +40,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Erwan Bocher (CNRS 2021)
  * @author Sylvein PALOMINOS (UBS Chaire GEOTERA 2021)
  */
-@Disabled
 public class DBUtilsTest {
 
     private static Connection h2Conn;
     private static Connection postConn;
     private static Statement h2St;
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void init() throws Exception {
@@ -66,15 +65,12 @@ public class DBUtilsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
         DataSource ds = dataSourceFactory.createDataSource(props);
-        postConn = ds.getConnection();
-        if (postConn == null) {
-            System.setProperty("postgresql", "false");
-        } else {
-            System.setProperty("postgresql", "true");
-        }
+        try {
+            postConn = ds.getConnection();
+        } catch (SQLException ignored) {}
+        System.setProperty("test.postgis", Boolean.toString(postConn!=null));
     }
 
     @BeforeEach
@@ -98,7 +94,7 @@ public class DBUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void getDBTypeFromConnection2() throws SQLException {
         assertEquals(DBTypes.POSTGIS, DBUtils.getDBType(postConn));
     }

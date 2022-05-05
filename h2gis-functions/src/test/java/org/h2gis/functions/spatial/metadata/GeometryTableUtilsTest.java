@@ -20,10 +20,9 @@
 package org.h2gis.functions.spatial.metadata;
 
 import org.h2.util.StringUtils;
-import org.h2gis.functions.TestUtilities;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 
@@ -46,7 +45,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
 import org.h2gis.functions.spatial.crs.UpdateGeometrySRID;
@@ -55,13 +53,14 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-@Disabled
+
 public class GeometryTableUtilsTest {
 
     private static Connection connection;
     private static Connection conPost;
     private Statement st;
     private static final Logger log = LoggerFactory.getLogger(GeometryTableUtilsTest.class);
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -80,11 +79,11 @@ public class GeometryTableUtilsTest {
         connection.createStatement().execute("CREATE TABLE GEOMTABLE (geom GEOMETRY, pt GEOMETRY(POINTZM), linestr GEOMETRY(LINESTRING), "
                 + "plgn GEOMETRY(POLYGON), multipt GEOMETRY(MULTIPOINT), multilinestr GEOMETRY(MULTILINESTRING), multiplgn GEOMETRY(MULTIPOLYGON), "
                 + "geomcollection GEOMETRY(GEOMETRYCOLLECTION))");
-        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('POINT(1 1)', 'POINT(1 1 0 0)',"
+        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('POINT(1 1)', 'POINTZM(1 1 0 0)',"
                 + " 'LINESTRING(1 1, 2 2)', 'POLYGON((1 1, 1 2, 2 2, 2 1, 1 1))', 'MULTIPOINT((1 1))',"
                 + " 'MULTILINESTRING((1 1, 2 2))', 'MULTIPOLYGON(((1 1, 1 2, 2 2, 2 1, 1 1)))',"
                 + " 'GEOMETRYCOLLECTION(POINT(1 1))')");
-        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('LINESTRING(1 1, 2 2)', 'POINT(2 2 0 0)',"
+        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('LINESTRING(1 1, 2 2)', 'POINTZM(2 2 0 0)',"
                 + " 'LINESTRING(2 2, 1 1)', 'POLYGON((1 1, 1 3, 3 3, 3 1, 1 1))', 'MULTIPOINT((3 3))',"
                 + " 'MULTILINESTRING((1 1, 3 3))', 'MULTIPOLYGON(((1 1, 1 3, 3 3, 3 1, 1 1)))',"
                 + " 'GEOMETRYCOLLECTION(POINT(3 3))')");
@@ -94,15 +93,12 @@ public class GeometryTableUtilsTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
         DataSource ds = dataSourceFactory.createDataSource(props);
-        conPost = ds.getConnection();
-        if (conPost == null) {
-            System.setProperty("postgresql", "false");
-        } else {
-            System.setProperty("postgresql", "true");
-        }
+        try {
+            conPost = ds.getConnection();
+        } catch (SQLException ignored) {}
+        System.setProperty("test.postgis", Boolean.toString(conPost!=null));
     }
 
     @AfterAll
@@ -275,7 +271,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testHasGeometryFieldPostGIS() throws SQLException {
         Statement stat = conPost.createStatement();
         stat.execute("DROP TABLE IF EXISTS POINT3D");
@@ -546,6 +542,18 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
+    public void testEstimatedExtentSchema() throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
+        statement.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES (ST_GeomFromText('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))', 4326)),(ST_GeomFromText('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))', 4326) )");
+        TableLocation tableLocation = TableLocation.parse("myschema.geomtable", DBTypes.H2GIS);
+        Geometry geom = GeometryTableUtilities.getEstimatedExtent(connection, tableLocation, "the_geom");
+        assertNotNull(geom);
+        assertEquals(4326, geom.getSRID());
+        statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE;");
+    }
+
+    @Test
     public void testGeometryType() throws SQLException {
         TableLocation tableLocation = TableLocation.parse("GEOMTABLE", DBTypes.H2);
         assertEquals(GeometryTypeCodes.GEOMETRY,
@@ -748,7 +756,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testEstimatedExtentPostGIS() throws SQLException {
         Statement statement = conPost.createStatement();
         statement.execute("DROP TABLE IF EXISTS PUBLIC.GEOMTABLE; CREATE TABLE PUBLIC.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
@@ -762,7 +770,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testEstimatedExtentSchemaPostGIS() throws SQLException {
         Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
@@ -776,7 +784,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testEnvelopeSchemaPostGIS() throws SQLException {
         Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE (THE_GEOM GEOMETRY(GEOMETRY, 4326));");
@@ -829,7 +837,7 @@ public class GeometryTableUtilsTest {
         String ddl = JDBCUtilities.createTableDDL(connection, location);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute(ddl);
-        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64),SIZE_GEOM FLOAT)",
+        assertEquals("CREATE TABLE PERSTABLE (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64),SIZE_GEOM FLOAT)",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY(POINTZ, 4326))");
@@ -848,7 +856,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testCreateDDLPostGIS() throws SQLException {
         Statement stat = conPost.createStatement();
         stat.execute("DROP TABLE IF EXISTS perstable");
@@ -882,13 +890,13 @@ public class GeometryTableUtilsTest {
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         String ddl = JDBCUtilities.createTableDDL(connection, location, TableLocation.parse("orbisgis",DBTypes.H2));
-        assertEquals("CREATE TABLE ORBISGIS (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
+        assertEquals("CREATE TABLE ORBISGIS (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, the_geom GEOMETRY, type int, name varchar, city varchar(12), "
                 + "temperature double precision, location GEOMETRY(POINTZ, 4326), wind CHARACTER VARYING(64))");
         ddl = JDBCUtilities.createTableDDL(connection, location, TableLocation.parse("\"OrbisGIS\"",DBTypes.H2));
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING(1048576),CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,THE_GEOM GEOMETRY,TYPE INTEGER,NAME CHARACTER VARYING,CITY CHARACTER VARYING(12),TEMPERATURE DOUBLE PRECISION,LOCATION GEOMETRY(POINTZ,4326),WIND CHARACTER VARYING(64))",
                 ddl);
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar(26))");       
@@ -898,7 +906,7 @@ public class GeometryTableUtilsTest {
         st.execute("DROP TABLE IF EXISTS perstable");
         st.execute("CREATE TABLE perstable (id INTEGER PRIMARY KEY, name varchar)");       
         ddl = JDBCUtilities.createTableDDL(connection,location, TableLocation.parse("\"OrbisGIS\"",DBTypes.H2));
-        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING(1048576))",
+        assertEquals("CREATE TABLE \"OrbisGIS\" (ID INTEGER,NAME CHARACTER VARYING)",
                 ddl);
     }   
   
@@ -953,7 +961,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testGetEnvelopeFromGeometryFieldsPostGIS() throws SQLException, ParseException {
         String sqlData = "DROP TABLE IF EXISTS public.buildings;\n"
                 + "CREATE TABLE public.buildings (\n"
@@ -1053,7 +1061,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")    
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testGetEnvelopeFromGeometryFieldsWithFilterPostGIS() throws SQLException, ParseException {
         String sqlData = "DROP TABLE IF EXISTS public.buildings;\n"
                 + "CREATE TABLE public.buildings (\n"
@@ -1184,7 +1192,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")   
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testGetEnvelopeFromGeometryFieldsSubQueryFilterPostGIS() throws SQLException, ParseException {
         Statement stat = conPost.createStatement();
         String sqlData = "DROP TABLE IF EXISTS public.building_indicators;\n"
@@ -1241,7 +1249,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testPostGISIsSpatialIndexed() throws Exception {
         TableLocation tableLocation = TableLocation.parse("geo_point", DBTypes.POSTGIS);
         Statement stat = conPost.createStatement();
@@ -1268,7 +1276,7 @@ public class GeometryTableUtilsTest {
     }
     
     @Test
-    @DisabledIfSystemProperty(named = "postgresql", matches = "false")
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testGetSRIDSameTableNames() throws SQLException {
         Statement statement = conPost.createStatement();
         statement.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; "
@@ -1316,6 +1324,7 @@ public class GeometryTableUtilsTest {
     }
 
     @Test
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testFirstGeometryTableNamePostGIS() throws Exception {
         Statement postGISST = conPost.createStatement();
         postGISST.execute("DROP TABLE IF EXISTS POINT_TABLE");

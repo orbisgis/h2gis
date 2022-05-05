@@ -30,7 +30,7 @@ import org.h2gis.functions.io.dbf.DBFRead;
 import org.h2gis.functions.io.dbf.DBFWrite;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.internal.SHPDriver;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -46,7 +46,6 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import org.h2gis.unitTest.GeometryAsserts;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +65,7 @@ public class SHPImportExportTest {
 
     private static Connection connection;
     private static final String DB_NAME = "SHPImportTest";
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
     private static final Logger log = LoggerFactory.getLogger(SHPImportExportTest.class);
 
@@ -837,7 +837,6 @@ public class SHPImportExportTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
@@ -878,7 +877,6 @@ public class SHPImportExportTest {
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
-        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
         Connection con = null;
         try {
             DataSource ds = dataSourceFactory.createDataSource(props);
