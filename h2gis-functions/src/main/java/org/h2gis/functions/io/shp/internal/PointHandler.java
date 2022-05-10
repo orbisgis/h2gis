@@ -1,7 +1,7 @@
 /**
  * H2GIS is a library that brings spatial support to the H2 Database Engine
- * <http://www.h2database.com>. H2GIS is developed by CNRS
- * <http://www.cnrs.fr/>.
+ * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
+ * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
  * <p>
  * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
@@ -14,7 +14,7 @@
  * for more details <http://www.gnu.org/licenses/>.
  * <p>
  * <p>
- * For more information, please consult: <http://www.h2gis.org/>
+ * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
  * or contact directly: info_at_h2gis.org
  */
 
