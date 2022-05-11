@@ -29,7 +29,7 @@ The select `query` must be enclosed in parenthesis `()`.
 
 {% highlight mysql %}
 CREATE TABLE test_point AS SELECT
-    'MULTIPOINT((1 1), (2 2))'::Geometry as THE_GEOM;
+    'MULTIPOINT((1 1), (2 2))'::Geometry as GEOM;
 
 -- ST_Explode using the 'tableName'
 SELECT * FROM ST_Explode('test_point');
@@ -37,10 +37,10 @@ SELECT * FROM ST_Explode('test_point');
 -- or
 -- ST_Explode using a 'query'
 SELECT * FROM ST_Explode('(SELECT * FROM test_point 
-                          WHERE ST_Dimension(THE_GEOM)=0)');
+                          WHERE ST_Dimension(GEOM)=0)');
 
 -- Answer:
---    |   THE_GEOM  | EXPLOD_ID |
+--    |     GEOM    | EXPLOD_ID |
 --    | ------------|-----------|
 --    | POINT(1 1)  |     1     |
 --    | POINT(2 2)  |     2     |
@@ -51,11 +51,11 @@ SELECT * FROM ST_Explode('(SELECT * FROM test_point
 
 {% highlight mysql %}
 CREATE TABLE test_point AS SELECT
-    'MULTIPOINT((1 1), (2 2))'::Geometry the_geomA,
-    'MULTIPOINT((3 3), (2 6))'::Geometry the_geomB;
-SELECT * FROM ST_Explode('test_point', 'the_geomB');
+    'MULTIPOINT((1 1), (2 2))'::Geometry geomA,
+    'MULTIPOINT((3 3), (2 6))'::Geometry geomB;
+SELECT * FROM ST_Explode('test_point', 'geomB');
 -- Answer:
---    |         THE_GEOMA         | THE_GEOMB   | EXPLOD_ID |
+--    |           GEOMA           |    GEOMB    | EXPLOD_ID |
 --    |---------------------------|-------------|-----------|
 --    | MULTIPOINT((1 1), (2 2))  | POINT(3 3)  |      1    |
 --    | MULTIPOINT((1 1), (2 2))  | POINT(2 6)  |      2    |

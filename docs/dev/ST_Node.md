@@ -29,9 +29,9 @@ This function supports 3d coordinates and preserve `z` values **only** for input
 {% highlight mysql %}
 -- Initialize the input 2D Linestring layer
 CREATE TABLE line AS SELECT 
-  ST_GeomFromText('LINESTRING(1 1, 4 4, 1 4, 4 1)') as the_geom;
+  ST_GeomFromText('LINESTRING(1 1, 4 4, 1 4, 4 1)') as geom;
 -- Compute nodes
-CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
+CREATE TABLE nodes AS SELECT ST_NODE(geom) FROM line;
 
 -- Answer: MULTILINESTRING ((1 1, 2.5 2.5), 
 			    (2.5 2.5, 4 4, 1 4, 2.5 2.5), 
@@ -45,9 +45,9 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
 {% highlight mysql %}
 -- Initialize the input 3D Linestring layer
 CREATE TABLE line AS SELECT 
-  ST_GeomFromText('LINESTRING(1 1 0, 4 4 3, 1 4 3, 4 1 0)') as the_geom;
+  ST_GeomFromText('LINESTRING(1 1 0, 4 4 3, 1 4 3, 4 1 0)') as geom;
 -- Compute nodes
-CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
+CREATE TABLE nodes AS SELECT ST_NODE(geom) FROM line;
 
 -- Answer: MULTILINESTRING ((1 1 0, 2.5 2.5), 
 			    (2.5 2.5, 4 4 3, 1 4 3, 2.5 2.5), 
@@ -58,9 +58,9 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
 {% highlight mysql %}
 -- Initialize the input MultiLinestring layer
 CREATE TABLE lines AS SELECT 
-  ST_GeomFromText('MULTILINESTRING((1 1, 4 4), (1 3, 4 2))') as the_geom;
+  ST_GeomFromText('MULTILINESTRING((1 1, 4 4), (1 3, 4 2))') as geom;
 -- Compute nodes
-CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM lines;
+CREATE TABLE nodes AS SELECT ST_NODE(geom) FROM lines;
 
 -- Answer: MULTILINESTRING ((1 1, 2.5 2.5), (2.5 2.5, 4 4), 
 			    (1 3, 2.5 2.5), (2.5 2.5, 4 2))
@@ -73,9 +73,9 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM lines;
 -- Initialize the input MultiPolygon layer
 CREATE TABLE polygon AS SELECT 
   ST_GeomFromText('MULTIPOLYGON(((1 1, 1 3, 3 3, 3 1, 1 1)), 
-				((2 4, 4 4, 4 2, 2 2, 2 4)))') as the_geom;
+				((2 4, 4 4, 4 2, 2 2, 2 4)))') as geom;
 -- Compute nodes
-CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM polygon;
+CREATE TABLE nodes AS SELECT ST_NODE(geom) FROM polygon;
 
 -- Answer: MULTILINESTRING ((1 1, 1 3, 2 3), (2 3, 3 3, 3 2), 
 			    (3 2, 3 1, 1 1), (2 4, 4 4, 4 2, 3 2), 
@@ -90,9 +90,9 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM polygon;
 CREATE TABLE geomColl AS SELECT 
   ST_GeomFromText('GEOMETRYCOLLECTION(
 		      POLYGON ((1 1, 1 3, 3 3, 3 1, 1 1)), 
-		      LINESTRING (1 4, 4 1))') as the_geom;
+		      LINESTRING (1 4, 4 1))') as geom;
 -- Compute nodes
-CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM geomColl;
+CREATE TABLE nodes AS SELECT ST_NODE(geom) FROM geomColl;
 
 -- Answer: MULTILINESTRING ((1 1, 1 3, 2 3), (2 3, 3 3, 3 2), 
 			    (3 2, 3 1, 1 1), (1 4, 2 3), 

@@ -35,7 +35,7 @@ the CSV file specified by `path`.
 
 {% highlight mysql %}
 -- Create an example table to use with CSVWrite:
-CREATE TABLE AREA(THE_GEOM VARCHAR(100), ID INT PRIMARY KEY);
+CREATE TABLE AREA(GEOM VARCHAR(100), ID INT PRIMARY KEY);
 INSERT INTO AREA VALUES
     ('POLYGON((-10 109, 90 9, -10 9, -10 109))', 1),
     ('POLYGON((90 109, 190 9, 90 9, 90 109))', 2);
@@ -44,7 +44,7 @@ CALL CSVWrite('/home/user/area.csv', 'SELECT * FROM AREA');
 -- Read it back:
 SELECT * FROM CSVRead('/home/user/area.csv');
 -- Answer:
--- |                 THE_GEOM                 |   ID   |
+-- |                   GEOM                   |   ID   |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
@@ -58,7 +58,7 @@ SELECT * FROM CSVRead('/home/user/area.csv',
                       NULL,
                       'charset=UTF-8 fieldSeparator=;');
 -- Answer:
--- |                     THE_GEOM             |   ID   |
+-- |                       GEOM               |   ID   |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |

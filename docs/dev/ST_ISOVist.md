@@ -47,18 +47,18 @@ Resulting polygon will be enclosed by a circle defined by the maximum distance (
 {% highlight mysql %}
 DROP TABLE IF EXISTS point, polygon, linestring, geomcollection;
 
-CREATE TABLE point AS SELECT ST_GEOMFROMTEXT('POINT (28.20 59.11)') as the_geom;
+CREATE TABLE point AS SELECT ST_GEOMFROMTEXT('POINT (28.20 59.11)') as geom;
 
 CREATE TABLE polygon AS SELECT ST_GEOMFROMTEXT('
 	MULTIPOLYGON (((87.1 39 0, 90.8 28.8 0, 80.8 25.3 0, 75.4 40.7 0, 83.1 43.5 0, 87.1 39 0)), ((70.3 67.2 0, 76.3 51.9 0, 79.2 53.1 0, 81.9 46.1 0, 75.3 43.6 0, 72.6 50.5 0, 68 48.6 0, 61.9 63.9 0, 70.3 67.2 0)), ((68 33.6 0, 64.8 32.5 0, 62.3 39 0, 69.1 41.4 0, 70.7 34.8 0, 68 33.6 0)), ((65.4 31.2 0, 69 21.9 0, 55.1 16.3 0, 51.5 25.7 0, 65.4 31.2 0)), ((59.6 85.6 0, 63.4 75.6 0, 54.8 72.5 0, 51.1 82.2 0, 59.6 85.6 0)), 
   ((62 38.3 0, 62.9 36.1 0, 58.8 34.5 0, 57.9 36.7 0, 62 38.3 0)), ((40.4 95.4 0, 39.7 95.3 0, 38.1 99.4 0, 49.1 103.4 0, 55.8 87.4 0, 32.5 78 0, 30.4 82.9 0, 43.3 88 0, 40.4 95.4 0)), ((43.5 64.9 0, 52.2 46.1 0, 50.4 45.3 0, 51.2 43.1 0, 48.7 42.2 0, 46.4 48.5 0, 45.7 48.2 0, 38.7 63.1 0, 43.5 64.9 0)), ((47.2 33.7 0, 49 29.1 0, 46.3 28 0, 44.4 32.8 0, 47.2 33.7 0)), ((25 19.9 0, 28.3 21 0, 28.8 19.1 0, 32.2 20.2 0, 32.8 18.6 0, 43.3 22.1 0, 46.2 13.3 0, 42.6 11.9 0, 42.1 12.9 0, 38.5 11.7 0, 38.6 11 0, 35.5 9.9 0, 35.9 8.8 0, 29.4 7.3 0, 25 19.9 0)), ((43 52.2 0, 44.6 48.4 0, 41.2 47.2 0, 38 47 0, 36.9 49.7 0, 43 52.2 0)), 
-  ((24.7 25.6 0, 20.7 37.5 0, 28.3 40.3 0, 31.3 31.5 0, 33.2 32.3 0, 34.4 29.2 0, 24.7 25.6 0)), ((18.2 83.9 0, 16.4 88.4 0, 26.3 92.5 0, 30.1 83.5 0, 16.5 78.2 0, 14.7 82.5 0, 18.2 83.9 0)), ((11.3 21 0, 10 24.9 0, 15.7 27.1 0, 17.2 23 0, 22.6 24.9 0, 23.7 22 0, 20 20.8 0, 19.6 22 0, 17.6 21.4 0, 17 22.9 0, 11.3 21 0)), ((19.3 19.9 0, 21.5 10.5 0, 8.2 7.3 0, 7.2 11.8 0, 9.3 12.3 0, 7.8 19.4 0, 16.1 21.1 0, 18.1 21.2 0, 18.5 19.7 0, 19.3 19.9 0)), ((8.3 64 0, 4.6 74.2 0, 13.8 77.7 0, 17.7 67.4 0, 14.8 66.4 0, 18.7 56 0, 12.2 53.4 0, 8.3 64 0)), ((14 50.8 0, 14.9 48.4 0, 9.6 46.6 0, 12.1 39.1 0, 6 36.9 0, 2.7 46.9 0, 14 50.8 0)))') as the_geom;
+  ((24.7 25.6 0, 20.7 37.5 0, 28.3 40.3 0, 31.3 31.5 0, 33.2 32.3 0, 34.4 29.2 0, 24.7 25.6 0)), ((18.2 83.9 0, 16.4 88.4 0, 26.3 92.5 0, 30.1 83.5 0, 16.5 78.2 0, 14.7 82.5 0, 18.2 83.9 0)), ((11.3 21 0, 10 24.9 0, 15.7 27.1 0, 17.2 23 0, 22.6 24.9 0, 23.7 22 0, 20 20.8 0, 19.6 22 0, 17.6 21.4 0, 17 22.9 0, 11.3 21 0)), ((19.3 19.9 0, 21.5 10.5 0, 8.2 7.3 0, 7.2 11.8 0, 9.3 12.3 0, 7.8 19.4 0, 16.1 21.1 0, 18.1 21.2 0, 18.5 19.7 0, 19.3 19.9 0)), ((8.3 64 0, 4.6 74.2 0, 13.8 77.7 0, 17.7 67.4 0, 14.8 66.4 0, 18.7 56 0, 12.2 53.4 0, 8.3 64 0)), ((14 50.8 0, 14.9 48.4 0, 9.6 46.6 0, 12.1 39.1 0, 6 36.9 0, 2.7 46.9 0, 14 50.8 0)))') as geom;
 
 CREATE TABLE linestring AS SELECT ST_GEOMFROMTEXT('
 	MULTILINESTRING ((54.8 72.5 0, 51.1 82.2 0), (51.1 82.2 0, 59.6 85.6 0), 
 	(55.8 87.4 0, 32.5 78 0), (32.5 78 0, 30.4 82.9 0), (45.7 48.2 0, 38.7 63.1 0), 
 	(38.7 63.1 0, 43.5 64.9 0), (20.7 37.5 0, 28.3 40.3 0), (30.1 83.5 0, 16.5 78.2 0), 
-	(13.8 77.7 0, 17.7 67.4 0), (14.9 48.4 0, 9.6 46.6 0), (9.6 46.6 0, 12.1 39.1 0))') as the_geom;
+	(13.8 77.7 0, 17.7 67.4 0), (14.9 48.4 0, 9.6 46.6 0), (9.6 46.6 0, 12.1 39.1 0))') as geom;
 
 CREATE TABLE geomcollection AS SELECT ST_GEOMFROMTEXT('GEOMETRYCOLLECTION(
 	MULTIPOLYGON (((87.1 39 0, 90.8 28.8 0, 80.8 25.3 0, 75.4 40.7 0, 83.1 43.5 0, 87.1 39 0)), 
@@ -68,7 +68,7 @@ CREATE TABLE geomcollection AS SELECT ST_GEOMFROMTEXT('GEOMETRYCOLLECTION(
 	((59.6 85.6 0, 63.4 75.6 0, 54.8 72.5 0, 51.1 82.2 0, 59.6 85.6 0)), 
 	((62 38.3 0, 62.9 36.1 0, 58.8 34.5 0, 57.9 36.7 0, 62 38.3 0))), 
 	MULTILINESTRING ((55.8 87.4 0, 32.5 78 0), (32.5 78 0, 30.4 82.9 0), (45.7 48.2 0, 38.7 63.1 0), 
-	(13.8 77.7 0, 17.7 67.4 0), (14.9 48.4 0, 9.6 46.6 0), (9.6 46.6 0, 12.1 39.1 0)))') as the_geom;
+	(13.8 77.7 0, 17.7 67.4 0), (14.9 48.4 0, 9.6 46.6 0), (9.6 46.6 0, 12.1 39.1 0)))') as geom;
 {% endhighlight %}
 
 #### Example with a distance
@@ -80,7 +80,7 @@ Use buildings (```polygon```) to compute the visibility from the ```point``` wit
 {% highlight mysql %}
 DROP TABLE IF EXISTS isovist;
 CREATE TABLE isovist AS 
-  SELECT ST_ISOVIST(a.the_geom, b.the_geom, 20) as the_geom 
+  SELECT ST_ISOVIST(a.geom, b.geom, 20) as geom 
   FROM point a, polygon b;
 {% endhighlight %}
 
@@ -95,7 +95,7 @@ Same but with a distance of 50m.
 {% highlight mysql %}
 DROP TABLE IF EXISTS isovist;
 CREATE TABLE isovist AS 
-  SELECT ST_ISOVIST(a.the_geom, b.the_geom, 50) as the_geom 
+  SELECT ST_ISOVIST(a.geom, b.geom, 50) as geom 
   FROM point a, polygon b;
 {% endhighlight %}
 
@@ -113,7 +113,7 @@ Use walls (```linestring```) to compute the visibility from the ```point``` with
 {% highlight mysql %}
 DROP TABLE IF EXISTS isovist;
 CREATE TABLE isovist AS 
-  SELECT ST_ISOVIST(a.the_geom, b.the_geom, 50) as the_geom 
+  SELECT ST_ISOVIST(a.geom, b.geom, 50) as geom 
   FROM point a, linestring b;
 {% endhighlight %}
 
@@ -127,7 +127,7 @@ Legend : ```walls``` in black /  ```point``` in red / ```resulting ISOVist layer
 {% highlight mysql %}
 DROP TABLE IF EXISTS isovist;
 CREATE TABLE isovist AS 
-  SELECT ST_ISOVIST(a.the_geom, b.the_geom, 50) as the_geom 
+  SELECT ST_ISOVIST(a.geom, b.geom, 50) as geom 
   FROM point a, geomcollection b;
 {% endhighlight %}
 
@@ -143,7 +143,7 @@ Compute the visibility using buildings (```poygon``` layer) with a distance of 5
 {% highlight mysql %}
 DROP TABLE IF EXISTS isovist;
 CREATE TABLE isovist AS 
-  SELECT ST_ISOVIST(a.the_geom, b.the_geom, 50, 0, 3) as the_geom 
+  SELECT ST_ISOVIST(a.geom, b.geom, 50, 0, 3) as geom 
   FROM point a, polygon b;
 {% endhighlight %}
 
@@ -154,7 +154,7 @@ Same, but ending at 5 rad.
 {% highlight mysql %}
 DROP TABLE IF EXISTS isovist;
 CREATE TABLE isovist AS 
-  SELECT ST_ISOVIST(a.the_geom, b.the_geom, 50, 0, 5) as the_geom 
+  SELECT ST_ISOVIST(a.geom, b.geom, 50, 0, 5) as geom 
   FROM point a, polygon b;
 {% endhighlight %}
 
@@ -197,15 +197,15 @@ In the [SQL Console](http://doc.orbisgis.org/en/latest/users/script_sql.html), e
 DROP TABLE IF EXISTS src, iso;
 
 CREATE TABLE src AS 
-  SELECT ST_STARTPOINT(the_geom) as the_geom 
+  SELECT ST_STARTPOINT(geom) as geom 
   FROM path;     
 
 CREATE TABLE iso AS 
-  SELECT ST_IsoVist(a.the_geom, ST_Accum(b.the_geom), 100) as the_geom 
+  SELECT ST_IsoVist(a.geom, ST_Accum(b.geom), 100) as geom 
   FROM src a, buildings b;
 {% endhighlight %}
 
-Where `ST_IsoVist(a.the_geom, ST_Accum(b.the_geom), 100)` &rarr; `100` is the maxDistance value used in this example.
+Where `ST_IsoVist(a.geom, ST_Accum(b.geom), 100)` &rarr; `100` is the maxDistance value used in this example.
 
 This script will creates:
 
@@ -242,9 +242,9 @@ mapImageWriter.setBackgroundColor(Color.WHITE);
 for(int i=1;i<=256;i+=1) {
  sql.execute '''
   DROP TABLE IF EXISTS src;
-  CREATE TABLE src AS SELECT ST_PointN(ST_Densify(the_geom, 10), '''+i+''') the_geom FROM path;     
+  CREATE TABLE src AS SELECT ST_PointN(ST_Densify(geom, 10), '''+i+''') geom FROM path;     
   DROP TABLE IF EXISTS iso;
-  CREATE TABLE iso AS SELECT ST_IsoVist((SELECT ST_PointN(ST_Densify(the_geom, 10), '''+i+''') the_geom FROM path), ST_Accum(the_geom), 100) the_geom FROM buildings;'''
+  CREATE TABLE iso AS SELECT ST_IsoVist((SELECT ST_PointN(ST_Densify(geom, 10), '''+i+''') geom FROM path), ST_Accum(geom), 100) geom FROM buildings;'''
 
  FileOutputStream fileOutputStream = new FileOutputStream("/myUrl/"+"test"+i+".png");
  mapImageWriter.write(fileOutputStream, null);
@@ -256,9 +256,9 @@ Where
 
 * `mapImageWriter.setWidth(729)` and `setHeight(513)` defines the size *(in pixels)* of the output .png files,
 * `for(int i=1;i<=256;i+=1)` &rarr; `256` correspond to the maximum number of image produced *(so here the maximum number of point used to compute the visibility along the `path`)*,
-* `ST_Densify(the_geom, 10)` &rarr; `10` is the distance *(exprimed in meter)* used to densify the `path` &rarr; every `10`m a point will be added,
+* `ST_Densify(geom, 10)` &rarr; `10` is the distance *(exprimed in meter)* used to densify the `path` &rarr; every `10`m a point will be added,
 * `path` is the layer name of the linestring used to computes visibilities,
-* `ST_Accum(the_geom), 100)` &rarr; `100` is the maximum distance used to compute the visibilty *(see `maxDistance` parameter)*,
+* `ST_Accum(geom), 100)` &rarr; `100` is the maximum distance used to compute the visibilty *(see `maxDistance` parameter)*,
 * `buildings` is the layer name in which obstacles are stored,
 * `/myUrl/+"test"+i+".png"` &rarr; .png files, prefixed by `test`; will be saved into a folder defined by `/myUrl/`.
 * `src` and `iso` are respectively the output table names for the point where the visibility is calculated and the resulting visibility polygon. 

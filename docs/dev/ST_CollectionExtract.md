@@ -28,13 +28,13 @@ Only `POINT`s, `LINE`s and `POLYGON`s are returned.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_CollectionExtract('POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3))', 3) as THE_GEOM;
+SELECT ST_CollectionExtract('POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3))', 3) as GEOM;
 -- Answer: POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3)) 
 {% endhighlight %}
 <img class="displayed" src="../ST_CollectionExtract_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_CollectionExtract('MULTILINESTRING ((0 0, 4 1), (1 1, 5 5))', 2) as THE_GEOM;
+SELECT ST_CollectionExtract('MULTILINESTRING ((0 0, 4 1), (1 1, 5 5))', 2) as GEOM;
 -- Answer: MULTILINESTRING ((0 0, 4 1), (1 1, 5 5))
 {% endhighlight %}
 <img class="displayed" src="../ST_CollectionExtract_2.png"/>
@@ -44,13 +44,13 @@ SELECT ST_CollectionExtract('GEOMETRYCOLLECTION(
                        MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                        LINESTRING(2 6, 6 2),
                        POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))', 2) 
-                       as THE_GEOM;
+                       as GEOM;
 -- Answer: LINESTRING (2 6, 6 2)  
 {% endhighlight %}
 <img class="displayed" src="../ST_CollectionExtract_3.png"/>
 
 {% highlight mysql %}
-SELECT ST_CollectionExtract('POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3))', 2) as THE_GEOM;
+SELECT ST_CollectionExtract('POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3))', 2) as GEOM;
 -- Answer: GEOMETRYCOLLECTION EMPTY
 {% endhighlight %}
 <img class="displayed" src="../ST_CollectionExtract_4.png"/>

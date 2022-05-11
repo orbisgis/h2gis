@@ -24,28 +24,28 @@ Project a `POINT` (`geomA`) along a `LINESTRING` (`geomB`). If the `POINT` proje
 
 {% highlight mysql %}
 SELECT ST_PROJECTPOINT('POINT(1 2)',
-                       'LINESTRING(0 0, 4 2)') as THE_GEOM;
+                       'LINESTRING(0 0, 4 2)') as GEOM;
 -- Answer: POINT (1.6 0.8)
 {% endhighlight %}
 <img class="displayed" src="../ST_ProjectPoint_1.png"/>
 
 {% highlight mysql %}
 SELECT ST_PROJECTPOINT('POINT(1 2)',
-                       'MULTILINESTRING ((0 0, 4 2), (1 4, 2 2))') as THE_GEOM;
+                       'MULTILINESTRING ((0 0, 4 2), (1 4, 2 2))') as GEOM;
 -- Answer: POINT (1.8 2.4)
 {% endhighlight %}
 <img class="displayed" src="../ST_ProjectPoint_2.png"/>
 
 {% highlight mysql %}
 SELECT ST_PROJECTPOINT('POINT(4 3)',
-                       'LINESTRING (0 0, 4 2)') as THE_GEOM;
+                       'LINESTRING (0 0, 4 2)') as GEOM;
 -- Answer: POINT (4 2)
 {% endhighlight %}
 <img class="displayed" src="../ST_ProjectPoint_3.png"/>
 
 {% highlight mysql %}
 SELECT ST_PROJECTPOINT('POINT(4 3)',
-                       'POLYGON ((2 4, 0 2, 3 0, 2 4))') as THE_GEOM;
+                       'POLYGON ((2 4, 0 2, 3 0, 2 4))') as GEOM;
 -- Answer: NULL
 {% endhighlight %}
 <img class="displayed" src="../ST_ProjectPoint_4.png"/>

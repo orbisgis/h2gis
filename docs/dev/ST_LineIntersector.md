@@ -25,21 +25,21 @@ As a result, a collection of `LINESTRING` is returned.
 
 {% highlight mysql %}
 SELECT ST_LineIntersector('LINESTRING(1 3, 3 1)',
-                          'LINESTRING(0 0, 4 2)') as THE_GEOM;
+                          'LINESTRING(0 0, 4 2)') as GEOM;
 -- Answer: MULTILINESTRING ((1 3, 2.66 1.33), (2.66 1.33, 3 1)) 
 {% endhighlight %}
 <img class="displayed" src="../ST_LineIntersector_1.png"/>
 
 {% highlight mysql %}
 SELECT ST_LineIntersector('LINESTRING(1 3, 3 1, 3 3)',
-                          'LINESTRING(0 0, 4 2)') as THE_GEOM;
+                          'LINESTRING(0 0, 4 2)') as GEOM;
 -- Answer: MULTILINESTRING ((1 3, 2.66 1.33), (2.66 1.33, 3 1, 3 1.5), (3 1.5, 3 3)) 
 {% endhighlight %}
 <img class="displayed" src="../ST_LineIntersector_2.png"/>
 
 {% highlight mysql %}
 SELECT ST_LineIntersector('LINESTRING(0 0, 4 2)', 
-                          'POLYGON ((2 4, 0 2, 3 0, 2 4))') as THE_GEOM;
+                          'POLYGON ((2 4, 0 2, 3 0, 2 4))') as GEOM;
 -- Answer: MULTILINESTRING ((0 0, 1.71 0.85), (1.71 0.85, 2.66 1.33), (2.66 1.33, 4 2)) 
 {% endhighlight %}
 <img class="displayed" src="../ST_LineIntersector_3.png"/>

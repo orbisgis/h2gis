@@ -13,13 +13,13 @@ permalink: /docs/dev/ST_Voronoi/
 
 {% highlight mysql %}
 -- Return type: geometry
-ST_VORONOI(THE_GEOM MULTIPOINTS,OUT_DIMENSION INTEGER)
-ST_VORONOI(THE_GEOM MULTIPOINTS,OUT_DIMENSION INTEGER,ENVELOPE POLYGON)
+ST_VORONOI(GEOM MULTIPOINTS,OUT_DIMENSION INTEGER)
+ST_VORONOI(GEOM MULTIPOINTS,OUT_DIMENSION INTEGER,ENVELOPE POLYGON)
 
-ST_VORONOI(THE_GEOM MULTIPOLYGON)
-ST_VORONOI(THE_GEOM MULTIPOLYGON,OUT_DIMENSION INTEGER)
-ST_VORONOI(THE_GEOM MULTIPOLYGON,OUT_DIMENSION INTEGER,ENVELOPE POLYGON)
-ST_VORONOI(THE_GEOM MULTIPOINTS)
+ST_VORONOI(GEOM MULTIPOLYGON)
+ST_VORONOI(GEOM MULTIPOLYGON,OUT_DIMENSION INTEGER)
+ST_VORONOI(GEOM MULTIPOLYGON,OUT_DIMENSION INTEGER,ENVELOPE POLYGON)
+ST_VORONOI(GEOM MULTIPOINTS)
 
 {% endhighlight %}
 
@@ -46,20 +46,20 @@ If the input is  a `MULTIPOLYGON` made of triangles mesh. Using geometry coordin
 {% highlight mysql %}
 -- Create input data point cloud
 drop table if exists pts;
-create table pts as select ST_MakePoint(A.X + (COS(B.X)), B.X - (SIN(A.X)), ROUND(LOG10(1 + A.X * (5 * B.X)),2)) THE_GEOM from SYSTEM_RANGE(0,50) A,SYSTEM_RANGE(30,50) B;
+create table pts as select ST_MakePoint(A.X + (COS(B.X)), B.X - (SIN(A.X)), ROUND(LOG10(1 + A.X * (5 * B.X)),2)) GEOM from SYSTEM_RANGE(0,50) A,SYSTEM_RANGE(30,50) B;
 {% endhighlight %}
 
 Create classic voronoi polygons with default envelope. (Z values are not kept.)
 {% highlight mysql %}
 drop table if exists voro;
-create table voro as select ST_VORONOI(ST_ACCUM(the_geom)) the_geom from PTS;
+create table voro as select ST_VORONOI(ST_ACCUM(geom)) geom from PTS;
 {% endhighlight %}
 
 Create voronoi polygons with Z values with input points as envelope.Then create a new table with one voronoi polygon per row.
 
 {% highlight mysql %}
 drop table if exists voro;
-create table voro as select ST_VORONOI(ST_DELAUNAY(ST_ACCUM(the_geom)), 2 , ST_ACCUM(the_geom)) the_geom from PTS;
+create table voro as select ST_VORONOI(ST_DELAUNAY(ST_ACCUM(geom)), 2 , ST_ACCUM(geom)) geom from PTS;
 drop table if exists voroexpl;
 create table voroexpl as select * from st_explode('voro');
 {% endhighlight %}

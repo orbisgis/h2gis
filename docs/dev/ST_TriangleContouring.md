@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_TriangleContouring/
 ### Signatures
 
 {% highlight mysql %}
--- Return type: tableName[THE_GEOM, IDISO]
+-- Return type: tableName[GEOM, IDISO]
 ST_TriangleContouring(VARCHAR tableName,
                       INT varArgs1, INT varArgs2, INT varArgs3, ...);
 ST_TriangleContouring(VARCHAR tableName,
@@ -42,11 +42,11 @@ etc.
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE TIN(THE_GEOM GEOMETRY) AS
+CREATE TABLE TIN(GEOM GEOMETRY) AS
     SELECT 'POLYGON((0 0 1, 3 0 0, 3 3 4, 0 0 1))';
 SELECT * FROM ST_TriangleContouring('TIN', 2, 3, 4);
 -- Answer:
--- |                    THE_GEOM                   | IDISO |
+-- |                    GEOM                   | IDISO |
 -- | --------------------------------------------- | ----- |
 -- | POLYGON((3 1.5 2, 1 1 2, 0 0 1, 3 1.5 2))     |     0 |
 -- | POLYGON((3 1.5 2, 0 0 1, 3 0 0, 3 1.5 2))     |     0 |
@@ -62,12 +62,12 @@ SELECT * FROM ST_TriangleContouring('TIN', 2, 3, 4);
 -- deleted since it is assigned a z-value (of 6) which is greater
 -- than the largest class value (5).
 DROP TABLE IF EXISTS TIN;
-CREATE TABLE TIN(THE_GEOM GEOMETRY, M1 DOUBLE, M2 INT, M3 DOUBLE) AS
+CREATE TABLE TIN(GEOM GEOMETRY, M1 DOUBLE, M2 INT, M3 DOUBLE) AS
     SELECT 'POLYGON((0 0 1, 3 0 0, 3 3 4, 0 0 1))',
            1.0, 6, 4.0;
 SELECT * FROM ST_TriangleContouring('TIN', 'm1', 'm2', 'm3', 2, 3, 5);
 -- Answer:
--- |               THE_GEOM               |  m1 |  m2 |  m3 | IDISO |
+-- |               GEOM               |  m1 |  m2 |  m3 | IDISO |
 -- | ------------------------------------ | --- | --- | --- | ----- |
 -- | POLYGON((0.6 0 0.8, 1 1 2, 0 0 1,    | 1.0 |   6 | 4.0 |     0 |
 -- |          0.6 0 0.8))                 |     |     |     |       |
@@ -87,7 +87,7 @@ SELECT * FROM ST_TriangleContouring('TIN', 'm1', 'm2', 'm3', 2, 3, 5);
 -- |          3 1.5 2))                   |     |     |     |       |
 
 -- An error is thrown if the Geometry is not a triangle.
-CREATE TABLE TIN(THE_GEOM GEOMETRY) AS
+CREATE TABLE TIN(GEOM GEOMETRY) AS
     SELECT 'POLYGON((0 0 1, 3 0 0, 3 3 4, 0 3 1, 0 0 1))';
 SELECT * FROM ST_TriangleContouring('TIN', 2, 3, 4);
 -- Answer: Invalid geometry input, got

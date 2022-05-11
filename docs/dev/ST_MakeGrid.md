@@ -12,9 +12,9 @@ permalink: /docs/dev/ST_MakeGrid/
 ### Signature
 
 {% highlight mysql %}
-TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+TABLE[GEOM, ID, ID_COL, ID_ROW]
     ST_MakeGrid(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY);
-TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+TABLE[GEOM, ID, ID_COL, ID_ROW]
     ST_MakeGrid(VARCHAR tableName, DOUBLE deltaX, DOUBLE deltaY);
 {% endhighlight %}
 
@@ -32,7 +32,7 @@ CREATE TABLE grid AS SELECT * FROM
     ST_MakeGrid('POLYGON((0 0, 2 0, 2 2, 0 0))'::GEOMETRY, 1, 1);
 SELECT * FROM grid;
 -- Answer:
--- |             THE_GEOM              |  ID | ID_COL | ID_ROW |
+-- |             GEOM              |  ID | ID_COL | ID_ROW |
 -- | ---------------------------------- | --- | ------ | ------ |
 -- | POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)) |   0 |      1 |      1 |
 -- | POLYGON((1 0, 2 0, 2 1, 1 1, 1 0)) |   1 |      2 |      1 |
@@ -44,13 +44,13 @@ SELECT * FROM grid;
 
 {% highlight mysql %}
 -- Using a table:
-CREATE TABLE TEST(THE_GEOM GEOMETRY);
+CREATE TABLE TEST(GEOM GEOMETRY);
 INSERT INTO TEST VALUES ('POLYGON((0 0, 2 0, 2 2, 0 0))');
 CREATE TABLE grid AS SELECT * FROM
     ST_MakeGrid('TEST', 1, 1);
 SELECT * FROM grid;
 -- Answer:
--- |             THE_GEOM              |  ID | ID_COL | ID_ROW |
+-- |             GEOM              |  ID | ID_COL | ID_ROW |
 -- | ---------------------------------- | --- | ------ | ------ |
 -- | POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)) |   0 |      1 |      1 |
 -- | POLYGON((1 0, 2 0, 2 1, 1 1, 1 0)) |   1 |      2 |      1 |
@@ -58,16 +58,16 @@ SELECT * FROM grid;
 -- | POLYGON((1 1, 2 1, 2 2, 1 2, 1 1)) |   3 |      2 |      2 |
 
 -- Using a subquery to construct a Geometry:
-CREATE TABLE TEST2(THE_GEOM GEOMETRY);
+CREATE TABLE TEST2(GEOM GEOMETRY);
 INSERT INTO TEST2 VALUES
     ('POLYGON((0 0, 2 0, 2 2, 0 0))'),
     ('POLYGON((1 1, 2 2, 1 2, 1 1))');
 CREATE TABLE grid AS SELECT * FROM
-    ST_MakeGrid((SELECT ST_Union(ST_Accum(THE_GEOM)) FROM TEST2),
+    ST_MakeGrid((SELECT ST_Union(ST_Accum(GEOM)) FROM TEST2),
                 1, 1);
 SELECT * FROM grid;
 -- Answer:
--- |             THE_GEOM              |  ID | ID_COL | ID_ROW |
+-- |             GEOM              |  ID | ID_COL | ID_ROW |
 -- | ---------------------------------- | --- | ------ | ------ |
 -- | POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)) |   0 |      1 |      1 |
 -- | POLYGON((1 0, 2 0, 2 1, 1 1, 1 0)) |   1 |      2 |      1 |

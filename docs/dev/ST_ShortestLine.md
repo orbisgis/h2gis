@@ -28,28 +28,28 @@ The function will only return the first shortest `LINESTRING` if more than one, 
 
 {% highlight mysql %}
 SELECT ST_ShortestLine('POINT(1 2)',
-                       'LINESTRING(0 0, 4 2)') as THE_GEOM;
+                       'LINESTRING(0 0, 4 2)') as GEOM;
 -- Answer: LINESTRING (1 2, 1.6 0.8)
 {% endhighlight %}
 <img class="displayed" src="../ST_ShortestLine_1.png"/>
 
 {% highlight mysql %}
 SELECT ST_ShortestLine('POINT(1 2)',
-                       'MULTILINESTRING ((0 0, 4 2), (1 4, 2 2))') as THE_GEOM;
+                       'MULTILINESTRING ((0 0, 4 2), (1 4, 2 2))') as GEOM;
 -- Answer: LINESTRING (1 2, 1.8 2.4) 
 {% endhighlight %}
 <img class="displayed" src="../ST_ShortestLine_2.png"/>
 
 {% highlight mysql %}
 SELECT ST_ShortestLine('POINT(4 3)',
-                       'LINESTRING(0 0, 4 2)') as THE_GEOM;
+                       'LINESTRING(0 0, 4 2)') as GEOM;
 -- Answer: LINESTRING (4 3, 4 2)  
 {% endhighlight %}
 <img class="displayed" src="../ST_ShortestLine_3.png"/>
 
 {% highlight mysql %}
 SELECT ST_ShortestLine('POINT(4 3)',
-                       'POLYGON ((2 4, 0 2, 3 0, 2 4))') as THE_GEOM;
+                       'POLYGON ((2 4, 0 2, 3 0, 2 4))') as GEOM;
 -- Answer: LINESTRING (4 3, 2.353 2.5882)   
 {% endhighlight %}
 <img class="displayed" src="../ST_ShortestLine_4.png"/>
@@ -58,7 +58,7 @@ SELECT ST_ShortestLine('POINT(4 3)',
 
 {% highlight mysql %}
 SELECT ST_ShortestLine('POINT(2 2)',
-                       'MULTILINESTRING ((1 1, 4 1), (1 3, 4 3))') as THE_GEOM;
+                       'MULTILINESTRING ((1 1, 4 1), (1 3, 4 3))') as GEOM;
 -- Answer: LINESTRING (2 2, 2 1)  
 {% endhighlight %}
 <img class="displayed" src="../ST_ShortestLine_5.png"/>

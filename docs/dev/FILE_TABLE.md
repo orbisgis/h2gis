@@ -51,7 +51,7 @@ SELECT * FROM commune LIMIT 2;
 CALL FILE_TABLE('/home/user/COMMUNE.SHP', 'commune44');
 SELECT * FROM commune44 LIMIT 2;
 -- Answer:
--- |                 the_geom                  |   NOM   |
+-- |                   geom                    |   NOM   |
 -- | ----------------------------------------- | ------- |
 -- | MULTIPOLYGON(((350075.2 6719771.8,        | Puceul  |
 -- |   350072.7 6719775.5, 350073 6719780.7,   |         |

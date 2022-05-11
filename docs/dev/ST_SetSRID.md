@@ -29,11 +29,11 @@ Returns a copy of `geom` with spatial reference id set to `srid`.
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE test_srid(the_geom GEOMETRY);
+CREATE TABLE test_srid(geom GEOMETRY);
 INSERT INTO test_srid VALUES (
     ST_GeomFromText('POINT(15 25)', 27572));
-SELECT ST_SRID(ST_SETSRID(the_geom, 5321)) trans,
-    ST_SRID(the_geom) original FROM test_srid;
+SELECT ST_SRID(ST_SETSRID(geom, 5321)) trans,
+    ST_SRID(geom) original FROM test_srid;
 -- Answer:
 --    | TRANS | ORIGINAL |
 --    |-------|----------|

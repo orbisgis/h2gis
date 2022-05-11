@@ -45,7 +45,7 @@ CALL SHPRead('/home/user/COMMUNE.SHP', 'commune44utf',
              'utf-8');
 SELECT * FROM commune44utf LIMIT 2;
 -- Answer:
--- |                 THE_GEOM                  |   NOM   |
+-- |                 GEOM                  |   NOM   |
 -- | ----------------------------------------- | ------- |
 -- | MULTIPOLYGON(((350075.2 6719771.8,        | Puceul  |
 -- |   350072.7 6719775.5, 350073 6719780.7,   |         |
@@ -59,7 +59,7 @@ CALL SHPRead('/home/user/COMMUNE.SHP', 'commune44iso',
              'iso-8859-1');
 SELECT * FROM commune44iso LIMIT 2;
 -- Answer:
--- |                 THE_GEOM                  |   NOM   |
+-- |                 GEOM                  |   NOM   |
 -- | ----------------------------------------- | ------- |
 -- | MULTIPOLYGON(((350075.2 6719771.8,        | Puceul  |
 -- |   350072.7 6719775.5, 350073 6719780.7,   |         |

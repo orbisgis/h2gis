@@ -114,7 +114,7 @@ SELECT ST_Graph('test');
 
 SELECT * FROM test_nodes;
 -- Answer:
---     | NODE_ID |   THE_GEOM  |
+--     | NODE_ID |     GEOM    |
 --     |---------|-------------|
 --     |    1    | POINT(0 0)  |
 --     |    2    | POINT(1 2)  |
@@ -139,7 +139,7 @@ SELECT ST_Graph('test', 'way');
 
 SELECT * FROM test_nodes;
 -- Answer:
---     | NODE_ID |   THE_GEOM  |
+--     | NODE_ID |     GEOM    |
 --     |---------|-------------|
 --     |    1    | POINT(1 1)  |
 --     |    2    | POINT(3 1)  |
@@ -174,7 +174,7 @@ SELECT ST_Graph('test', 'road', 0.05);
 
 SELECT * FROM test_nodes;
 -- Answer:
---     | NODE_ID |   THE_GEOM    |
+--     | NODE_ID |     GEOM      |
 --     |---------|---------------|
 --     |    1    | POINT(0 0)    |
 --     |    2    | POINT(1.05 0) |
@@ -212,7 +212,7 @@ SELECT ST_Graph('test', 'road', 0.0, true);
 
 SELECT * FROM test_nodes;
 -- Answer:
---     | NODE_ID |   THE_GEOM    |
+--     | NODE_ID |     GEOM      |
 --     |---------|---------------|
 --     |    1    | POINT(0 0 0)  |
 --     |    2    | POINT(1 0 0)  |
@@ -236,7 +236,7 @@ SELECT ST_Graph('test', 'road', 0.0, true);
 
 SELECT * FROM test_nodes;
 -- Answer:
---     | NODE_ID |   THE_GEOM    |
+--     | NODE_ID |     GEOM      |
 --     |---------|---------------|
 --     |    1    | POINT(0 0 1)  |
 --     |    2    | POINT(1 0 0)  |
@@ -260,7 +260,7 @@ SELECT ST_Graph('test', 'road', 0.0, true);
 
 SELECT * FROM test_nodes;
 -- Answer:
---     | NODE_ID |   THE_GEOM    |
+--     | NODE_ID |     GEOM      |
 --     |---------|---------------|
 --     |    1    | POINT(0 0 0)  |
 --     |    2    | POINT(1 0 1)  |

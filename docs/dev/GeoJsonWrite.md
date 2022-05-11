@@ -32,7 +32,7 @@ The default value of `fileEncoding` is `ISO-8859-1`.
 
 {% highlight mysql %}
 -- Write a spatial table to a GeoJSON file:
-CREATE TABLE TEST(ID INT PRIMARY KEY, THE_GEOM POINT);
+CREATE TABLE TEST(ID INT PRIMARY KEY, GEOM POINT);
 INSERT INTO TEST VALUES (1, 'POINT(0 1)');
 INSERT INTO TEST VALUES (2, 'POINT(2 4)');
 
@@ -42,7 +42,7 @@ CALL GeoJsonWrite('/home/user/test.geojson', 'TEST');
 CALL GeoJsonRead('/home/user/test.geojson', 'TEST2');
 SELECT * FROM TEST2;
 -- Answer:
--- | THE_GEOM    | ID |
+-- |     GEOM    | ID |
 -- |-------------|----|
 -- | POINT(0 1)  | 1  |
 -- | POINT(2 4)  | 2  |
@@ -58,7 +58,7 @@ CALL GeoJsonWrite('/home/user/test.geojson',
 CALL GeoJsonRead('/home/user/test.geojson', 'TEST2');
 SELECT * FROM TEST2;
 -- Answer:
--- | THE_GEOM    | ID |
+-- |     GEOM    | ID |
 -- |-------------|----|
 -- | POINT(0 1)  | 1  |
 {% endhighlight %}

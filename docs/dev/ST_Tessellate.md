@@ -58,7 +58,7 @@ MULTIPOLYGON (((2 4, 1 3, 3 3, 2 4)), ((1 3, 2 2, 3 3, 1 3)),
 The tessellation is made on a set of urban plots (in grey) (stored in a layer called "PLOTS")
 
 {% highlight mysql %}
-SELECT ST_Tessellate(THE_GEOM) as THE_GEOM FROM PLOTS;
+SELECT ST_Tessellate(GEOM) as GEOM FROM PLOTS;
 {% endhighlight %}
 
 The resulting triangles are displayed in pink.

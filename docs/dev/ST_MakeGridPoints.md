@@ -43,7 +43,7 @@ SELECT * FROM grid;
 -- | POINT(1.5 1.5)  |   3 |      2 |      2 |
 
 -- Using a table:
-CREATE TABLE TEST(THE_GEOM GEOMETRY);
+CREATE TABLE TEST(GEOM GEOMETRY);
 INSERT INTO TEST VALUES ('POLYGON((0 0, 2 0, 2 2, 0 0))');
 CREATE TABLE grid AS SELECT * FROM
     ST_MakeGridPoints('TEST', 1, 1);
@@ -57,13 +57,13 @@ SELECT * FROM grid;
 -- | POINT(1.5 1.5)  |   3 |      2 |      2 |
 
 -- Using a subquery to construct a Geometry:
-CREATE TABLE TEST2(THE_GEOM GEOMETRY);
+CREATE TABLE TEST2(GEOM GEOMETRY);
 INSERT INTO TEST2 VALUES
     ('POLYGON((0 0, 2 0, 2 2, 0 0))'),
     ('POLYGON((1 1, 2 2, 1 2, 1 1))');
 CREATE TABLE grid AS SELECT * FROM
     ST_MakeGridPoints(
-        (SELECT ST_Union(ST_Accum(THE_GEOM)) FROM TEST2),
+        (SELECT ST_Union(ST_Accum(GEOM)) FROM TEST2),
         1, 1);
 SELECT * FROM grid;
 --Answer:

@@ -44,7 +44,7 @@ The default value of `fileEncoding` is `ISO-8859-1`.
 
 {% highlight mysql %}
 -- Create an example table containing POLYGONs and export it.
-CREATE TABLE AREA(THE_GEOM GEOMETRY, ID INT PRIMARY KEY);
+CREATE TABLE AREA(GEOM GEOMETRY, ID INT PRIMARY KEY);
 INSERT INTO AREA VALUES
     ('POLYGON((-10 109, 90 9, -10 9, -10 109))', 1),
     ('POLYGON((90 109, 190 9, 90 9, 90 109))', 2);
@@ -55,7 +55,7 @@ CALL SHPWrite('/home/user/area.shp', 'AREA');
 CALL SHPRead('/home/user/area.shp', 'AREA2');
 SELECT * FROM AREA2;
 -- Answer:
--- |                     THE_GEOM                     | ID |
+-- |                       GEOM                       | ID |
 -- | ------------------------------------------------ | -- |
 -- | MULTIPOLYGON(((-10 109,, 90 9, -10 9, -10 109))) |  1 |
 -- | MULTIPOLYGON(((90 109, 190 109, 90 9, 90 109)))  |  2 |
@@ -71,7 +71,7 @@ CALL SHPWRITE('/home/user/area.shp',
 CALL SHPRead('/home/user/area.shp', 'AREA2');
 SELECT * FROM AREA2;
 -- Answer:
--- |                     THE_GEOM                     | ID |
+-- |                       GEOM                       | ID |
 -- | ------------------------------------------------ | -- |
 -- | MULTIPOLYGON(((-10 109,, 90 9, -10 9, -10 109))) |  1 |
 {% endhighlight %}
@@ -83,14 +83,14 @@ If you want to export your shapefile with it's projection, stored in a .prj file
 If not, the SRID must be enforced using the following commands:
 
 {% highlight mysql %}
-UPDATE mytable SET the_geom = ST_SetSRID(the_geom, EPSG_CODE);
-ALTER TABLE mytable ADD CHECK ST_SRID(the_geom) = EPSG_CODE;
+UPDATE mytable SET geom = ST_SetSRID(geom, EPSG_CODE);
+ALTER TABLE mytable ADD CHECK ST_SRID(geom) = EPSG_CODE;
 {% endhighlight %}
 
 Where:
 
 * `mytable` is the table name to update
-* `the_geom` is the geometric field name
+* `geom` is the geometric field name
 * `EPSG_CODE` is the EPSG id corresponding to your system (e.g `4326` for `WGS84` or `2154` for the french `Lambert 93`).
 
 Then export your shapefile as seen before.

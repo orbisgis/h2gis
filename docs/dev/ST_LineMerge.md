@@ -26,7 +26,7 @@ If the user provide something else than `(MULTI)LINESTRING` it returns an `EMPTY
 ##### Case with a `LINESTRING`
 
 {% highlight mysql %}
-SELECT ST_LineMerge('LINESTRING (1 1, 1 4)') as THE_GEOM;
+SELECT ST_LineMerge('LINESTRING (1 1, 1 4)') as GEOM;
 -- Answer: MULTILINESTRING ((1 1, 1 4)) 
 {% endhighlight %}
 
@@ -36,7 +36,7 @@ SELECT ST_LineMerge('LINESTRING (1 1, 1 4)') as THE_GEOM;
 SELECT ST_LineMerge('MULTILINESTRING ((1 1, 1 4), 
   				      (1 4, 5 4), 
   				      (5 4, 5 1), 
-  				      (3 3, 3 4))') as THE_GEOM;
+  				      (3 3, 3 4))') as GEOM;
 -- Answer: MULTILINESTRING ((1 1, 1 4, 5 4, 5 1), 
 --                          (3 3, 3 4)) 
 {% endhighlight %}

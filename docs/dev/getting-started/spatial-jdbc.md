@@ -29,10 +29,10 @@ Geometry fields:
 
 {% highlight java %}
 SpatialResultSet rs = st.executeQuery(
-    "SELECT the_geom FROM mygeomtable").
+    "SELECT geom FROM mygeomtable").
         unWrap(SpatialResultSet.class);
 rs.next();
-Geometry myGeom = rs.getGeometry("the_geom");
+Geometry myGeom = rs.getGeometry("geom");
 {% endhighlight %}
 
 [Java Database Connectivity]: http://www.oracle.com/technetwork/java/javase/jdbc/index.html

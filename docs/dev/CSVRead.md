@@ -42,7 +42,7 @@ file is interpreted as the column names.
 CREATE TABLE AREA AS
     SELECT * FROM CSVRead('/home/user/area.csv') LIMIT 2;
 -- Answer:
--- |                 THE_GEOM                 |   ID   |
+-- |                   GEOM                   |   ID   |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
@@ -56,7 +56,7 @@ CREATE TABLE AREA AS
                           NULL,
                           'fieldSeparator=;') LIMIT 2;
 -- Answer:
--- |                  THE_GEOM                |   ID   |
+-- |                    GEOM                  |   ID   |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
@@ -88,13 +88,13 @@ CREATE TABLE AREA AS
 | 3  |    6    |    7    |
 
 CREATE TABLE POINTS(ID INT PRIMARY KEY,
-                    THE_GEOM GEOMETRY) AS
-        SELECT ST_MakePoint(coord_x, coord_y) THE_GEOM, id
+                    GEOM GEOMETRY) AS
+        SELECT ST_MakePoint(coord_x, coord_y) GEOM, id
         FROM CSVREAD('/home/user/centroid.csv');
 
 SELECT * FROM POINTS;
 -- Answer:
-| ID |  THE_GEOM  |
+| ID |  GEOM  |
 |----|------------|
 | 1  | POINT(2 3) |
 | 2  | POINT(4 5) |

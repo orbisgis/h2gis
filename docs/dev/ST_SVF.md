@@ -37,7 +37,7 @@ Creation of the table with one point (here exprimed in Lambert 93, French system
 
 {% highlight mysql %}
 DROP TABLE IF EXISTS POINT;
-CREATE TABLE POINT AS SELECT ('POINT(222821.90377044567 6757577.12494107)'::GEOMETRY) as the_geom;
+CREATE TABLE POINT AS SELECT ('POINT(222821.90377044567 6757577.12494107)'::GEOMETRY) as geom;
 {% endhighlight %}
 
 Computation of the SVF with:
@@ -49,7 +49,7 @@ Computation of the SVF with:
 {% highlight mysql %}
 DROP TABLE IF EXISTS SVF;
 CREATE TABLE SVF AS 
-   SELECT ST_SVF(a.THE_GEOM, ST_ACCUM(b.THE_GEOM), 100, 150) AS SVF 
+   SELECT ST_SVF(a.GEOM, ST_ACCUM(b.GEOM), 100, 150) AS SVF 
    FROM POINT a, BUILDING b;
 
 -- Answer: 
@@ -67,8 +67,8 @@ INSERT INTO POINT VALUES ('POINT(222723.6455 6757539.0997)'::GEOMETRY);
 -- Compute the SVF for both points
 DROP TABLE IF EXISTS SVF;
 CREATE TABLE SVF AS 
-   SELECT ST_SVF(a.THE_GEOM, ST_ACCUM(b.THE_GEOM), 100, 150) AS SVF 
-   FROM POINT a, BUILDING b GROUP BY a.the_geom;
+   SELECT ST_SVF(a.GEOM, ST_ACCUM(b.GEOM), 100, 150) AS SVF 
+   FROM POINT a, BUILDING b GROUP BY a.geom;
 
 -- Answer: 
 |        SVF         |
@@ -88,25 +88,25 @@ In the example below, we are using a grid of points to compute SVFs. The grid is
 DROP TABLE IF EXISTS env, grid, grid_points;
 -- Generate the envelope of all buildings
 CREATE TABLE env AS 
-   SELECT ST_Envelope(ST_Accum(THE_GEOM)) AS THE_GEOM FROM BUILDINGS;
+   SELECT ST_Envelope(ST_Accum(GEOM)) AS GEOM FROM BUILDINGS;
 -- Generate a regular grid of 2 meters on the basis of the envelope
 CREATE TABLE grid AS 
    SELECT * FROM ST_MakeGrid('env', 2, 2);
 -- Retrieve the centroid points of all grid cells
 CREATE TABLE grid_points AS 
-   SELECT ST_Centroid(THE_GEOM) AS THE_GEOM FROM grid;
+   SELECT ST_Centroid(GEOM) AS GEOM FROM grid;
 -- Add a serial column in order to have a point id
 ALTER TABLE GRID_POINTS ADD COLUMN id bigint auto_increment;
 
 -- Compute the SVF on all these points (keeping id and geometry)
 -- Using all buildings that are within 50m around a point
 DROP TABLE IF EXISTS SVF;
-CREATE TABLE SVF AS SELECT a.THE_GEOM, a.ID, 
-   ST_SVF(a.THE_GEOM, ST_ACCUM(b.THE_GEOM), 50, 100) AS SVF 
-   FROM GRID_POINTS a, BUILDINGS b GROUP BY a.THE_GEOM;
+CREATE TABLE SVF AS SELECT a.GEOM, a.ID, 
+   ST_SVF(a.GEOM, ST_ACCUM(b.GEOM), 50, 100) AS SVF 
+   FROM GRID_POINTS a, BUILDINGS b GROUP BY a.GEOM;
 
 -- Answer: Table "SVF"
-|  THE_GEOM  | ID |        SVF         |
+|    GEOM    | ID |        SVF         |
 |------------|----|--------------------|
 | POINT(...) | 1  | 0.5658633540674807 |
 | POINT(...) | 2  | 0.4826031275651395 |

@@ -13,9 +13,9 @@ permalink: /docs/dev/ST_ShortestPath/
 
 {% highlight mysql %}
 -- Input type:
---     TABLE[EDGE_ID, START_NODE, END_NODE[, w][, eo][, THE_GEOM]]
+--     TABLE[EDGE_ID, START_NODE, END_NODE[, w][, eo][, GEOM]]
 -- Return type:
---     TABLE[[THE_GEOM, ]EDGE_ID, PATH_ID, PATH_EDGE_ID,
+--     TABLE[[GEOM, ]EDGE_ID, PATH_ID, PATH_EDGE_ID,
 --           SOURCE, DESTINATION, WEIGHT]
 ST_ShortestPath('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, d);
 {% endhighlight %}
@@ -139,7 +139,7 @@ SELECT * FROM ST_ShortestPath('INPUT_EDGES',
 -- result.
 SELECT * FROM ST_ShortestPath('EDGES_EO_W_GEOM',
         'directed - EDGE_ORIENTATION', 'weight', 1, 4);
--- | THE_GEOM                      | EDGE_ID | PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- | GEOM                          | EDGE_ID | PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
 -- |-------------------------------|---------|---------|--------------|--------|-------------|--------|
 -- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       1 |            1 |      5 |           4 |    6.0 |
 -- | LINESTRING (1 0, 2 0)         |       7 |       1 |            2 |      3 |           5 |    2.0 |
@@ -149,7 +149,7 @@ SELECT * FROM ST_ShortestPath('EDGES_EO_W_GEOM',
 -- METHOD 2: Recover Geometries after calculation.
 -- Notice the call to the ABS function (edge ids could be negative).
 -- We get the same result.
-SELECT A.THE_GEOM,
+SELECT A.GEOM,
        B.EDGE_ID,
        B.PATH_ID,
        B.PATH_EDGE_ID,
@@ -160,7 +160,7 @@ FROM INPUT A,
      (SELECT * FROM ST_ShortestPath('EDGES_EO_W_GEOM',
         'directed - EDGE_ORIENTATION', 'weight', 1, 4)) B
 WHERE A.ID=ABS(B.EDGE_ID);
--- | THE_GEOM                      | EDGE_ID | PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- | GEOM                          | EDGE_ID | PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
 -- |-------------------------------|---------|---------|--------------|--------|-------------|--------|
 -- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       1 |            1 |      5 |           4 |    6.0 |
 -- | LINESTRING (1 0, 2 0)         |       7 |       1 |            2 |      3 |           5 |    2.0 |

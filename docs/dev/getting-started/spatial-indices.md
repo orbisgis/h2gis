@@ -23,8 +23,8 @@ polygonal areas.  First, we create the `area` and `roads` tables, putting a
 spatial index on their Geometry columns:
 
 {% highlight mysql %}
-CREATE TABLE area(idarea INT PRIMARY KEY, the_geom GEOMETRY);
-CREATE SPATIAL INDEX myspatialindex ON area(the_geom);
+CREATE TABLE area(idarea INT PRIMARY KEY, geom GEOMETRY);
+CREATE SPATIAL INDEX myspatialindex ON area(geom);
 INSERT INTO area VALUES (1,
     'POLYGON((0 0, 20 0, 20 10, 0 10, 0 0))');
 INSERT INTO area VALUES (2,
@@ -32,8 +32,8 @@ INSERT INTO area VALUES (2,
 INSERT INTO area VALUES (3,
     'POLYGON((45 10, 50 10, 50 13, 45 13, 45 10))');
 
-CREATE TABLE roads(idroad INT PRIMARY KEY, the_geom GEOMETRY);
-CREATE SPATIAL INDEX ON roads(the_geom);
+CREATE TABLE roads(idroad INT PRIMARY KEY, geom GEOMETRY);
+CREATE SPATIAL INDEX ON roads(geom);
 INSERT INTO roads VALUES (1, 'LINESTRING(2 2, 7 7)');
 INSERT INTO roads VALUES (2, 'LINESTRING(15 -1, 30 13)');
 {% endhighlight %}
@@ -43,8 +43,8 @@ Now we execute the request:
 {% highlight mysql %}
 SELECT idarea, COUNT(idroad) roadscount
     FROM area, roads
-    WHERE area.the_geom && roads.the_geom
-    AND ST_Intersects(area.the_geom, roads.the_geom)
+    WHERE area.geom && roads.geom
+    AND ST_Intersects(area.geom, roads.geom)
     GROUP BY idarea
     ORDER BY idarea;
 {% endhighlight %}

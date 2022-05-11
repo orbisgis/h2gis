@@ -5,5 +5,5 @@ PostGIS has a jdbc:postgres_jts: Driver that let the user the choice to switch b
 
 # Create spatial table from csv
 ```sql
-create table roads(the_geom MultiLineString) as select ST_GeomFromText(the_geom) from CSVREAD('/home/user/roads.csv');
+create table roads(geom MultiLineString) as select ST_GeomFromText(geom) from CSVREAD('/home/user/roads.csv');
 ```

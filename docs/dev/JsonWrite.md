@@ -25,7 +25,7 @@ Write a spatial table and export it into a JSON file.
 
 {% highlight mysql %}
 -- Initialize the spatial table
-CREATE TABLE TEST(ID INT PRIMARY KEY, THE_GEOM POINT);
+CREATE TABLE TEST(ID INT PRIMARY KEY, GEOM POINT);
 INSERT INTO TEST VALUES (1, 'POINT(0 1)');
 -- Export
 CALL JsonWrite('/home/user/test.json', 'TEST');
@@ -34,7 +34,7 @@ CALL JsonWrite('/home/user/test.json', 'TEST');
 Open the `test.json` file.
 
 {% highlight json %}
-{"ID":1,"THE_GEOM":"POINT (0 1)"}
+{"ID":1,"GEOM":"POINT (0 1)"}
 {% endhighlight json %}
 
 ##### See also

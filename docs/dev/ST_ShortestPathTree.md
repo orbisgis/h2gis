@@ -13,9 +13,9 @@ permalink: /docs/dev/ST_ShortestPathTree/
 
 {% highlight mysql %}
 -- Input type:
---     TABLE[EDGE_ID, START_NODE, END_NODE[, w][, eo][, THE_GEOM]]
+--     TABLE[EDGE_ID, START_NODE, END_NODE[, w][, eo][, GEOM]]
 -- Return type:
---     TABLE[[THE_GEOM, ]EDGE_ID, SOURCE, DESTINATION, WEIGHT]
+--     TABLE[[GEOM, ]EDGE_ID, SOURCE, DESTINATION, WEIGHT]
 ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s)
 ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, r)
 {% endhighlight %}
@@ -113,7 +113,7 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 -- result.
 SELECT * FROM ST_ShortestPathTree('EDGES_EO_W_GEOM',
         'directed - EDGE_ORIENTATION', 'weight', 1);
--- | THE_GEOM                      | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- | GEOM                          | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
 -- |-------------------------------|---------|--------|-------------|--------|
 -- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |      3 |           2 |    3.0 |
 -- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |      5 |           4 |    6.0 |
@@ -124,7 +124,7 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W_GEOM',
 -- METHOD 2: Recover Geometries after calculation.
 -- Notice the call to the ABS function (edge ids could be negative).
 -- We get the same result.
-SELECT A.THE_GEOM,
+SELECT A.GEOM,
        B.EDGE_ID,
        B.SOURCE,
        B.DESTINATION,
@@ -133,7 +133,7 @@ FROM INPUT A,
      (SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
                  'directed - EDGE_ORIENTATION', 'weight', 1)) B
 WHERE A.ID=ABS(B.EDGE_ID);
--- | THE_GEOM                      | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- | GEOM                          | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
 -- |-------------------------------|---------|--------|-------------|--------|
 -- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |      3 |           2 |    3.0 |
 -- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |      5 |           4 |    6.0 |
