@@ -19,3 +19,4 @@
 + Move classes used for datasource creation (`H2GISOsgiDBFactory` and `DataSourceFactoryImpl`) to `*-osgi` package and keep test purpose class (`HGISSimpleDBFactory`) in `h2gis-functions`
 + Fix `ST_OrderingEquals` and `ST_AsBinary` parameters to handle the case of a null geometry
 + Fix `FindGeometryMetadata` to handle the case of case-sensitive names
++ Make the method `PostGISDBFactory.createDataSource(Properties)` static
