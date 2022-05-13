@@ -82,8 +82,10 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
                 List<Geometry> toUnitTmp = new ArrayList<Geometry>(size);
                 for (int i = 0; i < size; i++) {
                     Geometry geomsub = geom.getGeometryN(i);
-                    toUnitTmp.add(geomsub);
-                    feedDim(geomsub);
+                    if(!geomsub.isEmpty()) {
+                        toUnitTmp.add(geomsub);
+                        feedDim(geomsub);
+                    }
                 }
                 toUnite.addAll(toUnitTmp);
             } else {
@@ -97,14 +99,15 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
     public void add(Object o) throws SQLException {
         if (o instanceof Geometry) {
             Geometry geom = (Geometry) o;
-            if(srid ==-1){                
-                srid=geom.getSRID();
-            }
-            if(srid==geom.getSRID()){
-            addGeometry(geom);
-            }
-            else {
-              throw new SQLException("Operation on mixed SRID geometries not supported");  
+            if(!geom.isEmpty()) {
+                if (srid == -1) {
+                    srid = geom.getSRID();
+                }
+                if (srid == geom.getSRID()) {
+                    addGeometry(geom);
+                } else {
+                    throw new SQLException("Operation on mixed SRID geometries not supported");
+                }
             }
         } else if (o != null) {
             throw new SQLException("ST_Accum accepts only Geometry values. Input: " +
