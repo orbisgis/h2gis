@@ -2584,6 +2584,31 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_UnionSRID4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union('SRID=4326;POLYGON ((230 350, 460 350, 460 200, 230 200, 230 350))'::geometry,'LINESTRING EMPTY'::GEOMETRY) the_geom");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((230 200, 230 350, 460 350, 460 200, 230 200))", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_UnionSRID5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union('MULTIPOINT ((1 0), EMPTY, EMPTY, (2 2))'::GEOMETRY) the_geom");
+        rs.next();
+        assertGeometryEquals("MULTIPOINT ((1 0), (2 2))", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_UnionSRID6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union(st_accum(the_geom)::GEOMETRY) the_geom from" +
+                "(select 'SRID=4326; POINT(0 0)'::GEOMETRY as the_geom union select 'POINT EMPTY'::GEOMETRY as the_geom) as foo ");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POINT (0 0)", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
     public void test_ST_EstimatedExtent1() throws Exception {
         st.execute("DROP TABLE  forests IF EXISTS;" +
                 "CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
