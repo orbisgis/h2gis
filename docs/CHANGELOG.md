@@ -21,3 +21,4 @@
 + Fix ST_Accum and ST_Union to filter empty geometry
 + Fix `FindGeometryMetadata` to handle the case of case-sensitive names
 + Make the method `PostGISDBFactory.createDataSource(Properties)` static
++ Fix ST_Union to return null if the entry geometry is null

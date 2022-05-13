@@ -71,6 +71,12 @@ public class ST_Union extends DeterministicScalarFunction {
      * @return union of all Geometries in geomList
      */
     public static Geometry union(Geometry geomList) {
+        if(geomList==null){
+            return null;
+        }
+        if(geomList.isEmpty()){
+            return geomList;
+        }
         return UnaryUnionOp.union(geomList);
     }
 }
