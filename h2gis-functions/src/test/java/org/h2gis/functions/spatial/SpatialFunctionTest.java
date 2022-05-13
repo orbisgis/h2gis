@@ -2609,6 +2609,14 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_UnionSRID7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union(NULL)");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
     public void test_ST_EstimatedExtent1() throws Exception {
         st.execute("DROP TABLE  forests IF EXISTS;" +
                 "CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
