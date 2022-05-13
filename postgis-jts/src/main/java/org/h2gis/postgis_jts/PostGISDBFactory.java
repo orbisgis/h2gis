@@ -31,18 +31,18 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PostGISDBFactory {
-    String JDBC_DATABASE_NAME = "databaseName";
-    String JDBC_DATASOURCE_NAME = "dataSourceName";
-    String JDBC_PASSWORD = "password";
-    String JDBC_PORT_NUMBER = "portNumber";
-    String JDBC_SERVER_NAME = "serverName";
-    String JDBC_USER = "user";
-    String JDBC_URL = "url";
+    public static String JDBC_DATABASE_NAME = "databaseName";
+    public static String JDBC_DATASOURCE_NAME = "dataSourceName";
+    public static String JDBC_PASSWORD = "password";
+    public static String JDBC_PORT_NUMBER = "portNumber";
+    public static String JDBC_SERVER_NAME = "serverName";
+    public static String JDBC_USER = "user";
+    public static String JDBC_URL = "url";
     // org.postgresql.ds.jdbc23.AbstractJdbc23PoolingDataSource hold a static container of DataSource instance.
     // JDBC_DATASOURCE_NAME should be unique on each call of CreateDataSource with different parameters
     private static AtomicInteger dataSourceCount = new AtomicInteger(0);
 
-    public DataSource createDataSource(Properties properties) throws SQLException {
+    public static DataSource createDataSource(Properties properties) throws SQLException {
         if (properties == null) {
             properties = new Properties();
         }

@@ -19,20 +19,15 @@
  */
 package org.h2gis.functions.spatial.metadata;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.h2.util.StringUtils;
-import org.h2.value.Value;
-import org.h2.value.ValueArray;
-import org.h2.value.ValueInteger;
-import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBUtils;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class FindGeometryMetadata extends DeterministicScalarFunction{
 
@@ -55,24 +50,27 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
      * POINT Z
      * POINT ZM
      *
-     * @param geometry_type
+     *
      * @return an array of values with the following values order
-     * values[0] =   GEOMETRY_TYPE
+     * values[0] = GEOMETRY_TYPE
      * values[1] = COORD_DIMENSION
      * values[2] = SRID
-     * values[3] =   TYPE
-     * @throws SQLException
+     * values[3] = SFS TYPE
+     * @throws SQLException Exception get on executing wrong SQL query.
      */
-    public static String[] extractMetadata(Connection connection, String catalogName, String schemaName, String tableName, String columnName, String data_type, String geometry_type, String srid) throws SQLException {
+    public static String[] extractMetadata(Connection connection,
+                                           String catalogName, String schemaName, String tableName,
+                                           String columnName, String data_type, String geometry_type, String srid)
+            throws SQLException {
         if(geometry_type==null){
             geometry_type=data_type;
         }
         String[] values = new String[4];
         if(srid==null) {
-            try ( // Fetch the first geometry to find a stored SRID
-                  Statement st = connection.createStatement();
-                  ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
-                          StringUtils.quoteJavaString(columnName.toUpperCase()), new TableLocation(catalogName, schemaName, tableName, DBUtils.getDBType(connection))))) {
+            try ( ResultSet rs = connection.createStatement()
+                    .executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
+                            StringUtils.quoteJavaString(columnName),
+                            new TableLocation(catalogName, schemaName, tableName, DBUtils.getDBType(connection))))) {
                 if (rs.next()) {
                     srid = rs.getString(1);
                 }
