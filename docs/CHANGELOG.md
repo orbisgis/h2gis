@@ -22,3 +22,4 @@
 + Fix `FindGeometryMetadata` to handle the case of case-sensitive names
 + Make the method `PostGISDBFactory.createDataSource(Properties)` static
 + Fix ST_Union to return null if the entry geometry is null
++ Improve st_node to remove duplicate lines
