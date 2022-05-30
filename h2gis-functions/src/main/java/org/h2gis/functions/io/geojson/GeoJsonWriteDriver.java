@@ -791,7 +791,8 @@ public class GeoJsonWriteDriver {
                         jsonGenerator.writeString(rs.getString(fieldId));
                     }
                     else if (specificType.equalsIgnoreCase("TIME")){
-                        jsonGenerator.writeStringField(columnName, rs.getObject(fieldId).toString());
+                        Object obj = rs.getObject(fieldId);
+                        jsonGenerator.writeStringField(columnName, obj == null ? "null" : obj.toString());
                     }
                 }
                 else if (rs.getObject(fieldId) instanceof Object[]) {

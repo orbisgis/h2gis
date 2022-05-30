@@ -23,3 +23,4 @@
 + Make the method `PostGISDBFactory.createDataSource(Properties)` static
 + Fix ST_Union to return null if the entry geometry is null
 + Improve st_node to remove duplicate lines
++ Fix an issue on writing as geojson a table with a null value typed as `TIME`
