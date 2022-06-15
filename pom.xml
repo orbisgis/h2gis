@@ -79,7 +79,7 @@
         <!-- Dependencies versions -->
         <commons-compress-version>1.21</commons-compress-version>
         <commons-io-version>2.11.0</commons-io-version>
-        <h2-version>2.1.212</h2-version>
+        <h2-version>2.1.214</h2-version>
         <jackson-core-version>2.13.2</jackson-core-version>
         <jts-version>1.18.2</jts-version>
         <junit-version>5.8.2</junit-version>
@@ -412,12 +412,10 @@
                 </executions>
                 <inherited>false</inherited>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
