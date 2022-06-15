@@ -2528,6 +2528,16 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_CollectionExtract7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectionExtract('SRID=4326;GEOMETRYCOLLECTION (POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320)),"
+                + "  LINESTRING (290 340, 270 230),"
+                + "  LINESTRING (120 200, 230 170))', 3);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320))", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
     public void test_ST_BoundingCircleCenter() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_BoundingCircleCenter(ST_EXPAND('SRID=4326;POINT(0 0)',5,5)) the_geom");
         rs.next();
@@ -2581,6 +2591,39 @@ public class SpatialFunctionTest {
         assertThrows(SQLException.class, () -> {
             st.execute("SELECT ST_Union('SRID=4327;POLYGON ((230 350, 460 350, 460 200, 230 200, 230 350))'::geometry,'SRID=4326;POLYGON((460 350, 810 350, 810 200, 460 200, 460 350))'::GEOMETRY) the_geom");
         });
+    }
+
+    @Test
+    public void test_ST_UnionSRID4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union('SRID=4326;POLYGON ((230 350, 460 350, 460 200, 230 200, 230 350))'::geometry,'LINESTRING EMPTY'::GEOMETRY) the_geom");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((230 200, 230 350, 460 350, 460 200, 230 200))", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_UnionSRID5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union('MULTIPOINT ((1 0), EMPTY, EMPTY, (2 2))'::GEOMETRY) the_geom");
+        rs.next();
+        assertGeometryEquals("MULTIPOINT ((1 0), (2 2))", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_UnionSRID6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union(st_accum(the_geom)::GEOMETRY) the_geom from" +
+                "(select 'SRID=4326; POINT(0 0)'::GEOMETRY as the_geom union select 'POINT EMPTY'::GEOMETRY as the_geom) as foo ");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POINT (0 0)", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_UnionSRID7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union(NULL)");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
     }
 
     @Test

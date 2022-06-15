@@ -18,6 +18,11 @@
 + Move all OSGI dependencies to h2gis-functions-osgi and to postgis-jts-osgi
 + Move classes used for datasource creation (`H2GISOsgiDBFactory` and `DataSourceFactoryImpl`) to `*-osgi` package and keep test purpose class (`HGISSimpleDBFactory`) in `h2gis-functions`
 + Fix `ST_OrderingEquals` and `ST_AsBinary` parameters to handle the case of a null geometry
++ Fix ST_Accum and ST_Union to filter empty geometry
 + Fix `FindGeometryMetadata` to handle the case of case-sensitive names
 + Move header url into valid html `<a>` tags.
 + Make the method `PostGISDBFactory.createDataSource(Properties)` static
++ Fix ST_Union to return null if the entry geometry is null
++ Improve st_node to remove duplicate lines
++ Update H2 to 2.1.214
++ Fix an issue on writing as geojson a table with a null value typed as `TIME`

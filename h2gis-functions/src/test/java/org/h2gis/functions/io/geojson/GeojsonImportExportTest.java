@@ -1314,4 +1314,15 @@ public class GeojsonImportExportTest {
             assertGeometryEquals("POINT Z (-1.637021666666667 47.15928666666667 10.2)", res.getObject(1));
         }
     }
+
+    @Test
+    public void testWriteNullData() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS DATA;");
+            stat.execute("create table DATA(the_geom GEOMETRY(GEOMETRY), id int, t time)");
+            stat.execute("insert into DATA values( 'LINESTRING(1 2, 5 3, 10 19)', 1, '04:23:57')");
+            stat.execute("insert into DATA values( 'LINESTRING(1 10, 20 15)', 2, null)");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'DATA', true);");
+        }
+    }
 }

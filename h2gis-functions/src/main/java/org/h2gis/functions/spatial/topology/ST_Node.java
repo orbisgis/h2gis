@@ -22,10 +22,11 @@ package org.h2gis.functions.spatial.topology;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.RobustLineIntersector3D;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.noding.IntersectionAdder;
-import org.locationtech.jts.noding.MCIndexNoder;
-import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.SegmentStringUtil;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.noding.*;
+
+import java.util.*;
 
 /**
  *
@@ -35,7 +36,8 @@ import org.locationtech.jts.noding.SegmentStringUtil;
 public class ST_Node extends DeterministicScalarFunction{
 
     public ST_Node(){
-        addProperty(PROP_REMARKS, "Add nodes on a geometry for each intersection ");
+        addProperty(PROP_REMARKS, "Add nodes on a geometry for each intersection." +
+                "\nDuplicate lines are removed ");
     }
 
     @Override
@@ -51,9 +53,18 @@ public class ST_Node extends DeterministicScalarFunction{
     public static Geometry node(Geometry geom) {
         if (geom == null) {
             return null;
-        }        
+        }
         Noder noder = new MCIndexNoder(new IntersectionAdder(new RobustLineIntersector3D()));
         noder.computeNodes(SegmentStringUtil.extractNodedSegmentStrings(geom));
-        return SegmentStringUtil.toGeometry(noder.getNodedSubstrings(), geom.getFactory());
+        Collection segStrings = noder.getNodedSubstrings();
+        GeometryFactory geomFact = geom.getFactory();
+        Set<LineString> lines = new HashSet<>();
+        for (Iterator<SegmentString> segment = segStrings.iterator();  segment.hasNext();){
+            SegmentString ss = segment.next();
+            LineString line = geomFact.createLineString(ss.getCoordinates());
+            lines.add(line);
+        }
+        return geomFact.createMultiLineString(lines.toArray(lines.toArray(new LineString[0])));
+
     }
 }

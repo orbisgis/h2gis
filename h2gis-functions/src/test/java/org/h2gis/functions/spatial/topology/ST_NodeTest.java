@@ -69,7 +69,7 @@ public class ST_NodeTest {
         LineString lineString3 = new LineString(new CoordinateArraySequence(coord3), geometryFactory);
         LineString lineString4 = new LineString(new CoordinateArraySequence(coord4), geometryFactory);
         LineString lineString5 = new LineString(new CoordinateArraySequence(coord5), geometryFactory);
-        LineString[] lineStrings = {lineString1, lineString2, lineString3, lineString4, lineString5};
+        LineString[] lineStrings = {lineString1,lineString4, lineString2, lineString3, lineString5};
         expected3D = new MultiLineString(lineStrings, geometryFactory);
 
         Coordinate[] coord6 = new Coordinate[]{new Coordinate(1, 2, 0), new Coordinate(2, 2, 0.5)};
@@ -82,7 +82,7 @@ public class ST_NodeTest {
         LineString lineString8 = new LineString(new CoordinateArraySequence(coord8), geometryFactory);
         LineString lineString9 = new LineString(new CoordinateArraySequence(coord9), geometryFactory);
         LineString lineString10 = new LineString(new CoordinateArraySequence(coord10), geometryFactory);
-        LineString[] lineStrings2 = {lineString6, lineString7, lineString8, lineString9, lineString10};
+        LineString[] lineStrings2 = {lineString6,lineString9, lineString7, lineString8,  lineString10};
         expected2D = new MultiLineString(lineStrings2, geometryFactory);
     }
 

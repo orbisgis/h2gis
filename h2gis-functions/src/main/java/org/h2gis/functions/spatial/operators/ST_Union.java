@@ -54,6 +54,12 @@ public class ST_Union extends DeterministicScalarFunction {
         if(a==null || b==null) {
             return null;
         }
+        if(a.isEmpty()){
+            return a;
+        }
+        if(b.isEmpty()){
+            return UnaryUnionOp.union(a);
+        }
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
@@ -65,6 +71,12 @@ public class ST_Union extends DeterministicScalarFunction {
      * @return union of all Geometries in geomList
      */
     public static Geometry union(Geometry geomList) {
+        if(geomList==null){
+            return null;
+        }
+        if(geomList.isEmpty()){
+            return geomList;
+        }
         return UnaryUnionOp.union(geomList);
     }
 }
