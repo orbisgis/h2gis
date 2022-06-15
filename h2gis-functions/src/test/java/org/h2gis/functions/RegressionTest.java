@@ -116,4 +116,57 @@ public class RegressionTest {
             }
         });
     }
+
+
+
+    @Test
+    public void testGeometryType() throws SQLException {
+        Statement stat = connection.createStatement();
+        assertDoesNotThrow(() -> {
+            try {
+                stat.execute("DROP TABLE IF EXISTS geotable;" +
+                        "CREATE TABLE geotable (id integer, the_geom GEOMETRY(POINT, 4326));" +
+                        "INSERT INTO geotable VALUES(1, 'SRID=4326;POINT(0 0)'::GEOMETRY)," +
+                        "(2, 'SRID=4326;POINT(10 10)'::GEOMETRY);");
+                stat.execute("DROP TABLE IF EXISTS geotable_area;" +
+                        "CREATE TABLE geotable_area (id integer, the_geom GEOMETRY(GEOMETRY));" +
+                        "INSERT INTO geotable_area VALUES(1, 'POLYGON((0 0, 1 0, 1 1, 0 1,0 0))'::GEOMETRY)");
+                stat.execute("DROP TABLE IF EXISTS tmp_geom;" +
+                        "CREATE table tmp_geom (id integer, the_geom GEOMETRY) as " +
+                        "SELECT a.id ,a.the_geom from geotable as a," +
+                        "geotable_area as b where a.the_geom && b.the_geom;" +
+                        "drop table if exists geotable, geotable_area,  tmp_geom;");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+       });
+    }
+
+
+    @Test
+    public void testGeometrySRID() throws SQLException {
+        Statement stat = connection.createStatement();
+        assertDoesNotThrow(() -> {
+            try {
+                stat.execute("DROP TABLE IF EXISTS geotable;" +
+                        "CREATE TABLE geotable (id integer, the_geom GEOMETRY(POINT, 4326));" +
+                        "INSERT INTO geotable VALUES(1, 'SRID=4326;POINT(0 0)'::GEOMETRY)," +
+                        "(2, 'SRID=4326;POINT(10 10)'::GEOMETRY);");
+                stat.execute("DROP TABLE IF EXISTS geotable_area;" +
+                        "CREATE TABLE geotable_area (id integer, the_geom GEOMETRY(POLYGON, 4326));" +
+                        "INSERT INTO geotable_area VALUES(1, 'SRID=4326;POLYGON((-1 -1,1 -1, 1 1, -1 1,-1 -1))'::GEOMETRY)");
+                stat.execute("DROP TABLE IF EXISTS tmp_geom;" +
+                        "CREATE table tmp_geom (the_geom GEOMETRY) as " +
+                        "(SELECT ST_TOMULTISEGMENTS(ST_DIFFERENCE(ST_TOMULTILINE(St_BUFFER(a.THE_GEOM, 1))," +
+                        "                        ST_UNION(ST_ACCUM(b.the_geom)))) as the_geom from geotable as a," +
+                        "geotable_area as b where a.the_geom && b.the_geom) union all" +
+                        "(select ST_TOMULTISEGMENTS(ST_BUFFER(the_geom, 1)) as the_geom from geotable where id = 1)" +
+                        "union all" +
+                        "  (select ST_TOMULTISEGMENTS(ST_BUFFER(the_geom, 1)) as the_geom from geotable_area); " +
+                        "drop table if exists geotable, geotable_area,  tmp_geom;");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+    }
 }
