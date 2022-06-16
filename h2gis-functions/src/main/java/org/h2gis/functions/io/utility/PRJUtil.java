@@ -22,6 +22,7 @@ package org.h2gis.functions.io.utility;
 
 import org.cts.parser.prj.PrjKeyParameters;
 import org.cts.parser.prj.PrjParser;
+import org.h2gis.functions.spatial.crs.UserSpatialRef;
 import org.h2gis.utilities.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,10 @@ public class PRJUtil {
                 String authorityWithCode = p.get(PrjKeyParameters.REFNAME);
                 if (authorityWithCode != null) {
                     String[] authorityNameWithKey = authorityWithCode.split(":");
-                    srid = Integer.valueOf(authorityNameWithKey[1]);
+                    srid = Integer.parseInt(authorityNameWithKey[1]);
+                }
+                else{
+                    srid = UserSpatialRef.getUserSRID(prjString);
                 }
             }
             else{
@@ -157,7 +161,17 @@ public class PRJUtil {
                     printWriter = new PrintWriter(fileName);
                     printWriter.println(rs.getString(1));
                 } else {
-                    log.warn("This SRID { "+ srid +" } is not supported. \n The PRJ file won't be created.");
+                    //Let's try if this srid exists in the user table USER_SPATIAL_REF_SYS
+                    try (PreparedStatement ps_user = connection.prepareStatement("SELECT SRTEXT FROM " + UserSpatialRef.USER_SPATIAL_REF_SYS_TABLE + " WHERE SRID = ?")){
+                        ps_user.setInt(1, srid);
+                        ResultSet rs_user = ps_user.executeQuery();
+                        if (rs_user.next()) {
+                            printWriter = new PrintWriter(fileName);
+                            printWriter.println(rs_user.getString(1));
+                        } else {
+                            log.warn("This SRID { " + srid + " } is not supported. \n The PRJ file won't be created.");
+                        }
+                    }
                 }
             } finally {
                 if (printWriter != null) {

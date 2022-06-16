@@ -52,8 +52,7 @@ import org.h2gis.functions.spatial.buffer.*;
 import org.h2gis.functions.spatial.clean.ST_MakeValid;
 import org.h2gis.functions.spatial.convert.*;
 import org.h2gis.functions.spatial.create.*;
-import org.h2gis.functions.spatial.crs.ST_SetSRID;
-import org.h2gis.functions.spatial.crs.ST_Transform;
+import org.h2gis.functions.spatial.crs.*;
 import org.h2gis.functions.spatial.distance.*;
 import org.h2gis.functions.spatial.earth.ST_GeometryShadow;
 import org.h2gis.functions.spatial.earth.ST_Isovist;
@@ -89,8 +88,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
-import org.h2gis.functions.spatial.crs.ST_FindUTMSRID;
-import org.h2gis.functions.spatial.crs.UpdateGeometrySRID;
+
 import org.h2gis.functions.spatial.metadata.FindGeometryMetadata;
 import org.h2gis.functions.system.JTSVersion;
 
@@ -335,6 +333,8 @@ public class H2GISFunctions {
     public static void load(Connection connection, String BundleSymbolicName, String BundleVersion) throws SQLException {
         String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
         registerH2GISFunctions(connection,packagePrepend);
+        registerSpatialTables(connection);
+        registerUserSpatialRefSystemTable(connection);
     }
 
     /**
@@ -350,6 +350,7 @@ public class H2GISFunctions {
         }
         registerH2GISFunctions(connection, "");
         registerSpatialTables(connection);
+        registerUserSpatialRefSystemTable(connection);
     }
 
     /**
@@ -385,6 +386,15 @@ public class H2GISFunctions {
                 e.printStackTrace();
             }
         }
+    }
+    /**
+     * Register a class to manage some user spatial reference system to store prj information when
+     * CTS is not able to detect the official SRID from a prj file
+     * @param connection Open connection
+     * @throws java.sql.SQLException
+     */
+    public static void registerUserSpatialRefSystemTable(Connection connection) throws SQLException {
+        UserSpatialRef.init(connection);
     }
 
     /**
