@@ -25,3 +25,4 @@
 + Improve st_node to remove duplicate lines
 + Update H2 to 2.1.214
 + Fix an issue on writing as geojson a table with a null value typed as `TIME`
++ Add a mechanism to manage non-standardized prj file
