@@ -21,6 +21,7 @@
 package org.h2gis.functions.spatial.crs;
 
 
+import org.cts.parser.prj.PrjParser;
 import org.cts.parser.proj.ProjKeyParameters;
 import org.cts.registry.AbstractProjRegistry;
 import org.cts.registry.Registry;
@@ -44,6 +45,7 @@ public class SpatialRefRegistry  extends AbstractProjRegistry implements Registr
 
     private Connection connection;
     private static final Pattern regex = Pattern.compile("\\s+");
+    PrjParser prjParser = null;
 
     @Override
     public String getRegistryName() {
@@ -83,6 +85,30 @@ public class SpatialRefRegistry  extends AbstractProjRegistry implements Registr
                 
                 return v;
             }
+            //We look on the user spatial ref system table if we can find prj information
+            PreparedStatement userPS = connection.prepareStatement("SELECT srtext FROM "+UserSpatialRef.USER_SPATIAL_REF_SYS_TABLE+ " where srid=?");
+            userPS.setInt(1, Integer.valueOf(code));
+            ResultSet userRS = userPS.executeQuery();
+            if (userRS.next()) {
+                if(prjParser==null){
+                    prjParser=new PrjParser();
+                }
+                String prjText = userRS.getString(1);
+                String authcode =  "user:" + code;
+                if(prjText.isEmpty()){
+                    throw new RegistryException("No translation for srid user "+  authcode +" to PROJ format is known");
+                }
+
+                Map<String, String> v = prjParser.getParameters(prjText);
+                        
+                if (!v.containsKey(ProjKeyParameters.title)) {
+                    v.put(ProjKeyParameters.title, authcode);
+                }
+                prepStmt.close();
+
+                return v;
+            }
+
         } catch (SQLException ex) {
             throw new RegistryException("Cannot obtain the CRS parameters", ex);
         }

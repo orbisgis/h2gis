@@ -930,7 +930,6 @@ public class SHPImportExportTest {
     @Test
     public void exportPolygonWithHoles() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        File shpFile = new File("target/polygon_with_holes.shp");
         stat.execute("DROP TABLE IF EXISTS GEOTABLE");
         stat.execute("create table GEOTABLE(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         stat.execute("insert into GEOTABLE values(1, 'POLYGON ((-3.38562125 47.752285, -3.385295 47.752285, -3.385295 47.75199375, -3.38562125 47.75199375, -3.38562125 47.752285)," +
@@ -943,6 +942,55 @@ public class SHPImportExportTest {
         res.next();
         assertGeometryEquals("MULTIPOLYGON (((-3.38562125 47.75199375, -3.38562125 47.752285, -3.385295 47.752285, -3.385295 47.75199375, -3.38562125 47.75199375), (-3.3855775 47.7521275, -3.38548875 47.7521275, -3.38548875 47.75222625, -3.3855775 47.75222625, -3.3855775 47.7521275), (-3.385395 47.7520575, -3.3853175 47.7520575, -3.3853175 47.752145, -3.385395 47.752145, -3.385395 47.7520575)))", res.getObject(1));
         res.close();
+    }
 
+    @Test
+    public void readFileTablePRJWithoutEPSG() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork_without_epsg.shp").getPath());
+        stat.execute("CALL FILE_TABLE(" + path + ", 'WATERNETWORK');");
+        ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM WATERNETWORK;");
+        res.next();
+        assertTrue(res.getInt(1) > 0);
+        res.close();
+        res = stat.executeQuery("SELECT st_transform(THE_GEOM, 4326) FROM WATERNETWORK limit 1;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        assertEquals(4326, geom.getSRID());
+        res.close();
+    }
+
+    @Test
+    public void readReadPRJWithoutEPSG() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork_without_epsg.shp").getPath());
+        stat.execute("CALL SHPREAD(" + path + ", 'WATERNETWORK', true);");
+        ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM WATERNETWORK;");
+        res.next();
+        assertTrue(res.getInt(1) > 0);
+        res.close();
+        res = stat.executeQuery("SELECT st_transform(THE_GEOM, 4326) FROM WATERNETWORK limit 1;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        assertEquals(4326, geom.getSRID());
+        res.close();
+    }
+
+    @Test
+    public void readFileTablePRJWithoutEPSGAndWrite() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork_without_epsg.shp").getPath());
+        stat.execute("DROP TABLE IF EXISTS WATERNETWORK; CALL FILE_TABLE(" + path + ", 'WATERNETWORK');");
+        stat.execute("CALL SHPWrite('target/water_no_conform_prj.shp', 'WATERNETWORK', true)");
+        stat.execute("CALL SHPREAD(" + path + ", 'WATERNETWORK_NOT_CONFORM', true);");
+        ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM WATERNETWORK_NOT_CONFORM;");
+        res.next();
+        assertTrue(res.getInt(1) > 0);
+        res.close();
+        res = stat.executeQuery("SELECT st_transform(THE_GEOM, 4326) FROM WATERNETWORK_NOT_CONFORM limit 1;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        assertEquals(4326, geom.getSRID());
+        res.close();
     }
 }
