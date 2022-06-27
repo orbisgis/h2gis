@@ -22,15 +22,8 @@ package org.h2gis.functions.spatial.buffer;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
-import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.locationtech.jts.operation.buffer.OffsetCurve;
 
 /**
  * Return an offset line at a given distance and side from an input geometry.
@@ -44,7 +37,7 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
                 + "The optional third parameter can either specify number of segments used\n"
                 + " to approximate a quarter circle (integer case, defaults to 8)\n"
                 + " or a list of blank-separated key=value pairs (string case) to manage line style parameters :\n"
-                + "'quad_segs=8' endcap=round|flat|square' 'join=round|mitre|bevel' 'mitre_limit=5'");
+                + "'quad_segs=8' 'join=round|mitre|bevel' 'mitre_limit=5'");
     }
     
     @Override
@@ -67,18 +60,7 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
         BufferParameters bufferParameters = new BufferParameters();
         for (String params : buffParemeters) {
             String[] keyValue = params.split("=");
-            if (keyValue[0].equalsIgnoreCase("endcap")) {
-                String param = keyValue[1];
-                if (param.equalsIgnoreCase("round")) {
-                    bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
-                } else if (param.equalsIgnoreCase("flat") || param.equalsIgnoreCase("butt")) {
-                    bufferParameters.setEndCapStyle(BufferParameters.CAP_FLAT);
-                } else if (param.equalsIgnoreCase("square")) {
-                    bufferParameters.setEndCapStyle(BufferParameters.CAP_SQUARE);
-                } else {
-                    throw new IllegalArgumentException("Supported join values are round, flat, butt or square.");
-                }
-            } else if (keyValue[0].equalsIgnoreCase("join")) {
+            if (keyValue[0].equalsIgnoreCase("join")) {
                 String param = keyValue[1];
                 if (param.equalsIgnoreCase("bevel")) {
                     bufferParameters.setJoinStyle(BufferParameters.JOIN_BEVEL);
@@ -97,7 +79,8 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
                 throw new IllegalArgumentException("Unknown parameters. Please read the documentation.");
             }
         }
-        return computeOffsetCurve(geometry, offset, bufferParameters);
+        return OffsetCurve.getCurve(geometry, offset, bufferParameters.getQuadrantSegments(),bufferParameters.getJoinStyle(),
+                bufferParameters.getMitreLimit());
     }
 
     /**
@@ -108,62 +91,6 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
      * @return 
      */
     public static Geometry offsetCurve(Geometry geometry, double offset) {
-        return computeOffsetCurve(geometry, offset, new BufferParameters());
+        return OffsetCurve.getCurve(geometry, offset);
     }
-
-    /**
-     * Method to compute the offset line
-     * @param geometry
-     * @param offset
-     * @param bufferParameters
-     * @return 
-     */
-    public static Geometry computeOffsetCurve(Geometry geometry, double offset, BufferParameters bufferParameters) {
-        ArrayList<LineString> lineStrings = new ArrayList<LineString>();
-        int size = geometry.getNumGeometries();
-        for (int i = 0; i < size; i++) {
-            Geometry subGeom = geometry.getGeometryN(i);
-            if (subGeom.getDimension() == 1) {
-                lineStringOffSetCurve(lineStrings, (LineString) subGeom, offset, bufferParameters);
-            } else {
-                geometryOffSetCurve(lineStrings, subGeom, offset, bufferParameters);
-            }
-        }
-        if (!lineStrings.isEmpty()) {
-            if (lineStrings.size() == 1) {
-                return lineStrings.get(0);
-            } else {
-                return geometry.getFactory().createMultiLineString(lineStrings.toArray(new LineString[0]));
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Compute the offset curve for a linestring
-     *
-     * @param list
-     * @param lineString
-     * @param offset
-     * @param bufferParameters
-     */
-    public static void lineStringOffSetCurve(ArrayList<LineString> list, LineString lineString, double offset, BufferParameters bufferParameters) {
-        list.add(lineString.getFactory().createLineString(new OffsetCurveBuilder(lineString.getPrecisionModel(), bufferParameters).getOffsetCurve(lineString.getCoordinates(), offset)));
-    }
-
-    /**
-     * Compute the offset curve for a polygon, a point or a collection of geometries
-     * @param list
-     * @param geometry
-     * @param offset
-     * @param bufferParameters
-     */
-    public static void geometryOffSetCurve(ArrayList<LineString> list, Geometry geometry, double offset, BufferParameters bufferParameters) {
-        final List curves = new OffsetCurveSetBuilder(geometry, offset, new OffsetCurveBuilder(geometry.getFactory().getPrecisionModel(), bufferParameters)).getCurves();
-        final Iterator<SegmentString> iterator = curves.iterator();
-        while (iterator.hasNext()) {
-            list.add(geometry.getFactory().createLineString(iterator.next().getCoordinates()));
-        }
-    }
-
 }
