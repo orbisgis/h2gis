@@ -59,8 +59,10 @@ jobs:
       - name: Distribution
         run: mvn -ntp --batch-mode -Dmaven.test.skip=true -P standalone package
 
-      #Production of the archive
-      - name: Archive production artifacts
+      #Production of the archive     
+      - name: Unzip production artifacts  
+        run: unzip h2gis-dist/target/h2gis-standalone-bin.zip
+      - name: Archive production artifacts  
         uses: actions/upload-artifact@v2
         with:
           name: h2gis-standalone-bin
