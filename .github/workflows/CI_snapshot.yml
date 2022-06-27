@@ -66,4 +66,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:        
           name: h2gis-standalone-bin
-          path: h2gis-standalone-bin/
+          path: h2gis-standalone/
