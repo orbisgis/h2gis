@@ -101,6 +101,7 @@
         <maven-jar-version>3.2.0</maven-jar-version>
         <maven-javadoc-version>3.3.1</maven-javadoc-version>
         <maven-release-version>3.0.0-M4</maven-release-version>
+        <maven-source-version>3.2.1</maven-source-version>
         <maven-surefire-version>3.0.0-M5</maven-surefire-version>
         <version-maven-version>2.8.1</version-maven-version>
     </properties>
@@ -374,6 +375,29 @@
                         <doclint>all,-missing</doclint>
                         <quiet>true</quiet>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <!-- Maven release generation -->
                 <plugin>
@@ -419,6 +443,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
