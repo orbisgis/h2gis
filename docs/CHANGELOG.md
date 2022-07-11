@@ -20,6 +20,7 @@
 + Fix `ST_OrderingEquals` and `ST_AsBinary` parameters to handle the case of a null geometry
 + Fix ST_Accum and ST_Union to filter empty geometry
 + Fix `FindGeometryMetadata` to handle the case of case-sensitive names
++ Move header url into valid html `<a>` tags.
 + Make the method `PostGISDBFactory.createDataSource(Properties)` static
 + Fix ST_Union to return null if the entry geometry is null
 + Improve st_node to remove duplicate lines
