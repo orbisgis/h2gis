@@ -85,8 +85,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.GIT_TAG }}
-          release_name: ${{ env.GIT_TAG }}
+          tag: ${{ env.GIT_TAG }}
+          release: ${{ env.GIT_TAG }}
           bodyFile: "docs/CHANGELOG.md"
           draft: false
           prerelease: false
