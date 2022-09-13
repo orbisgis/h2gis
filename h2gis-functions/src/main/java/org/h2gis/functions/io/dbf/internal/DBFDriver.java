@@ -156,7 +156,6 @@ public class DBFDriver implements FileDriver {
     public DbaseFileReader getDbaseFileReader() {
         return dbaseFileReader;
     }
-    
-    
+
 }
 

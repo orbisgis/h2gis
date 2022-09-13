@@ -68,7 +68,7 @@ public class H2GISDBFactory {
         String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
         org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
-        return DriverManager.getConnection(databasePath,
+       return DriverManager.getConnection(databasePath,
                 DEFAULT_USER, DEFAULT_PASSWORD);
     }
     /**

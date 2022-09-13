@@ -334,7 +334,6 @@ public class H2GISFunctions {
         String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
         registerH2GISFunctions(connection,packagePrepend);
         registerSpatialTables(connection);
-        registerUserSpatialRefSystemTable(connection);
     }
 
     /**
@@ -350,7 +349,6 @@ public class H2GISFunctions {
         }
         registerH2GISFunctions(connection, "");
         registerSpatialTables(connection);
-        registerUserSpatialRefSystemTable(connection);
     }
 
     /**
@@ -386,15 +384,6 @@ public class H2GISFunctions {
                 e.printStackTrace();
             }
         }
-    }
-    /**
-     * Register a class to manage some user spatial reference system to store prj information when
-     * CTS is not able to detect the official SRID from a prj file
-     * @param connection Open connection
-     * @throws java.sql.SQLException
-     */
-    public static void registerUserSpatialRefSystemTable(Connection connection) throws SQLException {
-        UserSpatialRef.init(connection);
     }
 
     /**

@@ -47,12 +47,11 @@ public class H2GISOsgiDBFactory {
 
     /**
      * Open the connection to an existing database
-     * @param dbName
-     * @return
+     * @param dbName name of the database
+     * @return a connection to the database
      * @throws SQLException
-     * @throws ClassNotFoundException
      */
-    public static Connection openSpatialDataBase(String dbName) throws SQLException, ClassNotFoundException {
+    public static Connection openSpatialDataBase(String dbName) throws SQLException {
         String dbFilePath = getDataBasePath(dbName);       
         String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
         org.h2.Driver.load();
@@ -73,8 +72,8 @@ public class H2GISOsgiDBFactory {
 
     /**
      * Return the path of the file database
-     * @param dbName
-     * @return 
+     * @param dbName name of the database
+     * @return a path to the database
      */
     private static String getDataBasePath(String dbName) {
         if(dbName.startsWith("file://")) {
@@ -155,8 +154,8 @@ public class H2GISOsgiDBFactory {
     
     /**
      * 
-     * @param dbName
-     * @param h2_PARAMETERS
+     * @param dbName  path to the database
+     * @param h2_PARAMETERS Additional h2 parameters
      * @return 
      */
     private static String initDBFile( String dbName, String h2_PARAMETERS ) {
@@ -180,10 +179,9 @@ public class H2GISOsgiDBFactory {
      * @param initSpatial If true add spatial features to the database
      * @param h2Parameters Additional h2 parameters
      * @return Connection
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException throws an exception if the spatial functions can not be loaded
      */
-    public static Connection createSpatialDataBase(String dbName,boolean initSpatial, String h2Parameters )throws SQLException, ClassNotFoundException {
+    public static Connection createSpatialDataBase(String dbName,boolean initSpatial, String h2Parameters )throws SQLException {
         String databasePath = initDBFile(dbName, h2Parameters);
         org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
@@ -202,7 +200,7 @@ public class H2GISOsgiDBFactory {
      * @param initSpatial If true add spatial features to the database
      * @return Connection
      * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws ClassNotFoundException return an exception if the
      */
     public static Connection createSpatialDataBase(String dbName, boolean initSpatial )throws SQLException, ClassNotFoundException {
         return createSpatialDataBase(dbName, initSpatial, H2_PARAMETERS);

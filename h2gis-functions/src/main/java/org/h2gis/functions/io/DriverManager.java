@@ -95,7 +95,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
                     st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
                             tableName_,StringUtils.quoteStringSQL(fileName),
                             StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
-                    return new String[]{tableName_};
+                     return new String[]{tableName_};
                 }
             }
         }
