@@ -199,10 +199,9 @@ public class H2GISOsgiDBFactory {
      * @param dbName filename
      * @param initSpatial If true add spatial features to the database
      * @return Connection
-     * @throws SQLException
-     * @throws ClassNotFoundException return an exception if the
+     * @throws SQLException throws an exception if the spatial functions can not be loaded
      */
-    public static Connection createSpatialDataBase(String dbName, boolean initSpatial )throws SQLException, ClassNotFoundException {
+    public static Connection createSpatialDataBase(String dbName, boolean initSpatial )throws SQLException {
         return createSpatialDataBase(dbName, initSpatial, H2_PARAMETERS);
     }
 }
