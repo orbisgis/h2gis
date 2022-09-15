@@ -951,9 +951,9 @@ public class SHPImportExportTest {
         stat.execute("CALL FILE_TABLE(" + path + ", 'WATERNETWORK');");
         ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM WATERNETWORK;");
         res.next();
-        assertTrue(res.getInt(1) > 0);
+        assertTrue(res.getInt(1) == 0);
         res.close();
-        res = stat.executeQuery("SELECT st_transform(THE_GEOM, 4326) FROM WATERNETWORK limit 1;");
+        res = stat.executeQuery("SELECT st_transform(st_setsrid(THE_GEOM, 2154), 4326) FROM WATERNETWORK limit 1;");
         res.next();
         Geometry geom = (Geometry) res.getObject(1);
         assertEquals(4326, geom.getSRID());
@@ -967,12 +967,7 @@ public class SHPImportExportTest {
         stat.execute("CALL SHPREAD(" + path + ", 'WATERNETWORK', true);");
         ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM WATERNETWORK;");
         res.next();
-        assertTrue(res.getInt(1) > 0);
-        res.close();
-        res = stat.executeQuery("SELECT st_transform(THE_GEOM, 4326) FROM WATERNETWORK limit 1;");
-        res.next();
-        Geometry geom = (Geometry) res.getObject(1);
-        assertEquals(4326, geom.getSRID());
+        assertTrue(res.getInt(1) == 0);
         res.close();
     }
 
@@ -985,12 +980,7 @@ public class SHPImportExportTest {
         stat.execute("CALL SHPREAD(" + path + ", 'WATERNETWORK_NOT_CONFORM', true);");
         ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM WATERNETWORK_NOT_CONFORM;");
         res.next();
-        assertTrue(res.getInt(1) > 0);
-        res.close();
-        res = stat.executeQuery("SELECT st_transform(THE_GEOM, 4326) FROM WATERNETWORK_NOT_CONFORM limit 1;");
-        res.next();
-        Geometry geom = (Geometry) res.getObject(1);
-        assertEquals(4326, geom.getSRID());
+        assertTrue(res.getInt(1) == 0);
         res.close();
     }
 }

@@ -24,10 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.file_table.H2TableIndex;
-import org.h2gis.utilities.GeometryTableUtilities;
-import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
@@ -52,14 +49,8 @@ public class SHPEngineTest {
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
-    @BeforeEach
-    public void tearUp2() throws Exception {
-        // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
+    @AfterAll
+    public static void tearDown() throws Exception {
         connection.close();
     }
 
@@ -254,6 +245,17 @@ public class SHPEngineTest {
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         assertEquals(GeometryTypeCodes.MULTILINESTRING, GeometryTableUtilities.getMetaData(connection, TableLocation.parse("SHPTABLE", DBTypes.H2GIS), "THE_GEOM").geometryTypeCode);
+        st.execute("drop table shptable");
+    }
+
+    @Test
+    public void readReadPRJWithoutEPSGTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork_without_epsg.shp").getPath()+"', 'SHPTABLE');");
+        GeometryMetaData geomMeta = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("SHPTABLE", DBTypes.H2GIS),"THE_GEOM");
+        assertEquals(GeometryTypeCodes.MULTILINESTRING, geomMeta.geometryTypeCode);
+        assertTrue(geomMeta.getSRID()==0);
         st.execute("drop table shptable");
     }
 

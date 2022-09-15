@@ -59,6 +59,7 @@ public class SHPDriver implements FileDriver {
     public File prjFile;
     private int srid =0;
 
+
     /**
      * @param geometryFieldIndex The geometry field index in getRow() array.
      */

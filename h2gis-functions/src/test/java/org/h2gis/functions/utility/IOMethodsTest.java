@@ -24,9 +24,13 @@ import java.io.IOException;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.io.shp.SHPEngineTest;
 import org.h2gis.postgis_jts.PostGISDBFactory;
+import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
@@ -558,5 +562,14 @@ public class IOMethodsTest {
         assertEquals(1, res.getInt(1));
         assertGeometryEquals("MULTIPOLYGON (((-10 9, -10 109, 90 109, 90 9, -10 9)))", (Geometry) res.getObject(2));
         res.close();
+    }
+
+    @Test
+    public void linkSHP_PRJWithoutEPSGTest() throws SQLException {
+        Statement st = connection.createStatement();
+        String tableName = IOMethods.linkedFile(connection, SHPEngineTest.class.getResource("waternetwork_without_epsg.shp").getPath(), "SHPTABLE", true);
+        ResultSet res = st.executeQuery("SELECT the_geom FROM "+ tableName);
+        assertTrue(res.next());
+        assertTrue( ((Geometry)res.getObject(1)).getSRID()== 0);
     }
 }

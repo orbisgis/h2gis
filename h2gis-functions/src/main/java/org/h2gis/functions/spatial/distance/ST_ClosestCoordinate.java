@@ -72,22 +72,22 @@ public class ST_ClosestCoordinate extends DeterministicScalarFunction {
         }
         double minDistance = Double.POSITIVE_INFINITY;
         Coordinate pointCoordinate = point.getCoordinate();
-        Set<Coordinate> closestCoordinates = new HashSet<Coordinate>();
+        Set<Point> closestCoordinates = new HashSet<Point>();
         for (Coordinate c : geom.getCoordinates()) {
             double distance = c.distance(pointCoordinate);
             if (Double.compare(distance, minDistance) == 0) {
-                closestCoordinates.add(c);
+                closestCoordinates.add(GEOMETRY_FACTORY.createPoint(c));
             }
             if (Double.compare(distance, minDistance) < 0) {
                 minDistance = distance;
                 closestCoordinates.clear();
-                closestCoordinates.add(c);
+                closestCoordinates.add(GEOMETRY_FACTORY.createPoint(c));
             }
         }
         if (closestCoordinates.size() == 1) {
-            return GEOMETRY_FACTORY.createPoint(closestCoordinates.iterator().next());
+            return closestCoordinates.iterator().next();
         }
         return GEOMETRY_FACTORY.createMultiPoint(
-                closestCoordinates.toArray(new Coordinate[0]));
+                closestCoordinates.toArray(new Point[0]));
     }
 }

@@ -34,6 +34,7 @@ import java.sql.SQLException;
  */
 public interface DriverFunction {
 
+
     /**
      * A linked table is created instantly but work only if the DataBase is
      * local. A copy will transfer Data from the File to the remote/local
