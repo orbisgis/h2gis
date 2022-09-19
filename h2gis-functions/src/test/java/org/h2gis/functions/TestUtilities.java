@@ -22,6 +22,7 @@ package org.h2gis.functions;
 import org.h2gis.utilities.JDBCUtilities;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -36,6 +37,28 @@ public class TestUtilities {
         List<String> columns = JDBCUtilities.getColumnNames(res.getMetaData());
         for(String column:columns){
             System.out.println("Column : "+ column + " -  Value : "+ res.getString(column));
+        }
+    }
+
+    /**
+     * A basic utilities to print the column informations
+     * @param res
+     * @throws SQLException
+     */
+    public static void printColumns(ResultSet res) throws SQLException {
+        ResultSetMetaData metadata = res.getMetaData();
+        int cols = metadata.getColumnCount();
+        for (int i = 1; i <= cols; i++) {
+            System.out.println("Column : " + metadata.getColumnName(i) +
+                    "\n Label : " + metadata.getColumnLabel(i) +
+                    "\n Type : " + metadata.getColumnType(i) +
+                    "\n Type name : " + metadata.getColumnTypeName(i) +
+                    "\n Precision : " + metadata.getPrecision(i) +
+                    "\n Scale : " + metadata.getScale(i) +
+                    "\n Display size : " + metadata.getColumnDisplaySize(i) +
+                    "\n Class name : " + metadata.getColumnClassName(i) +
+                    "\n Table name : " + metadata.getTableName(i) +
+                    "\n Schema name : " + metadata.getSchemaName(i));
         }
     }
 
