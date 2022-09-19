@@ -82,7 +82,7 @@ public class DBFEngine extends FileEngine<DBFDriver> {
             // (C)character (String)
             case 'c':
             case 'C':
-                return TypeInfo.getTypeInfo(Value.CHAR, header.getFieldLength(i), 0, null);
+                return TypeInfo.getTypeInfo(Value.VARCHAR, header.getFieldLength(i), 0, null);
             // (D)date (Date)
             case 'd':
             case 'D':
