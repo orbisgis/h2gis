@@ -70,6 +70,6 @@ public class GraphFunction extends AbstractFunction {
      * @param startTime Start time in milliseconds
      */
     protected static void logTime(Logger logger, long startTime) {
-        logger.info("    " + (System.currentTimeMillis() - startTime) / 1000. + " seconds");
+        logger.debug("    " + (System.currentTimeMillis() - startTime) / 1000. + " seconds");
     }
 }
