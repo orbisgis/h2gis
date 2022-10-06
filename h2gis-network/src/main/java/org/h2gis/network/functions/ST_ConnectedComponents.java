@@ -126,7 +126,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
 
     private static List<Set<VUCent>> getConnectedComponents(Graph<VUCent, Edge> graph,
                                                             String orientation) {
-        LOGGER.info("Calculating connected components... ");
+        LOGGER.debug("Calculating connected components... ");
         final long start = System.currentTimeMillis();
         List<Set<VUCent>> sets;
         if (parseGlobalOrientation(orientation).equals(UNDIRECTED)) {
@@ -145,7 +145,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                                                         TableLocation edgesName,
                                                         List<Set<VUCent>> componentsList)
             throws SQLException {
-        LOGGER.info("Storing node connected components... ");
+        LOGGER.debug("Storing node connected components... ");
         final long start = System.currentTimeMillis();
         createNodeTable(connection, nodesName);
         final PreparedStatement nodeSt =
@@ -203,7 +203,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                                                         TableLocation tableName,
                                                         TableLocation nodesName,
                                                         TableLocation edgesName) throws SQLException {
-        LOGGER.info("Storing edge connected components...");
+        LOGGER.debug("Storing edge connected components...");
         final long start = System.currentTimeMillis();
         final Statement st = connection.createStatement();
         try {

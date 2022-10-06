@@ -100,7 +100,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * @throws java.sql.SQLException
      */
     protected KeyedGraph<V, E> prepareGraph() throws SQLException {
-        LOGGER.info("Loading graph into memory...");
+        LOGGER.debug("Loading graph into memory...");
         final long start = System.currentTimeMillis();
         // Initialize the graph.
         KeyedGraph<V, E> graph;

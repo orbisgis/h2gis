@@ -1055,7 +1055,7 @@ public class GeoJsonReaderDriver {
             }
             connection.setAutoCommit(true);
             //LOOP END_ARRAY ]
-            log.info(featureCounter-1 + " geojson features have been imported.");
+            log.debug(featureCounter-1 + " geojson features have been imported.");
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'features', found '" + firstParam + "'");
         }
@@ -1458,21 +1458,21 @@ public class GeoJsonReaderDriver {
                 if (split != null) {
                     srid = Integer.valueOf(split[1]);
                 } else {
-                    log.warn("The CRS URN " + crsURI + " is not supported.");
+                    log.debug("The CRS URN " + crsURI + " is not supported.");
                 }
             } else if (crsURI.equalsIgnoreCase(GeoJsonField.CRS_URN_OGC)) {
-                log.warn("Specification of coordinate reference systems has been removed,\n "
+                log.debug("Specification of coordinate reference systems has been removed,\n "
                         + "i.e., the \"crs\" member of [GJ2008] is no longer used. Assuming WGS84 CRS");
                 srid = 4326;
             } else {
-                log.warn("The CRS URN " + crsURI + " is not supported.");
+                log.debug("The CRS URN " + crsURI + " is not supported.");
             }
 
             jp.nextToken(); //END_OBJECT }
             jp.nextToken(); //END_OBJECT }
             jp.nextToken(); //Go to features
         } else if (firstField.equalsIgnoreCase(GeoJsonField.LINK)) {
-            log.warn("Linked CRS is not supported.");
+            log.debug("Linked CRS is not supported.");
             jp.nextToken();
             jp.nextToken();
             jp.nextToken(); //END_OBJECT }

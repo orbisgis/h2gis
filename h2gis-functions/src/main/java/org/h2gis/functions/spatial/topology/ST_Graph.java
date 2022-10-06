@@ -319,7 +319,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                            String pkCol,
                                            String geomCol,
                                            double tolerance) throws SQLException {
-        LOGGER.info("Selecting the first coordinate of the first geometry and " +
+        LOGGER.debug("Selecting the first coordinate of the first geometry and " +
                 "the last coordinate of the last geometry...");
         final String numGeoms = "ST_NumGeometries(" + geomCol + ")";
         final String firstGeom = "ST_GeometryN(" + geomCol + ", 1)";
@@ -353,7 +353,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         st.execute("DROP TABLE IF EXISTS" + PTS_TABLE + ";");
         String pointSignature = hasZ?"POINTZ":"POINT";
         if (tolerance > 0) {
-            LOGGER.info("Calculating envelopes around coordinates...");
+            LOGGER.debug("Calculating envelopes around coordinates...");
             // Putting all points and their envelopes together...
             st.execute("CREATE  TABLE " + PTS_TABLE + "( ID SERIAL PRIMARY KEY, "
                     + "THE_GEOM GEOMETRY("+pointSignature+"," + srid + "),"
@@ -370,7 +370,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 st.execute("CREATE INDEX ON " + PTS_TABLE + " USING GIST(AREA);");
             }
         } else {
-            LOGGER.info("Preparing temporary nodes table from coordinates...");
+            LOGGER.debug("Preparing temporary nodes table from coordinates...");
             // If the tolerance is zero, we just put all points together
             st.execute("CREATE  TABLE " + PTS_TABLE + "( "
                     + "ID SERIAL PRIMARY KEY, "
@@ -396,7 +396,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static void nodesTable(Statement st,
                                    TableLocation nodesName,
                                    double tolerance, int srid, boolean hasZ) throws SQLException {
-        LOGGER.info("Creating the nodes table...");
+        LOGGER.debug("Creating the nodes table...");
         // Creating nodes table by removing copies from the pts table.
         String pointSignature = hasZ?"POINTZ":"POINT";
         if (tolerance > 0) {
@@ -431,7 +431,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                    TableLocation nodesName,
                                    TableLocation edgesName,
                                    double tolerance, DBTypes dbType) throws SQLException {
-        LOGGER.info("Creating the edges table...");
+        LOGGER.debug("Creating the edges table...");
         if (tolerance > 0) {
             if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
                 st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(EXP);");
@@ -484,7 +484,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static void orientBySlope(Statement st,
                                       TableLocation nodesName,
                                       TableLocation edgesName) throws SQLException {
-        LOGGER.info("Orienting edges by slope...");
+        LOGGER.debug("Orienting edges by slope...");
         st.execute("UPDATE " + edgesName + " c " +
                     "SET START_NODE=END_NODE, " +
                     "    END_NODE=START_NODE " +
@@ -495,7 +495,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     private static void checkForNullEdgeEndpoints(Statement st,
                                                   TableLocation edgesName) throws SQLException {
-        LOGGER.info("Checking for null edge endpoints...");
+        LOGGER.debug("Checking for null edge endpoints...");
         try (ResultSet nullEdges = st.executeQuery("SELECT COUNT(*) FROM " + edgesName + " WHERE " +
                 "START_NODE IS NULL OR END_NODE IS NULL;")) {
             nullEdges.next();
