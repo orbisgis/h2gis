@@ -193,6 +193,7 @@ public class FGBWriteDriver {
                         while (dataBuffer.hasRemaining()) {
                             channel_.write(dataBuffer);
                         }
+                        bufferBuilder.clear();
                     }
                         bufferManager.flush();
 
