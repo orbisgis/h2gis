@@ -42,7 +42,7 @@ import java.sql.SQLException;
  */
 public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction {
 
-    private static final String OSM_API_URL = "http://api.openstreetmap.org/api/0.6/";
+    private static final String OSM_API_URL = "https://openstreetmap.org/api/0.6/";
 
     public ST_OSMDownloader() {
         addProperty(PROP_REMARKS, "Extract an OSM XML file from the OSM api server using a the bounding box of a given geometry.\n"
