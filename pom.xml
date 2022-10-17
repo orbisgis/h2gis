@@ -91,6 +91,7 @@
         <jna-version>0.3.0</jna-version>
         <cts-version>1.6.0</cts-version>
         <slf4j-version>1.7.36</slf4j-version>
+        <flatgeobuf-version>3.22.2</flatgeobuf-version>
 
         <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>
@@ -134,6 +135,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.wololo</groupId>
+                <artifactId>flatgeobuf</artifactId>
+                <version>${flatgeobuf-version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>poly2tri</artifactId>
