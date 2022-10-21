@@ -21,8 +21,15 @@
 package org.h2gis.functions.spatial.operators;
 
 import java.sql.SQLException;
+import java.util.HashSet;
+
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.operation.overlayng.CoverageUnion;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 
 /**
@@ -32,11 +39,13 @@ import org.locationtech.jts.operation.union.UnaryUnionOp;
  */
 public class ST_Union extends DeterministicScalarFunction {
 
+    static HashSet dims = new HashSet();
+
     /**
      * Default constructor
      */
     public ST_Union() {
-        addProperty(PROP_REMARKS, "Compute the union of two or more Geometries");
+        addProperty(PROP_REMARKS, "Compute the union of two or more Geometries.");
     }
 
     @Override
@@ -58,13 +67,22 @@ public class ST_Union extends DeterministicScalarFunction {
             return a;
         }
         if(b.isEmpty()){
-            return UnaryUnionOp.union(a);
+            findDim(a);
+            if(dims.size()>1) {
+                return UnaryUnionOp.union(a);
+            }else if(dims.contains(2)){
+                return CoverageUnion.union(a);
+            }else{
+                return UnaryUnionOp.union(a);
+            }
         }
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return a.union(b);
+        return OverlayNG.overlay(a,b, OverlayNG.UNION);
     }
+
+
 
     /**
      * @param geomList Geometry list
@@ -77,6 +95,29 @@ public class ST_Union extends DeterministicScalarFunction {
         if(geomList.isEmpty()){
             return geomList;
         }
-        return UnaryUnionOp.union(geomList);
+        findDim(geomList);
+        if(dims.size()>1) {
+            return UnaryUnionOp.union(geomList);
+        }else if(dims.contains(2)){
+            return CoverageUnion.union(geomList);
+        }else{
+            return UnaryUnionOp.union(geomList);
+        }
+    }
+
+
+    /**
+     * Utilities to collect the dimmensions of geometry
+     * @param geometry
+     */
+    public static void findDim(Geometry geometry){
+        if (geometry instanceof GeometryCollection) {
+            final int nbOfGeometries = geometry.getNumGeometries();
+            for (int i = 0; i < nbOfGeometries; i++) {
+                findDim(geometry.getGeometryN(i));
+            }
+        } else {
+            dims.add(geometry.getDimension());
+        }
     }
 }
