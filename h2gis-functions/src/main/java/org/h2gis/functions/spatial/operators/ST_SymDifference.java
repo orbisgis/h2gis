@@ -23,6 +23,8 @@ package org.h2gis.functions.spatial.operators;
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
 
 /**
  * Compute the symmetric difference between two Geometries.
@@ -34,7 +36,8 @@ public class ST_SymDifference extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_SymDifference() {
-        addProperty(PROP_REMARKS, "Compute the symmetric difference between two Geometries");
+        addProperty(PROP_REMARKS, "Compute the symmetric difference between two Geometries\n" +
+                "If the gridSize argument is provided, the inputs geometries are snapped to a grid of the given size.");;
     }
 
     @Override
@@ -55,6 +58,28 @@ public class ST_SymDifference extends DeterministicScalarFunction {
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return a.symDifference(b);
+        return OverlayNG.overlay(a,b, OverlayNG.SYMDIFFERENCE);
+    }
+
+    /**
+     * @param a Geometry instance.
+     * @param b Geometry instance
+     * @param gridSize size of a grid to snap the input geometries
+     * @return the symmetric difference between two geometries
+     * @throws java.sql.SQLException
+     */
+    public static Geometry symDifference(Geometry a,Geometry b, double gridSize) throws SQLException {
+        if(a==null || b==null) {
+            return null;
+        }
+        if(a.getSRID()!=b.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
+        if (gridSize >= 0) {
+            PrecisionModel pm = new PrecisionModel(1/gridSize);
+            return OverlayNG.overlay(a, b, OverlayNG.SYMDIFFERENCE, pm);
+        } else {
+            return OverlayNG.overlay(a, b, OverlayNG.SYMDIFFERENCE);
+        }
     }
 }
