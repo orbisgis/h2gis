@@ -21,6 +21,7 @@
 package org.h2gis.functions.spatial.ogc;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.unitTest.GeometryAsserts;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -114,7 +115,7 @@ public class SerializationTest {
         ResultSet rs = st.executeQuery("SELECT ST_Union(shore, boundary) FROM lakes, named_places " +
                 "WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Goose Island'");
         assertTrue(rs.next());
-        assertEquals("SRID=101;POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
+        GeometryAsserts.assertGeometryEquals("SRID=101;POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
     }
 
     @Test
