@@ -160,6 +160,6 @@ public final class WriteBufferManager {
 
 	public void putLong(long value) throws IOException {
 		prepareToAddBytes(8);
-		buffer.putFloat(value);
+		buffer.putLong(value);
 	}
 }

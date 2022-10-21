@@ -63,7 +63,7 @@ public class FGBImportExportTest {
     public void testWriteRamdomPoints() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("create table TABLE_POINTS ( THE_GEOM GEOMETRY(POINT)) as SELECT st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00) AS_THE_GEOM FROM GENERATE_SERIES(1, 1000)");
+            stat.execute("create table TABLE_POINTS (THE_GEOM GEOMETRY(POINT)) as SELECT  st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00) AS_THE_GEOM FROM GENERATE_SERIES(1, 10000)");
             stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
             /*stat.execute("CALL GeoJsonRead('target/multipoints.geojson', 'TABLE_MULTIPOINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");

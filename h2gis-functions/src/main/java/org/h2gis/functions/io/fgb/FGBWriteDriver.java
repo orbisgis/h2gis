@@ -196,8 +196,7 @@ public class FGBWriteDriver {
                         bufferBuilder.clear();
                     }
                         bufferManager.flush();
-
-                    } finally {
+                    }  finally {
                         rs.close();
                     }
                 }
