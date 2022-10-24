@@ -28,6 +28,7 @@ import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.spatial.convert.ST_GeomFromText;
 import org.h2gis.functions.spatial.convert.ST_PointFromText;
+import org.h2gis.unitTest.GeometryAsserts;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -102,7 +103,7 @@ public class OGCSpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Union('MULTIPOLYGON (((1 4, 1 8, 5 5, 1 4)), ((3 8, 2 5, 5 5, 3 8)))')");
         assertTrue(rs.next());
-        assertEquals("POLYGON ((1 4, 1 8, 2.6 6.8, 3 8, 5 5, 1 4))", rs.getString(1));
+        GeometryAsserts.assertGeometryEquals("POLYGON ((1 4, 1 8, 2.6 6.8, 3 8, 5 5, 1 4))", rs.getString(1));
         rs.close();
     }
 

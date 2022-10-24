@@ -25,6 +25,7 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
 /**
  * Compute the symmetric difference between two Geometries.
@@ -58,7 +59,7 @@ public class ST_SymDifference extends DeterministicScalarFunction {
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return OverlayNG.overlay(a,b, OverlayNG.SYMDIFFERENCE);
+        return OverlayNGRobust.overlay(a,b, OverlayNG.SYMDIFFERENCE);
     }
 
     /**
@@ -79,7 +80,7 @@ public class ST_SymDifference extends DeterministicScalarFunction {
             PrecisionModel pm = new PrecisionModel(1/gridSize);
             return OverlayNG.overlay(a, b, OverlayNG.SYMDIFFERENCE, pm);
         } else {
-            return OverlayNG.overlay(a, b, OverlayNG.SYMDIFFERENCE);
+            return OverlayNGRobust.overlay(a, b, OverlayNG.SYMDIFFERENCE);
         }
     }
 }
