@@ -26,6 +26,7 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
 /**
  * Compute the intersection of two Geometries.
@@ -60,7 +61,7 @@ public class ST_Intersection extends DeterministicScalarFunction {
         if (a.getSRID() != b.getSRID()) {
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION);
+        return OverlayNGRobust.overlay(a, b, OverlayNG.INTERSECTION);
     }
 
     /**
@@ -82,7 +83,7 @@ public class ST_Intersection extends DeterministicScalarFunction {
             PrecisionModel pm = new PrecisionModel(1/gridSize);
             return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION, pm);
         } else {
-            return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION);
+            return OverlayNGRobust.overlay(a, b, OverlayNG.INTERSECTION);
         }
     }
 }

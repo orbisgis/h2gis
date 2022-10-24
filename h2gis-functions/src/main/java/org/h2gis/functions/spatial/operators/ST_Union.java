@@ -26,11 +26,9 @@ import java.util.HashSet;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
 /**
  * Compute the union of two or more Geometries.
@@ -69,17 +67,17 @@ public class ST_Union extends DeterministicScalarFunction {
         if(b.isEmpty()){
             findDim(a);
             if(dims.size()>1) {
-                return UnaryUnionOp.union(a);
+                return OverlayNGRobust.union(a);
             }else if(dims.contains(2)){
                 return CoverageUnion.union(a);
             }else{
-                return UnaryUnionOp.union(a);
+                return OverlayNGRobust.union(a);
             }
         }
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return OverlayNG.overlay(a,b, OverlayNG.UNION);
+        return OverlayNGRobust.overlay(a,b, OverlayNG.UNION);
     }
 
 
@@ -97,11 +95,11 @@ public class ST_Union extends DeterministicScalarFunction {
         }
         findDim(geomList);
         if(dims.size()>1) {
-            return UnaryUnionOp.union(geomList);
+            return OverlayNGRobust.union(geomList);
         }else if(dims.contains(2)){
             return CoverageUnion.union(geomList);
         }else{
-            return UnaryUnionOp.union(geomList);
+            return OverlayNGRobust.union(geomList);
         }
     }
 
