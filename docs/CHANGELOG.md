@@ -4,5 +4,4 @@
 + Change move some log info to debug mode
 + Use the next generation overlay
 + Add grid size precision to snap intersection, difference and symdifference operators
-+ Improve ST_Union to use CoverageUnion when the input geometry contains only polygons
 + Use OverlayNGRobust instead of OverlayNG
