@@ -38,11 +38,12 @@ public class FGBWriteDriver {
     private final Connection connection;
 
     public FGBWriteDriver(Connection connection) {
-        this.connection=connection;
+        this.connection = connection;
     }
 
     /**
      * Write the spatial table to a FlatGeobuf file
+     *
      * @param progress
      * @param tableName
      * @param fileName
@@ -50,7 +51,7 @@ public class FGBWriteDriver {
      * @param deleteFiles
      */
     public void write(ProgressVisitor progress, String tableName, File fileName, String options, boolean deleteFiles) throws IOException, SQLException {
-        if(tableName == null) {
+        if (tableName == null) {
             throw new SQLException("The select query or the table name must not be null.");
         }
         String regex = ".*(?i)\\b(select|from)\\b.*";
@@ -66,7 +67,7 @@ public class FGBWriteDriver {
                     }
                     PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     ResultSet rs = ps.executeQuery();
-                   fgbWrite(progress, rs, new FileOutputStream(fileName));
+                    fgbWrite(progress, rs, new FileOutputStream(fileName));
                 } else {
                     throw new SQLException("Only .fgb extension is supported");
                 }
@@ -74,9 +75,7 @@ public class FGBWriteDriver {
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
-        }
-
-        else {
+        } else {
             if (FileUtilities.isExtensionWellFormated(fileName, "fgb")) {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
@@ -106,81 +105,70 @@ public class FGBWriteDriver {
                     Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, parse);
                     String geomCol = geomMetadata.first();
                     ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
-                    try {
-                        ResultSetMetaData rsmd = rs.getMetaData();
-                    FlatBufferBuilder bufferBuilder = new FlatBufferBuilder(16*1024);
-                    outputStream.write(Constants.MAGIC_BYTES);
-                        FileChannel channel = outputStream.getChannel();
+
+                    ResultSetMetaData rsmd = rs.getMetaData();
+                    FlatBufferBuilder bufferBuilder = new FlatBufferBuilder(1024 * 128);
+
+                    FileChannel channel = outputStream.getChannel();
+
+                    //Write the header
+                    HeaderMeta header = writeHeader(outputStream, bufferBuilder, recordCount, geomMetadata.second(), rsmd);
+                    //Columns numbers
+                    int columnCount = header.columns.size();
+                    //Let's iterate the resultset
+                    while (rs.next()) {
                         WriteBufferManager bufferManager = new WriteBufferManager(channel);
                         bufferManager.order(ByteOrder.LITTLE_ENDIAN);
-                    //Write the header
-                        HeaderMeta header = writeHeader(recordCount, geomMetadata.second(), rsmd);
-                        HeaderMeta.write(header, outputStream, bufferBuilder);
-                        bufferBuilder.clear();
-                        //Columns numbers
-                        int columnCount = header.columns.size();
-                    //Let's iterate the resulset
-                    while (rs.next()){
+
                         //Let's serialize the attributes
                         for (int i = 0; i < columnCount; i++) {
                             ColumnMeta column = header.columns.get(i);
-
-                            Object value =  rs.getObject(column.name);
+                            Object value = rs.getObject(column.name);
+                            System.out.println(value);
                             if (value == null) {
                                 continue;
                             }
                             bufferManager.putShort((short) i);
                             byte type = column.type;
-                            switch (type) {
-                                case ColumnType.Bool:
-                                    bufferManager.putShort((byte) ((boolean) value ? 1 : 0));
-                                    return;
-                                case ColumnType.Byte:
-                                    bufferManager.putShort((byte)  value );
-                                    return;
-                                case ColumnType.Short:
-                                    bufferManager.putShort((short)  value );
-                                    return;
-                                case ColumnType.Int:
-                                    bufferManager.putInt((int)  value );
-                                    return;
-                                case ColumnType.Float:
-                                    bufferManager.putFloat((float)  value );
-                                    return;
-                                case ColumnType.Double:
-                                    bufferManager.putDouble((float)  value );
-                                    return;
-                                case ColumnType.Long:
-                                    if(value instanceof BigInteger) {
-                                        bufferManager.putLong(((BigInteger) value).longValue());
-                                    }else {
-                                        bufferManager.putLong((Long) value);
-                                    }
-                                    return;
-                                case ColumnType.String:
-                                    //TODO
-                                    return;
-                                case ColumnType.DateTime:
-                                    //TODO
-                                    return;
-                                default:
-                                    throw new RuntimeException(
-                                            "Cannot handle type " + value.getClass().getName());
+                            if (type == ColumnType.Bool) {
+                                bufferManager.putShort((byte) ((boolean) value ? 1 : 0));
+                            } else if (type == ColumnType.Byte) {
+                                bufferManager.putShort((byte) value);
+                            } else if (type == ColumnType.Short) {
+                                bufferManager.putShort((short) value);
+                            } else if (type == ColumnType.Int) {
+                                bufferManager.putInt((int) value);
+                            } else if (type == ColumnType.Float) {
+                                bufferManager.putFloat((float) value);
+                            } else if (type == ColumnType.Double) {
+                                bufferManager.putDouble((float) value);
+                            } else if (type == ColumnType.Long) {
+                                if (value instanceof BigInteger) {
+                                    bufferManager.putLong(((BigInteger) value).longValue());
+                                } else {
+                                    bufferManager.putLong((Long) value);
+                                }
+                            } else if (type == ColumnType.String) {
+                                //TODO
+                            } else if (type == ColumnType.DateTime) {
+                                //TODO
+                            } else {
+                                throw new RuntimeException(
+                                        "Cannot handle type " + value.getClass().getName());
                             }
-
                         }
 
                         int propertiesOffset = 0;
-
                         if (bufferManager.position() > 0) {
                             bufferManager.flip();
                             propertiesOffset = Feature.createPropertiesVector(bufferBuilder, bufferManager.getBuffer());
                         }
 
+
                         //Let's serialize the geometry
-                        int geometryOffset=0;
-                        Geometry geom = (Geometry)  rs.getObject(geomCol);
-                        if(geom!=null) {
+                        int geometryOffset = 0;
+                        Geometry geom = (Geometry) rs.getObject(geomCol);
+                        if (geom != null) {
                             geometryOffset = GeometryConversions.serialize(bufferBuilder, geom, header.geometryType);
                         }
                         int featureOffset = Feature.createFeature(bufferBuilder, geometryOffset, propertiesOffset, 0);
@@ -193,35 +181,45 @@ public class FGBWriteDriver {
                         while (dataBuffer.hasRemaining()) {
                             channel_.write(dataBuffer);
                         }
-                        bufferBuilder.clear();
+                        bufferManager.clear();
                     }
-                        bufferManager.flush();
-                    }  finally {
-                        rs.close();
-                    }
+
+
                 }
             }
-            } finally {
-                try {
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                } catch (IOException ex) {
-                    throw new SQLException(ex);
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
                 }
+            } catch (IOException ex) {
+                throw new SQLException(ex);
             }
+        }
     }
 
     private void fgbWrite(ProgressVisitor progress, ResultSet rs, FileOutputStream fileOutputStream) {
     }
 
-    private HeaderMeta writeHeader(long rowCount, GeometryMetaData geometryMetaData,ResultSetMetaData metadata ) throws SQLException {
+    /**
+     * Write the header
+     *
+     * @param outputStream
+     * @param rowCount
+     * @param geometryMetaData
+     * @param metadata
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private HeaderMeta writeHeader(FileOutputStream outputStream, FlatBufferBuilder bufferBuilder, long rowCount, GeometryMetaData geometryMetaData, ResultSetMetaData metadata) throws SQLException, IOException {
+        outputStream.write(Constants.MAGIC_BYTES);
         //Get the column informations
         List<ColumnMeta> columns = new ArrayList<>();
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
             String typeName = metadata.getColumnTypeName(i);
-            if(metadata.getColumnTypeName(i).toLowerCase().startsWith("geometry")){
+            if (metadata.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
                 continue;
             }
             ColumnMeta column = new ColumnMeta();
@@ -229,17 +227,16 @@ public class FGBWriteDriver {
             column.type = columnType(metadata.getColumnType(i), typeName);
             columns.add(column);
         }
-
         HeaderMeta headerMeta = new HeaderMeta();
         headerMeta.featuresCount = rowCount;
         headerMeta.geometryType = geometryType(geometryMetaData.getSfs_geometryType());
         headerMeta.columns = columns;
-        headerMeta.srid=geometryMetaData.getSRID();
-
+        headerMeta.srid = geometryMetaData.getSRID();
+        HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
         return headerMeta;
     }
 
-    private byte geometryType(String geometryTypeName) throws SQLException{
+    private byte geometryType(String geometryTypeName) throws SQLException {
         switch (geometryTypeName) {
             case "POINT":
                 return GeometryType.Point;
@@ -260,7 +257,7 @@ public class FGBWriteDriver {
         }
     }
 
-    private byte columnType(int sqlTypeId, String sqlType) throws SQLException{
+    private byte columnType(int sqlTypeId, String sqlType) throws SQLException {
         switch (sqlTypeId) {
             case Types.BIT:
             case Types.BOOLEAN:

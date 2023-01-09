@@ -46,7 +46,12 @@ public class FGBImportExportTest {
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT))");
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)')");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)')");
+
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS; CREATE TABLE TABLE_POINTS (the_geom GEOMETRY(POINT)) as SELECT st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00) as the_geom  FROM GENERATE_SERIES(1, 10000);");
             stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+
+           //stat.execute("CALL SHPWRITE('target/points.shp', 'TABLE_POINTS', true);");
+
             /*stat.execute("CALL GeoJsonRead('target/multipoints.geojson', 'TABLE_MULTIPOINTS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");
             res.next();

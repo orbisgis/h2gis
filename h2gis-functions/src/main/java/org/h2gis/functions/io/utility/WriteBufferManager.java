@@ -162,4 +162,8 @@ public final class WriteBufferManager {
 		prepareToAddBytes(8);
 		buffer.putLong(value);
 	}
+
+	public void clear() {
+		buffer.clear();
+	}
 }

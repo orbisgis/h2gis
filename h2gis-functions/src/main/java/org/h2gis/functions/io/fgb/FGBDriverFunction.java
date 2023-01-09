@@ -3,14 +3,13 @@ package org.h2gis.functions.io.fgb;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.DriverManager;
-import org.h2gis.functions.io.geojson.GeoJsonWriteDriver;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class FlatGeobufDriverFunction implements DriverFunction {
+public class FGBDriverFunction implements DriverFunction {
 
     public IMPORT_DRIVER_TYPE getImportDriverType() {
         return IMPORT_DRIVER_TYPE.COPY;

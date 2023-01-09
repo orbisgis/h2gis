@@ -37,7 +37,7 @@ public class FGBWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void execute(Connection connection, String fileName, String tableReference, boolean deleteFile) throws SQLException, IOException {
-        FlatGeobufDriverFunction geobufDriverFunction = new FlatGeobufDriverFunction();
+        FGBDriverFunction geobufDriverFunction = new FGBDriverFunction();
         geobufDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), deleteFile, new EmptyProgressVisitor());
     }
 
