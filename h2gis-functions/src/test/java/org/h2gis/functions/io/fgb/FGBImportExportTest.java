@@ -1,7 +1,9 @@
 package org.h2gis.functions.io.fgb;
 
+import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
 import org.h2gis.functions.io.geojson.*;
 import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -13,10 +15,12 @@ import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FGBImportExportTest {
@@ -60,6 +64,41 @@ public class FGBImportExportTest {
             assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((150 290), (180 170), (266 275))")));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS_READ");*/
+        }
+    }
+
+    @Test
+    public void testFGBEngine() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), land varchar)");
+            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 'corn')");
+            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 'grass')");
+            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+
+            File fgbFile = new File("target/points.fgb");
+            FGBDriver fgbDriver = new FGBDriver();
+            fgbDriver.initDriverFromFile(fgbFile);
+            assertEquals(3, fgbDriver.getFieldCount());
+            for (int i = 0; i <fgbDriver.getRowCount() ; i++) {
+                for (int j = 0; j < fgbDriver.getFieldCount(); j++) {
+                    System.out.println(fgbDriver.getField(i, j).getString());
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testFGBFileTable() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), land varchar)");
+            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 'corn')");
+            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 'grass')");
+            stat.execute("CALL FILE_TABLE('target/points.fgb', 'points');");
+            ResultSet rs = stat.executeQuery("SELECT * FROM points");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
         }
     }
 

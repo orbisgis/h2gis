@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class FGBDriverFunction implements DriverFunction {
-
+    public static String DESCRIPTION = "FlatGeoBuffer";
     public IMPORT_DRIVER_TYPE getImportDriverType() {
         return IMPORT_DRIVER_TYPE.COPY;
     }
