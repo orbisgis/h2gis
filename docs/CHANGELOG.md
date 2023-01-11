@@ -7,3 +7,5 @@
 + Use OverlayNGRobust instead of OverlayNG
 + Add ESRI defs in spatial_ref_table
 + Update JNA to 0.4.0
++ Update CTS to 1.7.0-SNAPSHOT
++ Remove OrbisGIS commons dep

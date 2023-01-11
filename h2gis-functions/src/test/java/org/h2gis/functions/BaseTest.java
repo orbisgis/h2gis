@@ -22,7 +22,6 @@ package org.h2gis.functions;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
-import org.orbisgis.commons.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -505,7 +504,7 @@ public abstract class BaseTest {
      * @throws ClassNotFoundException {@link Exception} thrown during the creation of the database, when calling the H2
      *                                driver class..
      */
-    public Statement statementInit(@Nullable String prefix) throws SQLException, ClassNotFoundException {
+    public Statement statementInit(String prefix) throws SQLException, ClassNotFoundException {
         Connection connection = H2GISDBFactory.createSpatialDataBase(
                 "target/" + (prefix!=null?prefix:"") + UUID.randomUUID().toString());
         return connection.createStatement();
