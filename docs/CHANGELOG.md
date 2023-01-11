@@ -5,3 +5,5 @@
 + Use the next generation overlay
 + Add grid size precision to snap intersection, difference and symdifference operators
 + Use OverlayNGRobust instead of OverlayNG
++ Add ESRI defs in spatial_ref_table
++ Update JNA to 0.4.0
