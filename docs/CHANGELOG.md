@@ -9,3 +9,4 @@
 + Update JNA to 0.4.0
 + Update CTS to 1.7.0-SNAPSHOT
 + Remove OrbisGIS commons dep
++ Update CTS to 1.7.0
