@@ -104,6 +104,12 @@ public class CRSFunctionTest {
     }
 
     @Test
+    public void test_ST_Transform2100To4326() throws Exception {
+        checkProjectedGeom("SRID=2100;POINT(475283.4855100708 4207015.674958611)",
+                "SRID=4326;POINT(23.7201375 38.0130833)", 10E-3);
+    }
+
+    @Test
     public void testST_TransformAsIdentity() throws Exception {
         checkProjectedGeom("SRID=2154;POINT(565767.906 2669005.730)",
                 "SRID=2154;POINT(565767.906 2669005.730)");
