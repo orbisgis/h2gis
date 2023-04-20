@@ -169,8 +169,9 @@ public class GeoJsonWriteDriver {
                 rowCount = rs.getRow();
                 rs.beforeFirst();
             }
+            ResultSetMetaData resultSetMetaData = rs.getMetaData();
             ProgressVisitor copyProgress = progress.subProcess(rowCount);
-            Tuple<String, Integer> geometryInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs.getMetaData());
+            Tuple<String, Integer> geometryInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSetMetaData);
             JsonFactory jsonFactory = new JsonFactory();
             JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
 
@@ -178,7 +179,6 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("type", "FeatureCollection");
             try {
-                ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 cacheMetadata(resultSetMetaData);
                 //Read the first geometry to find its SRID
                 rs.next();
