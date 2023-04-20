@@ -2,18 +2,18 @@
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
  * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
- *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * <p>
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
- *
+ * <p>
  * H2GIS is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
  * for more details <http://www.gnu.org/licenses/>.
- *
- *
+ * <p>
+ * <p>
  * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
  * or contact directly: info_at_h2gis.org
  */
@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests of package spatial mesh
+ *
  * @author Erwan Bocher
  * @author Nicolas Fortin
  */
@@ -70,7 +71,7 @@ public class MeshFunctionTest {
     public void test_ST_DelaunayNullValue() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay(null);")) {
             rs.next();
-            assertTrue(rs.getObject(1)==null);
+            assertTrue(rs.getObject(1) == null);
         }
     }
 
@@ -78,7 +79,7 @@ public class MeshFunctionTest {
     public void test_ST_DelaunayWithPoints1() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINTZ ((0 0 1), (10 0 1), (10 10 1))'::GEOMETRY);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGONZ (((0 0 1, 10 0 1, 10 10 1, 0 0 1)))",rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((0 0 1, 10 0 1, 10 10 1, 0 0 1)))", rs.getBytes(1));
         }
     }
 
@@ -86,7 +87,7 @@ public class MeshFunctionTest {
     public void test_ST_DelaunayWithPoints2() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINTZ ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGONZ (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))",  rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))", rs.getBytes(1));
         }
     }
 
@@ -111,7 +112,7 @@ public class MeshFunctionTest {
     public void test_ST_DelaunayAsMultiPolygon() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGONZ ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 0);")) {
             rs.next();
-            assertGeometryEquals("MULTIPOLYGONZ (((5 8 1, 1.1 3 1, 5.1 1.1 1, 5 8 1)), ((5 8 1, 5.1 1.1 1, 9.5 6.4 1, 5 8 1)), ((1.1 9 1, 1.1 3 1, 5 8 1, 1.1 9 1)), ((8.8 9.9 1, 5 8 1, 9.5 6.4 1, 8.8 9.9 1)), ((1.1 9 1, 5 8 1, 8.8 9.9 1, 1.1 9 1)))\n",  rs.getBytes(1));
+            assertGeometryEquals("MULTIPOLYGONZ (((5 8 1, 1.1 3 1, 5.1 1.1 1, 5 8 1)), ((5 8 1, 5.1 1.1 1, 9.5 6.4 1, 5 8 1)), ((1.1 9 1, 1.1 3 1, 5 8 1, 1.1 9 1)), ((8.8 9.9 1, 5 8 1, 9.5 6.4 1, 8.8 9.9 1)), ((1.1 9 1, 5 8 1, 8.8 9.9 1, 1.1 9 1)))\n", rs.getBytes(1));
         }
     }
 
@@ -127,8 +128,16 @@ public class MeshFunctionTest {
     public void test_ST_ConstrainedDelaunayNullValue() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(null);")) {
             rs.next();
-            assertTrue(rs.getObject(1)==null);
+            assertTrue(rs.getObject(1) == null);
         }
+    }
+
+    @Test
+    public void test_ST_ConstrainedDelaunayEmptyGeometry() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('POLYGON EMPTY'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON EMPTY", rs.getObject(1));
+        rs.close();
     }
 
     @Test
@@ -278,6 +287,14 @@ public class MeshFunctionTest {
     }
 
     @Test
+    public void testSimpleST_TESSELLATEEmpty() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE(st_buffer('POLYGON ((-6 -2, -8 2, 0 8, -8 -7, -10 -1, -6 -2))', -10)) the_geom");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTIPOLYGON EMPTY", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
     public void testMultiST_TESSELLATE() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE(ST_UNION(ST_EXPAND('POINT(0 0)',5, 5),ST_EXPAND('POINT(15 0)',5, 5))) the_geom")) {
             assertTrue(rs.next());
@@ -295,7 +312,7 @@ public class MeshFunctionTest {
 
     @Test
     public void testInvalid2ST_TESSELLATE() {
-        assertThrows(SQLException.class, ()-> {
+        assertThrows(SQLException.class, () -> {
             try (ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE('POINT(1 1)') the_geom")) {
                 assertTrue(rs.next());
                 assertGeometryEquals("MULTIPOLYGON (((-5 -5, -5 5, 5 5, -5 -5)), ((-5 -5, 5 5, 5 -5, -5 -5)), ((10 -5, 10 5, 20 5, 10 -5)), ((10 -5, 20 5, 20 -5, 10 -5)))", rs.getObject(1));
