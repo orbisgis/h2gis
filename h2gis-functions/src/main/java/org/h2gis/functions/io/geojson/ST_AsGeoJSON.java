@@ -51,6 +51,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @return
      */
     public static String toGeojson(Geometry geom) {
+        if(geom==null){
+            return null;
+        }
         StringBuilder sb = new StringBuilder();
         toGeojsonGeometry(geom,maxdecimaldigits, sb);
         return sb.toString();
@@ -64,6 +67,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * @return
      */
     public static String toGeojson(Geometry geom, int maxdecimaldigits) {
+        if(geom==null){
+            return null;
+        }
         StringBuilder sb = new StringBuilder();
         toGeojsonGeometry(geom, maxdecimaldigits,sb);
         return sb.toString();
