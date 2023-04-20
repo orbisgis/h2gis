@@ -68,7 +68,7 @@ public class ST_Tessellate extends DeterministicScalarFunction {
             ArrayList<Polygon> polygons = new ArrayList<Polygon>(size * 2);
             for(int idPoly = 0; idPoly < size; idPoly++) {
                 Polygon pol = (Polygon) geometry.getGeometryN(idPoly);
-                if(pol.isEmpty()) {
+                if(!pol.isEmpty()) {
                     MultiPolygon triangles = tessellatePolygon(pol);
                     int sub_size = triangles.getNumGeometries();
                     polygons.ensureCapacity(sub_size);
