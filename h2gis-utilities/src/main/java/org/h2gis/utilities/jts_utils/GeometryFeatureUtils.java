@@ -76,7 +76,7 @@ public class GeometryFeatureUtils {
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @return a JSON list
      */
-    static public ArrayList<LinkedHashMap> toList(ResultSet resultSet, int maxdecimaldigits) throws Exception {
+     public static ArrayList<LinkedHashMap> toList(ResultSet resultSet, int maxdecimaldigits) throws Exception {
         ArrayList<String> columns = new ArrayList<>();
         ResultSetMetaData metaData = resultSet.getMetaData();
         String firstGeom =null;
@@ -115,7 +115,7 @@ public class GeometryFeatureUtils {
      * @return
      * @throws Exception
      */
-    private static LinkedHashMap getProperties(ResultSet resultSet, Collection<String> columns) throws Exception {
+    public static LinkedHashMap getProperties(ResultSet resultSet, Collection<String> columns) throws Exception {
         LinkedHashMap properties = new LinkedHashMap();
         for (String column:columns) {
             properties.put(column, resultSet.getObject(column));
@@ -128,7 +128,7 @@ public class GeometryFeatureUtils {
      * @param geom the geometry
      * @return
      */
-    static LinkedHashMap toMap(Geometry geom){
+    public static LinkedHashMap toMap(Geometry geom){
         return toMap(geom, 9);
     }
 
@@ -138,7 +138,7 @@ public class GeometryFeatureUtils {
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @return a map
      */
-    static LinkedHashMap toMap(Geometry geom, int maxdecimaldigits){
+    public static LinkedHashMap toMap(Geometry geom, int maxdecimaldigits){
         LinkedHashMap geometry_map = new LinkedHashMap();
         if(geom==null){
             geometry_map.put("geometry", null);
