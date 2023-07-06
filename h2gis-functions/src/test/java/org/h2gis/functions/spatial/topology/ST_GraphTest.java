@@ -133,10 +133,10 @@ public class ST_GraphTest {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, way GEOMETRY(LINESTRING), id INT AUTO_INCREMENT PRIMARY KEY);"
                 + "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0, 1 2)', 'road1', 'LINESTRING (1 1, 2 2, 3 1)', DEFAULT),"
-                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', 'LINESTRING (3 1, 2 0, 1 1)', DEFAULT),"
-                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING (1 1, 2 1)', DEFAULT),"
-                + "('LINESTRING (4 3, 5 2)', 'road4', 'LINESTRING (2 1, 3 1)', DEFAULT);");
+                + "('LINESTRING (0 0, 1 2)', 'road1', 'LINESTRING (1 1, 2 2, 3 1)', 1),"
+                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', 'LINESTRING (3 1, 2 0, 1 1)', 2),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING (1 1, 2 1)', 3),"
+                + "('LINESTRING (4 3, 5 2)', 'road4', 'LINESTRING (2 1, 3 1)', 4);");
 
         // This should detect the 'road' column since it is the first geometry column.
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
@@ -169,17 +169,18 @@ public class ST_GraphTest {
         assertFalse(rs.next());
         nodesResult = st.executeQuery("SELECT * FROM TEST_NODES ORDER BY NODE_ID");
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (1 1)");
-        checkNode(nodesResult, 2, "POINT (3 1)");
-        checkNode(nodesResult, 3, "POINT (2 1)");
+        checkNode(nodesResult, 1, "POINT (0 0)");
+        checkNode(nodesResult, 2, "POINT (1 2)");
+        checkNode(nodesResult, 3, "POINT (4 3)");
+        checkNode(nodesResult, 4, "POINT (5 2)");
         assertFalse(nodesResult.next());
         nodesResult.close();
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES ORDER BY EDGE_ID");
         assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
         checkEdge(edgesResult, 1, 1, 2);
-        checkEdge(edgesResult, 2, 2, 1);
-        checkEdge(edgesResult, 3, 1, 3);
-        checkEdge(edgesResult, 4, 3, 2);
+        checkEdge(edgesResult, 2, 2, 3);
+        checkEdge(edgesResult, 3, 3, 2);
+        checkEdge(edgesResult, 4, 3, 4);
         assertFalse(edgesResult.next());
         edgesResult.close();
         rs.close();
@@ -631,6 +632,43 @@ public class ST_GraphTest {
             checkEdge(edgesResult, 2, 2, 3);
             assertFalse(edgesResult.next());
             edgesResult.close();
+        }
+    }
+
+    @Test
+    public void test_ST_GraphColumns() throws Exception {
+        // Prepare the input table.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        st.execute("CREATE TABLE test(the_geom GEOMETRY(LINESTRING),weight float, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0, 1 2)', 12, 'road1', 1),"
+                + "('LINESTRING (1 2, 2 3, 4 3)',1,  'road2', 2),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 23, 'road3', 3),"
+                + "('LINESTRING (4 3, 5 2)', 12, 'road4', 4),"
+                + "('LINESTRING (4.05 4.1, 7 5)', 1, 'road5', 5),"
+                + "('LINESTRING (7.1 5, 8 4)', 5, 'road6', 6);");
+
+        try ( // Make sure everything went OK.
+              ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', ARRAY['weight'])")) {
+            assertTrue(rs.next());
+            assertTrue(rs.getBoolean(1));
+            assertFalse(rs.next());
+
+            // Test nodes table.
+            ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES limit 1");
+            assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
+            nodesResult.close();
+
+            // Test edges table.
+            ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES limit 1");
+            // This is a copy of the original table with three columns added.
+            assertEquals(4, edgesResult.getMetaData().getColumnCount());
+            edgesResult.close();
+
+            ResultSet edgesCount = st.executeQuery("SELECT count(*) FROM TEST_EDGES where weight is not null");
+            assertTrue(edgesCount.next());
+            assertEquals(6, edgesCount.getInt(1));
+            edgesCount.close();
         }
     }
 

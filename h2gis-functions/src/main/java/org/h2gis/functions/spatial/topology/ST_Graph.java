@@ -20,6 +20,9 @@
 package org.h2gis.functions.spatial.topology;
 
 
+import org.h2.value.Value;
+import org.h2.value.ValueArray;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.*;
@@ -29,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -107,8 +111,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     public static boolean createGraph(Connection connection,
                                       String tableName) throws SQLException {
-        return createGraph(connection, tableName, null);
+        return createGraph(connection, tableName, null, 0, false,false, null);
     }
+
 
     /**
      * Create the nodes and edges tables from the input table containing
@@ -119,15 +124,26 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *
      * @param connection       Connection
      * @param tableName        Input table
-     * @param spatialFieldName Name of column containing LINESTRINGs
+     * @param value            Name of column containing LINESTRINGs or an array of columns
      * @return true if both output tables were created
      * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
                                       String tableName,
-                                      String spatialFieldName) throws SQLException {
+                                      Value value) throws SQLException {
         // The default tolerance is zero.
-        return createGraph(connection, tableName, spatialFieldName, 0.0);
+        if(value instanceof ValueVarchar) {
+            return createGraph(connection, tableName, value.toString(), 0.0, false, false, null);
+        }else if(value instanceof ValueArray){
+            Value[] list = ((ValueArray) value).getList();
+            ArrayList<String> columns = new ArrayList<>();
+            for (Value arrVal : list) {
+                columns.add(arrVal.getString());
+            }
+            return createGraph(connection, tableName, null,0.0, false, false, columns);
+
+        }
+        throw new SQLException("Unsupported list of columns");
     }
 
     /**
@@ -159,7 +175,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       String spatialFieldName,
                                       double tolerance) throws SQLException {
         // By default we do not orient by slope.
-        return createGraph(connection, tableName, spatialFieldName, tolerance, false);
+        return createGraph(connection, tableName, spatialFieldName, tolerance, false, false, null);
     }
     
     /**
@@ -196,8 +212,48 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       String spatialFieldName,
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
-         return createGraph(connection, inputTable, spatialFieldName, tolerance, orientBySlope, false);
+         return createGraph(connection, inputTable, spatialFieldName, tolerance, orientBySlope, false, null);
      }
+
+
+    /**
+     * Create the nodes and edges tables from the input table containing
+     * LINESTRINGs in the given column and using the given
+     * tolerance, and potentially orienting edges by slope.
+     *
+     * The tolerance value is used specify the side length of a square Envelope
+     * around each node used to snap together other nodes within the same
+     * Envelope. Note, however, that edge geometries are left untouched.
+     * Note also that coordinates within a given tolerance of each
+     * other are not necessarily snapped together. Only the first and last
+     * coordinates of a geometry are considered to be potential nodes, and
+     * only nodes within a given tolerance of each other are snapped
+     * together. The tolerance works only in metric units.
+     *
+     * The boolean orientBySlope is set to true if edges should be oriented by
+     * the z-value of their first and last coordinates (decreasing).
+     *
+     * If the input table has name 'input', then the output tables are named
+     * 'input_nodes' and 'input_edges'.
+     *
+     * @param connection       Connection
+     * @param inputTable        Input table
+     * @param spatialFieldName Name of column containing LINESTRINGs
+     * @param tolerance        Tolerance
+     * @param orientBySlope    True if edges should be oriented by the z-value of
+     *                         their first and last coordinates (decreasing)
+     * @param deleteTables     True delete the existing tables
+     * @return true if both output tables were created
+     * @throws SQLException
+     */
+    public static boolean createGraph(Connection connection,
+                                      String inputTable,
+                                      String spatialFieldName,
+                                      double tolerance,
+                                      boolean orientBySlope, boolean deleteTables) throws SQLException {
+        return createGraph(connection, inputTable, spatialFieldName, tolerance, orientBySlope, deleteTables, null);
+    }
+
 
     /**
      * Create the nodes and edges tables from the input table containing
@@ -226,6 +282,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param orientBySlope    True if edges should be oriented by the z-value of
      *                         their first and last coordinates (decreasing)
      * @param deleteTables     True delete the existing tables
+     * @param columns          an array of columns to keep
      * @return true if both output tables were created
      * @throws SQLException
      */
@@ -234,7 +291,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       final String spatialFieldName,
                                       double tolerance,
                                       boolean orientBySlope,
-                                      boolean deleteTables) throws SQLException {
+                                      boolean deleteTables, ArrayList<String> columns) throws SQLException {
         if (tolerance < 0) {
             throw new IllegalArgumentException("Only positive tolerances are allowed.");
         }
@@ -278,12 +335,17 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         checkGeometryType(geometryMetada.getValue().geometryTypeCode);
         final Statement st = connection.createStatement();
         try {
-            firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.getKey(), tolerance);            
+            String selectedColumns="";
+            if(columns!=null && !columns.isEmpty())  {
+                selectedColumns = ","+String.join(",", columns);
+
+            }
+            firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.getKey(), tolerance,selectedColumns);
             int srid = geometryMetada.getValue().SRID;
             boolean hasZ = geometryMetada.getValue().hasZ;
             makeEnvelopes(st, tolerance, dbType, srid,hasZ);
             nodesTable(st, nodesName, tolerance, srid, hasZ);
-            edgesTable(st, nodesName, edgesName, tolerance, dbType);
+            edgesTable(st, nodesName, edgesName, tolerance, dbType, selectedColumns);
             checkForNullEdgeEndpoints(st, edgesName);
             if (orientBySlope) {
                 orientBySlope(st, nodesName, edgesName);
@@ -312,13 +374,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param pkCol
      * @param geomCol
      * @param tolerance
+     * @param columns an array of columns
      * @throws SQLException 
      */
     private static void firstFirstLastLast(Statement st,
                                            TableLocation tableName,
                                            String pkCol,
                                            String geomCol,
-                                           double tolerance) throws SQLException {
+                                           double tolerance, String  columns) throws SQLException {
         LOGGER.debug("Selecting the first coordinate of the first geometry and " +
                 "the last coordinate of the last geometry...");
         final String numGeoms = "ST_NumGeometries(" + geomCol + ")";
@@ -334,14 +397,16 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + expand(firstPointFirstGeom, tolerance) + " START_POINT_EXP, "
                     + lastPointLastGeom + " END_POINT, "
                     + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
-                    + "FROM " + tableName);
+                    + columns
+                    + " FROM " + tableName);
         } else {
             // If the tolerance is zero, there is no need to call ST_Expand.
             st.execute("CREATE  TABLE "+ COORDS_TABLE+" AS "
                     + "SELECT " + pkCol + " EDGE_ID, "
                     + firstPointFirstGeom + " START_POINT, "
                     + lastPointLastGeom + " END_POINT "
-                    + "FROM " + tableName);
+                    + columns
+                    + " FROM " + tableName);
         }
     }
 
@@ -430,7 +495,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static void edgesTable(Statement st,
                                    TableLocation nodesName,
                                    TableLocation edgesName,
-                                   double tolerance, DBTypes dbType) throws SQLException {
+                                   double tolerance, DBTypes dbType, String columns) throws SQLException {
         LOGGER.debug("Creating the edges table...");
         if (tolerance > 0) {
             if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
@@ -448,7 +513,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     " WHERE " + nodesName + ".EXP && "+ COORDS_TABLE+".START_POINT_EXP LIMIT 1) START_NODE, " +
                     "(SELECT NODE_ID FROM " + nodesName +
                     " WHERE " + nodesName + ".EXP && "+ COORDS_TABLE+".END_POINT_EXP LIMIT 1) END_NODE " +
-                    "FROM "+ COORDS_TABLE+";");
+                    columns +
+                    " FROM "+ COORDS_TABLE+";");
             st.execute("ALTER TABLE " + nodesName + " DROP COLUMN EXP;");
         } else {
             if (dbType == DBTypes.H2 || dbType == DBTypes.H2GIS) {
@@ -470,7 +536,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "(SELECT NODE_ID FROM " + nodesName +
                     " WHERE " + nodesName + ".THE_GEOM && "+ COORDS_TABLE+".END_POINT " +
                     "AND " + nodesName + ".THE_GEOM="+ COORDS_TABLE+".END_POINT LIMIT 1) END_NODE " +
-                    "FROM "+ COORDS_TABLE+";");
+                    columns +
+                    " FROM "+ COORDS_TABLE+";");
         }
     }
 
