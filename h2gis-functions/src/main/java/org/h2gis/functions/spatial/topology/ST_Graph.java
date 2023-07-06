@@ -20,9 +20,7 @@
 package org.h2gis.functions.spatial.topology;
 
 
-import org.h2.value.Value;
-import org.h2.value.ValueArray;
-import org.h2.value.ValueVarchar;
+import org.h2.value.*;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.*;
@@ -141,9 +139,15 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 columns.add(arrVal.getString());
             }
             return createGraph(connection, tableName, null,0.0, false, false, columns);
-
         }
-        throw new SQLException("Unsupported list of columns");
+        else if(value instanceof ValueBoolean){
+            return createGraph(connection, tableName, null,0.0, false, value.getBoolean(), null);
+        }
+        else if(value instanceof ValueNumeric){
+            return createGraph(connection, tableName, null,value.getDouble(), false, false, null);
+        }
+        throw new SQLException("Unsupported second argument. Possible solutions :" +
+                " geometry column name,  array of columns, boolean value to delete existing graph tables, tolerance value to snap the edges");
     }
 
     /**
@@ -165,17 +169,59 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *
      * @param connection       Connection
      * @param tableName        Input table
-     * @param spatialFieldName Name of column containing LINESTRINGs
-     * @param tolerance        Tolerance
+     * @param secondValue Name of column containing LINESTRINGs
+     * @param thirdValue        Tolerance
      * @return true if both output tables were created
      * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
                                       String tableName,
-                                      String spatialFieldName,
-                                      double tolerance) throws SQLException {
-        // By default we do not orient by slope.
-        return createGraph(connection, tableName, spatialFieldName, tolerance, false, false, null);
+                                      Value secondValue,
+                                      Value thirdValue) throws SQLException {
+        String spatialFieldName = null;
+        double tolerance = 0;
+        boolean orientBySlope = false;
+        boolean deleteTables = false;
+        ArrayList<String> columns =null;
+        if(secondValue instanceof ValueVarchar) {
+            spatialFieldName = secondValue.getString();
+            if(thirdValue instanceof ValueBoolean){
+                deleteTables = thirdValue.getBoolean();
+            }
+            else if(thirdValue instanceof ValueNumeric){
+                tolerance = thirdValue.getDouble();
+            }
+            else if(thirdValue instanceof ValueArray){
+                columns = getColumns(((ValueArray) secondValue));
+            }
+            else{
+                throw new SQLException("Unsupported signature. Possible arguments are : \"" +
+                        " ST_GRAPH(tableName, geometryColumn, true to delete tables\n" +
+                        " ST_GRAPH(tableName, geometryColumn, tolerance to snap the edges)\"" +
+                        " ST_GRAPH(tableName, geometryColumn, array of columns to keep)\n");
+            }
+         }else if(secondValue instanceof ValueArray){
+            columns = getColumns(((ValueArray) secondValue));
+             if(thirdValue instanceof ValueBoolean){
+                deleteTables = thirdValue.getBoolean();
+            }else if(thirdValue instanceof ValueNumeric){
+                tolerance = thirdValue.getDouble();
+            } else{
+                 throw new SQLException("Unsupported signature. Possible arguments are : \"" +
+                         " ST_GRAPH(tableName, array of columns to keep, true to delete tables\n" +
+                         " ST_GRAPH(tableName, array of columns to keep, tolerance to snap the edges)\"");
+             }
+        }
+        return createGraph(connection, tableName, spatialFieldName, tolerance, orientBySlope, deleteTables, columns);
+    }
+
+    private static ArrayList<String> getColumns(ValueArray valueArray){
+        Value[] list = valueArray.getList();
+        ArrayList<String> columns = new ArrayList<>();
+        for (Value arrVal : list) {
+            columns.add(arrVal.getString());
+        }
+        return columns;
     }
     
     /**

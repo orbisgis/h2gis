@@ -638,7 +638,7 @@ public class ST_GraphTest {
     @Test
     public void test_ST_GraphColumns() throws Exception {
         // Prepare the input table.
-        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        st.execute("DROP TABLE IF EXISTS TEST;");
         st.execute("CREATE TABLE test(the_geom GEOMETRY(LINESTRING),weight float, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
                 + "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 12, 'road1', 1),"
@@ -649,7 +649,7 @@ public class ST_GraphTest {
                 + "('LINESTRING (7.1 5, 8 4)', 5, 'road6', 6);");
 
         try ( // Make sure everything went OK.
-              ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', ARRAY['weight'])")) {
+              ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', ARRAY['weight'], true)")) {
             assertTrue(rs.next());
             assertTrue(rs.getBoolean(1));
             assertFalse(rs.next());
