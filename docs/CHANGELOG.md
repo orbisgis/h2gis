@@ -5,3 +5,4 @@
 + Update postgresql dependency to 42.3.8
 + Fix empty polygon with ST_TESSELLATE
 + Add ST_ConcaveHull function
++ Improve ST_Graph function to keep a list of columns for the edges
