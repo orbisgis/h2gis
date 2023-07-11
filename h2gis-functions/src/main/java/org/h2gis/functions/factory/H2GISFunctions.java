@@ -62,6 +62,8 @@ import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.ST_PrecisionReducer;
 import org.h2gis.functions.spatial.generalize.ST_Simplify;
 import org.h2gis.functions.spatial.generalize.ST_SimplifyPreserveTopology;
+import org.h2gis.functions.spatial.linear_referencing.ST_LineInterpolatePoint;
+import org.h2gis.functions.spatial.linear_referencing.ST_LineSubstring;
 import org.h2gis.functions.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.functions.spatial.mesh.ST_Delaunay;
 import org.h2gis.functions.spatial.mesh.ST_Tessellate;
@@ -320,7 +322,9 @@ public class H2GISFunctions {
                 new ST_MemSize(),
                 new ST_Multi(),
                 new ST_AsEWKB(),
-                new ST_ConcaveHull()
+                new ST_ConcaveHull(),
+                new ST_LineSubstring(),
+                new ST_LineInterpolatePoint()
         };
     }
 
