@@ -7,3 +7,5 @@
 + Add ST_ConcaveHull function
 + Improve ST_Graph function to keep a list of columns for the edges
 + Upgrade H2 database from 2.1.214 to 2.2.220
++ Add ST_LineSubstring and ST_LineInterpolatePoint functions
+
