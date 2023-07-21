@@ -324,7 +324,8 @@ public class H2GISFunctions {
                 new ST_AsEWKB(),
                 new ST_ConcaveHull(),
                 new ST_LineSubstring(),
-                new ST_LineInterpolatePoint()
+                new ST_LineInterpolatePoint(),
+                new ST_MaximumInscribedCircle()
         };
     }
 
