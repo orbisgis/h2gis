@@ -1,3 +1,23 @@
+/**
+ * H2GIS is a library that brings spatial support to the H2 Database Engine
+ * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
+ * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
+ * <p>
+ * This code is part of the H2GIS project. H2GIS is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU
+ * Lesser General Public License as published by the Free Software Foundation;
+ * version 3.0 of the License.
+ * <p>
+ * H2GIS is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details <http://www.gnu.org/licenses/>.
+ * <p>
+ * <p>
+ * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
+ * or contact directly: info_at_h2gis.org
+ */
+
 package org.h2gis.functions.spatial.others;
 
 import org.h2gis.api.DeterministicScalarFunction;
@@ -9,7 +29,6 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
@@ -18,12 +37,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Function to clip a [Multi]Polygon or [Multi]LineString geometry with another [Multi]Polygon or [Multi]LineString geometry.
+ * @author Erwan Bocher, CNRS, 2023
+ */
 public class ST_Clip extends DeterministicScalarFunction {
 
 
-
-    public ST_Clip(){
-        addProperty(PROP_REMARKS, "Clip a [Multi]Polygon or [Multi]LineString with another geometry.");
+    public ST_Clip() {
+        addProperty(PROP_REMARKS, "Clip a [Multi]Polygon or [Multi]LineString with [Multi]Polygon or [Multi]LineString geometry.");
     }
 
     @Override
@@ -40,27 +62,27 @@ public class ST_Clip extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static Geometry execute(Geometry geomToClip, Geometry geomForClip) throws SQLException, ParseException {
-        if(geomToClip==null){
+        if (geomToClip == null) {
             return null;
         }
-        if(geomToClip.isEmpty()){
+        if (geomToClip.isEmpty()) {
             return geomToClip;
         }
 
-        if(geomForClip==null || geomForClip.isEmpty()){
+        if (geomForClip == null || geomForClip.isEmpty()) {
             return geomToClip;
         }
 
-        if(geomToClip.getSRID()!=geomForClip.getSRID()){
+        if (geomToClip.getSRID() != geomForClip.getSRID()) {
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
 
-        if(geomToClip instanceof Polygon || geomToClip instanceof MultiPolygon){
+        if (geomToClip instanceof Polygon || geomToClip instanceof MultiPolygon) {
             Geometry geomForClipReduced = ST_CollectionExtract.execute(geomForClip, 2, 3);
-            if(geomForClipReduced.isEmpty()){
+            if (geomForClipReduced.isEmpty()) {
                 throw new SQLException("Only support [Multi]Polygon or [Multi]LineString as input geometry for clipping");
             }
-            if(geomToClip.intersects(geomForClipReduced)) {
+            if (geomToClip.intersects(geomForClipReduced)) {
                 GeometryFactory factory = geomToClip.getFactory();
                 Geometry geomNoded = factory.createGeometryCollection(new Geometry[]{ST_ToMultiLine.execute(geomToClip), ST_ToMultiLine.execute(geomForClip)}).union();
                 Geometry pols = ST_Polygonize.execute(geomNoded);
@@ -68,10 +90,10 @@ public class ST_Clip extends DeterministicScalarFunction {
                 GeometryCollection holesForClip = ST_Holes.execute(geomForClipReduced);
                 Geometry holes = OverlayNGRobust.overlay(holesToClip, holesForClip, OverlayNG.UNION);
                 List selected = new ArrayList();
-                int nb =pols.getNumGeometries();
+                int nb = pols.getNumGeometries();
                 PreparedGeometry pg_holes = new PreparedGeometryFactory().create(holes);
                 PreparedGeometry pg_geomToClip = new PreparedGeometryFactory().create(geomToClip);
-                for (int i = 0; i < nb; i++ ) {
+                for (int i = 0; i < nb; i++) {
                     Geometry g = pols.getGeometryN(i);
                     Point pt = g.getInteriorPoint();
                     if (!pg_holes.intersects(pt) && pg_geomToClip.intersects(pt)) {
@@ -83,12 +105,12 @@ public class ST_Clip extends DeterministicScalarFunction {
                 return geom;
             }
 
-        } else if (geomToClip instanceof LineString || geomToClip instanceof MultiLineString){
+        } else if (geomToClip instanceof LineString || geomToClip instanceof MultiLineString) {
             Geometry geomForClipReduced = ST_CollectionExtract.execute(geomForClip, 2, 3);
-            if(geomForClipReduced.isEmpty()){
+            if (geomForClipReduced.isEmpty()) {
                 throw new SQLException("Only support [Multi]Polygon or [Multi]LineString as input geometry for clipping");
             }
-            if(geomToClip.intersects(geomForClipReduced)) {
+            if (geomToClip.intersects(geomForClipReduced)) {
                 MultiLineString linesToClip = ST_ToMultiLine.execute(geomToClip);
                 Geometry lines_unions = OverlayNGRobust.overlay(linesToClip, ST_ToMultiLine.execute(geomForClipReduced), OverlayNG.UNION);
 
@@ -115,7 +137,7 @@ public class ST_Clip extends DeterministicScalarFunction {
                 geom.setSRID(geomToClip.getSRID());
                 return geom;*/
             }
-        }else{
+        } else {
             throw new SQLException("Only support [Multi]Polygon or [Multi]LineString as input geometry to clip");
         }
         return geomToClip;

@@ -2546,7 +2546,7 @@ public class SpatialFunctionTest {
                 + "  POINT (190 340),"
                 + "  POINT (200 360))', 1, 1);");
         rs.next();
-        assertGeometryEquals("MULTILINESTRING ((120 200, 230 170), (270 230, 290 340)) ", rs.getObject(1));
+        assertGeometryEquals("MULTIPOINT ((110 360), (145 322), (190 340), (200 360)) ", rs.getObject(1));
         rs.close();
     }
 
