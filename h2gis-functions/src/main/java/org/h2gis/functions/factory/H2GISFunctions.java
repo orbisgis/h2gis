@@ -69,6 +69,7 @@ import org.h2gis.functions.spatial.mesh.ST_Delaunay;
 import org.h2gis.functions.spatial.mesh.ST_Tessellate;
 import org.h2gis.functions.spatial.mesh.ST_Voronoi;
 import org.h2gis.functions.spatial.operators.*;
+import org.h2gis.functions.spatial.others.ST_Clip;
 import org.h2gis.functions.spatial.predicates.*;
 import org.h2gis.functions.spatial.properties.*;
 import org.h2gis.functions.spatial.snap.ST_Snap;
@@ -325,7 +326,8 @@ public class H2GISFunctions {
                 new ST_ConcaveHull(),
                 new ST_LineSubstring(),
                 new ST_LineInterpolatePoint(),
-                new ST_MaximumInscribedCircle()
+                new ST_MaximumInscribedCircle(),
+                new ST_Clip()
         };
     }
 

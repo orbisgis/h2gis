@@ -45,7 +45,7 @@ public class ST_Holes extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "getHoles";
+        return "execute";
     }
 
     /**
@@ -55,7 +55,7 @@ public class ST_Holes extends DeterministicScalarFunction {
      * @return The geometry's holes
      * @throws SQLException
      */
-    public static GeometryCollection getHoles(Geometry geom) throws SQLException {
+    public static GeometryCollection execute(Geometry geom) throws SQLException {
         if (geom != null) {
             if (geom.getDimension() >= 2) {
                 ArrayList<Geometry> holes = new ArrayList<Geometry>();

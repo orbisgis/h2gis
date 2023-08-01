@@ -24,6 +24,7 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -41,9 +42,36 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
 
     @Override
     public String getJavaStaticMethod() {
-        return "collectionExtract";
+        return "execute";
     }
-    
+
+    /**
+     * Given a (multi)geometry, returns a (multi)geometry consisting only of
+     * elements of the specified type. Sub-geometries that are not the specified
+     * type are ignored. If there are no sub-geometries of the right type, an
+     * EMPTY geometry will be returned. Only points, lines and polygons are
+     * extracted.
+     *
+     * @param geometry
+     * @param dimension1 one dimension to filter
+     * @param dimension2 second dimension to filter
+     * @return
+     * @throws org.locationtech.jts.io.ParseException
+     */
+    public static Geometry execute(Geometry geometry, int dimension1, int dimension2) throws SQLException {
+        if(geometry == null){
+            return null;
+        }
+        if ((dimension1 < 1) || (dimension1 > 3)&&(dimension2 < 1) || (dimension2 > 3)) {
+            throw new IllegalArgumentException(
+                    "Dimension out of range (1..3)");
+        }
+        ArrayList<Geometry> geometries = new ArrayList<>();
+        getGeometryByDimensions(geometries, geometry, dimension1,dimension2);
+        return geometry.getFactory().buildGeometry(geometries);
+    }
+
+
     /**
      * Given a (multi)geometry, returns a (multi)geometry consisting only of
      * elements of the specified type. Sub-geometries that are not the specified
@@ -56,7 +84,7 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
      * @return 
      * @throws org.locationtech.jts.io.ParseException 
      */
-    public static Geometry collectionExtract(Geometry geometry, int dimension) throws ParseException {
+    public static Geometry execute(Geometry geometry, int dimension) throws SQLException {
         if(geometry == null){
             return null;
         }
@@ -96,6 +124,26 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
             }
         }
         return null;
+    }
+
+    /**
+     * Filter dimensions from a geometry
+     * @param geometries
+     * @param geometry
+     * @param dimension1 one dimension to filter
+     * @param dimension2 second dimension to filter
+     */
+    private static void getGeometryByDimensions(ArrayList<Geometry> geometries, Geometry geometry, int dimension1, int dimension2) {
+        int size = geometry.getNumGeometries();
+        for (int i = 0; i < size; i++) {
+            Geometry subGeom = geometry.getGeometryN(i);
+            int dim = subGeom.getDimension()+1;
+            if (subGeom instanceof GeometryCollection){
+                getGeometryByDimensions(geometries, subGeom, dimension1, dimension2);
+            } else if(dim==dimension1 || dim==dimension2){
+                geometries.add( subGeom);
+            }
+        }
     }
     
     /**
