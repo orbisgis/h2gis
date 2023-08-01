@@ -55,9 +55,9 @@ public class ST_Clip extends DeterministicScalarFunction {
 
 
     /**
-     *
-     * @param geomToClip
-     * @param geomForClip
+     * Clip a [Multi]Polygon or [Multi]LineString geometry with another [Multi]Polygon or [Multi]LineString geometry
+     * @param geomToClip [Multi]Polygon or [Multi]LineString
+     * @param geomForClip [Multi]Polygon or [Multi]LineString
      * @return
      * @throws SQLException
      */
@@ -112,30 +112,9 @@ public class ST_Clip extends DeterministicScalarFunction {
             }
             if (geomToClip.intersects(geomForClipReduced)) {
                 MultiLineString linesToClip = ST_ToMultiLine.execute(geomToClip);
-                Geometry lines_unions = OverlayNGRobust.overlay(linesToClip, ST_ToMultiLine.execute(geomForClipReduced), OverlayNG.UNION);
-
+                Geometry lines_unions = OverlayNGRobust.overlay(linesToClip,
+                        ST_ToMultiLine.execute(geomForClipReduced), OverlayNG.UNION);
                 return OverlayOp.overlayOp(lines_unions, linesToClip, OverlayOp.INTERSECTION);
-
-                /*List selected = new ArrayList();
-                int nb =lines_unions.getNumGeometries();
-                PreparedGeometry pg = new PreparedGeometryFactory().create(geomToClip);
-                Geometry line = new WKTReader().read("LINESTRING (109.87219512195122 267.4, 109.34146341463415 264)");
-                for (int i = 0; i < nb; i++ ) {
-                    Geometry g = lines_unions.getGeometryN(i);
-
-                    if(g.equals(line)){
-                        Point pt = g.getInteriorPoint();
-                    }
-                    if(g.getDimension()>0) {
-                        Point pt = g.getInteriorPoint();
-                        if (pg.contains(g)) {
-                            selected.add(g);
-                        }
-                    }
-                }
-                Geometry geom = geomToClip.getFactory().buildGeometry(selected);
-                geom.setSRID(geomToClip.getSRID());
-                return geom;*/
             }
         } else {
             throw new SQLException("Only support [Multi]Polygon or [Multi]LineString as input geometry to clip");
