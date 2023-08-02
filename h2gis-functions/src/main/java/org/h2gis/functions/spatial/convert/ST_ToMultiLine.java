@@ -70,9 +70,7 @@ public class ST_ToMultiLine extends DeterministicScalarFunction {
 
     private static void toMultiLineString(final Geometry geometry,
                                           final List<LineString> lineStrings) throws SQLException {
-        if ((geometry instanceof Point) || (geometry instanceof MultiPoint)) {
-            throw new SQLException("Found a point! Cannot create a MultiLineString.");
-        } else if (geometry instanceof LineString) {
+        if (geometry instanceof LineString) {
             toMultiLineString((LineString) geometry, lineStrings);
         } else if (geometry instanceof Polygon) {
             toMultiLineString((Polygon) geometry, lineStrings);

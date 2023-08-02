@@ -78,17 +78,15 @@ public class ST_Clip extends DeterministicScalarFunction {
         }
 
         if (geomToClip instanceof Polygon || geomToClip instanceof MultiPolygon) {
-            Geometry geomForClipReduced = ST_CollectionExtract.execute(geomForClip, 2, 3);
+            Geometry geomForClipReduced = ST_ToMultiLine.execute(geomForClip);
             if (geomForClipReduced.isEmpty()) {
                 throw new SQLException("Only support [Multi]Polygon or [Multi]LineString as input geometry for clipping");
             }
             if (geomToClip.intersects(geomForClipReduced)) {
                 GeometryFactory factory = geomToClip.getFactory();
-                Geometry geomNoded = factory.createGeometryCollection(new Geometry[]{ST_ToMultiLine.execute(geomToClip), ST_ToMultiLine.execute(geomForClip)}).union();
+                Geometry geomNoded = factory.createGeometryCollection(new Geometry[]{ST_ToMultiLine.execute(geomToClip), geomForClipReduced}).union();
                 Geometry pols = ST_Polygonize.execute(geomNoded);
-                GeometryCollection holesToClip = ST_Holes.execute(geomToClip);
-                GeometryCollection holesForClip = ST_Holes.execute(geomForClipReduced);
-                Geometry holes = OverlayNGRobust.overlay(holesToClip, holesForClip, OverlayNG.UNION);
+                Geometry holes = OverlayNGRobust.overlay(ST_Holes.execute(geomToClip), ST_Holes.execute(geomForClip), OverlayNG.UNION);
                 List selected = new ArrayList();
                 int nb = pols.getNumGeometries();
                 PreparedGeometry pg_holes = new PreparedGeometryFactory().create(holes);
@@ -106,15 +104,17 @@ public class ST_Clip extends DeterministicScalarFunction {
             }
 
         } else if (geomToClip instanceof LineString || geomToClip instanceof MultiLineString) {
-            Geometry geomForClipReduced = ST_CollectionExtract.execute(geomForClip, 2, 3);
+            Geometry geomForClipReduced = ST_ToMultiLine.execute(geomForClip);
             if (geomForClipReduced.isEmpty()) {
                 throw new SQLException("Only support [Multi]Polygon or [Multi]LineString as input geometry for clipping");
             }
             if (geomToClip.intersects(geomForClipReduced)) {
-                MultiLineString linesToClip = ST_ToMultiLine.execute(geomToClip);
-                Geometry lines_unions = OverlayNGRobust.overlay(linesToClip,
-                        ST_ToMultiLine.execute(geomForClipReduced), OverlayNG.UNION);
-                return OverlayOp.overlayOp(lines_unions, linesToClip, OverlayOp.INTERSECTION);
+                GeometryFactory factory = geomToClip.getFactory();
+                Geometry geom = ST_ToMultiLine.execute(factory.createGeometryCollection(new Geometry[]{OverlayNGRobust.overlay(geomToClip,
+                        geomForClipReduced, OverlayNG.INTERSECTION),
+                OverlayNGRobust.overlay(geomToClip,geomForClipReduced, OverlayNG.DIFFERENCE)}));
+                geom.setSRID(geomToClip.getSRID());
+                return geom;
             }
         } else {
             throw new SQLException("Only support [Multi]Polygon or [Multi]LineString as input geometry to clip");
