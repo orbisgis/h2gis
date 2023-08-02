@@ -134,7 +134,7 @@ public class DelaunayData {
                     if(dimension > 0) {
                         // Mixed geometry, try to unify sub-types
                         try {
-                            geom = ST_ToMultiLine.createMultiLineString(geom).union();
+                            geom = ST_ToMultiLine.execute(geom).union();
                         } catch (SQLException ex) {
                             throw new IllegalArgumentException(ex);
                         }
