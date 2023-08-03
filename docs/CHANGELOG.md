@@ -10,4 +10,5 @@
 + Add ST_LineSubstring and ST_LineInterpolatePoint functions
 + Add ST_MaximumInscribedCircle function
 + Extend ST_CollectionExtract to filter with one or two dimensions
-+ Add ST_Clip function to a [Multi]Polygon or [Multi]LineString geometry with another [Multi]Polygon or [Multi]LineString geometry 
++ Add ST_Clip function to a [Multi]Polygon or [Multi]LineString geometry with another [Multi]Polygon or [Multi]LineString geometry
++ Add two utilities to return a list of numeric columns or the first one

@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -452,6 +453,16 @@ public class JDBCUtilitiesTest {
         List<String> indexes2 = JDBCUtilities.getIndexNames(connection, table, "ID");         
         assertEquals(1, indexes2.size());
         assertTrue(indexes2.contains("TATA"));
+    }
+
+
+    @Test
+    public void testGetNumericColumns() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
+        st.execute("CREATE TABLE TEMPTABLE(id integer, name varchar, land float, id_land varchar)");
+        assertEquals(Arrays.asList("ID", "LAND"), JDBCUtilities.getNumericColumns(connection, TableLocation.parse("TEMPTABLE")));
+        assertEquals("ID", JDBCUtilities.getFirstNumericColumn(connection, TableLocation.parse("TEMPTABLE")));
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
     }
 
     private static class CustomDataSource implements DataSource {
