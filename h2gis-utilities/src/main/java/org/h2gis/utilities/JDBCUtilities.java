@@ -20,18 +20,17 @@
 package org.h2gis.utilities;
 
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
+import org.h2gis.utilities.wrapper.ConnectionWrapper;
+import org.h2gis.utilities.wrapper.DataSourceWrapper;
 
+import javax.sql.DataSource;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
-
-import org.h2gis.utilities.dbtypes.DBTypes;
-import org.h2gis.utilities.dbtypes.DBUtils;
-import org.h2gis.utilities.wrapper.ConnectionWrapper;
-import org.h2gis.utilities.wrapper.DataSourceWrapper;
 
 import static org.h2gis.utilities.dbtypes.DBTypes.*;
 import static org.h2gis.utilities.dbtypes.DBUtils.getDBType;
@@ -84,6 +83,7 @@ public class JDBCUtilities {
     public enum FUNCTION_TYPE {
         ALL, BUILT_IN, ALIAS
     }
+
     public static final String H2_DRIVER_NAME = "H2 JDBC Driver";
 
     private JDBCUtilities() {
@@ -120,8 +120,8 @@ public class JDBCUtilities {
      * Return true if table table contains field fieldName.
      *
      * @param connection Connection
-     * @param table a TableLocation
-     * @param fieldName Field name
+     * @param table      a TableLocation
+     * @param fieldName  Field name
      * @return True if the table contains the field
      * @throws SQLException
      */
@@ -133,8 +133,8 @@ public class JDBCUtilities {
      * Return true if table tableName contains field fieldName.
      *
      * @param connection Connection
-     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
-     * @param fieldName Field name
+     * @param tableName  a table name in the form CATALOG.SCHEMA.TABLE
+     * @param fieldName  Field name
      * @return True if the table contains the field
      * @throws SQLException
      */
@@ -163,7 +163,7 @@ public class JDBCUtilities {
      * Fetch the metadata, and check field name
      *
      * @param resultSetMetaData Active result set meta data.
-     * @param fieldName Field name, ignore case
+     * @param fieldName         Field name, ignore case
      * @return The field index [1-n]; -1 if the field is not found
      * @throws SQLException
      */
@@ -181,12 +181,12 @@ public class JDBCUtilities {
      * Check column name from its index
      *
      * @param resultSetMetaData Active result set meta data.
-     * @param columnIndex Column index
+     * @param columnIndex       Column index
      * @return The column name
      * @throws SQLException
      */
     public static String getColumnName(ResultSetMetaData resultSetMetaData, Integer columnIndex) throws SQLException {
-        int columnCount =resultSetMetaData.getColumnCount();
+        int columnCount = resultSetMetaData.getColumnCount();
         for (int columnId = 1; columnId <= columnCount; columnId++) {
             if (columnId == columnIndex) {
                 return resultSetMetaData.getColumnName(columnId);
@@ -196,8 +196,8 @@ public class JDBCUtilities {
     }
 
     /**
-     * @param connection Active connection to the database
-     * @param table a TableLocation
+     * @param connection  Active connection to the database
+     * @param table       a TableLocation
      * @param columnIndex Field ordinal position [1-n]
      * @return The field name, empty if the field position or table is not found
      * @throws SQLException If jdbc throws an error
@@ -207,8 +207,8 @@ public class JDBCUtilities {
     }
 
     /**
-     * @param connection Active connection to the database
-     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
+     * @param connection  Active connection to the database
+     * @param tableName   a table name in the form CATALOG.SCHEMA.TABLE
      * @param columnIndex Field ordinal position [1-n]
      * @return The field name, empty if the field position or table is not found
      * @throws SQLException If jdbc throws an error
@@ -232,7 +232,7 @@ public class JDBCUtilities {
      * Returns the list of all the column names of a table.
      *
      * @param connection Active connection to the database
-     * @param table a TableLocation
+     * @param table      a TableLocation
      * @return The list of field name.
      * @throws SQLException If jdbc throws an error
      */
@@ -244,7 +244,7 @@ public class JDBCUtilities {
      * Returns the list of all the column names of a table.
      *
      * @param connection Active connection to the database
-     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
+     * @param tableName  a table name in the form CATALOG.SCHEMA.TABLE
      * @return The list of field name.
      * @throws SQLException If jdbc throws an error
      */
@@ -256,7 +256,7 @@ public class JDBCUtilities {
                     "SELECT * FROM " + tableName + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
-                int columnCount =metadata.getColumnCount();
+                int columnCount = metadata.getColumnCount();
                 for (int columnId = 1; columnId <= columnCount; columnId++) {
                     fieldNameList.add(metadata.getColumnName(columnId));
                 }
@@ -273,7 +273,7 @@ public class JDBCUtilities {
      * Returns the list of all the column names and indexes of a table.
      *
      * @param connection Active connection to the database
-     * @param table a TableLocation
+     * @param table      a TableLocation
      * @return The list of field name.
      * @throws SQLException If jdbc throws an error
      */
@@ -285,7 +285,7 @@ public class JDBCUtilities {
      * Returns the list of all the column names and indexes of a table.
      *
      * @param connection Active connection to the database
-     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
+     * @param tableName  a table name in the form CATALOG.SCHEMA.TABLE
      * @return The list of field name.
      * @throws SQLException If jdbc throws an error
      */
@@ -297,7 +297,7 @@ public class JDBCUtilities {
                     "SELECT * FROM " + tableName + " LIMIT 0;");
             try {
                 ResultSetMetaData metadata = resultSet.getMetaData();
-                int columnCount =metadata.getColumnCount();
+                int columnCount = metadata.getColumnCount();
                 for (int columnId = 1; columnId <= columnCount; columnId++) {
                     fieldNameList.add(new Tuple<>(metadata.getColumnName(columnId), columnId));
                 }
@@ -313,9 +313,8 @@ public class JDBCUtilities {
     /**
      * Fetch the row count of a table.
      *
-     *
      * @param connection Active connection.
-     * @param table a TableLocation
+     * @param table      a TableLocation
      * @return Row count
      * @throws SQLException If the table does not exists, or sql request fail.
      */
@@ -326,9 +325,8 @@ public class JDBCUtilities {
     /**
      * Fetch the row count of a table.
      *
-     *
      * @param connection Active connection.
-     * @param tableName a table name in the form CATALOG.SCHEMA.TABLE
+     * @param tableName  a table name in the form CATALOG.SCHEMA.TABLE
      * @return Row count
      * @throws SQLException If the table does not exists, or sql request fail.
      */
@@ -354,7 +352,7 @@ public class JDBCUtilities {
      * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table
      * reference is a temporary table.
      *
-     * @param connection Active connection not closed by this method
+     * @param connection    Active connection not closed by this method
      * @param tableLocation Table reference
      * @return True if the provided table is temporary.
      * @throws SQLException If the table does not exists.
@@ -387,7 +385,7 @@ public class JDBCUtilities {
      * reference is a linked table.
      *
      * @param connection Active connection not closed by this method
-     * @param table TableLocation
+     * @param table      TableLocation
      * @return True if the provided table is linked.
      * @throws SQLException If the table does not exists.
      */
@@ -399,7 +397,7 @@ public class JDBCUtilities {
      * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table
      * reference is a linked table.
      *
-     * @param connection Active connection not closed by this method
+     * @param connection     Active connection not closed by this method
      * @param tableReference Table reference
      * @return True if the provided table is linked.
      * @throws SQLException If the table does not exists.
@@ -436,7 +434,7 @@ public class JDBCUtilities {
     }
 
     /**
-     * @param connection Connection
+     * @param connection    Connection
      * @param tableLocation table identifier
      * @return The integer primary key used for edition[1-n]; 0 if the source is
      * closed or if the table has no primary key or more than one column as
@@ -490,7 +488,7 @@ public class JDBCUtilities {
      * Method to fetch an integer primary key (name + index). Return null
      * otherwise
      *
-     * @param connection Connection
+     * @param connection    Connection
      * @param tableLocation table identifier
      * @return The name and the index of an integer primary key used for
      * edition[1-n]; 0 if the source is closed or if the table has no primary
@@ -543,7 +541,7 @@ public class JDBCUtilities {
     /**
      * Return true if the table exists.
      *
-     * @param connection Connection
+     * @param connection    Connection
      * @param tableLocation Table name
      * @return true if the table exists
      * @throws java.sql.SQLException
@@ -556,10 +554,10 @@ public class JDBCUtilities {
                 new String[]{"TABLE", "VIEW", "SYSTEM TABLE"});
         for (String matchTableName : tableNames) {
             TableLocation matchTableNameLocation = TableLocation.parse(matchTableName, tableLocation.getDbTypes());
-            if(tableLocation.getTable().equals(matchTableNameLocation.getTable()) &&
+            if (tableLocation.getTable().equals(matchTableNameLocation.getTable()) &&
                     ((tableLocation.getSchema().isEmpty() &&
                             matchTableNameLocation.getSchema().equalsIgnoreCase("public")) ||
-                            tableLocation.getSchema().equals(matchTableNameLocation.getSchema()) )) {
+                            tableLocation.getSchema().equals(matchTableNameLocation.getSchema()))) {
                 return true;
             }
         }
@@ -570,7 +568,7 @@ public class JDBCUtilities {
      * Return true if the table exists.
      *
      * @param connection Connection
-     * @param tableName Table name
+     * @param tableName  Table name
      * @return true if the table exists
      * @throws java.sql.SQLException
      */
@@ -582,10 +580,10 @@ public class JDBCUtilities {
     /**
      * Returns the list of table names.
      *
-     * @param connection Active connection to the database
+     * @param connection    Active connection to the database
      * @param tableLocation Table name
-     * @param types A list of table types, which must be from the list of table
-     * types returned from getTableTypes(), to include. null returns all types
+     * @param types         A list of table types, which must be from the list of table
+     *                      types returned from getTableTypes(), to include. null returns all types
      * @return The integer primary key used for edition[1-n]; 0 if the source is
      * closed or if the table has no primary key or more than one column as
      * primary key
@@ -609,24 +607,24 @@ public class JDBCUtilities {
     /**
      * Returns the list of table names.
      *
-     * @param connection Active connection to the database
-     * @param catalog A catalog name. Must match the catalog name as it is
-     * stored in the database. "" retrieves those without a catalog; null means
-     * that the catalog name should not be used to narrow the search
-     * @param schemaPattern A schema name pattern. Must match the schema name as
-     * it is stored in the database. "" retrieves those without a schema. null
-     * means that the schema name should not be used to narrow the search
+     * @param connection       Active connection to the database
+     * @param catalog          A catalog name. Must match the catalog name as it is
+     *                         stored in the database. "" retrieves those without a catalog; null means
+     *                         that the catalog name should not be used to narrow the search
+     * @param schemaPattern    A schema name pattern. Must match the schema name as
+     *                         it is stored in the database. "" retrieves those without a schema. null
+     *                         means that the schema name should not be used to narrow the search
      * @param tableNamePattern A table name pattern. Must match the table name
-     * as it is stored in the database
-     * @param types A list of table types, which must be from the list of table
-     * types returned from getTableTypes(), to include. null returns all types
+     *                         as it is stored in the database
+     * @param types            A list of table types, which must be from the list of table
+     *                         types returned from getTableTypes(), to include. null returns all types
      * @return The integer primary key used for edition[1-n]; 0 if the source is
      * closed or if the table has no primary key or more than one column as
      * primary key
      * @throws java.sql.SQLException
      */
     public static List<String> getTableNames(Connection connection, String catalog, String schemaPattern,
-            String tableNamePattern, String[] types) throws SQLException {
+                                             String tableNamePattern, String[] types) throws SQLException {
         List<String> tableList = new ArrayList<>();
         ResultSet rs = connection.getMetaData().getTables(catalog, schemaPattern, tableNamePattern, types);
         final DBTypes dbType = getDBType(connection);
@@ -645,8 +643,8 @@ public class JDBCUtilities {
      * from the database
      *
      * @param connection Connection
-     * @param table Name of the table containing the field.
-     * @param fieldName Name of the field containing the values.
+     * @param table      Name of the table containing the field.
+     * @param fieldName  Name of the field containing the values.
      * @return The list of distinct values of the field.
      * @throws java.sql.SQLException
      */
@@ -659,8 +657,8 @@ public class JDBCUtilities {
      * from the database
      *
      * @param connection Connection
-     * @param tableName Name of the table containing the field.
-     * @param fieldName Name of the field containing the values.
+     * @param tableName  Name of the table containing the field.
+     * @param fieldName  Name of the field containing the values.
      * @return The list of distinct values of the field.
      * @throws java.sql.SQLException
      */
@@ -687,7 +685,7 @@ public class JDBCUtilities {
      * A method to create an empty table (no columns)
      *
      * @param connection Connection
-     * @param table Table name
+     * @param table      Table name
      * @throws java.sql.SQLException
      */
     public static void createEmptyTable(Connection connection, TableLocation table) throws SQLException {
@@ -699,7 +697,7 @@ public class JDBCUtilities {
     /**
      * A method to create an empty table (no columns)
      *
-     * @param connection Connection
+     * @param connection     Connection
      * @param tableReference Table name
      * @throws java.sql.SQLException
      */
@@ -732,7 +730,6 @@ public class JDBCUtilities {
      * wrap the provided dataSource.
      *
      * @param dataSource H2 or PostGIS DataSource
-     *
      * @return Wrapped DataSource, with spatial methods
      */
     public static DataSource wrapSpatialDataSource(DataSource dataSource) {
@@ -755,7 +752,6 @@ public class JDBCUtilities {
      * wrap the provided connection.
      *
      * @param connection H2 or PostGIS Connection
-     *
      * @return Wrapped DataSource, with spatial methods
      */
     public static Connection wrapConnection(Connection connection) {
@@ -771,8 +767,7 @@ public class JDBCUtilities {
     }
 
     /**
-     *
-     * @param st Statement to cancel
+     * @param st              Statement to cancel
      * @param progressVisitor Progress to link with
      * @return call
      * {@link org.h2gis.api.ProgressVisitor#removePropertyChangeListener(java.beans.PropertyChangeListener)}
@@ -839,8 +834,8 @@ public class JDBCUtilities {
 
     /**
      * A simple method to generate a DDL create table command from a table name
-     *
-     *
+     * <p>
+     * <p>
      * Takes into account only data types
      *
      * @param connection
@@ -903,11 +898,9 @@ public class JDBCUtilities {
                                                 .append("(").append(geomMetadata.getGeometryType()).append(",").append(geomMetadata.getSRID()).append(")");
                                     }
                                 }
-                            }
-                            else if (columnTypeName.equalsIgnoreCase("decfloat")) {
+                            } else if (columnTypeName.equalsIgnoreCase("decfloat")) {
                                 builder.append(columnName).append(" FLOAT");
-                            }
-                            else {
+                            } else {
                                 builder.append(columnName).append(" ").append(columnTypeName);
                             }
                         }
@@ -930,7 +923,7 @@ public class JDBCUtilities {
 
     /**
      * A simple method to generate a DDL create table command from a table name
-     *
+     * <p>
      * Takes into account only data types
      *
      * @param connection
@@ -944,7 +937,7 @@ public class JDBCUtilities {
 
     /**
      * A simple method to generate a DDL create table command from a query
-     *
+     * <p>
      * Takes into account only data types
      *
      * @param outputTableName
@@ -959,7 +952,7 @@ public class JDBCUtilities {
     /**
      * A simple method to generate a DDL create table command from
      * ResultSetMetaData
-     *
+     * <p>
      * Takes into account only data types
      *
      * @param outputTableName
@@ -1002,11 +995,9 @@ public class JDBCUtilities {
                     builder.append(columnName).append(" ").append("DOUBLE PRECISION");
                 } else if (columnTypeName.toLowerCase().startsWith("geometry")) {
                     builder.append(columnName).append(" ").append(columnTypeName);
-                }
-                else if (columnTypeName.equalsIgnoreCase("decfloat")) {
+                } else if (columnTypeName.equalsIgnoreCase("decfloat")) {
                     builder.append(columnName).append(" FLOAT");
-                }
-                else {
+                } else {
                     builder.append(columnName).append(" ").append(columnTypeName);
                 }
             }
@@ -1022,7 +1013,7 @@ public class JDBCUtilities {
      * return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
-     * @param tableName Name of the table to check.
+     * @param tableName  Name of the table to check.
      * @param columnName Name of the column to check.
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1036,7 +1027,7 @@ public class JDBCUtilities {
      * indexed, return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
-     * @param table {@link TableLocation} of the table to check.
+     * @param table      {@link TableLocation} of the table to check.
      * @param columnName Name of the column to check.
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1062,7 +1053,7 @@ public class JDBCUtilities {
      * return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
-     * @param tableName Name of the table to check.
+     * @param tableName  Name of the table to check.
      * @param columnName Name of the column to check.
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1076,7 +1067,7 @@ public class JDBCUtilities {
      * return false otherwise.
      *
      * @param connection {@link Connection} containing the table to check.
-     * @param table {@link TableLocation} of the table to check.
+     * @param table      {@link TableLocation} of the table to check.
      * @param columnName Name of the column to check.
      * @return True if the given column is indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1129,7 +1120,7 @@ public class JDBCUtilities {
      * connection.
      *
      * @param connection Connection to access to the desired table.
-     * @param table Table containing the column to index.
+     * @param table      Table containing the column to index.
      * @param columnName Name of the column to index.
      * @return True if the column have been indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1150,7 +1141,7 @@ public class JDBCUtilities {
      * connection.
      *
      * @param connection Connection to access to the desired table.
-     * @param table Name of the table containing the column to index.
+     * @param table      Name of the table containing the column to index.
      * @param columnName Name of the column to index.
      * @return True if the column have been indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1164,7 +1155,7 @@ public class JDBCUtilities {
      * given connection.
      *
      * @param connection Connection to access to the desired table.
-     * @param table Table containing the column to index.
+     * @param table      Table containing the column to index.
      * @param columnName Name of the column to index.
      * @return True if the column have been indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1192,7 +1183,7 @@ public class JDBCUtilities {
      * given connection.
      *
      * @param connection Connection to access to the desired table.
-     * @param table Name of the table containing the column to index.
+     * @param table      Name of the table containing the column to index.
      * @param columnName Name of the column to index.
      * @return True if the column have been indexed, false otherwise.
      * @throws SQLException Exception thrown on SQL execution error.
@@ -1206,7 +1197,7 @@ public class JDBCUtilities {
      * connection.
      *
      * @param connection Connection to access to the desired table.
-     * @param table Table containing the column to drop index.
+     * @param table      Table containing the column to drop index.
      * @param columnName Name of the column to drop index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
@@ -1222,7 +1213,7 @@ public class JDBCUtilities {
      * Return the name of all indexes for a given table
      *
      * @param connection Connection to access to the desired table.
-     * @param table Table containing the column to get the index names.
+     * @param table      Table containing the column to get the index names.
      * @return a map with the index name and its column name
      * @throws SQLException
      */
@@ -1234,7 +1225,7 @@ public class JDBCUtilities {
      * Return the name of all indexes for a given table
      *
      * @param connection Connection to access to the desired table.
-     * @param table Table containing the column to get the index names.
+     * @param table      Table containing the column to get the index names.
      * @return a map with the index name and its column name
      * @throws SQLException
      */
@@ -1257,7 +1248,7 @@ public class JDBCUtilities {
      * Return the name of indexes for a given table and column
      *
      * @param connection Connection to access to the desired table.
-     * @param table Table containing the column to get the index names.
+     * @param table      Table containing the column to get the index names.
      * @param columnName Name of the column.
      * @return
      * @throws SQLException
@@ -1270,7 +1261,7 @@ public class JDBCUtilities {
      * Return the name of indexes for a given table and column
      *
      * @param connection Connection to access to the desired table.
-     * @param table Table containing the column to get the index names.
+     * @param table      Table containing the column to get the index names.
      * @param columnName Name of the column.
      * @return
      * @throws SQLException
@@ -1297,7 +1288,7 @@ public class JDBCUtilities {
      * connection.
      *
      * @param connection Connection to access to the desired table.
-     * @param table Name of the table containing the column to drop index.
+     * @param table      Name of the table containing the column to drop index.
      * @param columnName Name of the column to drop index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
@@ -1309,7 +1300,7 @@ public class JDBCUtilities {
      * Drop the all the indexes of the given table on the given connection.
      *
      * @param connection Connection to access to the desired table.
-     * @param table Table containing the column to drop index.
+     * @param table      Table containing the column to drop index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, TableLocation table) throws SQLException {
@@ -1327,10 +1318,147 @@ public class JDBCUtilities {
      * Drop the all the indexes of the given table on yhe given connection.
      *
      * @param connection Connection to access to the desired table.
-     * @param table Name of the table containing the column to drop index.
+     * @param table      Name of the table containing the column to drop index.
      * @throws SQLException Exception thrown on SQL execution error.
      */
     public static void dropIndex(Connection connection, String table) throws SQLException {
         dropIndex(connection, TableLocation.parse(table, getDBType(connection)));
+    }
+
+    /**
+     * Return a list of numeric column names
+     *
+     * @param resultSetMetaData the metadata of the table
+     * @return a list
+     * @throws SQLException
+     */
+    public static List<String> getNumericColumns(ResultSetMetaData resultSetMetaData) throws SQLException {
+        List<String> fieldNameList = new ArrayList<>();
+        int columnCount = resultSetMetaData.getColumnCount();
+        for (int columnId = 1; columnId <= columnCount; columnId++) {
+            if (isNumeric(resultSetMetaData.getColumnType(columnId))) {
+                fieldNameList.add(resultSetMetaData.getColumnName(columnId));
+            }
+        }
+        return fieldNameList;
+    }
+
+    /**
+     * Returns the list of all the numeric column names of a table.
+     *
+     * @param connection Active connection to the database
+     * @param table      a TableLocation
+     * @return The list of field name.
+     * @throws SQLException If jdbc throws an error
+     */
+    public static List<String> getNumericColumns(Connection connection, TableLocation table) throws SQLException {
+        return getNumericColumns(connection, table.toString());
+    }
+
+    /**
+     * Returns the list of all the numeric column names of a table.
+     *
+     * @param connection Active connection to the database
+     * @param tableName  a table name in the form CATALOG.SCHEMA.TABLE
+     * @return The list of field names.
+     * @throws SQLException If jdbc throws an error
+     */
+    public static List<String> getNumericColumns(Connection connection, String tableName) throws SQLException {
+        List<String> fieldNameList = new ArrayList<>();
+        final Statement statement = connection.createStatement();
+        try {
+            final ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + tableName + " LIMIT 0;");
+            try {
+                ResultSetMetaData metadata = resultSet.getMetaData();
+                int columnCount = metadata.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
+                    if (isNumeric(metadata.getColumnType(columnId))) {
+                        fieldNameList.add(metadata.getColumnName(columnId));
+                    }
+                }
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            statement.close();
+        }
+        return fieldNameList;
+    }
+
+    /**
+     * Return the first numeric column otherwise null
+     *
+     * @param resultSetMetaData the metadata of the table
+     * @return the name of the column
+     * @throws SQLException
+     */
+    public static String getFirstNumericColumn(ResultSetMetaData resultSetMetaData) throws SQLException {
+        int columnCount = resultSetMetaData.getColumnCount();
+        for (int columnId = 1; columnId <= columnCount; columnId++) {
+            if (isNumeric(resultSetMetaData.getColumnType(columnId))) {
+                return resultSetMetaData.getColumnName(columnId);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the first numeric column name of a table.
+     *
+     * @param connection Active connection to the database
+     * @param table      a TableLocation
+     * @return The first numeric column name .
+     * @throws SQLException If jdbc throws an error
+     */
+    public static String getFirstNumericColumn(Connection connection, TableLocation table) throws SQLException {
+        return getFirstNumericColumn(connection, table.toString());
+    }
+
+    /**
+     * Returns the first numeric column name of a table.
+     *
+     * @param connection Active connection to the database
+     * @param tableName  a table name in the form CATALOG.SCHEMA.TABLE
+     * @return The first numeric column name .
+     * @throws SQLException If jdbc throws an error
+     */
+    public static String getFirstNumericColumn(Connection connection, String tableName) throws SQLException {
+        final Statement statement = connection.createStatement();
+        try {
+            final ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + tableName + " LIMIT 0;");
+            try {
+                return getFirstNumericColumn(resultSet.getMetaData());
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            statement.close();
+        }
+    }
+
+
+    /**
+     * Return true is the SQL type is a numeric data type
+     *
+     * @param sqlType SQL type from {@link java.sql.Types}
+     * @return True if the type is numeric
+     */
+    public static boolean isNumeric(int sqlType) {
+        switch (sqlType) {
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+            case Types.BIGINT:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+            case Types.INTEGER:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.FLOAT:
+                return true;
+            default:
+                return false;
+        }
     }
 }
