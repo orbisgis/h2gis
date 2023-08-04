@@ -327,7 +327,9 @@ public class H2GISFunctions {
                 new ST_LineSubstring(),
                 new ST_LineInterpolatePoint(),
                 new ST_MaximumInscribedCircle(),
-                new ST_Clip()
+                new ST_Clip(),
+                new ST_ForcePolygonCW(),
+                new ST_ForcePolygonCCW()
         };
     }
 
