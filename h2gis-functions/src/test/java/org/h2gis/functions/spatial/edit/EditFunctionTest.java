@@ -114,4 +114,13 @@ public class EditFunctionTest {
         rs.close();
     }
 
+    @Test
+    public void testST_ForcePolygonCCW1() throws Exception {
+        String geom = "POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270))";
+        String resultGeom = "POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270))";
+        ResultSet rs = st.executeQuery("SELECT ST_ForcePolygonCCW('" +geom+ "'::GEOMETRY);");
+        assertTrue(rs.next());
+        assertGeometryEquals(resultGeom,  rs.getBytes(1));
+        rs.close();
+    }
 }
