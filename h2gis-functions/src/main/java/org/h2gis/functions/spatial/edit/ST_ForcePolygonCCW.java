@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author Erwan Bocher, CNRS, 2023
+ */
 public class ST_ForcePolygonCCW extends DeterministicScalarFunction {
 
 
