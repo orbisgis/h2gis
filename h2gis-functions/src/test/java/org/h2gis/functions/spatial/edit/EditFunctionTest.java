@@ -29,9 +29,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -70,17 +70,17 @@ public class EditFunctionTest {
         String resultGeom = "POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270))";
         ResultSet rs = st.executeQuery("SELECT ST_ForcePolygonCW('" +geom+ "'::GEOMETRY);");
         assertTrue(rs.next());
-        assertGeometryEquals(resultGeom,  rs.getBytes(1));
+        assertEquals(resultGeom,  rs.getString(1));
         rs.close();
     }
 
     @Test
     public void testST_ForcePolygonCW2() throws Exception {
         String geom = "POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270))";
-        String resultGeom = "POLYGON ((90 270, 90 200, 330 200, 330 270, 90 270))";
+        String resultGeom = "POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270))";
         ResultSet rs = st.executeQuery("SELECT ST_ForcePolygonCW('" +geom+ "'::GEOMETRY);");
         assertTrue(rs.next());
-        assertGeometryEquals(resultGeom,  rs.getBytes(1));
+        assertEquals(resultGeom,  rs.getString(1));
         rs.close();
     }
 
@@ -88,11 +88,10 @@ public class EditFunctionTest {
     public void testST_ForcePolygonCW3() throws Exception {
         String geom = "POLYGON ((90 270, 90 200, 330 200, 330 270, 90 270)," +
                 "  (160 250, 225 250, 225 218, 160 218, 160 250))";
-        String resultGeom = "POLYGON ((90 270, 90 200, 330 200, 330 270, 90 270)," +
-                "  (160 250, 225 250, 225 218, 160 218, 160 250))";
+        String resultGeom = "POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270), (160 250, 160 218, 225 218, 225 250, 160 250))";
         ResultSet rs = st.executeQuery("SELECT ST_ForcePolygonCW('" +geom+ "'::GEOMETRY);");
         assertTrue(rs.next());
-        assertGeometryEquals(resultGeom,  rs.getBytes(1));
+        assertEquals(resultGeom,  rs.getString(1));
         rs.close();
     }
 
@@ -103,24 +102,31 @@ public class EditFunctionTest {
                 "  LINESTRING (70 190, 84 178, 95 167, 104 160, 115 151, 124 145, 132 139, 130 140), \n" +
                 "  POINT (180 350), \n" +
                 "  POINT (270 320))";
-        String resultGeom = "GEOMETRYCOLLECTION (POLYGON ((90 270, 90 200, 330 200, 330 270, 90 270), \n" +
-                "  (160 250, 225 250, 225 218, 160 218, 160 250)), \n" +
-                "  LINESTRING (70 190, 84 178, 95 167, 104 160, 115 151, 124 145, 132 139, 130 140), \n" +
-                "  POINT (180 350), \n" +
-                "  POINT (270 320))";
+        String resultGeom = "GEOMETRYCOLLECTION (POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270), (160 250, 160 218, 225 218, 225 250, 160 250)), LINESTRING (70 190, 84 178, 95 167, 104 160, 115 151, 124 145, 132 139, 130 140), POINT (180 350), POINT (270 320))";
         ResultSet rs = st.executeQuery("SELECT ST_ForcePolygonCW('" +geom+ "'::GEOMETRY);");
         assertTrue(rs.next());
-        assertGeometryEquals(resultGeom,  rs.getBytes(1));
+        assertEquals(resultGeom,  rs.getString(1));
         rs.close();
     }
 
     @Test
     public void testST_ForcePolygonCCW1() throws Exception {
         String geom = "POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270))";
-        String resultGeom = "POLYGON ((90 270, 330 270, 330 200, 90 200, 90 270))";
+        String resultGeom = "POLYGON ((90 270, 90 200, 330 200, 330 270, 90 270))";
         ResultSet rs = st.executeQuery("SELECT ST_ForcePolygonCCW('" +geom+ "'::GEOMETRY);");
         assertTrue(rs.next());
-        assertGeometryEquals(resultGeom,  rs.getBytes(1));
+        assertEquals(resultGeom,  rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void testST_ForcePolygonCCW2() throws Exception {
+        String geom = "POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0)," +
+                "  (2 2, 4 2, 4 4, 2 4, 2 2))";
+        String resultGeom = "POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0), (2 2, 2 4, 4 4, 4 2, 2 2))";
+        ResultSet rs = st.executeQuery("SELECT ST_ForcePolygonCCW('" +geom+ "'::GEOMETRY);");
+        assertTrue(rs.next());
+        assertEquals(resultGeom,  rs.getString(1));
         rs.close();
     }
 }
