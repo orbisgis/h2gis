@@ -331,7 +331,8 @@ public class H2GISFunctions {
                 new ST_ForcePolygonCW(),
                 new ST_ForcePolygonCCW(),
                 new ST_MakeArcLine(),
-                new ST_MakeArcPolygon()
+                new ST_MakeArcPolygon(),
+                new ST_MinimumBoundingRadius()
         };
     }
 

@@ -15,3 +15,4 @@
 + Add ST_ForcePolygonCCW and ST_ForcePolygonCW functions
 + Add ST_MakeArcLine and ST_MakeArcPolygon functions
 + Fix ST_MakeEllipse to keep the SRID of the input point
++ Add ST_MinimumBoundingRadius function
