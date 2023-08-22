@@ -1097,4 +1097,13 @@ public class CreateFunctionTest {
                 "0.475280216520913 4.977359612865423, 0.3962497842839422 4.984273879759712, 0.3171195982828228 4.989933382359422, 0.2379095791187109 4.99433669591504, 0.158639667490338 4.997482711915925, 0.0793298191740397 4.999370638369375, 0.0000000000000003 5, 0 0))\n", rs.getObject(1));
         rs.close();
     }
+
+    @Test
+    public void test_ST_MinimumBoundingRadius1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT center, radius FROM ST_MinimumBoundingRadius('POLYGON((26426 65078,26531 65242,26075 65136,26096 65427,26426 65078))'::GEOMETRY);");
+        rs.next();
+        assertGeometryBarelyEquals("POINT(26284.8418027133 65267.1145090825)", rs.getObject(1));
+        assertEquals(247.436045591407D, rs.getDouble(2), 10-9);
+        rs.close();
+    }
 }
