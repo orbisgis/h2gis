@@ -71,7 +71,9 @@ public class ST_MakeEllipse extends DeterministicScalarFunction {
             GSF.setCentre(new Coordinate(p.getX(), p.getY()));
             GSF.setWidth(width);
             GSF.setHeight(height);
-            return GSF.createEllipse();
+            Polygon geom = GSF.createEllipse();
+            geom.setSRID(p.getSRID());
+            return geom;
         }
     }
 }
