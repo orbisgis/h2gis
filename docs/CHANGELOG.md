@@ -13,3 +13,5 @@
 + Add ST_Clip function to a [Multi]Polygon or [Multi]LineString geometry with another [Multi]Polygon or [Multi]LineString geometry
 + Add two utilities to return a list of numeric columns or the first one
 + Add ST_ForcePolygonCCW and ST_ForcePolygonCW functions
++ Add ST_MakeArcLine and ST_MakeArcPolygon functions
++ Fix ST_MakeEllipse to keep the SRID of the input point
