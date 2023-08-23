@@ -16,3 +16,4 @@
 + Add ST_MakeArcLine and ST_MakeArcPolygon functions
 + Fix ST_MakeEllipse to keep the SRID of the input point
 + Add ST_MinimumBoundingRadius function
++ Extend ST_MinimumBoundingRadius to support table or select query
