@@ -45,6 +45,35 @@ public class TableUtilities {
     /**
      * Copy fields from table into a {@link org.h2.tools.SimpleResultSet}
      *
+     * @param rs Result set that will receive columns
+     * @param metadata Import columns from this table
+     *
+     * @throws SQLException Error
+     */
+    public static void copyFields(SimpleResultSet rs, ResultSetMetaData metadata) throws SQLException {
+        int columnCount = metadata.getColumnCount();
+        for (int columnId = 1; columnId <= columnCount; columnId++) {
+            String type = metadata.getColumnTypeName(columnId);
+            String columnName =metadata.getColumnName(columnId);
+            String label = metadata.getColumnLabel(columnId);
+            if(label!=null){
+                columnName = label;
+            }
+            //TODO : workarround due to the geometry type signature returned by H2  eg. GEOMETRY(POLYGON)
+            if (type.toLowerCase().startsWith("geometry")) {
+                rs.addColumn(columnName, metadata.getColumnType(columnId),
+                        "GEOMETRY", metadata.getPrecision(columnId), metadata.getScale(columnId));
+            }
+            else{
+                rs.addColumn(columnName, metadata.getColumnType(columnId),
+                        type, metadata.getPrecision(columnId), metadata.getScale(columnId));
+            }
+        }
+    }
+
+    /**
+     * Copy fields from table into a {@link org.h2.tools.SimpleResultSet}
+     *
      * @param connection Active connection
      * @param rs Result set that will receive columns
      * @param tableLocation Import columns from this table
@@ -57,25 +86,7 @@ public class TableUtilities {
             final ResultSet resultSet = statement.executeQuery(
                     "SELECT * FROM " + tableLocation + " LIMIT 0;");
             try {
-                ResultSetMetaData metadata = resultSet.getMetaData();
-                int columnCount = metadata.getColumnCount();
-                for (int columnId = 1; columnId <= columnCount; columnId++) {
-                    String type = metadata.getColumnTypeName(columnId);
-                    String columnName =metadata.getColumnName(columnId);
-                    String label = metadata.getColumnLabel(columnId);
-                    if(label!=null){
-                        columnName = label;
-                    }
-                    //TODO : workarround due to the geometry type signature returned by H2  eg. GEOMETRY(POLYGON)
-                    if (type.toLowerCase().startsWith("geometry")) {
-                        rs.addColumn(columnName, metadata.getColumnType(columnId),
-                                "GEOMETRY", metadata.getPrecision(columnId), metadata.getScale(columnId));
-                    }
-                    else{
-                        rs.addColumn(columnName, metadata.getColumnType(columnId),
-                                type, metadata.getPrecision(columnId), metadata.getScale(columnId));
-                    }
-                }
+                copyFields(rs, resultSet.getMetaData());
             } finally {
                 resultSet.close();
             }
