@@ -1125,15 +1125,15 @@ public class CreateFunctionTest {
     public void test_ST_MinimumBoundingRadiusTableSelect() throws Exception {
         st.execute("DROP TABLE IF EXISTS tmp_geoms;"
                 +"CREATE TABLE tmp_geoms AS SELECT ST_BUFFER(ST_MAKEPOINT(X, X*10), 10) as the_geom, X as id FROM GENERATE_SERIES(1, 3);");
-        ResultSet rs = st.executeQuery(" select * from ST_MinimumBoundingRadius('(SELECT * FROM tmp_geoms where ID > 1)') order by id");
+        ResultSet rs = st.executeQuery(" select center, radius, id, the_geom from ST_MinimumBoundingRadius('(SELECT the_geom FROM tmp_geoms where ID > 1)') order by id");
+        assertEquals(4, rs.getMetaData().getColumnCount());
         while (rs.next()){
-            assertTrue(rs.getInt(1)<3);
-            assertNotNull(rs.getObject(2));
-            assertTrue(rs.getDouble(3)>0);
+            assertNotNull(rs.getObject("center"));
+            assertTrue(rs.getInt("id")<3);
+            assertNotNull(rs.getObject("the_geom"));
+            assertTrue(rs.getDouble("radius")>0);
         }
         rs.close();
         st.execute("DROP TABLE tmp_geoms;");
     }
-
-
 }
