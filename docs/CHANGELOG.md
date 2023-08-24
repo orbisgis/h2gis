@@ -17,3 +17,4 @@
 + Fix ST_MakeEllipse to keep the SRID of the input point
 + Add ST_MinimumBoundingRadius function
 + Extend ST_MinimumBoundingRadius to support table or select query
++ Extend ST_MinimumBoundingRadius to copy all fields when the input data is a table or a select query
