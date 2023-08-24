@@ -1113,9 +1113,9 @@ public class CreateFunctionTest {
         +"CREATE TABLE tmp_geoms AS SELECT ST_BUFFER(ST_MAKEPOINT(X, X*10), 10) FROM GENERATE_SERIES(1, 3);");
         ResultSet rs = st.executeQuery(" select * from ST_MinimumBoundingRadius('tmp_geoms') order by id");
         while (rs.next()){
-            assertTrue(rs.getInt(1)>=1);
-            assertNotNull(rs.getObject(2));
-            assertTrue(rs.getDouble(3)>0);
+            assertTrue(rs.getInt("id")>=1);
+            assertNotNull(rs.getObject("center"));
+            assertTrue(rs.getDouble("radius")>0);
         }
         rs.close();
         st.execute("DROP TABLE tmp_geoms;");
