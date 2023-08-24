@@ -24,6 +24,7 @@ import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.geom.Geometry;
@@ -45,6 +46,7 @@ public class MinimumBoundingRadiusRowSet implements SimpleRowSource {
     public ResultSet tableQuery;
     public int spatialFieldIndex;
     public int explodeId = 1;
+    private int columnCount;
 
     public MinimumBoundingRadiusRowSet(Connection connection, String tableName) {
         this.connection = connection;
@@ -53,27 +55,38 @@ public class MinimumBoundingRadiusRowSet implements SimpleRowSource {
 
     @Override
     public Object[] readRow() throws SQLException {
-        if(firstRow) {
+        if (firstRow) {
             reset();
         }
-        if(tableQuery.next()){
-            Geometry geomTable = (Geometry) tableQuery.getObject(spatialFieldIndex);
-            if(geomTable!=null) {
-                MinimumBoundingCircle mbc = new MinimumBoundingCircle(geomTable);
-                Geometry geom = geomTable.getFactory().createPoint(mbc.getCentre());
-                geom.setSRID(geomTable.getSRID());
-                return new Object[]{explodeId++, geom, mbc.getRadius()};
+        if (tableQuery.next()) {
+            Object[] objects = new Object[columnCount + 3];
+            Geometry centerGeom = null;
+            Double radiusGeom = null;
+            for (int i = 1; i <= columnCount; i++) {
+                if (i == spatialFieldIndex) {
+                    Geometry geomTable = (Geometry) tableQuery.getObject(spatialFieldIndex);
+                    if (geomTable != null) {
+                        MinimumBoundingCircle mbc = new MinimumBoundingCircle(geomTable);
+                        centerGeom = geomTable.getFactory().createPoint(mbc.getCentre());
+                        centerGeom.setSRID(geomTable.getSRID());
+                        radiusGeom = mbc.getRadius();
+                    }
+                    objects[i-1] = geomTable;
+                } else {
+                    objects[i-1] = tableQuery.getObject(i);
+                }
             }
-            else{
-                return new Object[]{explodeId++, null, null};
-            }
+            objects[columnCount] = explodeId++;
+            objects[columnCount + 1] = centerGeom;
+            objects[columnCount + 2] = radiusGeom;
+            return objects;
         }
         return null;
     }
 
     @Override
     public void close() {
-        if(tableQuery!=null) {
+        if (tableQuery != null) {
             try {
                 tableQuery.close();
                 tableQuery = null;
@@ -99,20 +112,47 @@ public class MinimumBoundingRadiusRowSet implements SimpleRowSource {
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
-        }else{
+        } else {
             TableLocation tableLocation = TableLocation.parse(tableName, DBUtils.getDBType(connection));
             spatialFieldIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableLocation).second();
             Statement st = connection.createStatement();
-            tableQuery = st.executeQuery("select * from "+ tableName);
+            tableQuery = st.executeQuery("select * from " + tableName);
         }
         firstRow = false;
+        ResultSetMetaData meta = tableQuery.getMetaData();
+        columnCount = meta.getColumnCount();
+
     }
 
-    public ResultSet getResultSet()  {
+    public ResultSet getResultSet() throws SQLException {
         SimpleResultSet srs = new SimpleResultSet(this);
-        srs.addColumn("ID", Types.INTEGER,10,0);
+        copyFields(srs);
+        srs.addColumn("ID", Types.INTEGER, 10, 0);
         srs.addColumn("CENTER", Types.OTHER, "GEOMETRY", 0, 0);
         srs.addColumn("RADIUS", Types.DOUBLE, 10, 0);
         return srs;
+    }
+
+    private void copyFields(SimpleResultSet srs) throws SQLException {
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableName);
+        if (matcher.find()) {
+            if (tableName.startsWith("(") && tableName.endsWith(")")) {
+                try (ResultSet rs = connection.createStatement().executeQuery(tableName)) {
+                    TableUtilities.copyFields(srs, rs.getMetaData());
+                } catch (SQLException e) {
+                    throw new SQLException(e);
+                }
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
+        } else {
+            try (ResultSet rs = connection.createStatement().executeQuery("select * from " + tableName)) {
+                TableUtilities.copyFields(srs, rs.getMetaData());
+            } catch (SQLException e) {
+                throw new SQLException(e);
+            }
+        }
     }
 }
