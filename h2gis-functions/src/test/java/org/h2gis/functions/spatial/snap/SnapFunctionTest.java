@@ -30,7 +30,6 @@ import java.sql.Statement;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 
 /**
- * @author Nicolas Fortin
  * @author Erwan Bocher, CNRS, 2023
  */
 public class SnapFunctionTest {
