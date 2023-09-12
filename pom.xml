@@ -91,6 +91,7 @@
         <postgresql-version>42.3.8</postgresql-version>
         <jna-version>0.4.0</jna-version>
         <cts-version>1.7.0</cts-version>
+        <geographiclib-version>2.0</geographiclib-version>
         <slf4j-version>1.7.36</slf4j-version>
 
         <!-- Plugins versions -->
@@ -199,6 +200,11 @@
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.enterprise</artifactId>
                 <version>${osgi-enterprise-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.geographiclib</groupId>
+                <artifactId>GeographicLib-Java</artifactId>
+                <version>${geographiclib-version}</version>
             </dependency>
 
             <!-- Test dependencies -->
