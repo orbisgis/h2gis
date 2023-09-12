@@ -67,6 +67,10 @@
             <artifactId>h2gis-utilities</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.geographiclib</groupId>
+            <artifactId>GeographicLib-Java</artifactId>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>

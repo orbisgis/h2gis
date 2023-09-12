@@ -72,6 +72,7 @@ import org.h2gis.functions.spatial.operators.*;
 import org.h2gis.functions.spatial.others.ST_Clip;
 import org.h2gis.functions.spatial.predicates.*;
 import org.h2gis.functions.spatial.properties.*;
+import org.h2gis.functions.spatial.snap.ST_Project;
 import org.h2gis.functions.spatial.snap.ST_Snap;
 import org.h2gis.functions.spatial.split.ST_LineIntersector;
 import org.h2gis.functions.spatial.split.ST_Split;
@@ -332,7 +333,8 @@ public class H2GISFunctions {
                 new ST_ForcePolygonCCW(),
                 new ST_MakeArcLine(),
                 new ST_MakeArcPolygon(),
-                new ST_MinimumBoundingRadius()
+                new ST_MinimumBoundingRadius(),
+                new ST_Project()
         };
     }
 
