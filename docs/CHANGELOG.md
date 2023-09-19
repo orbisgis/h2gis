@@ -19,3 +19,4 @@
 + Extend ST_MinimumBoundingRadius to support table or select query
 + Extend ST_MinimumBoundingRadius to copy all fields when the input data is a table or a select query
 + Add ST_Project function
++ Update H2 to 2.2.224 and SLFJ
