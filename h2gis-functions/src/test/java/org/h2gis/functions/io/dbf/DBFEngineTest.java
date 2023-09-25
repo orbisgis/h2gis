@@ -202,7 +202,7 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists sotchi");
         st.execute("CALL DBFREAD("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("sotchi.dbf").getPath())+", 'SOTCHI', 'cp1251');");
-        st.execute("CALL DBFWRITE('target/sotchi.dbf', 'SOTCHI', 'cp1251');");
+        st.execute("CALL DBFWRITE('target/sotchi.dbf', 'SOTCHI', 'cp1251', true);");
         st.execute("drop table if exists sotchi");
         st.execute("CALL FILE_TABLE('target/sotchi.dbf', 'SOTCHI_GOODHEADER');");
         // Check if fields name are OK
