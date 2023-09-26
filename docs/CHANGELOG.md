@@ -21,3 +21,4 @@
 + Add ST_Project function
 + Update H2 to 2.2.224 and SLFJ
 + Change the `h2gis-dist` main class from `org.h2.tools.Server` to `org.h2.tools.Console`
++ Set scope as test for slf4j-simple
