@@ -753,6 +753,9 @@ public class GeoJsonWriteDriver {
         if (!Double.isNaN(coordinate.getZ())) {
             gen.writeNumber(coordinate.getZ());
         }
+        if(!Double.isNaN(coordinate.getM())) {
+            gen.writeNumber(coordinate.getM());
+        }
         gen.writeEndArray();
     }
 
