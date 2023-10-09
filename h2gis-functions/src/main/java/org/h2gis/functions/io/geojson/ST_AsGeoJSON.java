@@ -134,6 +134,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
         if (!Double.isNaN(coord.z)) {
             sb.append(",").append(CoordinateUtils.round(coord.z, maxdecimaldigits));
         }
+        if (!Double.isNaN(coord.getM())) {
+            sb.append(",").append(CoordinateUtils.round(coord.getM(), maxdecimaldigits));
+        }
         sb.append("]}");
     }
 

@@ -23,9 +23,12 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import org.h2.util.geometry.EWKTUtils;
+import org.h2.util.geometry.JTSUtils;
 import org.h2.value.ValueGeometry;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.spatial.convert.ST_GeomFromWKB;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
@@ -77,7 +80,8 @@ public class GeoJsonReaderDriver {
 
     private Set finalGeometryTypes;
     private JsonEncoding jsonEncoding;
-    private boolean hasZ =false;
+
+    private int coordinateDimension = 2;
 
     /**
      * Driver to import a GeoJSON file into a spatial table.
@@ -281,14 +285,22 @@ public class GeoJsonReaderDriver {
             String finalGeometryType = GeoJsonField.GEOMETRY;
             if (finalGeometryTypes.size() == 1) {
                 finalGeometryType = (String) finalGeometryTypes.iterator().next();
-                createTable.append("THE_GEOM GEOMETRY(").append(hasZ?finalGeometryType+"Z":finalGeometryType).append(",").append(parsedSRID).append(")");
+                switch (coordinateDimension) {
+                    case 3:
+                        finalGeometryType+="Z";
+                        break;
+                    case 4:
+                        finalGeometryType+="ZM";
+                        break;
+                }
+                createTable.append("THE_GEOM GEOMETRY(").append(finalGeometryType).append(",").append(parsedSRID).append(")");
             }
             else{
                 createTable.append("THE_GEOM GEOMETRY(GEOMETRY,").append(parsedSRID).append(")");
             }
             cachedColumnIndex = new LinkedHashMap<>();
             StringBuilder insertTable = new StringBuilder("INSERT INTO ");
-            insertTable.append(tableLocation).append(" VALUES(ST_GeomFromWKB(?, ").append(parsedSRID).append(")");
+            insertTable.append(tableLocation).append(" VALUES(?");
 
             int i = 1;
             for (Map.Entry<String, Integer> columns : cachedColumnNames.entrySet()) {
@@ -706,8 +718,13 @@ public class GeoJsonReaderDriver {
         //We look for a z value
         jp.nextToken();
         if (jp.getCurrentToken() != JsonToken.END_ARRAY) {
+            jp.nextToken(); // exit array or M value
+            coordinateDimension = 3;
+        }
+        //We look for a m value
+        if (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             jp.nextToken(); // exit array
-            hasZ=true;
+            coordinateDimension = 4;
         }
         jp.nextToken();
     }
@@ -899,7 +916,7 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // FIELD_NAME type     
             jp.nextToken(); //VALUE_STRING Point
             String geometryType = jp.getText();
-            values[0] = parseGeometry(jp, geometryType);
+            values[0] = JTSUtils.geometry2ewkb(parseGeometry(jp, geometryType));
         }
     }
 
@@ -1320,6 +1337,17 @@ public class GeoJsonReaderDriver {
     }
 
     /**
+     * Fetch number at specified index but return default value if out of bounds
+     * @param coordinates Number array
+     * @param index Index to extract in array
+     * @param defaultValue Value to return if out of bounds
+     * @return
+     */
+    private static double getOrDefault(List<Double> coordinates, int index, double defaultValue) {
+        return index < coordinates.size() ? coordinates.get(index) : defaultValue;
+    }
+
+    /**
      * Parses a GeoJSON coordinate array and returns a JTS coordinate. The first
      * token corresponds to the first X value. The last token correponds to the
      * end of the coordinate array "]".
@@ -1333,25 +1361,30 @@ public class GeoJsonReaderDriver {
      * @return Coordinate
      */
     private Coordinate parseCoordinate(JsonParser jp) throws IOException {
+        List<Double> coordinates = new ArrayList<>();
         jp.nextToken();
-        double x = jp.getDoubleValue();// VALUE_NUMBER_FLOAT
-        jp.nextToken(); // second value
-        double y = jp.getDoubleValue();
-        Coordinate coord;
-        //We look for a z value
-        jp.nextToken();
-        if (jp.getCurrentToken() == JsonToken.END_ARRAY) {
-            if(hasZ) {
-                coord = new Coordinate(x, y, 0);
-            }else {
-                coord = new Coordinate(x, y);
-            }
-        } else {
-            double z = jp.getDoubleValue();
-            jp.nextToken(); // exit array
-            coord = new Coordinate(x, y, z);
+        while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
+            coordinates.add(jp.getDoubleValue());
+            jp.nextToken();
         }
-        jp.nextToken();
+        Coordinate coord;
+        if(coordinateDimension == 4) {
+            coord = new CoordinateXYZM(
+                    getOrDefault(coordinates, 0, 0),
+                    getOrDefault(coordinates, 1, 0),
+                    getOrDefault(coordinates, 2, 0),
+                    getOrDefault(coordinates, 3, 0));
+        } else if(coordinateDimension == 3) {
+            coord = new Coordinate(
+                    getOrDefault(coordinates, 0, 0),
+                    getOrDefault(coordinates, 1, 0),
+                    getOrDefault(coordinates, 2, 0));
+        } else {
+            coord = new Coordinate(
+                    getOrDefault(coordinates, 0, 0),
+                    getOrDefault(coordinates, 1, 0));
+        }
+        jp.nextToken(); // exit end array
         return coord;
     }
 
