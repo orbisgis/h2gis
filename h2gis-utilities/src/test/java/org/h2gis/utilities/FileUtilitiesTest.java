@@ -150,6 +150,8 @@ public class FileUtilitiesTest {
         }
         File tmpFile = File.createTempFile("test", ".txt", directory);
         assertTrue(tmpFile.exists());
+        File tmpFile2 = File.createTempFile("test2", ".txt", directory);
+        assertTrue(tmpFile2.exists());
         File outPutZip = new File("./target/output.zip");
         outPutZip.delete();
         FileUtilities.zip(directory, outPutZip);
@@ -171,13 +173,41 @@ public class FileUtilitiesTest {
         }
         File tmpFile = File.createTempFile("test", ".txt", directory);
         assertTrue(tmpFile.exists());
+        File subFolder = new File(directory.getAbsolutePath()+File.separator+"subFolder");
+        subFolder.mkdir();
+        File tmpFile2 = File.createTempFile("second_file", ".txt", subFolder);
+        assertTrue(tmpFile2.exists());
         File outPutZip = new File("./target/output.zip");
         outPutZip.delete();
         FileUtilities.zip(new File[]{tmpFile}, outPutZip);
         tmpFile.delete();
-        assertTrue(outPutZip.exists());        
-        FileUtilities.unzipFile(outPutZip, directory);
-        assertTrue(tmpFile.exists()); 
-    }   
-    
+        assertTrue(outPutZip.exists());
+        FileUtilities.unzip(outPutZip, directory);
+        assertTrue(tmpFile.exists());
+    }
+
+    @Test
+    public void zipUnZip() throws Exception {
+        File directory = new File("/tmp/directory");
+        if (directory.exists()) {
+            FileUtilities.deleteFiles(directory);
+        } else {
+            directory.mkdir();
+        }
+        File tmpFile = File.createTempFile("test", ".txt", directory);
+        assertTrue(tmpFile.exists());
+        File subFolder = new File(directory.getAbsolutePath()+File.separator+"subFolder");
+        subFolder.mkdir();
+        File tmpFile2 = File.createTempFile("second_file", ".txt", subFolder);
+        assertTrue(tmpFile2.exists());
+        File outputZip = new File(directory.toPath().getParent().toFile().getAbsolutePath() + File.separator + "directory.zip");
+        outputZip.delete();
+        FileUtilities.zip(directory);
+        assertTrue(outputZip.exists());
+        FileUtilities.deleteFiles(directory, true);
+        assertFalse(tmpFile.exists());
+        assertFalse(subFolder.exists());
+        FileUtilities.unzip(outputZip);
+     }
+
 }
