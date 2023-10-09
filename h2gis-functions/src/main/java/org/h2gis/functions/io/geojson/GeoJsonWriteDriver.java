@@ -89,7 +89,7 @@ public class GeoJsonWriteDriver {
      * @throws java.io.IOException
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
-        if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
+        if (FileUtilities.isExtensionWellFormated(fileName, "geojson")|| FileUtilities.isExtensionWellFormated(fileName, "json")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -319,7 +319,7 @@ public class GeoJsonWriteDriver {
         Matcher matcher = pattern.matcher(tableName);
         if (matcher.find()) {
             if (tableName.startsWith("(") && tableName.endsWith(")")) {
-                if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
+                if (FileUtilities.isExtensionWellFormated(fileName, "geojson")|| FileUtilities.isExtensionWellFormated(fileName, "json")) {
                     if (deleteFile) {
                         Files.deleteIfExists(fileName.toPath());
                     } else if (fileName.exists()) {
@@ -380,7 +380,7 @@ public class GeoJsonWriteDriver {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
+            if (FileUtilities.isExtensionWellFormated(fileName, "geojson")|| FileUtilities.isExtensionWellFormated(fileName, "json")) {
                 if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
                 } else if (fileName.exists()) {
