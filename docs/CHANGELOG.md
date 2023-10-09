@@ -24,3 +24,4 @@
 + Set scope as test for slf4j-simple
 + Zip and unzip functions with subfolders
 + GeoJson driver must be able to read json extension
++ GeoJson handle the M ordinate. The limitation is only ZM is supported (default Z value to 0 if M is given but not Z)
