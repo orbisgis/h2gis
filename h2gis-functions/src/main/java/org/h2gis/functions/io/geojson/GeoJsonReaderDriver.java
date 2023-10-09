@@ -104,7 +104,8 @@ public class GeoJsonReaderDriver {
      * @throws java.io.IOException
      */
     public String read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
-        if (fileName != null && fileName.getName().toLowerCase().endsWith(".geojson")) {
+        String fileNameLower = fileName.getName().toLowerCase();
+        if (fileName != null && (fileNameLower.endsWith(".geojson") || fileNameLower.endsWith(".json"))) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableLocation + " doesn't exist ");
             }

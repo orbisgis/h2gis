@@ -1325,4 +1325,22 @@ public class GeojsonImportExportTest {
             stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'DATA', true);");
         }
     }
+
+    @Test
+    public void testWriteReadJsonExtension() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            File folderOut = new File("target/");
+            String geojson = folderOut.getAbsolutePath() + File.separator + "mutilines.json";
+            stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS");
+            stat.execute("create table TABLE_MULTILINESTRINGS(the_geom GEOMETRY(MULTILINESTRING))");
+            stat.execute("insert into TABLE_MULTILINESTRINGS values( 'MULTILINESTRING ((90 220, 260 320, 280 200))')");
+            stat.execute("CALL GeoJsonWrite('" +geojson+ "', 'TABLE_MULTILINESTRINGS', true);");
+            stat.execute("CALL GeoJsonRead('" +geojson+ "', 'TABLE_MULTILINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTILINESTRINGS_READ;");
+            res.next();
+            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTILINESTRING ((90 220, 260 320, 280 200))")));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS_READ");
+        }
+    }
 }
