@@ -42,7 +42,7 @@ public class ST_Polygonize extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "polygonize";
+        return "execute";
     }
 
     /**
@@ -52,7 +52,7 @@ public class ST_Polygonize extends DeterministicScalarFunction {
      * @param geometry
      * @return 
      */
-    public static Geometry polygonize(Geometry geometry) {
+    public static Geometry execute(Geometry geometry) {
         if(geometry == null){
             return null;
         }

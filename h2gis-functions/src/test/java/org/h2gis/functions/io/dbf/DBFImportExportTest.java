@@ -187,7 +187,7 @@ public class DBFImportExportTest {
     @Test
     public void testWriteDecimal() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        File dbfFile = new File("target/area_export.dbf");
+        File dbfFile = new File("target/area_export2.dbf");
         stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
         stat.execute("create table area(id integer, val DECIMAL(13,3), descr CHAR(50))");
         double v1 = 40656458.41;

@@ -23,6 +23,9 @@ package org.h2gis.functions.spatial.operators;
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
 /**
  * Compute the difference between two Geometries.
@@ -35,7 +38,8 @@ public class ST_Difference extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Difference() {
-        addProperty(PROP_REMARKS, "Compute the difference between two Geometries");
+        addProperty(PROP_REMARKS, "Compute the difference between two Geometries.\n" +
+                "If the gridSize argument is provided, the inputs geometries are snapped to a grid of the given size.");;
     }
 
     @Override
@@ -55,6 +59,27 @@ public class ST_Difference extends DeterministicScalarFunction {
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return a.difference(b);
+        return OverlayNGRobust.overlay(a,b, OverlayNG.DIFFERENCE);
+    }
+
+    /**
+     * @param a Geometry instance.
+     * @param b Geometry instance
+     * @param gridSize size of a grid to snap the input geometries
+     * @return the difference between two geometries
+     */
+    public static Geometry difference(Geometry a,Geometry b, double gridSize) throws SQLException {
+        if(a==null || b==null) {
+            return null;
+        }
+        if(a.getSRID()!=b.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
+        if (gridSize >= 0) {
+            PrecisionModel pm = new PrecisionModel(1/gridSize);
+            return OverlayNG.overlay(a, b, OverlayNG.DIFFERENCE, pm);
+        } else {
+            return OverlayNGRobust.overlay(a, b, OverlayNG.DIFFERENCE);
+        }
     }
 }

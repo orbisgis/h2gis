@@ -140,6 +140,24 @@ public class FileUtilities {
         }
         return result;
     }
+
+    /**
+     * Unzip to a directory
+     *
+     * @param zipFile the zipped file
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void unzip(File zipFile) throws IOException {
+        Path parentDir = zipFile.toPath().getParent();
+        String fileName = zipFile.getName();
+        String withoutExtension = fileName.substring(0, fileName.lastIndexOf(".")).replace(".", "_");
+        File targetDir = parentDir.resolve(withoutExtension).toFile();
+        if(!targetDir.exists()){
+            targetDir.mkdir();
+        }
+        unzip(zipFile, targetDir);
+    }
     
     /**
      * Unzip to a directory
@@ -149,7 +167,7 @@ public class FileUtilities {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void unzipFile(File zipFile, File directory) throws IOException {
+    public static void unzip(File zipFile, File directory) throws IOException {
         if (directory == null) {
             throw new IOException("The directory cannot be null");
         }
@@ -177,15 +195,27 @@ public class FileUtilities {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
                 File newFile = newFile(directory, zipEntry);
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
+                if (zipEntry.isDirectory()) {
+                    if (!newFile.isDirectory() && !newFile.mkdirs()) {
+                        throw new IOException("Failed to create directory " + newFile);
+                    }
+                } else {
+                    // fix for Windows-created archives
+                    File parent = newFile.getParentFile();
+                    if (!parent.isDirectory() && !parent.mkdirs()) {
+                        throw new IOException("Failed to create directory " + parent);
+                    }
+
+                    // write file content
+                    FileOutputStream fos = new FileOutputStream(newFile);
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
                 }
-                fos.close();
                 zipEntry = zis.getNextEntry();
             }
-            zis.closeEntry();
         } finally {
             if (zis != null) {
                 zis.close();
@@ -264,6 +294,23 @@ public class FileUtilities {
                 out.close();
             }
         }
+    }
+
+    /**
+     * Zips the specified file or folder
+     *
+     * @param toZip
+     * @throws IOException
+     */
+    public static void zip(File toZip) throws IOException {
+        Path parentDir = toZip.toPath().getParent();
+        String fileName = toZip.getName();
+        int lastIndex = fileName.lastIndexOf(".");
+        if(lastIndex!=-1) {
+            fileName = fileName.substring(0, lastIndex).replace(".", "_");
+        }
+        Path targetDir = parentDir.resolve(fileName+".zip");
+        zip(toZip, targetDir.toFile());
     }
 
     /**

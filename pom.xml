@@ -5,7 +5,7 @@
     <!-- Maven Coordinates -->
     <groupId>org.orbisgis</groupId>
     <artifactId>h2gis-parent</artifactId>
-    <version>2.2.0-SNAPSHOT</version>
+    <version>2.2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
@@ -79,20 +79,22 @@
         <!-- Dependencies versions -->
         <commons-compress-version>1.21</commons-compress-version>
         <commons-io-version>2.11.0</commons-io-version>
-        <h2-version>2.1.214</h2-version>
+        <h2-version>2.2.224</h2-version>
         <jackson-core-version>2.13.2</jackson-core-version>
         <jts-version>1.19.0</jts-version>
-        <junit-version>5.8.2</junit-version>
+        <junit-version>5.9.2</junit-version>
         <osgi-compendium-version>5.0.0</osgi-compendium-version>
         <osgi-core-version>6.0.0</osgi-core-version>
         <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
-        <poly2tri-version>0.4.0</poly2tri-version>
+        <poly2tri-version>0.7.0-SNAPSHOT</poly2tri-version>
         <postgis-jdbc-version>2021.1.0</postgis-jdbc-version>
-        <jna-version>0.3.0</jna-version>
-        <cts-version>1.6.0</cts-version>
-        <slf4j-version>1.7.36</slf4j-version>
         <flatgeobuf-version>3.22.2</flatgeobuf-version>
-
+        <postgresql-version>42.6.0</postgresql-version>
+        <jna-version>0.5.0-SNAPSHOT</jna-version>
+        <cts-version>1.7.1-SNAPSHOT</cts-version>
+        <geographiclib-version>2.0</geographiclib-version>
+        <slf4j-version>2.0.9</slf4j-version>
+      
         <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>
         <maven-assembly-version>3.3.0</maven-assembly-version>
@@ -186,6 +188,11 @@
                 <version>${postgis-jdbc-version}</version>
             </dependency>
             <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql-version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
                 <version>${osgi-compendium-version}</version>
@@ -199,6 +206,11 @@
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.enterprise</artifactId>
                 <version>${osgi-enterprise-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.geographiclib</groupId>
+                <artifactId>GeographicLib-Java</artifactId>
+                <version>${geographiclib-version}</version>
             </dependency>
 
             <!-- Test dependencies -->

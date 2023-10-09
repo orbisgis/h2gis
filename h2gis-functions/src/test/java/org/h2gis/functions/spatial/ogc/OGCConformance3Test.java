@@ -677,7 +677,7 @@ public class OGCConformance3Test {
         assertTrue(rs.next());
         // OGC original: POLYGON ((56 34, 62 48, 84 48, 84 42, 56 34))
         // Here the polygon is the same but with a different points order
-        assertEquals("POLYGON ((62 48, 84 48, 84 42, 56 34, 62 48))", rs.getString(1));
+        GeometryAsserts.assertGeometryEquals("POLYGON ((62 48, 84 48, 84 42, 56 34, 62 48))", rs.getString(1));
     }
 
     /**
@@ -690,7 +690,7 @@ public class OGCConformance3Test {
         ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Union(shore, boundary)) FROM lakes, named_places " +
                 "WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Goose Island'");
         assertTrue(rs.next());
-        assertEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
+        GeometryAsserts.assertGeometryEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
     }
 
     /**
@@ -705,7 +705,7 @@ public class OGCConformance3Test {
         ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_SymDifference(shore, boundary)) FROM lakes, named_places " +
                 "WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Goose Island'");
         assertTrue(rs.next());
-        assertEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
+        GeometryAsserts.assertGeometryEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
     }
 
     /**

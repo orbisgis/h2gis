@@ -1325,4 +1325,59 @@ public class GeojsonImportExportTest {
             stat.execute("CALL GeoJsonWrite('target/lines.geojson', 'DATA', true);");
         }
     }
+
+    @Test
+    public void testWriteReadJsonExtension() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            File folderOut = new File("target/");
+            String geojson = folderOut.getAbsolutePath() + File.separator + "mutilines.json";
+            stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS");
+            stat.execute("create table TABLE_MULTILINESTRINGS(the_geom GEOMETRY(MULTILINESTRING))");
+            stat.execute("insert into TABLE_MULTILINESTRINGS values( 'MULTILINESTRING ((90 220, 260 320, 280 200))')");
+            stat.execute("CALL GeoJsonWrite('" +geojson+ "', 'TABLE_MULTILINESTRINGS', true);");
+            stat.execute("CALL GeoJsonRead('" +geojson+ "', 'TABLE_MULTILINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTILINESTRINGS_READ;");
+            res.next();
+            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTILINESTRING ((90 220, 260 320, 280 200))")));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS_READ");
+        }
+    }
+
+
+    @Test
+    public void testGeojsonPointXYZM() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+            stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINTZM))");
+            stat.execute("insert into TABLE_POINT values(1, 'POINTZM(1 2 5 1564184363)')");
+            ResultSet res = stat.executeQuery("SELECT ST_AsGeoJSON(the_geom) from TABLE_POINT;");
+            res.next();
+            assertEquals("{\"type\":\"Point\",\"coordinates\":[1.0,2.0,5.0,1.564184363E9]}", res.getString(1));
+            res.close();
+        }
+    }
+
+
+    @Test
+    public void testWriteReadXYZM() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+            stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINTZM))");
+            stat.execute("insert into TABLE_POINTS values( 'POINTZM(1 2 3 200)')");
+            stat.execute("insert into TABLE_POINTS values( 'POINTZM(10 200 2000 250)')");
+            stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS', true);");
+            stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
+            res.next();
+            assertEquals(3,((Geometry) res.getObject(1)).getCoordinate().getZ());
+            assertEquals(200,((Geometry) res.getObject(1)).getCoordinate().getM());
+            res.next();
+            assertEquals(2000,((Geometry) res.getObject(1)).getCoordinate().getZ());
+            assertEquals(250,((Geometry) res.getObject(1)).getCoordinate().getM());
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        }
+    }
 }

@@ -62,13 +62,17 @@ import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.ST_PrecisionReducer;
 import org.h2gis.functions.spatial.generalize.ST_Simplify;
 import org.h2gis.functions.spatial.generalize.ST_SimplifyPreserveTopology;
+import org.h2gis.functions.spatial.linear_referencing.ST_LineInterpolatePoint;
+import org.h2gis.functions.spatial.linear_referencing.ST_LineSubstring;
 import org.h2gis.functions.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.functions.spatial.mesh.ST_Delaunay;
 import org.h2gis.functions.spatial.mesh.ST_Tessellate;
 import org.h2gis.functions.spatial.mesh.ST_Voronoi;
 import org.h2gis.functions.spatial.operators.*;
+import org.h2gis.functions.spatial.others.ST_Clip;
 import org.h2gis.functions.spatial.predicates.*;
 import org.h2gis.functions.spatial.properties.*;
+import org.h2gis.functions.spatial.snap.ST_Project;
 import org.h2gis.functions.spatial.snap.ST_Snap;
 import org.h2gis.functions.spatial.split.ST_LineIntersector;
 import org.h2gis.functions.spatial.split.ST_Split;
@@ -319,7 +323,18 @@ public class H2GISFunctions {
                 new ST_SubDivide(),
                 new ST_MemSize(),
                 new ST_Multi(),
-                new ST_AsEWKB()
+                new ST_AsEWKB(),
+                new ST_ConcaveHull(),
+                new ST_LineSubstring(),
+                new ST_LineInterpolatePoint(),
+                new ST_MaximumInscribedCircle(),
+                new ST_Clip(),
+                new ST_ForcePolygonCW(),
+                new ST_ForcePolygonCCW(),
+                new ST_MakeArcLine(),
+                new ST_MakeArcPolygon(),
+                new ST_MinimumBoundingRadius(),
+                new ST_Project()
         };
     }
 

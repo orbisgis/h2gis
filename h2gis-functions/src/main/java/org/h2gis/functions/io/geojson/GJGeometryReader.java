@@ -84,7 +84,7 @@ public class GJGeometryReader {
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
-     * @param jsParser
+     * @param  jp
      * @throws IOException
      * @return Point
      */

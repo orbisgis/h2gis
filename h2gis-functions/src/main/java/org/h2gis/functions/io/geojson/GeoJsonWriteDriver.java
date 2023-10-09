@@ -89,7 +89,7 @@ public class GeoJsonWriteDriver {
      * @throws java.io.IOException
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
-        if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
+        if (FileUtilities.isExtensionWellFormated(fileName, "geojson")|| FileUtilities.isExtensionWellFormated(fileName, "json")) {
             if (deleteFile) {
                 Files.deleteIfExists(fileName.toPath());
             } else if (fileName.exists()) {
@@ -169,8 +169,9 @@ public class GeoJsonWriteDriver {
                 rowCount = rs.getRow();
                 rs.beforeFirst();
             }
+            ResultSetMetaData resultSetMetaData = rs.getMetaData();
             ProgressVisitor copyProgress = progress.subProcess(rowCount);
-            Tuple<String, Integer> geometryInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs.getMetaData());
+            Tuple<String, Integer> geometryInfo = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSetMetaData);
             JsonFactory jsonFactory = new JsonFactory();
             JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
 
@@ -178,7 +179,6 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("type", "FeatureCollection");
             try {
-                ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 cacheMetadata(resultSetMetaData);
                 //Read the first geometry to find its SRID
                 rs.next();
@@ -319,7 +319,7 @@ public class GeoJsonWriteDriver {
         Matcher matcher = pattern.matcher(tableName);
         if (matcher.find()) {
             if (tableName.startsWith("(") && tableName.endsWith(")")) {
-                if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
+                if (FileUtilities.isExtensionWellFormated(fileName, "geojson")|| FileUtilities.isExtensionWellFormated(fileName, "json")) {
                     if (deleteFile) {
                         Files.deleteIfExists(fileName.toPath());
                     } else if (fileName.exists()) {
@@ -380,7 +380,7 @@ public class GeoJsonWriteDriver {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            if (FileUtilities.isExtensionWellFormated(fileName, "geojson")) {
+            if (FileUtilities.isExtensionWellFormated(fileName, "geojson")|| FileUtilities.isExtensionWellFormated(fileName, "json")) {
                 if (deleteFile) {
                     Files.deleteIfExists(fileName.toPath());
                 } else if (fileName.exists()) {
@@ -752,6 +752,9 @@ public class GeoJsonWriteDriver {
         gen.writeNumber(coordinate.y);
         if (!Double.isNaN(coordinate.getZ())) {
             gen.writeNumber(coordinate.getZ());
+        }
+        if(!Double.isNaN(coordinate.getM())) {
+            gen.writeNumber(coordinate.getM());
         }
         gen.writeEndArray();
     }

@@ -43,7 +43,7 @@ public class ST_ToMultiLine extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "createMultiLineString";
+        return "execute";
     }
 
     /**
@@ -53,7 +53,7 @@ public class ST_ToMultiLine extends DeterministicScalarFunction {
      * @return A MultiLineString constructed from the given geometry's coordinates
      * @throws SQLException
      */
-    public static MultiLineString createMultiLineString(Geometry geom) throws SQLException {
+    public static MultiLineString execute(Geometry geom) throws SQLException {
         if (geom != null) {
             if (geom.getDimension() > 0) {
                 final List<LineString> lineStrings = new LinkedList<LineString>();
@@ -70,9 +70,7 @@ public class ST_ToMultiLine extends DeterministicScalarFunction {
 
     private static void toMultiLineString(final Geometry geometry,
                                           final List<LineString> lineStrings) throws SQLException {
-        if ((geometry instanceof Point) || (geometry instanceof MultiPoint)) {
-            throw new SQLException("Found a point! Cannot create a MultiLineString.");
-        } else if (geometry instanceof LineString) {
+        if (geometry instanceof LineString) {
             toMultiLineString((LineString) geometry, lineStrings);
         } else if (geometry instanceof Polygon) {
             toMultiLineString((Polygon) geometry, lineStrings);
