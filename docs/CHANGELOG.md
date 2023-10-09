@@ -23,3 +23,4 @@
 + Change the `h2gis-dist` main class from `org.h2.tools.Server` to `org.h2.tools.Console`
 + Set scope as test for slf4j-simple
 + Zip and unzip functions with subfolders
++ GeoJson driver must be able to read json extension
