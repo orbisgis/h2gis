@@ -167,8 +167,8 @@ public class FGBDriverFunction implements DriverFunction {
                     for(int columnId = 0; columnId < columnCount; columnId++) {
                         pst.setObject(columnId+1, fgbDriver.getField(rowId, columnId));
                     }
+                    pst.execute();
                 }
-                pst.execute();
             }
 
 

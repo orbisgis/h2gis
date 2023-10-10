@@ -1,5 +1,6 @@
 package org.h2gis.functions.io.fgb;
 
+import org.h2.util.geometry.EWKTUtils;
 import org.h2.util.geometry.JTSUtils;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -21,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -121,11 +123,12 @@ public class FGBImportExportTest {
                 while (geojsonRs.next()) {
                       assertTrue(fgbRs.next());
                       System.out.println(fgbRs.getString(2));
-//                      assertEquals(geojsonRs.getString(2), fgbRs.getString(2));
-//                      assertEquals(geojsonRs.getString(3), fgbRs.getString(3));
-//                      byte[] ewkbGeoJSON = JTSUtils.geometry2ewkb((Geometry) geojsonRs.getObject(0));
-//                      byte[] ewkbFGB = JTSUtils.geometry2ewkb((Geometry) fgbRs.getObject(0));
-//                      assertArrayEquals(ewkbGeoJSON, ewkbFGB);
+                      assertEquals(geojsonRs.getString(2), fgbRs.getString(2));
+                      assertEquals(geojsonRs.getString(3), fgbRs.getString(3));
+                      byte[] ewkbGeoJSON = JTSUtils.geometry2ewkb((Geometry) geojsonRs.getObject(1));
+                      byte[] ewkbFGB = JTSUtils.geometry2ewkb((Geometry) fgbRs.getObject(1));
+                      assertArrayEquals(ewkbGeoJSON, ewkbFGB, String.format(Locale.ROOT,"\n%s \n!=\n%s",
+                              EWKTUtils.ewkb2ewkt(ewkbGeoJSON), EWKTUtils.ewkb2ewkt(ewkbFGB)));
                 }
             }
         }
