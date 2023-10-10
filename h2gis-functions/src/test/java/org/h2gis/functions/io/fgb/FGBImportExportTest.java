@@ -114,6 +114,7 @@ public class FGBImportExportTest {
             stat.execute("CALL FGBRead('"+FGBImportExportTest.class.getResource("countries.fgb").getPath()+"', 'COUNTRIES_FGB', true);");
             stat.execute("CALL GEOJSONREAD('"+FGBImportExportTest.class.getResource("countries.geojson")+"', 'COUNTRIES_GEOJSON', true);");
         }
+        // Compare results
 
     }
 

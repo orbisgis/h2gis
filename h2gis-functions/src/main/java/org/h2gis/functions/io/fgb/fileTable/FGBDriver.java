@@ -53,7 +53,7 @@ public class FGBDriver implements FileDriver {
      */
     private long featuresOffset;
 
-    private Map<Integer, Long> rowIndexToFileLocation;
+    private NavigableMap<Integer, Long> rowIndexToFileLocation;
 
     /**
      * Init file header for DBF File
@@ -76,6 +76,7 @@ public class FGBDriver implements FileDriver {
         featuresOffset = headerMeta.offset + treeSize;
         srid = headerMeta.srid;
         rowIndexToFileLocation = new TreeMap<>();
+        currentRow = new Value[fieldCount];
     }
 
     public static String getGeometryFieldType(HeaderMeta headerMeta) throws SQLException {
@@ -143,15 +144,23 @@ public class FGBDriver implements FileDriver {
             if(rowId == 0) {
                 fileChannel.position(featuresOffset);
                 rowIdPrevious = -1;
+            } else if (rowId < rowIdPrevious || rowId > rowIdPrevious + 1) {
+                // We have to seek to the desired location
+                Integer lowerKey = rowIndexToFileLocation.floorKey((int)rowId);
+                if(lowerKey == null) {
+                    lowerKey = 0;
+                }
+                // Make our way until
             }
             if (rowIdPrevious + 1 == rowId) {
                 // Read the current row from the input stream
                 rowIdPrevious = rowId;
                 LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
                 featureSize = data.readInt();
-                rowIndexToFileLocation.put((int)rowId + 1, fileChannel.position());
                 byte[] bytes = new byte[featureSize];
                 data.readFully(bytes);
+                // fileChannelPosition is now at rowId + 1
+                rowIndexToFileLocation.put((int)rowId + 1, fileChannel.position());
                 ByteBuffer bb = ByteBuffer.wrap(bytes);
                 Feature feature = Feature.getRootAsFeature(bb);
                 Geometry geometry = feature.geometry();
@@ -164,9 +173,9 @@ public class FGBDriver implements FileDriver {
                             GeometryConversions.deserialize(geometry, geometryType);
                     if (jtsGeometry != null) {
                         jtsGeometry.setSRID(srid);
-                        return ValueGeometry.getFromGeometry(jtsGeometry);
+                        currentRow[geometryFieldIndex] = ValueGeometry.getFromGeometry(jtsGeometry);
                     } else {
-                        return ValueNull.INSTANCE;
+                        currentRow[geometryFieldIndex] = ValueNull.INSTANCE;
                     }
                 }
                 // Read columns
@@ -180,28 +189,28 @@ public class FGBDriver implements FileDriver {
                         byte type = columnMeta.type;
                         switch (type) {
                             case ColumnType.Bool:
-                                currentRow[propertyIndex] = ValueBoolean.get(propertiesBB.get() > 0);
+                                currentRow[propertyIndex + 1] = ValueBoolean.get(propertiesBB.get() > 0);
                                 break;
                             case ColumnType.Byte:
-                                currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.get());
+                                currentRow[propertyIndex + 1] = ValueSmallint.get(propertiesBB.get());
                                 break;
                             case ColumnType.Short:
-                                currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.getShort());
+                                currentRow[propertyIndex + 1] = ValueSmallint.get(propertiesBB.getShort());
                                 break;
                             case ColumnType.Int:
-                                currentRow[propertyIndex] = ValueInteger.get(propertiesBB.getInt());
+                                currentRow[propertyIndex + 1] = ValueInteger.get(propertiesBB.getInt());
                                 break;
                             case ColumnType.Long:
-                                currentRow[propertyIndex] = ValueBigint.get(propertiesBB.getLong());
+                                currentRow[propertyIndex + 1] = ValueBigint.get(propertiesBB.getLong());
                                 break;
                             case ColumnType.Double:
-                                currentRow[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
+                                currentRow[propertyIndex + 1] = ValueDouble.get(propertiesBB.getDouble());
                                 break;
                             case ColumnType.DateTime:
-                                currentRow[propertyIndex] = ValueDate.parse(readString(propertiesBB));
+                                currentRow[propertyIndex + 1] = ValueDate.parse(readString(propertiesBB));
                                 break;
                             case ColumnType.String:
-                                currentRow[propertyIndex] = ValueVarchar.get(readString(propertiesBB));
+                                currentRow[propertyIndex + 1] = ValueVarchar.get(readString(propertiesBB));
                                 break;
                             default:
                                 throw new RuntimeException("Unknown type");
@@ -209,7 +218,7 @@ public class FGBDriver implements FileDriver {
                     }
                 }
             }
-            return currentRow[columnId - 1];
+            return currentRow[columnId];
         } catch (IOException e) {
             throw new NoSuchElementException();
         }
