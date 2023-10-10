@@ -19,6 +19,7 @@
  */
 package org.h2gis.functions.io.fgb.fileTable;
 
+import com.google.common.io.LittleEndianDataInputStream;
 import org.h2.value.*;
 import org.h2gis.api.FileDriver;
 import org.wololo.flatgeobuf.*;
@@ -30,25 +31,29 @@ import org.wololo.flatgeobuf.generated.GeometryType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class FGBDriver implements FileDriver {
-
-
-    private File fgbFile;
     private HeaderMeta headerMeta;
     private int fieldCount;
-    private LittleEndianDataInputStream data;
     private int geometryFieldIndex = 0;
     private int srid = 0;
     private FileInputStream fis;
-    private Feature feature;
-    private long rowdid_previous = -1;
+    private FileChannel fileChannel;
+    private Value[] currentRow = new Value[0];
+    private long rowIdPrevious = -1;
+
+    /**
+     * Address of the first feature
+     */
+    private long featuresOffset;
+
+    private Map<Integer, Long> rowIndexToFileLocation;
 
     /**
      * Init file header for DBF File
@@ -58,22 +63,19 @@ public class FGBDriver implements FileDriver {
      */
     public void initDriverFromFile(File fgbFile) throws IOException {
         // Read columns from files metadata
-        this.fgbFile = fgbFile;
         fis = new FileInputStream(fgbFile);
+        this.fileChannel = fis.getChannel();
         headerMeta = HeaderMeta.read(fis);
         fieldCount = headerMeta.columns.size() + 1;
-        int treeSize =
+        long treeSize =
                 headerMeta.featuresCount > 0 && headerMeta.indexNodeSize > 0
-                        ? (int)
+                        ?
                         PackedRTree.calcSize(
-                                (int) headerMeta.featuresCount, headerMeta.indexNodeSize)
+                                (int)headerMeta.featuresCount, headerMeta.indexNodeSize)
                         : 0;
-        int featuresOffset = headerMeta.offset + treeSize;
+        featuresOffset = headerMeta.offset + treeSize;
         srid = headerMeta.srid;
-        data = new LittleEndianDataInputStream(fis);
-        if (treeSize > 0) {
-            skipNBytes(data, treeSize);
-        }
+        rowIndexToFileLocation = new TreeMap<>();
     }
 
     public static String getGeometryFieldType(HeaderMeta headerMeta) throws SQLException {
@@ -103,14 +105,6 @@ public class FGBDriver implements FileDriver {
 
     public HeaderMeta getHeader() {
         return headerMeta;
-    }
-
-    private void skipNBytes(InputStream stream, long skip) throws IOException {
-        long actual = 0;
-        long remaining = skip;
-        while (actual < remaining) {
-            remaining -= stream.skip(remaining);
-        }
     }
 
     @Override
@@ -146,15 +140,20 @@ public class FGBDriver implements FileDriver {
     public Value getField(long rowId, int columnId) throws IOException {
         int featureSize;
         try {
-            if (rowdid_previous == -1 || rowdid_previous != rowId) {
-                rowdid_previous = rowId;
+            if(rowId == 0) {
+                fileChannel.position(featuresOffset);
+                rowIdPrevious = -1;
+            }
+            if (rowIdPrevious + 1 == rowId) {
+                // Read the current row from the input stream
+                rowIdPrevious = rowId;
+                LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
                 featureSize = data.readInt();
+                rowIndexToFileLocation.put((int)rowId + 1, fileChannel.position());
                 byte[] bytes = new byte[featureSize];
                 data.readFully(bytes);
                 ByteBuffer bb = ByteBuffer.wrap(bytes);
-                feature = Feature.getRootAsFeature(bb);
-            }
-            if (columnId == geometryFieldIndex) {
+                Feature feature = Feature.getRootAsFeature(bb);
                 Geometry geometry = feature.geometry();
                 byte geometryType = headerMeta.geometryType;
                 if (geometry != null) {
@@ -170,32 +169,50 @@ public class FGBDriver implements FileDriver {
                         return ValueNull.INSTANCE;
                     }
                 }
-            }
-            int propertiesLength = feature.propertiesLength();
-            if (propertiesLength > 0) {
-                List<ColumnMeta> columns = headerMeta.columns;
-                ByteBuffer propertiesBB = feature.propertiesAsByteBuffer();
-                while (propertiesBB.hasRemaining()) {
-                    short i = propertiesBB.getShort();
-                    if (columnId - 1 == i) {
-                        ColumnMeta columnMeta = columns.get(i);
+                // Read columns
+                int propertiesLength = feature.propertiesLength();
+                if (propertiesLength > 0) {
+                    List<ColumnMeta> columns = headerMeta.columns;
+                    ByteBuffer propertiesBB = feature.propertiesAsByteBuffer();
+                    while (propertiesBB.hasRemaining()) {
+                        short propertyIndex = propertiesBB.getShort();
+                        ColumnMeta columnMeta = columns.get(propertyIndex);
                         byte type = columnMeta.type;
-                        if (type == ColumnType.Bool) return ValueBoolean.get(propertiesBB.get() > 0 ? true : false);
-                        else if (type == ColumnType.Byte) return ValueSmallint.get(propertiesBB.get());
-                        else if (type == ColumnType.Short) return ValueSmallint.get(propertiesBB.getShort());
-                        else if (type == ColumnType.Int) return ValueInteger.get(propertiesBB.getInt());
-                        else if (type == ColumnType.Long) return ValueBigint.get(propertiesBB.getLong());
-                        else if (type == ColumnType.Double) return ValueDouble.get(propertiesBB.getDouble());
-                        else if (type == ColumnType.DateTime) return ValueDate.parse(readString(propertiesBB));
-                        else if (type == ColumnType.String) return ValueVarchar.get(readString(propertiesBB));
-                        else throw new RuntimeException("Unknown type");
+                        switch (type) {
+                            case ColumnType.Bool:
+                                currentRow[propertyIndex] = ValueBoolean.get(propertiesBB.get() > 0);
+                                break;
+                            case ColumnType.Byte:
+                                currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.get());
+                                break;
+                            case ColumnType.Short:
+                                currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.getShort());
+                                break;
+                            case ColumnType.Int:
+                                currentRow[propertyIndex] = ValueInteger.get(propertiesBB.getInt());
+                                break;
+                            case ColumnType.Long:
+                                currentRow[propertyIndex] = ValueBigint.get(propertiesBB.getLong());
+                                break;
+                            case ColumnType.Double:
+                                currentRow[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
+                                break;
+                            case ColumnType.DateTime:
+                                currentRow[propertyIndex] = ValueDate.parse(readString(propertiesBB));
+                                break;
+                            case ColumnType.String:
+                                currentRow[propertyIndex] = ValueVarchar.get(readString(propertiesBB));
+                                break;
+                            default:
+                                throw new RuntimeException("Unknown type");
+                        }
                     }
                 }
             }
+            return currentRow[columnId - 1];
         } catch (IOException e) {
             throw new NoSuchElementException();
         }
-        return ValueNull.INSTANCE;
     }
 
     @Override
