@@ -22,20 +22,22 @@ package org.h2gis.functions.io.fgb;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
 import org.h2gis.utilities.URIUtilities;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class FGBWrite extends AbstractFunction implements ScalarFunction {
+public class FGBRead extends AbstractFunction implements ScalarFunction {
 
-    public FGBWrite() {
-        addProperty(PROP_REMARKS, "Export a spatial table to a FlatGeobuf file.\n "
-                + "\nFGBWrite(..."
+    public FGBRead() {
+        addProperty(PROP_REMARKS, "Import a a FlatGeobuf file into a spatial table.\n "
+                + "\nFGBRead(..."
                 + "\n Supported arguments :"
                 + "\n path of the file, table name"
-                + "\n path of the file, table name, true to delete the file if exists");
+                + "\n path of the file, table name, true to delete the table if exists");
     }
 
     @Override
@@ -55,9 +57,10 @@ public class FGBWrite extends AbstractFunction implements ScalarFunction {
      * @throws IOException
      * @throws SQLException
      */
-    public static void execute(Connection connection, String fileName, String tableReference, boolean deleteFile) throws SQLException, IOException {
-        FGBDriverFunction geobufDriverFunction = new FGBDriverFunction();
-        geobufDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), deleteFile, new EmptyProgressVisitor());
+    public static void execute(Connection connection, String fileName, String tableReference, boolean deleteTable) throws SQLException, IOException {
+        File file = URIUtilities.fileFromString(fileName);
+        FGBDriverFunction driver = new FGBDriverFunction();
+        driver.importFile(connection, tableReference, file, deleteTable ,new EmptyProgressVisitor());
     }
 
     /**

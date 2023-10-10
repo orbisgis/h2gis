@@ -36,6 +36,7 @@ public class FGBImportExportTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new FGBWrite(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new FGBRead(), "");
     }
 
     @AfterAll
@@ -51,7 +52,9 @@ public class FGBImportExportTest {
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)')");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)')");
 
-            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS; CREATE TABLE TABLE_POINTS (the_geom GEOMETRY(POINT)) as SELECT st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00) as the_geom  FROM GENERATE_SERIES(1, 10000);");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS; CREATE TABLE TABLE_POINTS (the_geom GEOMETRY(POINT))" +
+                    " as SELECT st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00) as the_geom" +
+                    "  FROM GENERATE_SERIES(1, 10000);");
             stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
 
            //stat.execute("CALL SHPWRITE('target/points.shp', 'TABLE_POINTS', true);");
@@ -100,6 +103,18 @@ public class FGBImportExportTest {
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("ID"));
         }
+    }
+
+    /**
+     * Use externally generated FGP and GeoJSON files from flatgeobuf repository
+     */
+    @Test
+    public void testExternalFGPImport() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL FGBRead('"+FGBImportExportTest.class.getResource("countries.fgb").getPath()+"', 'COUNTRIES_FGB', true);");
+            stat.execute("CALL GEOJSONREAD('"+FGBImportExportTest.class.getResource("countries.geojson")+"', 'COUNTRIES_GEOJSON', true);");
+        }
+
     }
 
     @Disabled
