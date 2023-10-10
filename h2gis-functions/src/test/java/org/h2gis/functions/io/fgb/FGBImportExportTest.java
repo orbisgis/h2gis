@@ -1,5 +1,6 @@
 package org.h2gis.functions.io.fgb;
 
+import org.h2.util.geometry.JTSUtils;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
@@ -17,11 +18,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FGBImportExportTest {
 
@@ -113,9 +114,21 @@ public class FGBImportExportTest {
         try (Statement stat = connection.createStatement()) {
             stat.execute("CALL FGBRead('"+FGBImportExportTest.class.getResource("countries.fgb").getPath()+"', 'COUNTRIES_FGB', true);");
             stat.execute("CALL GEOJSONREAD('"+FGBImportExportTest.class.getResource("countries.geojson")+"', 'COUNTRIES_GEOJSON', true);");
+            // Compare results
         }
-        // Compare results
-
+        try(ResultSet geojsonRs = connection.createStatement().executeQuery("SELECT the_geom, id, name FROM COUNTRIES_GEOJSON ORDER BY ID")) {
+            try(ResultSet fgbRs = connection.createStatement().executeQuery("SELECT the_geom, id, name FROM COUNTRIES_FGB ORDER BY ID")) {
+                while (geojsonRs.next()) {
+                      assertTrue(fgbRs.next());
+                      System.out.println(fgbRs.getString(2));
+//                      assertEquals(geojsonRs.getString(2), fgbRs.getString(2));
+//                      assertEquals(geojsonRs.getString(3), fgbRs.getString(3));
+//                      byte[] ewkbGeoJSON = JTSUtils.geometry2ewkb((Geometry) geojsonRs.getObject(0));
+//                      byte[] ewkbFGB = JTSUtils.geometry2ewkb((Geometry) fgbRs.getObject(0));
+//                      assertArrayEquals(ewkbGeoJSON, ewkbFGB);
+                }
+            }
+        }
     }
 
     @Disabled
