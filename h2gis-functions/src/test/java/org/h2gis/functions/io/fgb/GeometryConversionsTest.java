@@ -95,6 +95,27 @@ public class GeometryConversionsTest {
 
     }
 
+    @Test
+    public void testXYZM() throws IOException {
+        String expectedWKT = "POINT ZM (3 5 7 8)";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "LINESTRING ZM (3 5 7 4, 4 8 8 6, 6 9 10 8)";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "POLYGON ZM ((10 5 1 5, 10 10 2 4, 8 10 3 7, 8 5 4 2, 10 5 1 5))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "MULTIPOINT ZM ((3 5 1 8), (4 8 2 12), (6 9 3 44))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "MULTILINESTRING ZM ((3 5 1 4, 4 8 1 8, 6 9 2 12), (9 2 9 44, 1 2 8 55, 6 6 7 5), (10 1 2 6, 9 2 1 9, 8 3 3 12))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "MULTIPOLYGON ZM (((10 5 1 1, 10 10 2 66, 8 10 3 55, 8 5 4 4, 10 5 1 1)), ((5 5 1 5, 5 5 2 42, 4 5 3 41, 4 2 4 4, 5 5 1 5)))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+    }
+
     private static class MyPoint extends Point {
         public MyPoint(CoordinateSequence coordinates, GeometryFactory factory) {
             super(coordinates, factory);
