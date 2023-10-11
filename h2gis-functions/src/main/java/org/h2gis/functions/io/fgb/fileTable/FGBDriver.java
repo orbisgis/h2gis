@@ -20,9 +20,20 @@
 package org.h2gis.functions.io.fgb.fileTable;
 
 import com.google.common.io.LittleEndianDataInputStream;
-import org.h2.value.*;
+import org.h2.value.Value;
+import org.h2.value.ValueBigint;
+import org.h2.value.ValueBoolean;
+import org.h2.value.ValueDate;
+import org.h2.value.ValueDouble;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueInteger;
+import org.h2.value.ValueNull;
+import org.h2.value.ValueSmallint;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.FileDriver;
-import org.wololo.flatgeobuf.*;
+import org.wololo.flatgeobuf.ColumnMeta;
+import org.wololo.flatgeobuf.HeaderMeta;
+import org.wololo.flatgeobuf.PackedRTree;
 import org.wololo.flatgeobuf.generated.ColumnType;
 import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.Geometry;
@@ -35,8 +46,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.NavigableMap;
+import java.util.NoSuchElementException;
+import java.util.TreeMap;
 
 public class FGBDriver implements FileDriver {
     private HeaderMeta headerMeta;
@@ -79,31 +92,6 @@ public class FGBDriver implements FileDriver {
         currentRow = new Value[fieldCount];
     }
 
-    public static String getGeometryFieldType(HeaderMeta headerMeta) throws SQLException {
-        int fgbGeometryType = headerMeta.geometryType;
-        StringBuilder sfsGeometryType = new StringBuilder("GEOMETRY(");
-        if(fgbGeometryType > GeometryType.GeometryCollection) {
-            throw new SQLException("Unsupported geometry type: " +
-                    GeometryType.name(fgbGeometryType));
-        } else {
-            sfsGeometryType.append(GeometryType.names[fgbGeometryType]);
-        }
-        if(fgbGeometryType > GeometryType.Unknown && fgbGeometryType < GeometryType.GeometryCollection) {
-            // Z or ZM
-            if(headerMeta.hasZ) {
-                sfsGeometryType.append("Z");
-            }
-            if(headerMeta.hasM) {
-                sfsGeometryType.append("M");
-            }
-        }
-        // SRID
-        sfsGeometryType.append(",");
-        sfsGeometryType.append(headerMeta.srid);
-        sfsGeometryType.append(")");
-        return sfsGeometryType.toString();
-    }
-
     public HeaderMeta getHeader() {
         return headerMeta;
     }
@@ -115,16 +103,11 @@ public class FGBDriver implements FileDriver {
 
     @Override
     public int getEstimatedRowSize(long rowId) {
-        //TODO evaluate the row size
-        /*int totalSize = 0;
-        int fieldCount = getFieldCount();
-        for(int column = 0; column < fieldCount; column++) {
-
-
-            totalSize += dbaseFileReader.getLengthFor(column);
+        int totalSize = 0;
+        for(ColumnMeta column : headerMeta.columns) {
+            totalSize += column.width;
         }
-        return totalSize;*/
-        return 0;
+        return totalSize;
     }
 
     @Override
@@ -144,13 +127,24 @@ public class FGBDriver implements FileDriver {
             if(rowId == 0) {
                 fileChannel.position(featuresOffset);
                 rowIdPrevious = -1;
-            } else if (rowId < rowIdPrevious || rowId > rowIdPrevious + 1) {
+            } else if (rowId > rowIdPrevious + 1 || rowId < rowIdPrevious) {
                 // We have to seek to the desired location
                 Integer lowerKey = rowIndexToFileLocation.floorKey((int)rowId);
                 if(lowerKey == null) {
-                    lowerKey = 0;
+                    fileChannel.position(featuresOffset);
+                    rowIdPrevious = -1;
+                } else {
+                    fileChannel.position(rowIndexToFileLocation.get(lowerKey));
+                    rowIdPrevious = lowerKey - 1;
                 }
-                // Make our way until
+                // Make our way until rowId
+                while (rowIdPrevious + 1 < rowId) {
+                    LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
+                    featureSize = data.readInt();
+                    fileChannel.position(fileChannel.position() + featureSize);
+                    rowIdPrevious++;
+                    rowIndexToFileLocation.put((int)rowIdPrevious + 1, fileChannel.position());
+                }
             }
             if (rowIdPrevious + 1 == rowId) {
                 // Read the current row from the input stream

@@ -21,6 +21,7 @@ package org.h2gis.functions.io.fgb;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.fgb.fileTable.GeometryConversions;
 import org.h2gis.functions.io.utility.WriteBufferManager;
 import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
@@ -28,7 +29,6 @@ import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.Geometry;
 import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.Constants;
-import org.wololo.flatgeobuf.GeometryConversions;
 import org.wololo.flatgeobuf.HeaderMeta;
 import org.wololo.flatgeobuf.generated.ColumnType;
 import org.wololo.flatgeobuf.generated.Feature;
@@ -43,8 +43,11 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.*;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -111,6 +114,12 @@ public class FGBWriteDriver {
 
     }
 
+    private static void writeString(String value, WriteBufferManager bufferManager) throws IOException {
+        byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
+        bufferManager.putInt(stringBytes.length);
+        bufferManager.putBytes(stringBytes);
+    }
+
     private void fgbWrite(ProgressVisitor progress, String tableName, FileOutputStream outputStream) throws IOException, SQLException {
         try {
             DBTypes dbTypes = DBUtils.getDBType(connection);
@@ -126,7 +135,7 @@ public class FGBWriteDriver {
                     ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
 
                     ResultSetMetaData rsmd = rs.getMetaData();
-                    FlatBufferBuilder bufferBuilder = new FlatBufferBuilder(1024 * 128);
+                    FlatBufferBuilder bufferBuilder = new FlatBufferBuilder();
 
                     FileChannel channel = outputStream.getChannel();
 
@@ -143,7 +152,6 @@ public class FGBWriteDriver {
                         for (int i = 0; i < columnCount; i++) {
                             ColumnMeta column = header.columns.get(i);
                             Object value = rs.getObject(column.name);
-                            System.out.println(value);
                             if (value == null) {
                                 continue;
                             }
@@ -168,9 +176,15 @@ public class FGBWriteDriver {
                                     bufferManager.putLong((Long) value);
                                 }
                             } else if (type == ColumnType.String) {
-                                //TODO
+                                writeString(value.toString(), bufferManager);
                             } else if (type == ColumnType.DateTime) {
-                                //TODO
+                                if(value instanceof ZonedDateTime) {
+                                    // ISO 8601
+                                    String iso8601Date = ((ZonedDateTime)value).format(DateTimeFormatter.ISO_INSTANT);
+                                    writeString(iso8601Date, bufferManager);
+                                } else {
+                                    bufferManager.putInt(0);
+                                }
                             } else {
                                 throw new RuntimeException(
                                         "Cannot handle type " + value.getClass().getName());
@@ -192,9 +206,6 @@ public class FGBWriteDriver {
                         }
                         int featureOffset = Feature.createFeature(bufferBuilder, geometryOffset, propertiesOffset, 0);
                         bufferBuilder.finishSizePrefixed(featureOffset);
-
-                        // Closing is caller responsibility
-                        @SuppressWarnings("PMD.CloseResource")
                         WritableByteChannel channel_ = Channels.newChannel(outputStream);
                         ByteBuffer dataBuffer = bufferBuilder.dataBuffer();
                         while (dataBuffer.hasRemaining()) {
@@ -233,7 +244,7 @@ public class FGBWriteDriver {
      */
     private HeaderMeta writeHeader(FileOutputStream outputStream, FlatBufferBuilder bufferBuilder, long rowCount, GeometryMetaData geometryMetaData, ResultSetMetaData metadata) throws SQLException, IOException {
         outputStream.write(Constants.MAGIC_BYTES);
-        //Get the column informations
+        //Get the column information
         List<ColumnMeta> columns = new ArrayList<>();
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {

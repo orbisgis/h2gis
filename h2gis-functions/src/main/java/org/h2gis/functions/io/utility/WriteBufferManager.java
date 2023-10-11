@@ -163,6 +163,16 @@ public final class WriteBufferManager {
 		buffer.putLong(value);
 	}
 
+	public void putBytes(byte[] byteArray) throws IOException {
+		prepareToAddBytes(byteArray.length);
+		buffer.put(byteArray);
+	}
+
+	public void putBytes(byte[] byteArray, int offset, int length) throws IOException {
+		prepareToAddBytes(length);
+		buffer.put(byteArray, offset, length);
+	}
+
 	public void clear() {
 		buffer.clear();
 	}

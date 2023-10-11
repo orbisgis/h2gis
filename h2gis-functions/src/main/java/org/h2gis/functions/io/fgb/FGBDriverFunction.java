@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class FGBDriverFunction implements DriverFunction {
+    private static final int BATCH_MAX_SIZE = 100;
     public static String DESCRIPTION = "FlatGeoBuffer";
     public IMPORT_DRIVER_TYPE getImportDriverType() {
         return IMPORT_DRIVER_TYPE.COPY;
@@ -162,12 +163,28 @@ public class FGBDriverFunction implements DriverFunction {
                     Collections.nCopies(createTableData.columns.size(), "?")));
             preparedStatementQuery.append(")");
             int columnCount = fgbDriver.getFieldCount();
+            ProgressVisitor rowCopyProgress = progress.subProcess((int)fgbDriver.getRowCount());
+            long batchSize = 0;
+            connection.setAutoCommit(false);
             try(PreparedStatement pst = connection.prepareStatement(preparedStatementQuery.toString())) {
                 for(long rowId=0; rowId < fgbDriver.getRowCount(); rowId++) {
                     for(int columnId = 0; columnId < columnCount; columnId++) {
                         pst.setObject(columnId+1, fgbDriver.getField(rowId, columnId));
                     }
-                    pst.execute();
+                    pst.addBatch();
+                    batchSize++;
+                    rowCopyProgress.endStep();
+                    if (batchSize >= BATCH_MAX_SIZE) {
+                        pst.executeBatch();
+                        connection.commit();
+                        pst.clearBatch();
+                        batchSize = 0;
+                    }
+                }
+                if (batchSize > 0) {
+                    pst.executeBatch();
+                    connection.commit();
+                    pst.clearBatch();
                 }
             }
 
