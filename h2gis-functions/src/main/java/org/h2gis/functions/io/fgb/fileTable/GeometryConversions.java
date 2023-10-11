@@ -215,11 +215,11 @@ public class GeometryConversions {
         for (int i = 0; i < xyLength; i = i + 2) {
             if(c < geometry.mLength()) {
                 coordinates[c++] = new CoordinateXYZM(geometry.xy(i), geometry.xy(i + 1),
-                        c < geometry.zLength() ? geometry.z(c) : Coordinate.NULL_ORDINATE,
-                        c < geometry.mLength() ? geometry.m(c) : Coordinate.NULL_ORDINATE);
+                        (i >> 1) < geometry.zLength() ? geometry.z((i >> 1)) : Coordinate.NULL_ORDINATE,
+                        (i >> 1) < geometry.mLength() ? geometry.m((i >> 1)) : Coordinate.NULL_ORDINATE);
             } else {
                 coordinates[c++] = new Coordinate(geometry.xy(i), geometry.xy(i + 1),
-                        c < geometry.zLength() ? geometry.z(c) : Coordinate.NULL_ORDINATE);
+                        (i >> 1) < geometry.zLength() ? geometry.z((i >> 1)) : Coordinate.NULL_ORDINATE);
             }
         }
 

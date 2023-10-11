@@ -65,8 +65,8 @@ public class GeometryConversionsTest {
 
     @Test
     public void testXYZ() throws IOException {
-        String expectedWKT = "POLYGONZ ((10 5 1, 10 10 2, 8 10 3, 8 5 4, 10 5 1))";
-        System.out.println(serializeDeserializeRound(expectedWKT));
+        String expectedWKT = "POLYGON Z ((10 5 1, 10 10 2, 8 10 3, 8 5 4, 10 5 1))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
     }
 
     private static class MyPoint extends Point {
