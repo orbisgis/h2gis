@@ -48,11 +48,12 @@ public class GeometryConversionsTest {
     private static String serializeDeserializeRound(String ewkt) throws IOException {
         Geometry geom = JTSUtils.ewkb2geometry(EWKTUtils.ewkt2ewkb(ewkt));
         FlatBufferBuilder flatBufferBuilder = new FlatBufferBuilder();
-        int geometryOffset = GeometryConversions.serialize(flatBufferBuilder, geom, (byte)GeometryType.Unknown);
+        byte GeomType = GeometryConversions.toGeometryType(geom.getClass());
+        int geometryOffset = GeometryConversions.serialize(flatBufferBuilder, geom, GeomType);
         flatBufferBuilder.finish(geometryOffset);
         org.wololo.flatgeobuf.generated.Geometry fgbGeom = org.wololo.flatgeobuf.generated.Geometry.
                 getRootAsGeometry(flatBufferBuilder.dataBuffer());
-        Geometry geomJTSOutput = GeometryConversions.deserialize(fgbGeom, GeometryType.Polygon);
+        Geometry geomJTSOutput = GeometryConversions.deserialize(fgbGeom, GeomType);
         if(geomJTSOutput == null) {
             throw new IOException("Null geometry");
         }
@@ -65,8 +66,33 @@ public class GeometryConversionsTest {
 
     @Test
     public void testXYZ() throws IOException {
-        String expectedWKT = "POLYGON Z ((10 5 1, 10 10 2, 8 10 3, 8 5 4, 10 5 1))";
+        String expectedWKT = "POINT Z (3 5 7)";
         assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "LINESTRING Z (3 5 7, 4 8 8, 6 9 10)";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "POLYGON Z ((10 5 1, 10 10 2, 8 10 3, 8 5 4, 10 5 1))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "MULTIPOINT Z ((3 5 1), (4 8 2), (6 9 3))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "MULTILINESTRING Z ((3 5 1, 4 8 1, 6 9 2), (9 2 9, 1 2 8, 6 6 7), (10 1 2, 9 2 1, 8 3 3))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "MULTIPOLYGON Z (((10 5 1, 10 10 2, 8 10 3, 8 5 4, 10 5 1)), ((5 5 1, 5 5 2, 4 5 3, 4 2 4, 5 5 1)))";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "POINT Z EMPTY";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "LINESTRING Z EMPTY";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
+        expectedWKT = "POLYGON Z EMPTY";
+        assertEquals(expectedWKT, serializeDeserializeRound(expectedWKT));
+
     }
 
     private static class MyPoint extends Point {
