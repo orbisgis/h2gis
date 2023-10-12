@@ -61,6 +61,8 @@ public class FGBDriver implements FileDriver {
     private Value[] currentRow = new Value[0];
     private long rowIdPrevious = -1;
 
+    private boolean cacheRowAddress = true;
+
     /**
      * Address of the first feature
      */
@@ -92,6 +94,19 @@ public class FGBDriver implements FileDriver {
         currentRow = new Value[fieldCount];
     }
 
+    public boolean isCacheRowAddress() {
+        return cacheRowAddress;
+    }
+
+    /**
+     * @param cacheRowAddress If true the feature file address will be cached in order to reduce random access time.
+     *                      If the file will be read sequentially only you can disable the cache in order
+     *                      to reduce the memory footprint
+     */
+    public void setCacheRowAddress(boolean cacheRowAddress) {
+        this.cacheRowAddress = cacheRowAddress;
+    }
+
     public HeaderMeta getHeader() {
         return headerMeta;
     }
@@ -120,6 +135,27 @@ public class FGBDriver implements FileDriver {
         if (fis != null) fis.close();
     }
 
+    /**
+     * Using the Spatial index it is possible to quickly cache the file address of all features.
+     * Using this function before doing a random access should reduce the access time.
+     * @throws IOException
+     */
+    public void cacheFeatureAddressFromIndex() throws IOException {
+        if(headerMeta.indexNodeSize > 0) {
+            fileChannel.position(headerMeta.offset);
+            LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
+            long[] fids = new long[(int) headerMeta.featuresCount];
+            for (long id = 0; id < fids.length; id++) {
+                fids[(int) id] = id;
+            }
+            long[] featuresAddress = PackedRTree.readFeatureOffsets(data, fids, headerMeta);
+            for (int i = 0, featuresAddressLength = featuresAddress.length; i < featuresAddressLength; i++) {
+                long address = featuresAddress[i];
+                rowIndexToFileLocation.put(i, address + featuresOffset);
+            }
+        }
+    }
+
     @Override
     public Value getField(long rowId, int columnId) throws IOException {
         int featureSize;
@@ -143,7 +179,9 @@ public class FGBDriver implements FileDriver {
                     featureSize = data.readInt();
                     fileChannel.position(fileChannel.position() + featureSize);
                     rowIdPrevious++;
-                    rowIndexToFileLocation.put((int)rowIdPrevious + 1, fileChannel.position());
+                    if(cacheRowAddress) {
+                        rowIndexToFileLocation.put((int) rowIdPrevious + 1, fileChannel.position());
+                    }
                 }
             }
             if (rowIdPrevious + 1 == rowId) {
@@ -154,7 +192,9 @@ public class FGBDriver implements FileDriver {
                 byte[] bytes = new byte[featureSize];
                 data.readFully(bytes);
                 // fileChannelPosition is now at rowId + 1
-                rowIndexToFileLocation.put((int)rowId + 1, fileChannel.position());
+                if(cacheRowAddress) {
+                    rowIndexToFileLocation.put((int) rowId + 1, fileChannel.position());
+                }
                 ByteBuffer bb = ByteBuffer.wrap(bytes);
                 Feature feature = Feature.getRootAsFeature(bb);
                 Geometry geometry = feature.geometry();
@@ -181,30 +221,33 @@ public class FGBDriver implements FileDriver {
                         short propertyIndex = propertiesBB.getShort();
                         ColumnMeta columnMeta = columns.get(propertyIndex);
                         byte type = columnMeta.type;
+                        if(propertyIndex >= geometryFieldIndex) {
+                            propertyIndex += 1;
+                        }
                         switch (type) {
                             case ColumnType.Bool:
-                                currentRow[propertyIndex + 1] = ValueBoolean.get(propertiesBB.get() > 0);
+                                currentRow[propertyIndex] = ValueBoolean.get(propertiesBB.get() > 0);
                                 break;
                             case ColumnType.Byte:
-                                currentRow[propertyIndex + 1] = ValueSmallint.get(propertiesBB.get());
+                                currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.get());
                                 break;
                             case ColumnType.Short:
-                                currentRow[propertyIndex + 1] = ValueSmallint.get(propertiesBB.getShort());
+                                currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.getShort());
                                 break;
                             case ColumnType.Int:
-                                currentRow[propertyIndex + 1] = ValueInteger.get(propertiesBB.getInt());
+                                currentRow[propertyIndex] = ValueInteger.get(propertiesBB.getInt());
                                 break;
                             case ColumnType.Long:
-                                currentRow[propertyIndex + 1] = ValueBigint.get(propertiesBB.getLong());
+                                currentRow[propertyIndex] = ValueBigint.get(propertiesBB.getLong());
                                 break;
                             case ColumnType.Double:
-                                currentRow[propertyIndex + 1] = ValueDouble.get(propertiesBB.getDouble());
+                                currentRow[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
                                 break;
                             case ColumnType.DateTime:
-                                currentRow[propertyIndex + 1] = ValueDate.parse(readString(propertiesBB));
+                                currentRow[propertyIndex] = ValueDate.parse(readString(propertiesBB));
                                 break;
                             case ColumnType.String:
-                                currentRow[propertyIndex + 1] = ValueVarchar.get(readString(propertiesBB));
+                                currentRow[propertyIndex] = ValueVarchar.get(readString(propertiesBB));
                                 break;
                             default:
                                 throw new RuntimeException("Unknown type");
@@ -228,5 +271,12 @@ public class FGBDriver implements FileDriver {
             byte[] stringBytes = new byte[length];
             bb.get(stringBytes, 0, length);
             return  new String(stringBytes, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * @return Field index of the geometry when using the method getField
+     */
+    public int getGeometryFieldIndex() {
+        return geometryFieldIndex;
     }
 }

@@ -1,22 +1,27 @@
 package org.h2gis.functions.io.fgb;
 
-import com.google.flatbuffers.ArrayReadWriteBuf;
 import com.google.flatbuffers.FlatBufferBuilder;
-import com.google.flatbuffers.FlexBuffers;
-import com.google.flatbuffers.ReadBuf;
 import org.h2.util.geometry.EWKTUtils;
 import org.h2.util.geometry.JTSUtils;
 import org.h2gis.functions.io.fgb.fileTable.GeometryConversions;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTWriter;
-import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.GeometryType;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Date;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Jared Erickson

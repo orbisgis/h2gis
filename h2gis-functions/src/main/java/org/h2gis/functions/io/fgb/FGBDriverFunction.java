@@ -22,18 +22,14 @@ package org.h2gis.functions.io.fgb;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.table.Column;
 import org.h2.util.ParserUtil;
-import org.h2.value.Value;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.URIUtilities;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
-import org.wololo.flatgeobuf.HeaderMeta;
-import org.wololo.flatgeobuf.generated.GeometryType;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,10 +37,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 public class FGBDriverFunction implements DriverFunction {
     private static final int BATCH_MAX_SIZE = 100;
@@ -132,6 +125,7 @@ public class FGBDriverFunction implements DriverFunction {
             }
             FGBEngine fgbEngine = new FGBEngine();
             FGBDriver fgbDriver = fgbEngine.createDriver(fileName, Collections.singletonList(options));
+            fgbDriver.setCacheRowAddress(false); // we will read the file sequentially, it is useless to cache feature location
             CreateTableData createTableData = new CreateTableData();
             fgbEngine.feedCreateTableData(fgbDriver, createTableData);
             StringBuilder createTableQuery = new StringBuilder("CREATE TABLE ");

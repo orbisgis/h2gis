@@ -20,11 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Locale;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -149,26 +151,48 @@ public class FGBImportExportTest {
         }
     }
 
+    @Test
+    public void testFGPIndex() throws IOException {
+        FGBDriver fgbDriver = new FGBDriver();
+        File file = URIUtilities.fileFromString(Objects.requireNonNull(FGBImportExportTest.class.getResource(
+                "countries.fgb")).getFile());
+        fgbDriver.initDriverFromFile(file);
+        fgbDriver.cacheFeatureAddressFromIndex();
+
+
+        assertEquals(179, fgbDriver.getRowCount());
+        assertEquals(3, fgbDriver.getFieldCount());
+        Object idObj = fgbDriver.getField(50, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("LVA", ((ValueVarchar)idObj).getString());
+
+        idObj = fgbDriver.getField(35, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("BTN", ((ValueVarchar)idObj).getString());
+
+        idObj = fgbDriver.getField(100, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("KWT", ((ValueVarchar)idObj).getString());
+    }
 
     @Test
     public void testRandomFGPRead() throws Exception {
-        try (Statement stat = connection.createStatement()) {
-            FGBDriver fgbDriver = new FGBDriver();
-            File file = URIUtilities.fileFromString(FGBImportExportTest.class.getResource("countries.fgb").getFile());
-            fgbDriver.initDriverFromFile(file);
-            assertEquals(179, fgbDriver.getRowCount());
-            assertEquals(3, fgbDriver.getFieldCount());
-            Object idObj = fgbDriver.getField(50, 1);
-            assertInstanceOf(ValueVarchar.class, idObj);
-            assertEquals("LVA", ((ValueVarchar)idObj).getString());
+        FGBDriver fgbDriver = new FGBDriver();
+        File file = URIUtilities.fileFromString(Objects.requireNonNull(FGBImportExportTest.class.getResource(
+                "countries.fgb")).getFile());
+        fgbDriver.initDriverFromFile(file);
+        assertEquals(179, fgbDriver.getRowCount());
+        assertEquals(3, fgbDriver.getFieldCount());
+        Object idObj = fgbDriver.getField(50, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("LVA", ((ValueVarchar)idObj).getString());
 
-            idObj = fgbDriver.getField(35, 1);
-            assertInstanceOf(ValueVarchar.class, idObj);
-            assertEquals("BTN", ((ValueVarchar)idObj).getString());
+        idObj = fgbDriver.getField(35, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("BTN", ((ValueVarchar)idObj).getString());
 
-            idObj = fgbDriver.getField(100, 1);
-            assertInstanceOf(ValueVarchar.class, idObj);
-            assertEquals("KWT", ((ValueVarchar)idObj).getString());
-        }
+        idObj = fgbDriver.getField(100, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("KWT", ((ValueVarchar)idObj).getString());
     }
 }
