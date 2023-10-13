@@ -157,7 +157,6 @@ public class FGBWriteDriver {
             String outputTable = parse.toString();
             int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
             if (recordCount > 0) {
-                ProgressVisitor copyProgress = progress.subProcess(recordCount);
                 try ( // Read table content
                       Statement st = connection.createStatement()) {
                     Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, parse);
@@ -191,6 +190,7 @@ public class FGBWriteDriver {
                     long featureAddressPointer = 0;
                     ByteBuffer bufferManager = ByteBuffer.allocate(BYTEBUFFER_CACHE);
                     bufferManager.order(ByteOrder.LITTLE_ENDIAN);
+                    ProgressVisitor copyProgress = progress.subProcess(recordCount);
                     while (rs.next()) {
                         bufferManager.clear();
                         //Let's serialize the attributes
@@ -283,10 +283,12 @@ public class FGBWriteDriver {
                                     geomEnvelope.getMaxX(), geomEnvelope.getMaxY(), featureAddressPointer);
                             envelopes.add(featureItem);
                         }
-                        featureAddressPointer += featureOffset;
                         bufferBuilder.finishSizePrefixed(featureOffset);
-                        outputStream.write(bufferBuilder.sizedByteArray());
+                        byte[] featureData = bufferBuilder.sizedByteArray();
+                        featureAddressPointer += featureData.length;
+                        outputStream.write(featureData);
                         bufferBuilder.clear();
+                        copyProgress.endStep();
                     }
                     if(envelopes != null) {
                         // Write spatial index after the header and before the first feature

@@ -49,6 +49,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -289,7 +291,7 @@ public class FGBImportExportTest {
     @Test
     public void testExternalFGPSpatialIndex() throws Exception {
         File tempOutputFile = new File("target/countries_exported.fgb");
-        //tempOutputFile.deleteOnExit();
+        tempOutputFile.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
             stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES_FGB', true, 'createIndex=true');");
@@ -300,7 +302,8 @@ public class FGBImportExportTest {
         fgbDriver.cacheFeatureAddressFromIndex();
     }
 
-    private static List<Value> idsFromCursor(Cursor cursor, FGBDriver fgbDriver, String columnName) {
+    private static <R> List<R> idsFromCursor(Cursor cursor, FGBDriver fgbDriver, String columnName,
+                                         Function<? super Value, ? extends R> var1) {
         List<Value> values = new ArrayList<>();
         int indexColum = 0;
         for (ColumnMeta column : fgbDriver.getHeader().columns) {
@@ -315,7 +318,7 @@ public class FGBImportExportTest {
         while(cursor.next()) {
             values.add(cursor.get().getValue(indexColum));
         }
-        return values;
+        return values.stream().map(var1).sorted().collect(Collectors.toList());
     }
 
     @Test
@@ -327,7 +330,25 @@ public class FGBImportExportTest {
         assertEquals(179, fgbDriver.getRowCount());
         assertEquals(3, fgbDriver.getFieldCount());
         Cursor cursor = fgbDriver.queryIndex(new Envelope(115.95, 125.031, 5.17, 11.88));
-        assertIterableEquals(Arrays.asList(ValueVarchar.get("IDN"), ValueVarchar.get("MYS"), ValueVarchar.get("PHL")),
-                idsFromCursor(cursor, fgbDriver, "ID"));
+        assertIterableEquals(Arrays.asList("IDN", "MYS", "PHL"),
+                idsFromCursor(cursor, fgbDriver, "ID", Value::getString));
+    }
+
+
+    @Test
+    public void testReadWriteSpatialIndex() throws Exception {
+        File tempOutputFile = new File("target/countries_exported.fgb");
+        //tempOutputFile.deleteOnExit();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
+            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES_FGB', true, 'createIndex=true');");
+        }
+        FGBDriver fgbDriver = new FGBDriver();
+        fgbDriver.initDriverFromFile(tempOutputFile);
+        assertEquals(179, fgbDriver.getRowCount());
+        assertEquals(3, fgbDriver.getFieldCount());
+        Cursor cursor = fgbDriver.queryIndex(new Envelope(115.95, 125.031, 5.17, 11.88));
+        assertIterableEquals(Arrays.asList("IDN", "MYS", "PHL"),
+                 idsFromCursor(cursor, fgbDriver, "ID", Value::getString));
     }
 }
