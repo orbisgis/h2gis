@@ -22,6 +22,7 @@ package org.h2gis.functions.io.fgb;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.table.Column;
 import org.h2.util.ParserUtil;
+import org.h2.util.StringUtils;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.DriverManager;
@@ -77,15 +78,28 @@ public class FGBDriverFunction implements DriverFunction {
 
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        return exportTable(connection, tableReference, fileName, null, deleteFiles, progress);
+        return exportTable(connection, tableReference, fileName, "", deleteFiles, progress);
     }
 
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
         progress  = DriverManager.check(connection, tableReference, fileName, progress);
         FGBWriteDriver fgbWriteDriver = new FGBWriteDriver(connection);
+        if(options != null) {
+            String[] keyValuePairs = StringUtils.arraySplit(options, ' ', false);
+            for (String pair : keyValuePairs) {
+                int index = pair.indexOf('=');
+                String key = StringUtils.trimSubstring(pair, 0, index);
+                String value = pair.substring(index + 1);
+                if (key.equalsIgnoreCase("createIndex")) {
+                    fgbWriteDriver.setCreateIndex(Boolean.parseBoolean(value));
+                } else if (key.equalsIgnoreCase("nodeSize")) {
+                    fgbWriteDriver.setPackedRTreeNodeSize(Short.parseShort(value.trim()));
+                }
+            }
+        }
         try {
-            fgbWriteDriver.write(progress, tableReference, fileName, options, deleteFiles);
+            fgbWriteDriver.write(progress, tableReference, fileName, deleteFiles);
             return new String[]{fileName.getAbsolutePath()};
         }catch (SQLException|IOException ex){
             throw new SQLException(ex);

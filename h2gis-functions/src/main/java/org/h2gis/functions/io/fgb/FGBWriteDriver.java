@@ -20,16 +20,20 @@
 package org.h2gis.functions.io.fgb;
 
 import com.google.flatbuffers.FlatBufferBuilder;
+import org.h2.util.StringUtils;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.fgb.fileTable.GeometryConversions;
 import org.h2gis.functions.io.utility.WriteBufferManager;
 import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.HeaderMeta;
+import org.wololo.flatgeobuf.NodeItem;
+import org.wololo.flatgeobuf.PackedRTree;
 import org.wololo.flatgeobuf.generated.ColumnType;
 import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.GeometryType;
@@ -49,7 +53,10 @@ import java.sql.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,10 +64,31 @@ import java.util.regex.Pattern;
  *
  */
 public class FGBWriteDriver {
+    short packedRTreeNodeSize = 16;
+
+    boolean createIndex = true;
+
     private final Connection connection;
 
     public FGBWriteDriver(Connection connection) {
         this.connection = connection;
+    }
+
+
+    public short getPackedRTreeNodeSize() {
+        return packedRTreeNodeSize;
+    }
+
+    public void setPackedRTreeNodeSize(short packedRTreeNodeSize) {
+        this.packedRTreeNodeSize = packedRTreeNodeSize;
+    }
+
+    public boolean isCreateIndex() {
+        return createIndex;
+    }
+
+    public void setCreateIndex(boolean createIndex) {
+        this.createIndex = createIndex;
     }
 
     /**
@@ -69,10 +97,9 @@ public class FGBWriteDriver {
      * @param progress
      * @param tableName
      * @param fileName
-     * @param options
      * @param deleteFiles
      */
-    public void write(ProgressVisitor progress, String tableName, File fileName, String options, boolean deleteFiles) throws IOException, SQLException {
+    public void write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFiles) throws IOException, SQLException {
         if (tableName == null) {
             throw new SQLException("The select query or the table name must not be null.");
         }
@@ -141,9 +168,26 @@ public class FGBWriteDriver {
 
                     //Write the header
                     HeaderMeta header = writeHeader(outputStream, bufferBuilder, recordCount, geomMetadata.second(), rsmd);
+
+                    long endHeaderPosition = outputStream.getChannel().position();
                     //Columns numbers
                     int columnCount = header.columns.size();
+                    List<PackedRTree.Item> envelopes = null;
+                    if(createIndex && header.featuresCount < Integer.MAX_VALUE) {
+                        envelopes = new LinkedList<>();
+                        long indexSize = PackedRTree.calcSize((int) header.featuresCount, packedRTreeNodeSize);
+                        byte[] buffer = new byte[512];
+                        long written = 0;
+                        while (written < indexSize) {
+                            if(buffer.length > indexSize - written) {
+                                buffer = new byte[(int)(indexSize - written)];
+                            }
+                            outputStream.write(buffer);
+                            written += buffer.length;
+                        }
+                    }
                     //Let's iterate the resultset
+                    long featureAddressPointer = 0;
                     while (rs.next()) {
                         WriteBufferManager bufferManager = new WriteBufferManager(channel);
                         bufferManager.order(ByteOrder.LITTLE_ENDIAN);
@@ -205,6 +249,20 @@ public class FGBWriteDriver {
                             geometryOffset = GeometryConversions.serialize(bufferBuilder, geom, header.geometryType);
                         }
                         int featureOffset = Feature.createFeature(bufferBuilder, geometryOffset, propertiesOffset, 0);
+                        if (envelopes != null) {
+                            PackedRTree.FeatureItem featureItem = new PackedRTree.FeatureItem();
+                            Envelope geomEnvelope;
+                            if(geom != null && !geom.isEmpty()) {
+                                geomEnvelope = geom.getEnvelopeInternal();
+                            }  else {
+                                geomEnvelope = new Envelope(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
+                                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+                            }
+                            featureItem.nodeItem = new NodeItem(geomEnvelope.getMinX(), geomEnvelope.getMinY(),
+                                    geomEnvelope.getMaxX(), geomEnvelope.getMaxY(), featureAddressPointer);
+                            envelopes.add(featureItem);
+                        }
+                        featureAddressPointer += featureOffset;
                         bufferBuilder.finishSizePrefixed(featureOffset);
                         WritableByteChannel channel_ = Channels.newChannel(outputStream);
                         ByteBuffer dataBuffer = bufferBuilder.dataBuffer();
@@ -213,8 +271,17 @@ public class FGBWriteDriver {
                         }
                         bufferManager.clear();
                     }
-
-
+                    if(envelopes != null) {
+                        // Write spatial index after the header and before the first feature
+                        NodeItem extend = new NodeItem(0);
+                        envelopes.forEach(x -> extend.expand(x.nodeItem));
+                        PackedRTree.hilbertSort(envelopes, extend);
+                        Collections.reverse(envelopes);
+                        PackedRTree packedRTree = new PackedRTree(envelopes, packedRTreeNodeSize);
+                        FileChannel fileChannel = outputStream.getChannel();
+                        fileChannel.position(endHeaderPosition);
+                        packedRTree.write(outputStream);
+                    }
                 }
             }
         } finally {
@@ -262,6 +329,11 @@ public class FGBWriteDriver {
         headerMeta.geometryType = geometryType(geometryMetaData.getSfs_geometryType());
         headerMeta.columns = columns;
         headerMeta.srid = geometryMetaData.getSRID();
+        if(createIndex) {
+            headerMeta.indexNodeSize = packedRTreeNodeSize;
+        } else {
+            headerMeta.indexNodeSize = 0;
+        }
         HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
         return headerMeta;
     }

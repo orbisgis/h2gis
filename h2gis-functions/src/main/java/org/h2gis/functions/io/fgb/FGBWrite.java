@@ -43,6 +43,10 @@ public class FGBWrite extends AbstractFunction implements ScalarFunction {
         return "execute";
     }
 
+    public static void execute(Connection connection, String fileName, String tableReference, boolean deleteFile, String option) throws SQLException, IOException {
+        FGBDriverFunction geobufDriverFunction = new FGBDriverFunction();
+        geobufDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), option ,deleteFile, new EmptyProgressVisitor());
+    }
     /**
      * Read a table and write it into a FlatGeobuf file.
      *
@@ -56,8 +60,7 @@ public class FGBWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void execute(Connection connection, String fileName, String tableReference, boolean deleteFile) throws SQLException, IOException {
-        FGBDriverFunction geobufDriverFunction = new FGBDriverFunction();
-        geobufDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), deleteFile, new EmptyProgressVisitor());
+        execute(connection, fileName, tableReference, deleteFile, "");
     }
 
     /**

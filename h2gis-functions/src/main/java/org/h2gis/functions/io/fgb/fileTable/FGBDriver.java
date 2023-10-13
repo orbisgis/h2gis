@@ -20,6 +20,9 @@
 package org.h2gis.functions.io.fgb.fileTable;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import org.h2.index.Cursor;
+import org.h2.result.Row;
+import org.h2.result.SearchRow;
 import org.h2.value.Value;
 import org.h2.value.ValueBigint;
 import org.h2.value.ValueBoolean;
@@ -31,6 +34,8 @@ import org.h2.value.ValueNull;
 import org.h2.value.ValueSmallint;
 import org.h2.value.ValueVarchar;
 import org.h2gis.api.FileDriver;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.io.WKTReader;
 import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.HeaderMeta;
 import org.wololo.flatgeobuf.PackedRTree;
@@ -135,6 +140,13 @@ public class FGBDriver implements FileDriver {
         if (fis != null) fis.close();
     }
 
+    public Cursor queryIndex(Envelope queryEnvelope) throws IOException {
+        fileChannel.position(headerMeta.offset);
+        PackedRTree.SearchResult searchResult = PackedRTree.search(fis, 0, (int)headerMeta.featuresCount,
+                headerMeta.indexNodeSize, queryEnvelope);
+        return new FGBDriverCursor(searchResult, this);
+    }
+
     /**
      * Using the Spatial index it is possible to quickly cache the file address of all features.
      * Using this function before doing a random access should reduce the access time.
@@ -154,6 +166,81 @@ public class FGBDriver implements FileDriver {
                 rowIndexToFileLocation.put(i, address + featuresOffset);
             }
         }
+    }
+
+    /**
+     * @param featureAddress Feature address in the file relative to the first feature
+     * @return
+     * @throws IOException
+     */
+    public Value[] getFieldsFromFileLocation(long featureAddress) throws IOException {
+        Value[] values = new Value[fieldCount];
+        fileChannel.position(featuresOffset + featureAddress);
+        // Read the current row from the input stream
+        LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
+        int featureSize = data.readInt();
+        byte[] bytes = new byte[featureSize];
+        data.readFully(bytes);
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        Feature feature = Feature.getRootAsFeature(bb);
+        Geometry geometry = feature.geometry();
+        byte geometryType = headerMeta.geometryType;
+        if (geometry != null) {
+            if (geometryType == GeometryType.Unknown) {
+                geometryType = (byte) geometry.type();
+            }
+            org.locationtech.jts.geom.Geometry jtsGeometry =
+                    GeometryConversions.deserialize(geometry, geometryType);
+            if (jtsGeometry != null) {
+                jtsGeometry.setSRID(srid);
+                currentRow[geometryFieldIndex] = ValueGeometry.getFromGeometry(jtsGeometry);
+            } else {
+                currentRow[geometryFieldIndex] = ValueNull.INSTANCE;
+            }
+        }
+        // Read columns
+        int propertiesLength = feature.propertiesLength();
+        if (propertiesLength > 0) {
+            List<ColumnMeta> columns = headerMeta.columns;
+            ByteBuffer propertiesBB = feature.propertiesAsByteBuffer();
+            while (propertiesBB.hasRemaining()) {
+                short propertyIndex = propertiesBB.getShort();
+                ColumnMeta columnMeta = columns.get(propertyIndex);
+                byte type = columnMeta.type;
+                if(propertyIndex >= geometryFieldIndex) {
+                    propertyIndex += 1;
+                }
+                switch (type) {
+                    case ColumnType.Bool:
+                        currentRow[propertyIndex] = ValueBoolean.get(propertiesBB.get() > 0);
+                        break;
+                    case ColumnType.Byte:
+                        currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.get());
+                        break;
+                    case ColumnType.Short:
+                        currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.getShort());
+                        break;
+                    case ColumnType.Int:
+                        currentRow[propertyIndex] = ValueInteger.get(propertiesBB.getInt());
+                        break;
+                    case ColumnType.Long:
+                        currentRow[propertyIndex] = ValueBigint.get(propertiesBB.getLong());
+                        break;
+                    case ColumnType.Double:
+                        currentRow[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
+                        break;
+                    case ColumnType.DateTime:
+                        currentRow[propertyIndex] = ValueDate.parse(readString(propertiesBB));
+                        break;
+                    case ColumnType.String:
+                        currentRow[propertyIndex] = ValueVarchar.get(readString(propertiesBB));
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown type");
+                }
+            }
+        }
+        return values;
     }
 
     @Override
@@ -187,72 +274,9 @@ public class FGBDriver implements FileDriver {
             if (rowIdPrevious + 1 == rowId) {
                 // Read the current row from the input stream
                 rowIdPrevious = rowId;
-                LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
-                featureSize = data.readInt();
-                byte[] bytes = new byte[featureSize];
-                data.readFully(bytes);
-                // fileChannelPosition is now at rowId + 1
+                currentRow = getFieldsFromFileLocation(fileChannel.position()-featuresOffset);
                 if(cacheRowAddress) {
                     rowIndexToFileLocation.put((int) rowId + 1, fileChannel.position());
-                }
-                ByteBuffer bb = ByteBuffer.wrap(bytes);
-                Feature feature = Feature.getRootAsFeature(bb);
-                Geometry geometry = feature.geometry();
-                byte geometryType = headerMeta.geometryType;
-                if (geometry != null) {
-                    if (geometryType == GeometryType.Unknown) {
-                        geometryType = (byte) geometry.type();
-                    }
-                    org.locationtech.jts.geom.Geometry jtsGeometry =
-                            GeometryConversions.deserialize(geometry, geometryType);
-                    if (jtsGeometry != null) {
-                        jtsGeometry.setSRID(srid);
-                        currentRow[geometryFieldIndex] = ValueGeometry.getFromGeometry(jtsGeometry);
-                    } else {
-                        currentRow[geometryFieldIndex] = ValueNull.INSTANCE;
-                    }
-                }
-                // Read columns
-                int propertiesLength = feature.propertiesLength();
-                if (propertiesLength > 0) {
-                    List<ColumnMeta> columns = headerMeta.columns;
-                    ByteBuffer propertiesBB = feature.propertiesAsByteBuffer();
-                    while (propertiesBB.hasRemaining()) {
-                        short propertyIndex = propertiesBB.getShort();
-                        ColumnMeta columnMeta = columns.get(propertyIndex);
-                        byte type = columnMeta.type;
-                        if(propertyIndex >= geometryFieldIndex) {
-                            propertyIndex += 1;
-                        }
-                        switch (type) {
-                            case ColumnType.Bool:
-                                currentRow[propertyIndex] = ValueBoolean.get(propertiesBB.get() > 0);
-                                break;
-                            case ColumnType.Byte:
-                                currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.get());
-                                break;
-                            case ColumnType.Short:
-                                currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.getShort());
-                                break;
-                            case ColumnType.Int:
-                                currentRow[propertyIndex] = ValueInteger.get(propertiesBB.getInt());
-                                break;
-                            case ColumnType.Long:
-                                currentRow[propertyIndex] = ValueBigint.get(propertiesBB.getLong());
-                                break;
-                            case ColumnType.Double:
-                                currentRow[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
-                                break;
-                            case ColumnType.DateTime:
-                                currentRow[propertyIndex] = ValueDate.parse(readString(propertiesBB));
-                                break;
-                            case ColumnType.String:
-                                currentRow[propertyIndex] = ValueVarchar.get(readString(propertiesBB));
-                                break;
-                            default:
-                                throw new RuntimeException("Unknown type");
-                        }
-                    }
                 }
             }
             return currentRow[columnId];
@@ -278,5 +302,37 @@ public class FGBDriver implements FileDriver {
      */
     public int getGeometryFieldIndex() {
         return geometryFieldIndex;
+    }
+
+    public static class FGBDriverCursor implements Cursor {
+        PackedRTree.SearchResult searchResult;
+        FGBDriver fgbDriver;
+
+        int position = -1;
+
+        public FGBDriverCursor(PackedRTree.SearchResult searchResult, FGBDriver fgbDriver) {
+            this.searchResult = searchResult;
+            this.fgbDriver = fgbDriver;
+        }
+
+        @Override
+        public Row get() {
+            return null;
+        }
+
+        @Override
+        public SearchRow getSearchRow() {
+            return null;
+        }
+
+        @Override
+        public boolean next() {
+            return position < searchResult.hits.size() - 1;
+        }
+
+        @Override
+        public boolean previous() {
+            return position > 0;
+        }
     }
 }

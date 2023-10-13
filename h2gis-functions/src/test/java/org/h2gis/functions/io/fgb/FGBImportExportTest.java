@@ -1,7 +1,9 @@
 package org.h2gis.functions.io.fgb;
 
+import com.google.common.io.LittleEndianDataInputStream;
 import org.h2.util.geometry.EWKTUtils;
 import org.h2.util.geometry.JTSUtils;
+import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueVarchar;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -9,24 +11,40 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
 import org.h2gis.functions.io.geojson.*;
 import org.h2gis.postgis_jts.PostGISDBFactory;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.URIUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wololo.flatgeobuf.HeaderMeta;
+import org.wololo.flatgeobuf.NodeItem;
+import org.wololo.flatgeobuf.PackedRTree;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,7 +59,7 @@ public class FGBImportExportTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
         H2GISFunctions.registerFunction(connection.createStatement(), new FGBWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new FGBRead(), "");
     }
@@ -131,21 +149,21 @@ public class FGBImportExportTest {
     @Test
     public void testExternalFGPImport() throws Exception {
         try (Statement stat = connection.createStatement()) {
-            stat.execute("CALL FGBRead('"+FGBImportExportTest.class.getResource("countries.fgb")+"', 'COUNTRIES_FGB', true);");
-            stat.execute("CALL GEOJSONREAD('"+FGBImportExportTest.class.getResource("countries.geojson")+"', 'COUNTRIES_GEOJSON', true);");
+            stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
+            stat.execute("CALL GEOJSONREAD('" + FGBImportExportTest.class.getResource("countries.geojson") + "', 'COUNTRIES_GEOJSON', true);");
             // Compare results
         }
-        try(ResultSet geojsonRs = connection.createStatement().executeQuery("SELECT the_geom, id, name FROM COUNTRIES_GEOJSON ORDER BY ID")) {
-            try(ResultSet fgbRs = connection.createStatement().executeQuery("SELECT the_geom, id, name FROM COUNTRIES_FGB ORDER BY ID")) {
+        try (ResultSet geojsonRs = connection.createStatement().executeQuery("SELECT the_geom, id, name FROM COUNTRIES_GEOJSON ORDER BY ID")) {
+            try (ResultSet fgbRs = connection.createStatement().executeQuery("SELECT the_geom, id, name FROM COUNTRIES_FGB ORDER BY ID")) {
                 while (geojsonRs.next()) {
-                      assertTrue(fgbRs.next());
-                      assertEquals(geojsonRs.getString(2), fgbRs.getString(2));
-                      assertEquals(geojsonRs.getString(3), fgbRs.getString(3));
-                      Geometry geojsonGeom = (Geometry) geojsonRs.getObject(1);
-                      Geometry fgbGeom = (Geometry) fgbRs.getObject(1);
-                      assertNotNull(geojsonGeom);
-                      assertNotNull(fgbGeom);
-                      assertEquals(0, geojsonGeom.getCentroid().getCoordinate().distance(fgbGeom.getCentroid().getCoordinate()), 1e-6);
+                    assertTrue(fgbRs.next());
+                    assertEquals(geojsonRs.getString(2), fgbRs.getString(2));
+                    assertEquals(geojsonRs.getString(3), fgbRs.getString(3));
+                    Geometry geojsonGeom = (Geometry) geojsonRs.getObject(1);
+                    Geometry fgbGeom = (Geometry) fgbRs.getObject(1);
+                    assertNotNull(geojsonGeom);
+                    assertNotNull(fgbGeom);
+                    assertEquals(0, geojsonGeom.getCentroid().getCoordinate().distance(fgbGeom.getCentroid().getCoordinate()), 1e-6);
                 }
             }
         }
@@ -164,15 +182,15 @@ public class FGBImportExportTest {
         assertEquals(3, fgbDriver.getFieldCount());
         Object idObj = fgbDriver.getField(50, 1);
         assertInstanceOf(ValueVarchar.class, idObj);
-        assertEquals("LVA", ((ValueVarchar)idObj).getString());
+        assertEquals("LVA", ((ValueVarchar) idObj).getString());
 
         idObj = fgbDriver.getField(35, 1);
         assertInstanceOf(ValueVarchar.class, idObj);
-        assertEquals("BTN", ((ValueVarchar)idObj).getString());
+        assertEquals("BTN", ((ValueVarchar) idObj).getString());
 
         idObj = fgbDriver.getField(100, 1);
         assertInstanceOf(ValueVarchar.class, idObj);
-        assertEquals("KWT", ((ValueVarchar)idObj).getString());
+        assertEquals("KWT", ((ValueVarchar) idObj).getString());
     }
 
     @Test
@@ -185,14 +203,107 @@ public class FGBImportExportTest {
         assertEquals(3, fgbDriver.getFieldCount());
         Object idObj = fgbDriver.getField(50, 1);
         assertInstanceOf(ValueVarchar.class, idObj);
-        assertEquals("LVA", ((ValueVarchar)idObj).getString());
+        assertEquals("LVA", ((ValueVarchar) idObj).getString());
 
         idObj = fgbDriver.getField(35, 1);
         assertInstanceOf(ValueVarchar.class, idObj);
-        assertEquals("BTN", ((ValueVarchar)idObj).getString());
+        assertEquals("BTN", ((ValueVarchar) idObj).getString());
 
         idObj = fgbDriver.getField(100, 1);
         assertInstanceOf(ValueVarchar.class, idObj);
-        assertEquals("KWT", ((ValueVarchar)idObj).getString());
+        assertEquals("KWT", ((ValueVarchar) idObj).getString());
+    }
+
+    @Test
+    public void testPackedRTree() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GEOJSONREAD('" + FGBImportExportTest.class.getResource("countries.geojson") + "', 'COUNTRIES_GEOJSON', true);");
+        }
+
+        List<PackedRTree.FeatureItem> nodeItemList = new ArrayList<>();
+        int index=0;
+        List<String> ids = new ArrayList<>();
+        try (SpatialResultSet geojsonRs = connection.createStatement().executeQuery(
+                "SELECT the_geom, id, name FROM COUNTRIES_GEOJSON ORDER BY ID").unwrap(SpatialResultSet.class)) {
+            while (geojsonRs.next()) {
+                Geometry geometry = geojsonRs.getGeometry();
+                Envelope geomEnvelope = geometry.getEnvelopeInternal();
+                PackedRTree.FeatureItem featureItem = new PackedRTree.FeatureItem();
+                featureItem.nodeItem = new NodeItem(geomEnvelope.getMinX(), geomEnvelope.getMinY(),
+                        geomEnvelope.getMaxX(), geomEnvelope.getMaxY(), index++);
+                ids.add(geojsonRs.getString("ID"));
+                nodeItemList.add(featureItem);
+            }
+            NodeItem extend = new NodeItem(0);
+            nodeItemList.forEach(x -> extend.expand(x.nodeItem));
+            PackedRTree.hilbertSort(nodeItemList, extend);
+            short nodeSize = 16;
+            PackedRTree packedRTree = new PackedRTree(nodeItemList, nodeSize);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream((int)PackedRTree.calcSize(
+                    nodeItemList.size(), nodeSize));
+            packedRTree.write(byteArrayOutputStream);
+            // Read RTree
+            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())) {
+                // Envelope over Indonesia, Malaysia and Philippines
+                Envelope queryEnv = new WKTReader().read(
+                        "POLYGON ((115.97 5.17,115.95 11.78,125.031 11.88,124.60 5.29,115.97 5.17))").getEnvelopeInternal();
+                long[] fids = new long[nodeItemList.size()];
+                for (long id = 0; id < fids.length; id++) {
+                    fids[(int) id] = id;
+                }
+                HeaderMeta headerMeta = new HeaderMeta();
+                headerMeta.featuresCount = nodeItemList.size();
+                headerMeta.indexNodeSize = nodeSize;
+                long[] featuresAddress = PackedRTree.readFeatureOffsets(new LittleEndianDataInputStream(byteArrayInputStream),
+                        fids, headerMeta);
+                byteArrayInputStream.reset();
+                PackedRTree.SearchResult searchResult = PackedRTree.search(byteArrayInputStream, 0, nodeItemList.size(),
+                        nodeSize, queryEnv);
+                assertEquals(3, searchResult.hits.size());
+                Set<String> hitsIds = new TreeSet<>();
+                for (PackedRTree.SearchHit hit : searchResult.hits) {
+                    hitsIds.add(ids.get((int)hit.offset));
+                }
+                Iterator<String> it = hitsIds.iterator();
+                assertEquals("IDN", it.next());
+                assertEquals("MYS", it.next());
+                assertEquals("PHL", it.next());
+
+                queryEnv = new Envelope(-1.504, 5.577, 52.723, 61.934);
+                byteArrayInputStream.reset();
+                searchResult = PackedRTree.search(byteArrayInputStream, 0, nodeItemList.size(),
+                        nodeSize, queryEnv);
+                assertEquals(4, searchResult.hits.size());
+                hitsIds = new TreeSet<>();
+                for (PackedRTree.SearchHit hit : searchResult.hits) {
+                    System.out.println(ids.get((int)hit.offset));
+                    hitsIds.add(ids.get((int)hit.offset));
+                }
+            }
+        }
+    }
+    @Test
+    public void testExternalFGPSpatialIndex() throws Exception {
+        File tempOutputFile = new File("target/countries_exported.fgb");
+        //tempOutputFile.deleteOnExit();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
+            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES_FGB', true, 'createIndex=false');");
+        }
+        assertTrue(tempOutputFile.exists());
+        FGBDriver fgbDriver = new FGBDriver();
+        fgbDriver.initDriverFromFile(tempOutputFile);
+        fgbDriver.cacheFeatureAddressFromIndex();
+    }
+
+    @Test
+    public void testRandomFGPReadGdal() throws Exception {
+        FGBDriver fgbDriver = new FGBDriver();
+        File file = URIUtilities.fileFromString(Objects.requireNonNull(FGBImportExportTest.class.getResource(
+                "countries_gdal.fgb")).getFile());
+        fgbDriver.initDriverFromFile(file);
+        assertEquals(179, fgbDriver.getRowCount());
+        assertEquals(3, fgbDriver.getFieldCount());
+        fgbDriver.cacheFeatureAddressFromIndex();
     }
 }
