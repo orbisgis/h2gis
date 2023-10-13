@@ -19,6 +19,7 @@
  */
 package org.h2gis.functions.io.fgb;
 
+import com.google.common.collect.Lists;
 import com.google.flatbuffers.FlatBufferBuilder;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.fgb.fileTable.GeometryConversions;
@@ -175,7 +176,7 @@ public class FGBWriteDriver {
                     int columnCount = header.columns.size();
                     List<PackedRTree.Item> envelopes = null;
                     if(createIndex && header.featuresCount < Integer.MAX_VALUE) {
-                        envelopes = new LinkedList<>();
+                        envelopes = new ArrayList<>((int) header.featuresCount);
                         long indexSize = PackedRTree.calcSize((int) header.featuresCount, packedRTreeNodeSize);
                         byte[] buffer = new byte[512];
                         long written = 0;
@@ -296,8 +297,7 @@ public class FGBWriteDriver {
                         NodeItem extend = new NodeItem(0);
                         envelopes.forEach(x -> extend.expand(x.nodeItem));
                         PackedRTree.hilbertSort(envelopes, extend);
-                        Collections.reverse(envelopes);
-                        PackedRTree packedRTree = new PackedRTree(envelopes, packedRTreeNodeSize);
+                        PackedRTree packedRTree = new PackedRTree(Lists.reverse(envelopes), packedRTreeNodeSize);
                         FileChannel fileChannel = outputStream.getChannel();
                         fileChannel.position(endHeaderPosition);
                         packedRTree.write(outputStream);
