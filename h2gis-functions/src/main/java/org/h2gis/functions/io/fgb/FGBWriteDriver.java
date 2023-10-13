@@ -56,6 +56,7 @@ import java.sql.Types;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -295,6 +296,7 @@ public class FGBWriteDriver {
                         NodeItem extend = new NodeItem(0);
                         envelopes.forEach(x -> extend.expand(x.nodeItem));
                         PackedRTree.hilbertSort(envelopes, extend);
+                        Collections.reverse(envelopes);
                         PackedRTree packedRTree = new PackedRTree(envelopes, packedRTreeNodeSize);
                         FileChannel fileChannel = outputStream.getChannel();
                         fileChannel.position(endHeaderPosition);

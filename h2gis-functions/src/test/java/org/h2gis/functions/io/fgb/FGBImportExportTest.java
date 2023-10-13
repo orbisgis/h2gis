@@ -1,24 +1,17 @@
 package org.h2gis.functions.io.fgb;
 
 import com.google.common.io.LittleEndianDataInputStream;
-import org.checkerframework.checker.units.qual.A;
 import org.h2.index.Cursor;
-import org.h2.util.geometry.EWKTUtils;
-import org.h2.util.geometry.JTSUtils;
 import org.h2.value.Value;
-import org.h2.value.ValueGeometry;
 import org.h2.value.ValueVarchar;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
-import org.h2gis.functions.io.geojson.*;
-import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.URIUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -33,33 +26,32 @@ import org.wololo.flatgeobuf.PackedRTree;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FGBImportExportTest {
 
 
     private static Connection connection;
     private static final String DB_NAME = "FGBImportExportTest";
-    private static final WKTReader WKTREADER = new WKTReader();
     private static final Logger log = LoggerFactory.getLogger(FGBImportExportTest.class);
 
     @BeforeAll
@@ -220,88 +212,6 @@ public class FGBImportExportTest {
         assertEquals("KWT", ((ValueVarchar) idObj).getString());
     }
 
-    @Test
-    public void testPackedRTree() throws Exception {
-        try (Statement stat = connection.createStatement()) {
-            stat.execute("CALL GEOJSONREAD('" + FGBImportExportTest.class.getResource("countries.geojson") + "', 'COUNTRIES_GEOJSON', true);");
-        }
-
-        List<PackedRTree.FeatureItem> nodeItemList = new ArrayList<>();
-        int index=0;
-        List<String> ids = new ArrayList<>();
-        try (SpatialResultSet geojsonRs = connection.createStatement().executeQuery(
-                "SELECT the_geom, id, name FROM COUNTRIES_GEOJSON ORDER BY ID").unwrap(SpatialResultSet.class)) {
-            while (geojsonRs.next()) {
-                Geometry geometry = geojsonRs.getGeometry();
-                Envelope geomEnvelope = geometry.getEnvelopeInternal();
-                PackedRTree.FeatureItem featureItem = new PackedRTree.FeatureItem();
-                featureItem.nodeItem = new NodeItem(geomEnvelope.getMinX(), geomEnvelope.getMinY(),
-                        geomEnvelope.getMaxX(), geomEnvelope.getMaxY(), index++);
-                ids.add(geojsonRs.getString("ID"));
-                nodeItemList.add(featureItem);
-            }
-            NodeItem extend = new NodeItem(0);
-            nodeItemList.forEach(x -> extend.expand(x.nodeItem));
-            PackedRTree.hilbertSort(nodeItemList, extend);
-            short nodeSize = 16;
-            PackedRTree packedRTree = new PackedRTree(nodeItemList, nodeSize);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream((int)PackedRTree.calcSize(
-                    nodeItemList.size(), nodeSize));
-            packedRTree.write(byteArrayOutputStream);
-            // Read RTree
-            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())) {
-                // Envelope over Indonesia, Malaysia and Philippines
-                Envelope queryEnv = new WKTReader().read(
-                        "POLYGON ((115.97 5.17,115.95 11.78,125.031 11.88,124.60 5.29,115.97 5.17))").getEnvelopeInternal();
-                long[] fids = new long[nodeItemList.size()];
-                for (long id = 0; id < fids.length; id++) {
-                    fids[(int) id] = id;
-                }
-                HeaderMeta headerMeta = new HeaderMeta();
-                headerMeta.featuresCount = nodeItemList.size();
-                headerMeta.indexNodeSize = nodeSize;
-                long[] featuresAddress = PackedRTree.readFeatureOffsets(new LittleEndianDataInputStream(byteArrayInputStream),
-                        fids, headerMeta);
-                byteArrayInputStream.reset();
-                PackedRTree.SearchResult searchResult = PackedRTree.search(byteArrayInputStream, 0, nodeItemList.size(),
-                        nodeSize, queryEnv);
-                assertEquals(3, searchResult.hits.size());
-                Set<String> hitsIds = new TreeSet<>();
-                for (PackedRTree.SearchHit hit : searchResult.hits) {
-                    hitsIds.add(ids.get((int)hit.offset));
-                }
-                Iterator<String> it = hitsIds.iterator();
-                assertEquals("IDN", it.next());
-                assertEquals("MYS", it.next());
-                assertEquals("PHL", it.next());
-
-                queryEnv = new Envelope(-1.504, 5.577, 52.723, 61.934);
-                byteArrayInputStream.reset();
-                searchResult = PackedRTree.search(byteArrayInputStream, 0, nodeItemList.size(),
-                        nodeSize, queryEnv);
-                assertEquals(4, searchResult.hits.size());
-                hitsIds = new TreeSet<>();
-                for (PackedRTree.SearchHit hit : searchResult.hits) {
-                    System.out.println(ids.get((int)hit.offset));
-                    hitsIds.add(ids.get((int)hit.offset));
-                }
-            }
-        }
-    }
-    @Test
-    public void testExternalFGPSpatialIndex() throws Exception {
-        File tempOutputFile = new File("target/countries_exported.fgb");
-        tempOutputFile.deleteOnExit();
-        try (Statement stat = connection.createStatement()) {
-            stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
-            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES_FGB', true, 'createIndex=true');");
-        }
-        assertTrue(tempOutputFile.exists());
-        FGBDriver fgbDriver = new FGBDriver();
-        fgbDriver.initDriverFromFile(tempOutputFile);
-        fgbDriver.cacheFeatureAddressFromIndex();
-    }
-
     private static <R> List<R> idsFromCursor(Cursor cursor, FGBDriver fgbDriver, String columnName,
                                          Function<? super Value, ? extends R> var1) {
         List<Value> values = new ArrayList<>();
@@ -338,17 +248,35 @@ public class FGBImportExportTest {
     @Test
     public void testReadWriteSpatialIndex() throws Exception {
         File tempOutputFile = new File("target/countries_exported.fgb");
-        //tempOutputFile.deleteOnExit();
+        tempOutputFile.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
-            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES_FGB', true, 'createIndex=true');");
+            stat.execute("DROP TABLE IF EXISTS COUNTRIES");
+            stat.execute("CREATE TABLE COUNTRIES AS SELECT * FROM COUNTRIES_FGB ORDER BY ID");
+            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES', true, 'createIndex=true');");
         }
         FGBDriver fgbDriver = new FGBDriver();
         fgbDriver.initDriverFromFile(tempOutputFile);
+        fgbDriver.cacheFeatureAddressFromIndex();
+
         assertEquals(179, fgbDriver.getRowCount());
         assertEquals(3, fgbDriver.getFieldCount());
         Cursor cursor = fgbDriver.queryIndex(new Envelope(115.95, 125.031, 5.17, 11.88));
         assertIterableEquals(Arrays.asList("IDN", "MYS", "PHL"),
                  idsFromCursor(cursor, fgbDriver, "ID", Value::getString));
+
+        // Check random access built from Spatial Index offsets
+
+        Object idObj = fgbDriver.getField(50, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("LVA", ((ValueVarchar) idObj).getString());
+
+        idObj = fgbDriver.getField(35, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("BTN", ((ValueVarchar) idObj).getString());
+
+        idObj = fgbDriver.getField(100, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("KWT", ((ValueVarchar) idObj).getString());
     }
 }
