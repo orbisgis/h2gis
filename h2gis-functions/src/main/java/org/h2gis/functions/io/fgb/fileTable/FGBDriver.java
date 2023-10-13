@@ -21,6 +21,7 @@ package org.h2gis.functions.io.fgb.fileTable;
 
 import com.google.common.io.LittleEndianDataInputStream;
 import org.h2.index.Cursor;
+import org.h2.result.DefaultRow;
 import org.h2.result.Row;
 import org.h2.result.SearchRow;
 import org.h2.value.Value;
@@ -36,6 +37,8 @@ import org.h2.value.ValueVarchar;
 import org.h2gis.api.FileDriver;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.WKTReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.HeaderMeta;
 import org.wololo.flatgeobuf.PackedRTree;
@@ -173,8 +176,9 @@ public class FGBDriver implements FileDriver {
      * @return
      * @throws IOException
      */
-    public Value[] getFieldsFromFileLocation(long featureAddress) throws IOException {
-        Value[] values = new Value[fieldCount];
+    public static Value[] getFieldsFromFileLocation(FileChannel fileChannel, long featureAddress, long featuresOffset,
+                                                    HeaderMeta headerMeta, int geometryFieldIndex) throws IOException {
+        Value[] values = new Value[headerMeta.columns.size()+1];
         fileChannel.position(featuresOffset + featureAddress);
         // Read the current row from the input stream
         LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
@@ -192,10 +196,10 @@ public class FGBDriver implements FileDriver {
             org.locationtech.jts.geom.Geometry jtsGeometry =
                     GeometryConversions.deserialize(geometry, geometryType);
             if (jtsGeometry != null) {
-                jtsGeometry.setSRID(srid);
-                currentRow[geometryFieldIndex] = ValueGeometry.getFromGeometry(jtsGeometry);
+                jtsGeometry.setSRID(headerMeta.srid);
+                values[geometryFieldIndex] = ValueGeometry.getFromGeometry(jtsGeometry);
             } else {
-                currentRow[geometryFieldIndex] = ValueNull.INSTANCE;
+                values[geometryFieldIndex] = ValueNull.INSTANCE;
             }
         }
         // Read columns
@@ -212,28 +216,28 @@ public class FGBDriver implements FileDriver {
                 }
                 switch (type) {
                     case ColumnType.Bool:
-                        currentRow[propertyIndex] = ValueBoolean.get(propertiesBB.get() > 0);
+                        values[propertyIndex] = ValueBoolean.get(propertiesBB.get() > 0);
                         break;
                     case ColumnType.Byte:
-                        currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.get());
+                        values[propertyIndex] = ValueSmallint.get(propertiesBB.get());
                         break;
                     case ColumnType.Short:
-                        currentRow[propertyIndex] = ValueSmallint.get(propertiesBB.getShort());
+                        values[propertyIndex] = ValueSmallint.get(propertiesBB.getShort());
                         break;
                     case ColumnType.Int:
-                        currentRow[propertyIndex] = ValueInteger.get(propertiesBB.getInt());
+                        values[propertyIndex] = ValueInteger.get(propertiesBB.getInt());
                         break;
                     case ColumnType.Long:
-                        currentRow[propertyIndex] = ValueBigint.get(propertiesBB.getLong());
+                        values[propertyIndex] = ValueBigint.get(propertiesBB.getLong());
                         break;
                     case ColumnType.Double:
-                        currentRow[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
+                        values[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
                         break;
                     case ColumnType.DateTime:
-                        currentRow[propertyIndex] = ValueDate.parse(readString(propertiesBB));
+                        values[propertyIndex] = ValueDate.parse(readString(propertiesBB));
                         break;
                     case ColumnType.String:
-                        currentRow[propertyIndex] = ValueVarchar.get(readString(propertiesBB));
+                        values[propertyIndex] = ValueVarchar.get(readString(propertiesBB));
                         break;
                     default:
                         throw new RuntimeException("Unknown type");
@@ -245,7 +249,6 @@ public class FGBDriver implements FileDriver {
 
     @Override
     public Value getField(long rowId, int columnId) throws IOException {
-        int featureSize;
         try {
             if(rowId == 0) {
                 fileChannel.position(featuresOffset);
@@ -263,7 +266,7 @@ public class FGBDriver implements FileDriver {
                 // Make our way until rowId
                 while (rowIdPrevious + 1 < rowId) {
                     LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
-                    featureSize = data.readInt();
+                    int featureSize = data.readInt();
                     fileChannel.position(fileChannel.position() + featureSize);
                     rowIdPrevious++;
                     if(cacheRowAddress) {
@@ -274,7 +277,8 @@ public class FGBDriver implements FileDriver {
             if (rowIdPrevious + 1 == rowId) {
                 // Read the current row from the input stream
                 rowIdPrevious = rowId;
-                currentRow = getFieldsFromFileLocation(fileChannel.position()-featuresOffset);
+                currentRow = getFieldsFromFileLocation(fileChannel,fileChannel.position()-featuresOffset,
+                        featuresOffset, headerMeta, geometryFieldIndex);
                 if(cacheRowAddress) {
                     rowIndexToFileLocation.put((int) rowId + 1, fileChannel.position());
                 }
@@ -285,12 +289,16 @@ public class FGBDriver implements FileDriver {
         }
     }
 
+    public long getFeaturesOffset() {
+        return featuresOffset;
+    }
+
     @Override
     public void insertRow(Object[] values) throws IOException {
         throw new IOException("Unsupported write operation");
     }
 
-    private String readString(ByteBuffer bb) {
+    private static String readString(ByteBuffer bb) {
             int length = bb.getInt();
             byte[] stringBytes = new byte[length];
             bb.get(stringBytes, 0, length);
@@ -305,10 +313,13 @@ public class FGBDriver implements FileDriver {
     }
 
     public static class FGBDriverCursor implements Cursor {
+        static final Logger LOGGER = LoggerFactory.getLogger(FGBDriver.class);
         PackedRTree.SearchResult searchResult;
         FGBDriver fgbDriver;
 
         int position = -1;
+
+        Row currentRow = null;
 
         public FGBDriverCursor(PackedRTree.SearchResult searchResult, FGBDriver fgbDriver) {
             this.searchResult = searchResult;
@@ -317,7 +328,7 @@ public class FGBDriver implements FileDriver {
 
         @Override
         public Row get() {
-            return null;
+            return currentRow;
         }
 
         @Override
@@ -327,12 +338,35 @@ public class FGBDriver implements FileDriver {
 
         @Override
         public boolean next() {
-            return position < searchResult.hits.size() - 1;
+            if(position < searchResult.hits.size() - 1) {
+                position++;
+                return fetchRow();
+            } else {
+                return false;
+            }
+        }
+
+        private boolean fetchRow() {
+            try {
+                Value[] values = FGBDriver.getFieldsFromFileLocation(fgbDriver.fileChannel,
+                        searchResult.hits.get(position).offset, fgbDriver.getFeaturesOffset(), fgbDriver.getHeader(),
+                        fgbDriver.getGeometryFieldIndex());
+                currentRow = new DefaultRow(values);
+            } catch (IOException ex) {
+                LOGGER.warn("Issue when fetching record", ex);
+                return false;
+            }
+            return true;
         }
 
         @Override
         public boolean previous() {
-            return position > 0;
+            if(position > 0) {
+                position--;
+                return fetchRow();
+            } else {
+                return false;
+            }
         }
     }
 }

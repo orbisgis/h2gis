@@ -20,10 +20,8 @@
 package org.h2gis.functions.io.fgb;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import org.h2.util.StringUtils;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.fgb.fileTable.GeometryConversions;
-import org.h2gis.functions.io.utility.WriteBufferManager;
 import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
@@ -42,21 +40,24 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,6 +65,8 @@ import java.util.regex.Pattern;
  *
  */
 public class FGBWriteDriver {
+    private final static int BYTEBUFFER_CACHE = 1024;
+
     short packedRTreeNodeSize = 16;
 
     boolean createIndex = true;
@@ -141,10 +144,10 @@ public class FGBWriteDriver {
 
     }
 
-    private static void writeString(String value, WriteBufferManager bufferManager) throws IOException {
+    private static void writeString(String value, ByteBuffer bufferManager) throws IOException {
         byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
         bufferManager.putInt(stringBytes.length);
-        bufferManager.putBytes(stringBytes);
+        bufferManager.put(stringBytes);
     }
 
     private void fgbWrite(ProgressVisitor progress, String tableName, FileOutputStream outputStream) throws IOException, SQLException {
@@ -163,8 +166,6 @@ public class FGBWriteDriver {
 
                     ResultSetMetaData rsmd = rs.getMetaData();
                     FlatBufferBuilder bufferBuilder = new FlatBufferBuilder();
-
-                    FileChannel channel = outputStream.getChannel();
 
                     //Write the header
                     HeaderMeta header = writeHeader(outputStream, bufferBuilder, recordCount, geomMetadata.second(), rsmd);
@@ -188,57 +189,77 @@ public class FGBWriteDriver {
                     }
                     //Let's iterate the resultset
                     long featureAddressPointer = 0;
+                    ByteBuffer bufferManager = ByteBuffer.allocate(BYTEBUFFER_CACHE);
+                    bufferManager.order(ByteOrder.LITTLE_ENDIAN);
                     while (rs.next()) {
-                        WriteBufferManager bufferManager = new WriteBufferManager(channel);
-                        bufferManager.order(ByteOrder.LITTLE_ENDIAN);
-
+                        bufferManager.clear();
                         //Let's serialize the attributes
-                        for (int i = 0; i < columnCount; i++) {
-                            ColumnMeta column = header.columns.get(i);
-                            Object value = rs.getObject(column.name);
-                            if (value == null) {
-                                continue;
-                            }
-                            bufferManager.putShort((short) i);
-                            byte type = column.type;
-                            if (type == ColumnType.Bool) {
-                                bufferManager.putShort((byte) ((boolean) value ? 1 : 0));
-                            } else if (type == ColumnType.Byte) {
-                                bufferManager.putShort((byte) value);
-                            } else if (type == ColumnType.Short) {
-                                bufferManager.putShort((short) value);
-                            } else if (type == ColumnType.Int) {
-                                bufferManager.putInt((int) value);
-                            } else if (type == ColumnType.Float) {
-                                bufferManager.putFloat((float) value);
-                            } else if (type == ColumnType.Double) {
-                                bufferManager.putDouble((float) value);
-                            } else if (type == ColumnType.Long) {
-                                if (value instanceof BigInteger) {
-                                    bufferManager.putLong(((BigInteger) value).longValue());
-                                } else {
-                                    bufferManager.putLong((Long) value);
+                        while (true) {
+                            try {
+                                for (int i = 0; i < columnCount; i++) {
+                                    ColumnMeta column = header.columns.get(i);
+                                    Object value = rs.getObject(column.name);
+                                    if (value == null) {
+                                        continue;
+                                    }
+                                    bufferManager.putShort((short) i);
+                                    byte type = column.type;
+                                    switch (type) {
+                                        case ColumnType.Bool:
+                                            bufferManager.putShort((byte) ((boolean) value ? 1 : 0));
+                                            break;
+                                        case ColumnType.Byte:
+                                            bufferManager.putShort((byte) value);
+                                            break;
+                                        case ColumnType.Short:
+                                            bufferManager.putShort((short) value);
+                                            break;
+                                        case ColumnType.Int:
+                                            bufferManager.putInt((int) value);
+                                            break;
+                                        case ColumnType.Float:
+                                            bufferManager.putFloat((float) value);
+                                            break;
+                                        case ColumnType.Double:
+                                            bufferManager.putDouble((float) value);
+                                            break;
+                                        case ColumnType.Long:
+                                            if (value instanceof BigInteger) {
+                                                bufferManager.putLong(((BigInteger) value).longValue());
+                                            } else {
+                                                bufferManager.putLong((Long) value);
+                                            }
+                                            break;
+                                        case ColumnType.String:
+                                            writeString(value.toString(), bufferManager);
+                                            break;
+                                        case ColumnType.DateTime:
+                                            if (value instanceof ZonedDateTime) {
+                                                // ISO 8601
+                                                String iso8601Date = ((ZonedDateTime) value).format(DateTimeFormatter.ISO_INSTANT);
+                                                writeString(iso8601Date, bufferManager);
+                                            } else {
+                                                bufferManager.putInt(0);
+                                            }
+                                            break;
+                                        default:
+                                            throw new RuntimeException(
+                                                    "Cannot handle type " + value.getClass().getName());
+                                    }
                                 }
-                            } else if (type == ColumnType.String) {
-                                writeString(value.toString(), bufferManager);
-                            } else if (type == ColumnType.DateTime) {
-                                if(value instanceof ZonedDateTime) {
-                                    // ISO 8601
-                                    String iso8601Date = ((ZonedDateTime)value).format(DateTimeFormatter.ISO_INSTANT);
-                                    writeString(iso8601Date, bufferManager);
-                                } else {
-                                    bufferManager.putInt(0);
-                                }
-                            } else {
-                                throw new RuntimeException(
-                                        "Cannot handle type " + value.getClass().getName());
+                                break;
+                            } catch (BufferOverflowException ex) {
+                                // Not enough cache, increase it
+                                bufferManager = ByteBuffer.allocate(bufferManager.capacity() * 2);
+                                bufferManager.order(ByteOrder.LITTLE_ENDIAN);
                             }
                         }
 
                         int propertiesOffset = 0;
                         if (bufferManager.position() > 0) {
                             bufferManager.flip();
-                            propertiesOffset = Feature.createPropertiesVector(bufferBuilder, bufferManager.getBuffer());
+                            propertiesOffset = Feature.createPropertiesVector(bufferBuilder, bufferManager);
+                            bufferManager.clear();
                         }
 
 
@@ -264,19 +285,14 @@ public class FGBWriteDriver {
                         }
                         featureAddressPointer += featureOffset;
                         bufferBuilder.finishSizePrefixed(featureOffset);
-                        WritableByteChannel channel_ = Channels.newChannel(outputStream);
-                        ByteBuffer dataBuffer = bufferBuilder.dataBuffer();
-                        while (dataBuffer.hasRemaining()) {
-                            channel_.write(dataBuffer);
-                        }
-                        bufferManager.clear();
+                        outputStream.write(bufferBuilder.sizedByteArray());
+                        bufferBuilder.clear();
                     }
                     if(envelopes != null) {
                         // Write spatial index after the header and before the first feature
                         NodeItem extend = new NodeItem(0);
                         envelopes.forEach(x -> extend.expand(x.nodeItem));
                         PackedRTree.hilbertSort(envelopes, extend);
-                        Collections.reverse(envelopes);
                         PackedRTree packedRTree = new PackedRTree(envelopes, packedRTreeNodeSize);
                         FileChannel fileChannel = outputStream.getChannel();
                         fileChannel.position(endHeaderPosition);
@@ -335,6 +351,7 @@ public class FGBWriteDriver {
             headerMeta.indexNodeSize = 0;
         }
         HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
+        bufferBuilder.clear();
         return headerMeta;
     }
 

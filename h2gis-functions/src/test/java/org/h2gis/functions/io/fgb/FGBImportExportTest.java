@@ -1,6 +1,8 @@
 package org.h2gis.functions.io.fgb;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import org.checkerframework.checker.units.qual.A;
+import org.h2.index.Cursor;
 import org.h2.util.geometry.EWKTUtils;
 import org.h2.util.geometry.JTSUtils;
 import org.h2.value.Value;
@@ -23,6 +25,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.HeaderMeta;
 import org.wololo.flatgeobuf.NodeItem;
 import org.wololo.flatgeobuf.PackedRTree;
@@ -37,6 +40,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -288,7 +292,7 @@ public class FGBImportExportTest {
         //tempOutputFile.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
-            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES_FGB', true, 'createIndex=false');");
+            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES_FGB', true, 'createIndex=true');");
         }
         assertTrue(tempOutputFile.exists());
         FGBDriver fgbDriver = new FGBDriver();
@@ -296,14 +300,34 @@ public class FGBImportExportTest {
         fgbDriver.cacheFeatureAddressFromIndex();
     }
 
+    private static List<Value> idsFromCursor(Cursor cursor, FGBDriver fgbDriver, String columnName) {
+        List<Value> values = new ArrayList<>();
+        int indexColum = 0;
+        for (ColumnMeta column : fgbDriver.getHeader().columns) {
+            if(column.name.equalsIgnoreCase(columnName)) {
+                if(indexColum >= fgbDriver.getGeometryFieldIndex()) {
+                    indexColum++;
+                }
+                break;
+            }
+            indexColum++;
+        }
+        while(cursor.next()) {
+            values.add(cursor.get().getValue(indexColum));
+        }
+        return values;
+    }
+
     @Test
-    public void testRandomFGPReadGdal() throws Exception {
+    public void testFGPReadGdal() throws Exception {
         FGBDriver fgbDriver = new FGBDriver();
         File file = URIUtilities.fileFromString(Objects.requireNonNull(FGBImportExportTest.class.getResource(
                 "countries_gdal.fgb")).getFile());
         fgbDriver.initDriverFromFile(file);
         assertEquals(179, fgbDriver.getRowCount());
         assertEquals(3, fgbDriver.getFieldCount());
-        fgbDriver.cacheFeatureAddressFromIndex();
+        Cursor cursor = fgbDriver.queryIndex(new Envelope(115.95, 125.031, 5.17, 11.88));
+        assertIterableEquals(Arrays.asList(ValueVarchar.get("IDN"), ValueVarchar.get("MYS"), ValueVarchar.get("PHL")),
+                idsFromCursor(cursor, fgbDriver, "ID"));
     }
 }
