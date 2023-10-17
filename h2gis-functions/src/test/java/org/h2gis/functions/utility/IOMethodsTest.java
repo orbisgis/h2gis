@@ -596,4 +596,24 @@ public class IOMethodsTest {
         assertGeometryEquals("POLYGON ((-10 9, -10 109, 90 109, 90 9, -10 9))", (Geometry) res.getObject(1));
         res.close();
     }
+
+    @Test
+    public void test_importAndLinkFGB() throws Exception {
+        File fgbFile = new File("target/area_export.fgb");
+        st.execute("DROP TABLE IF EXISTS AREA");
+        st.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+        st.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
+        // Create a shape file using table area
+        IOMethods ioMethods = new IOMethods();
+        ioMethods.exportToFile(connection, "AREA", "target/area_export.fgb", null, true);
+        // Read this shape file to check values
+        assertTrue(fgbFile.exists());
+        String tableName = IOMethods.linkedFile(connection,  fgbFile.getAbsolutePath(), "FGBTABLE", true);
+        assertEquals("FGBTABLE", tableName);
+        ResultSet res = st.executeQuery("SELECT idarea, the_geom FROM FGBTABLE");
+        assertTrue(res.next());
+        assertEquals(1, res.getInt(1));
+        assertGeometryEquals("POLYGON ((-10 9, -10 109, 90 109, 90 9, -10 9))", (Geometry) res.getObject(2));
+        res.close();
+    }
 }
