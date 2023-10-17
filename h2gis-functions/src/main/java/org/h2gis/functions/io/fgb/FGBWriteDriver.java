@@ -380,6 +380,8 @@ public class FGBWriteDriver {
                 return GeometryType.MultiPolygon;
             case "GEOMETRYCOLLECTION":
                 return GeometryType.GeometryCollection;
+            case "GEOMETRY":
+                return GeometryType.Unknown;
             default:
                 throw new RuntimeException("SQL type not supported : " + geometryTypeName);
         }
