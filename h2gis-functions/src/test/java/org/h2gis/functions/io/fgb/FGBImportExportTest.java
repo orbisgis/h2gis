@@ -303,4 +303,28 @@ public class FGBImportExportTest {
             assertFalse(rs.next());
         }
     }
+
+    @Test
+    public void testWriteReadFGBPointSrid() throws Exception {
+        File file = new File("target/points.fgb");
+        file.deleteOnExit();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT, 4326))");
+            stat.execute("insert into TABLE_POINTS values(1, 'SRID=4326;POINT (140 260)')");
+            stat.execute("insert into TABLE_POINTS values(2, 'SRID=4326;POINT (150 290)')");
+            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
+
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
+            assertEquals("SRID=4326;POINT (140 260)", rs.getString("THE_GEOM"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("ID"));
+            assertEquals("SRID=4326;POINT (150 290)", rs.getString("THE_GEOM"));
+            assertFalse(rs.next());
+        }
+    }
 }
