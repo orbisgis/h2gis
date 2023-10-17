@@ -24,6 +24,8 @@ import java.io.IOException;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.io.fgb.FGBRead;
+import org.h2gis.functions.io.fgb.FGBWrite;
 import org.h2gis.functions.io.shp.SHPEngineTest;
 import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.GeometryMetaData;
@@ -76,6 +78,8 @@ public class IOMethodsTest {
         H2GISFunctions.registerFunction(connection.createStatement(), new SHPWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFRead(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new FGBRead(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new FGBWrite(), "");
     }
 
     @AfterAll
@@ -571,5 +575,45 @@ public class IOMethodsTest {
         ResultSet res = st.executeQuery("SELECT the_geom FROM "+ tableName);
         assertTrue(res.next());
         assertTrue( ((Geometry)res.getObject(1)).getSRID()== 0);
+    }
+
+    @Test
+    public void test_importExportFGB() throws Exception {
+        File fgbFile = new File("target/area_export.fgb");
+        st.execute("DROP TABLE IF EXISTS AREA");
+        st.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+        st.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
+        // Create a shape file using table area
+        IOMethods ioMethods = new IOMethods();
+        ioMethods.exportToFile(connection, "AREA", "target/area_export.fgb", null, true);
+        // Read this shape file to check values
+        assertTrue(fgbFile.exists());
+        String[] tableNames = ioMethods.importFile(connection, fgbFile.getAbsolutePath(), "test_table", null, true);
+        assertEquals("TEST_TABLE", tableNames[0]);
+        ResultSet res = st.executeQuery("SELECT * FROM test_table");
+        assertTrue(res.next());
+        assertEquals(1, res.getInt(2));
+        assertGeometryEquals("POLYGON ((-10 9, -10 109, 90 109, 90 9, -10 9))", (Geometry) res.getObject(1));
+        res.close();
+    }
+
+    @Test
+    public void test_importAndLinkFGB() throws Exception {
+        File fgbFile = new File("target/area_export.fgb");
+        st.execute("DROP TABLE IF EXISTS AREA");
+        st.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
+        st.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
+        // Create a shape file using table area
+        IOMethods ioMethods = new IOMethods();
+        ioMethods.exportToFile(connection, "AREA", "target/area_export.fgb", null, true);
+        // Read this shape file to check values
+        assertTrue(fgbFile.exists());
+        String tableName = IOMethods.linkedFile(connection,  fgbFile.getAbsolutePath(), "FGBTABLE", true);
+        assertEquals("FGBTABLE", tableName);
+        ResultSet res = st.executeQuery("SELECT idarea, the_geom FROM FGBTABLE");
+        assertTrue(res.next());
+        assertEquals(1, res.getInt(1));
+        assertGeometryEquals("POLYGON ((-10 9, -10 109, 90 109, 90 9, -10 9))", (Geometry) res.getObject(2));
+        res.close();
     }
 }
