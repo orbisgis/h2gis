@@ -28,3 +28,4 @@
 + GeoJson read the optional ID field on feature as an attribute, but currently it will be saved back into feature attribute.
 + FlatGeobuf driver. Read Write driver and FileTable. This driver does not support mixed geometry type. On write a spatial index is created by default. The spatial index on file table is not currently supported.
 + Expose FlatGeobuf driver to the IOMethods
++ FlatGeobuf must supports Unknown geometry type for SQL GEOMETRY
