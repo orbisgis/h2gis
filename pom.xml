@@ -88,12 +88,13 @@
         <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
         <poly2tri-version>0.7.0-SNAPSHOT</poly2tri-version>
         <postgis-jdbc-version>2021.1.0</postgis-jdbc-version>
+        <flatgeobuf-version>3.26.1</flatgeobuf-version>
         <postgresql-version>42.6.0</postgresql-version>
         <jna-version>0.5.0-SNAPSHOT</jna-version>
         <cts-version>1.7.1-SNAPSHOT</cts-version>
         <geographiclib-version>2.0</geographiclib-version>
         <slf4j-version>2.0.9</slf4j-version>
-
+      
         <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>
         <maven-assembly-version>3.3.0</maven-assembly-version>
@@ -136,6 +137,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.wololo</groupId>
+                <artifactId>flatgeobuf</artifactId>
+                <version>${flatgeobuf-version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>poly2tri</artifactId>

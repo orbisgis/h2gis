@@ -34,6 +34,14 @@ public class GeoJsonField {
     static String FEATURE="feature";
     static String GEOMETRY="geometry";
     static String PROPERTIES="properties";
+
+    /**
+     * If a Feature has a commonly used identifier, that identifier
+     *       SHOULD be included as a member of the Feature object with the name
+     *       "id", and the value of this member is either a JSON string or
+     *       number.
+     */
+    static String FEATURE_ID="id";
     static String POINT="point";
     static String LINESTRING="linestring";
     static String POLYGON="polygon";

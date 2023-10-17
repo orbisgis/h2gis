@@ -343,7 +343,7 @@ public class H2GISFunctions {
      * @param connection Active H2 connection
      * @param BundleSymbolicName OSGi Bundle symbolic name
      * @param BundleVersion OSGi Bundle version
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException  Database issue
      */
     public static void load(Connection connection, String BundleSymbolicName, String BundleVersion) throws SQLException {
         String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
@@ -354,7 +354,7 @@ public class H2GISFunctions {
     /**
      * Register GEOMETRY type and register H2GIS functions
      * @param connection Active H2 connection
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException  Database issue
      */
     public static void load(Connection connection) throws SQLException {
         org.locationtech.jts.JTSVersion jtsVersion = org.locationtech.jts.JTSVersion.CURRENT_VERSION;
@@ -369,7 +369,7 @@ public class H2GISFunctions {
     /**
      * Register view in order to create GEOMETRY_COLUMNS standard table.
      * @param connection Open connection
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException  Database issue
      */
     public static void registerSpatialTables(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
@@ -502,7 +502,7 @@ public class H2GISFunctions {
      * Remove the specified function from the provided DataBase connection
      * @param st Active statement
      * @param function function to remove
-     * @throws SQLException
+     * @throws SQLException  Database issue
      */
     public static void unRegisterFunction(Statement st, Function function) throws SQLException {
         String functionAlias = getStringProperty(function, Function.PROP_NAME);

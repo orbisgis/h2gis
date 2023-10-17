@@ -24,6 +24,8 @@ import org.h2.util.StringUtils;
 import org.h2gis.api.*;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.dbf.DBFEngine;
+import org.h2gis.functions.io.fgb.FGBDriverFunction;
+import org.h2gis.functions.io.fgb.FGBEngine;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.shp.SHPEngine;
 import org.h2gis.utilities.TableLocation;
@@ -41,17 +43,20 @@ import java.sql.Statement;
  * Manage additional table engines in H2.
  * Use the appropriate driver to open a specified file path.
  * @author Nicolas Fortin
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain Paliminos (UBS 2019)
+ * @author Erwan Bocher (CNRS)
  */
 public class DriverManager extends AbstractFunction implements ScalarFunction, DriverFunction {
 
     private static final DriverDef[] DRIVERS = new DriverDef[] {
             new DriverDef(DBFEngine.class.getName(),"dbf"),
-            new DriverDef(SHPEngine.class.getName(),"shp")};
+            new DriverDef(SHPEngine.class.getName(),"shp"),
+            new DriverDef(FGBEngine.class.getName(), "fgb")};
     private static final int FORMAT = 0;
     private static final int DESCRIPTION = 1;
     private static final String[][] formatDescription = new String[][] {{"dbf", DBFDriverFunction.DESCRIPTION},
-                                                                        {"shp", SHPDriverFunction.DESCRIPTION}};
+                                                                        {"shp", SHPDriverFunction.DESCRIPTION},
+                                                                        {"fgb", FGBDriverFunction.DESCRIPTION}};
 
     public DriverManager() {
         addProperty(PROP_NAME, "FILE_TABLE");
@@ -199,12 +204,12 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
 
     /**
      * Method to check the import and export arguments
-     * @param connection
-     * @param tableReference
-     * @param fileName
-     * @param progress
-     * @return
-     * @throws SQLException
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference Table name
+     * @param fileName Path of the data file
+     * @param progress Progress instance
+     * @return progress instance
+     * @throws SQLException Database issue
      */
     public static ProgressVisitor check(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException {
         if (connection == null) {

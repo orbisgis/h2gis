@@ -56,9 +56,13 @@ public final class WriteBufferManager {
 	 * @param b
 	 * @throws java.io.IOException
 	 */
-	public void put(byte b) throws IOException {
+	public void putShort(byte b) throws IOException {
 		prepareToAddBytes(1);
 		buffer.put(b);
+	}
+
+	public int position(){
+		return buffer.position();
 	}
 
 	/**
@@ -89,7 +93,7 @@ public final class WriteBufferManager {
 	 * @param bs
 	 * @throws java.io.IOException
 	 */
-	public void put(byte[] bs) throws IOException {
+	public void putShort(byte[] bs) throws IOException {
 		prepareToAddBytes(bs.length);
 		buffer.put(bs);
 	}
@@ -136,4 +140,40 @@ public final class WriteBufferManager {
 		buffer.putDouble(d);
 	}
 
+	public void flip() {
+		buffer.flip();
+	}
+
+	public ByteBuffer getBuffer() {
+		return buffer;
+	}
+
+	public void putShort(short i) throws IOException {
+		 prepareToAddBytes(2);
+		 buffer.putShort(i);
+	}
+
+	public void putFloat(float value) throws IOException {
+		prepareToAddBytes(4);
+		buffer.putFloat(value);
+	}
+
+	public void putLong(long value) throws IOException {
+		prepareToAddBytes(8);
+		buffer.putLong(value);
+	}
+
+	public void putBytes(byte[] byteArray) throws IOException {
+		prepareToAddBytes(byteArray.length);
+		buffer.put(byteArray);
+	}
+
+	public void putBytes(byte[] byteArray, int offset, int length) throws IOException {
+		prepareToAddBytes(length);
+		buffer.put(byteArray, offset, length);
+	}
+
+	public void clear() {
+		buffer.clear();
+	}
 }
