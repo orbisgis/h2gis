@@ -25,3 +25,5 @@
 + Zip and unzip functions with subfolders
 + GeoJson driver must be able to read json extension
 + GeoJson handle the M ordinate. The limitation is only ZM is supported (default Z value to 0 if M is given but not Z)
++ GeoJson read the optional ID field on feature as an attribute, but currently it will be saved back into feature attribute.
++ FlatGeobuf driver. Read Write driver and FileTable. This driver does not support mixed geometry type. On write a spatial index is created by default. The spatial index on file table is not currently supported. 

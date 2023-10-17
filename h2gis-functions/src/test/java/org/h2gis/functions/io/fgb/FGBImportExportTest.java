@@ -1,26 +1,50 @@
 package org.h2gis.functions.io.fgb;
 
-import org.h2.value.ValueGeometry;
+import com.google.common.io.LittleEndianDataInputStream;
+import org.h2.index.Cursor;
+import org.h2.value.Value;
+import org.h2.value.ValueVarchar;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
-import org.h2gis.functions.io.geojson.*;
-import org.h2gis.postgis_jts.PostGISDBFactory;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.URIUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wololo.flatgeobuf.ColumnMeta;
+import org.wololo.flatgeobuf.HeaderMeta;
+import org.wololo.flatgeobuf.NodeItem;
+import org.wololo.flatgeobuf.PackedRTree;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FGBImportExportTest {
@@ -28,14 +52,14 @@ public class FGBImportExportTest {
 
     private static Connection connection;
     private static final String DB_NAME = "FGBImportExportTest";
-    private static final WKTReader WKTREADER = new WKTReader();
     private static final Logger log = LoggerFactory.getLogger(FGBImportExportTest.class);
 
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
+        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
         H2GISFunctions.registerFunction(connection.createStatement(), new FGBWrite(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new FGBRead(), "");
     }
 
     @AfterAll
@@ -45,25 +69,25 @@ public class FGBImportExportTest {
 
     @Test
     public void testWriteReadFGBPoint() throws Exception {
+        File file = new File("target/points.fgb");
+        file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT))");
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)')");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)')");
-
-            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS; CREATE TABLE TABLE_POINTS (the_geom GEOMETRY(POINT)) as SELECT st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00) as the_geom  FROM GENERATE_SERIES(1, 10000);");
             stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
 
-           //stat.execute("CALL SHPWRITE('target/points.shp', 'TABLE_POINTS', true);");
-
-            /*stat.execute("CALL GeoJsonRead('target/multipoints.geojson', 'TABLE_MULTIPOINTS_READ');");
-            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");
-            res.next();
-            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((140 260), (246 284))")));
-            res.next();
-            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((150 290), (180 170), (266 275))")));
-            res.close();
-            stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS_READ");*/
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
+            assertEquals("POINT (140 260)", rs.getString("THE_GEOM"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("ID"));
+            assertEquals("POINT (150 290)", rs.getString("THE_GEOM"));
+            assertFalse(rs.next());
         }
     }
 
@@ -80,43 +104,179 @@ public class FGBImportExportTest {
             FGBDriver fgbDriver = new FGBDriver();
             fgbDriver.initDriverFromFile(fgbFile);
             assertEquals(3, fgbDriver.getFieldCount());
-            for (int i = 0; i <fgbDriver.getRowCount() ; i++) {
-                for (int j = 0; j < fgbDriver.getFieldCount(); j++) {
-                    System.out.println(fgbDriver.getField(i, j).getString());
+            assertEquals(2, fgbDriver.getRowCount());
+
+            assertEquals("POINT (140 260)", fgbDriver.getField(0, 0).getString());
+            assertEquals(1, fgbDriver.getField(0, 1).getInt());
+            assertEquals("corn", fgbDriver.getField(0, 2).getString());
+
+            assertEquals("POINT (150 290)", fgbDriver.getField(1, 0).getString());
+            assertEquals(2, fgbDriver.getField(1, 1).getInt());
+            assertEquals("grass", fgbDriver.getField(1, 2).getString());
+        }
+    }
+
+    @Test
+    public void testFGBFileTable() throws Exception {
+        File file = new File("target/points.fgb");
+        file.deleteOnExit();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), land varchar)");
+            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 'corn')");
+            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 'grass')");
+            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FILE_TABLE('target/points.fgb', 'points');");
+
+            ResultSet rs = stat.executeQuery("SELECT * FROM points");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
+            assertEquals("POINT (140 260)", rs.getString("THE_GEOM"));
+            assertEquals("corn", rs.getString("land"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("ID"));
+            assertEquals("POINT (150 290)", rs.getString("THE_GEOM"));
+            assertEquals("grass", rs.getString("land"));
+            assertFalse(rs.next());
+        }
+    }
+
+    /**
+     * Use externally generated FGP and GeoJSON files from flatgeobuf repository
+     */
+    @Test
+    public void testExternalFGPImport() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
+            stat.execute("CALL GEOJSONREAD('" + FGBImportExportTest.class.getResource("countries.geojson") + "', 'COUNTRIES_GEOJSON', true);");
+            // Compare results
+        }
+        try (ResultSet geojsonRs = connection.createStatement().executeQuery("SELECT the_geom, id, name FROM COUNTRIES_GEOJSON ORDER BY ID")) {
+            try (ResultSet fgbRs = connection.createStatement().executeQuery("SELECT the_geom, id, name FROM COUNTRIES_FGB ORDER BY ID")) {
+                while (geojsonRs.next()) {
+                    assertTrue(fgbRs.next());
+                    assertEquals(geojsonRs.getString(2), fgbRs.getString(2));
+                    assertEquals(geojsonRs.getString(3), fgbRs.getString(3));
+                    Geometry geojsonGeom = (Geometry) geojsonRs.getObject(1);
+                    Geometry fgbGeom = (Geometry) fgbRs.getObject(1);
+                    assertNotNull(geojsonGeom);
+                    assertNotNull(fgbGeom);
+                    assertEquals(0, geojsonGeom.getCentroid().getCoordinate().distance(fgbGeom.getCentroid().getCoordinate()), 1e-6);
                 }
             }
         }
     }
 
     @Test
-    public void testFGBFileTable() throws Exception {
-        try (Statement stat = connection.createStatement()) {
-            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), land varchar)");
-            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 'corn')");
-            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 'grass')");
-            stat.execute("CALL FILE_TABLE('target/points.fgb', 'points');");
-            ResultSet rs = stat.executeQuery("SELECT * FROM points");
-            assertTrue(rs.next());
-            assertEquals(1, rs.getInt("ID"));
-        }
+    public void testFGPIndex() throws IOException {
+        FGBDriver fgbDriver = new FGBDriver();
+        File file = URIUtilities.fileFromString(Objects.requireNonNull(FGBImportExportTest.class.getResource(
+                "countries.fgb")).getFile());
+        fgbDriver.initDriverFromFile(file);
+        fgbDriver.cacheFeatureAddressFromIndex();
+
+
+        assertEquals(179, fgbDriver.getRowCount());
+        assertEquals(3, fgbDriver.getFieldCount());
+        Object idObj = fgbDriver.getField(50, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("LVA", ((ValueVarchar) idObj).getString());
+
+        idObj = fgbDriver.getField(35, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("BTN", ((ValueVarchar) idObj).getString());
+
+        idObj = fgbDriver.getField(100, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("KWT", ((ValueVarchar) idObj).getString());
     }
 
-    @Disabled
     @Test
-    public void testWriteRamdomPoints() throws Exception {
-        try (Statement stat = connection.createStatement()) {
-            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("create table TABLE_POINTS (THE_GEOM GEOMETRY(POINT)) as SELECT  st_makepoint(-60 + x*random()/500.00, 30 + x*random()/500.00) AS_THE_GEOM FROM GENERATE_SERIES(1, 10000)");
-            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
-            /*stat.execute("CALL GeoJsonRead('target/multipoints.geojson', 'TABLE_MULTIPOINTS_READ');");
-            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");
-            res.next();
-            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((140 260), (246 284))")));
-            res.next();
-            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((150 290), (180 170), (266 275))")));
-            res.close();
-            stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS_READ");*/
+    public void testRandomFGPRead() throws Exception {
+        FGBDriver fgbDriver = new FGBDriver();
+        File file = URIUtilities.fileFromString(Objects.requireNonNull(FGBImportExportTest.class.getResource(
+                "countries.fgb")).getFile());
+        fgbDriver.initDriverFromFile(file);
+        assertEquals(179, fgbDriver.getRowCount());
+        assertEquals(3, fgbDriver.getFieldCount());
+        Object idObj = fgbDriver.getField(50, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("LVA", ((ValueVarchar) idObj).getString());
+
+        idObj = fgbDriver.getField(35, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("BTN", ((ValueVarchar) idObj).getString());
+
+        idObj = fgbDriver.getField(100, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("KWT", ((ValueVarchar) idObj).getString());
+    }
+
+    private static <R> List<R> idsFromCursor(Cursor cursor, FGBDriver fgbDriver, String columnName,
+                                         Function<? super Value, ? extends R> var1) {
+        List<Value> values = new ArrayList<>();
+        int indexColum = 0;
+        for (ColumnMeta column : fgbDriver.getHeader().columns) {
+            if(column.name.equalsIgnoreCase(columnName)) {
+                if(indexColum >= fgbDriver.getGeometryFieldIndex()) {
+                    indexColum++;
+                }
+                break;
+            }
+            indexColum++;
         }
+        while(cursor.next()) {
+            values.add(cursor.get().getValue(indexColum));
+        }
+        return values.stream().map(var1).sorted().collect(Collectors.toList());
+    }
+
+    @Test
+    public void testFGPReadGdal() throws Exception {
+        FGBDriver fgbDriver = new FGBDriver();
+        File file = URIUtilities.fileFromString(Objects.requireNonNull(FGBImportExportTest.class.getResource(
+                "countries_gdal.fgb")).getFile());
+        fgbDriver.initDriverFromFile(file);
+        assertEquals(179, fgbDriver.getRowCount());
+        assertEquals(3, fgbDriver.getFieldCount());
+        Cursor cursor = fgbDriver.queryIndex(new Envelope(115.95, 125.031, 5.17, 11.88));
+        assertIterableEquals(Arrays.asList("IDN", "MYS", "PHL"),
+                idsFromCursor(cursor, fgbDriver, "ID", Value::getString));
+    }
+
+
+    @Test
+    public void testReadWriteSpatialIndex() throws Exception {
+        File tempOutputFile = new File("target/countries_exported.fgb");
+        tempOutputFile.deleteOnExit();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
+            stat.execute("DROP TABLE IF EXISTS COUNTRIES");
+            stat.execute("CREATE TABLE COUNTRIES AS SELECT * FROM COUNTRIES_FGB ORDER BY ID");
+            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES', true, 'createIndex=true');");
+        }
+        FGBDriver fgbDriver = new FGBDriver();
+        fgbDriver.initDriverFromFile(tempOutputFile);
+        fgbDriver.cacheFeatureAddressFromIndex();
+
+        assertEquals(179, fgbDriver.getRowCount());
+        assertEquals(3, fgbDriver.getFieldCount());
+        Cursor cursor = fgbDriver.queryIndex(new Envelope(115.95, 125.031, 5.17, 11.88));
+        assertIterableEquals(Arrays.asList("IDN", "MYS", "PHL"),
+                 idsFromCursor(cursor, fgbDriver, "ID", Value::getString));
+
+        // Check random access built from Spatial Index offsets
+
+        Object idObj = fgbDriver.getField(50, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("LVA", ((ValueVarchar) idObj).getString());
+
+        idObj = fgbDriver.getField(35, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("BTN", ((ValueVarchar) idObj).getString());
+
+        idObj = fgbDriver.getField(100, 1);
+        assertInstanceOf(ValueVarchar.class, idObj);
+        assertEquals("KWT", ((ValueVarchar) idObj).getString());
     }
 }

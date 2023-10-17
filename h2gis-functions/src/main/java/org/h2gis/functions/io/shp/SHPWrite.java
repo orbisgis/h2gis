@@ -105,4 +105,4 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
         shpDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteFiles, new EmptyProgressVisitor());
     }
-    }
+}
