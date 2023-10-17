@@ -27,6 +27,7 @@ import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
+import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
@@ -54,7 +55,7 @@ public class FGBDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[0];
+        return new String[]{"fgb"};
     }
 
     @Override
@@ -133,7 +134,9 @@ public class FGBDriverFunction implements DriverFunction {
 
     @Override
     public String[] importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        progress = DriverManager.check(connection,tableReference,fileName, progress);
         final DBTypes dbType = DBUtils.getDBType(connection);
+        if (FileUtilities.isFileImportable(fileName, "fgb")) {
         String sqlTableName = TableLocation.parse(tableReference, dbType).toString();
         // forge the sql query to create table
         try(Statement st = connection.createStatement()) {
@@ -200,6 +203,8 @@ public class FGBDriverFunction implements DriverFunction {
                     pst.clearBatch();
                 }
             }
+            return new String[]{sqlTableName};
+        }
         }
         return null;
     }

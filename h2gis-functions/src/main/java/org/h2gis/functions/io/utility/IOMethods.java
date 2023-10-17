@@ -25,6 +25,7 @@ import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.asc.AscDriverFunction;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
+import org.h2gis.functions.io.fgb.FGBDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
 import org.h2gis.functions.io.gpx.GPXDriverFunction;
 import org.h2gis.functions.io.json.JsonDriverFunction;
@@ -82,6 +83,7 @@ public class IOMethods {
         driverFunctionList.add(new SHPDriverFunction());
         driverFunctionList.add(new TSVDriverFunction());
         driverFunctionList.add(new AscDriverFunction());
+        driverFunctionList.add(new FGBDriverFunction());
     }
 
     /**
