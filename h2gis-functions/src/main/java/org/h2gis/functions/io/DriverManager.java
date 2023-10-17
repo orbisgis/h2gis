@@ -26,7 +26,6 @@ import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.dbf.DBFEngine;
 import org.h2gis.functions.io.fgb.FGBDriverFunction;
 import org.h2gis.functions.io.fgb.FGBEngine;
-import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.shp.SHPEngine;
 import org.h2gis.utilities.TableLocation;
@@ -205,12 +204,12 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
 
     /**
      * Method to check the import and export arguments
-     * @param connection
-     * @param tableReference
-     * @param fileName
-     * @param progress
-     * @return
-     * @throws SQLException
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference Table name
+     * @param fileName Path of the data file
+     * @param progress Progress instance
+     * @return progress instance
+     * @throws SQLException Database issue
      */
     public static ProgressVisitor check(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException {
         if (connection == null) {

@@ -61,7 +61,6 @@ public class FGBWrite extends AbstractFunction implements ScalarFunction {
      * @param tableReference Table name or select query Note : The select query
      *                       must be enclosed in parenthesis
      * @param deleteFile     true to delete output file
-     * @return
      * @throws IOException
      * @throws SQLException
      */
