@@ -59,6 +59,11 @@ import java.util.NavigableMap;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
+/**
+ * FlatGeobuffer reader driver
+ * @author Erwan Bocher
+ * @author Nicolas Fortin
+ */
 public class FGBDriver implements FileDriver {
     private HeaderMeta headerMeta;
     private int fieldCount;

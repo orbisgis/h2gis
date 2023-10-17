@@ -64,7 +64,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * FlatGeobuffer write file
+ * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class FGBWriteDriver {
     private final static int BYTEBUFFER_CACHE = 1024;
@@ -241,12 +243,15 @@ public class FGBWriteDriver {
                                                 String iso8601Date = ((ZonedDateTime) value).format(DateTimeFormatter.ISO_INSTANT);
                                                 writeString(iso8601Date, bufferManager);
                                             } else {
-                                                bufferManager.putInt(0);
+                                                throw new RuntimeException(
+                                                        "Cannot handle type " + value.getClass().getName()+ " with "
+                                                                + ColumnType.names[column.type]);
                                             }
                                             break;
                                         default:
                                             throw new RuntimeException(
-                                                    "Cannot handle type " + value.getClass().getName());
+                                                    "Cannot handle type " + value.getClass().getName()+ " with "
+                                                            + ColumnType.names[column.type]);
                                     }
                                 }
                                 break;

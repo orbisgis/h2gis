@@ -30,6 +30,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Expose FlatGeobuffer reader function
+ * @author Erwan Bocher
+ * @author Nicolas Fortin
+ */
 public class FGBRead extends AbstractFunction implements ScalarFunction {
 
     public FGBRead() {

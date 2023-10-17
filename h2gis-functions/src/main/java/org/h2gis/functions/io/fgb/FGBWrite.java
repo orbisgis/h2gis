@@ -28,6 +28,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Expose FlatGeobuffer writer function
+ * @author Erwan Bocher
+ * @author Nicolas Fortin
+ */
 public class FGBWrite extends AbstractFunction implements ScalarFunction {
 
     public FGBWrite() {

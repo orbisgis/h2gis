@@ -36,6 +36,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * FlatGeobuffer engine for link with file instead of copy
+ * @author Erwan Bocher
+ * @author Nicolas Fortin
+ */
 public class FGBEngine extends FileEngine<FGBDriver> {
 
 

@@ -40,6 +40,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 
+/**
+ * FlatGeobuffer reader/write driver function
+ * @author Erwan Bocher
+ * @author Nicolas Fortin
+ */
 public class FGBDriverFunction implements DriverFunction {
     private static final int BATCH_MAX_SIZE = 100;
     public static String DESCRIPTION = "FlatGeoBuffer";
