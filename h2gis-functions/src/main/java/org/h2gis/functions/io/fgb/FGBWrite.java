@@ -35,7 +35,8 @@ public class FGBWrite extends AbstractFunction implements ScalarFunction {
                 + "\nFGBWrite(..."
                 + "\n Supported arguments :"
                 + "\n path of the file, table name"
-                + "\n path of the file, table name, true to delete the file if exists");
+                + "\n path of the file, table name, true to delete the file if exists"
+                + "\n path of the file, table name, true to delete the file if exists,options default 'createIndex=true nodeSize=16'");
     }
 
     @Override

@@ -195,17 +195,6 @@ public class FGBDriverFunction implements DriverFunction {
                     pst.clearBatch();
                 }
             }
-
-
-            // Read file geometry type
-            //HeaderMeta headerMeta = fgbDriver.getHeader();
-            //StringBuilder createTableQuery = new StringBuilder("CREATE TABLE ");
-            //createTableQuery.append(TableLocation.parse(tableReference, dbType));
-            //createTableQuery.append("(THE_GEOM ");
-            //createTableQuery.append(FGBDriver.getGeometryFieldType(headerMeta));
-            //createTableQuery.append(", ");
-            //// Attributes
-            //fgbDriver.
         }
         return null;
     }
