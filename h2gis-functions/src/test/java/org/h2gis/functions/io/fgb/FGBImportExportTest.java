@@ -86,7 +86,7 @@ public class FGBImportExportTest {
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("ID"));
             assertEquals("POINT (140 260)", rs.getString("THE_GEOM"));
-            assertEquals(12.1, rs.getObject("area"));
+            assertEquals(12.1, rs.getFloat("area"));
             assertEquals("OrbisGIS", rs.getString("name"));
             assertEquals(1, rs.getObject("smallint_col"));
             assertEquals(1, rs.getObject("int_col"));
