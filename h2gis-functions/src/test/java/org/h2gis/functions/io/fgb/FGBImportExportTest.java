@@ -73,9 +73,11 @@ public class FGBImportExportTest {
         file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT))");
-            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)')");
-            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)')");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), area float, " +
+                    "perimeter double precision, name varchar, smallint_col smallint, int_col integer, " +
+                    "numeric_col NUMERIC(10, 1),  real_col real, float_precision_col float(1), bigint_col bigint )");
+            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 12.1, 156.12345678, 'OrbisGIS', 1, 1,10.5,12.1234, 12.8, 1000000)");
+            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 10.2,  156.12345678, 'NoiseModelling', null, 1,10.5,12.1234, 12.8, null)");
             stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
@@ -84,9 +86,18 @@ public class FGBImportExportTest {
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("ID"));
             assertEquals("POINT (140 260)", rs.getString("THE_GEOM"));
+            assertEquals(12.1, rs.getObject("area"));
+            assertEquals("OrbisGIS", rs.getString("name"));
+            assertEquals(1, rs.getObject("smallint_col"));
+            assertEquals(1, rs.getObject("int_col"));
+            assertEquals(10.5, rs.getObject("numeric_col"));
+            assertEquals(12.1234 , rs.getObject("real_col"));
+            assertEquals(12.8, rs.getObject("float_precision_col"));
+            assertEquals(1000000, rs.getObject("bigint_col"));
             assertTrue(rs.next());
             assertEquals(2, rs.getInt("ID"));
             assertEquals("POINT (150 290)", rs.getString("THE_GEOM"));
+            assertEquals(10.2, rs.getDouble("area"));
             assertFalse(rs.next());
         }
     }

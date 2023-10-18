@@ -40,6 +40,7 @@ import org.wololo.flatgeobuf.generated.GeometryType;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -216,16 +217,25 @@ public class FGBWriteDriver {
                                             bufferManager.putShort((byte) value);
                                             break;
                                         case ColumnType.Short:
-                                            bufferManager.putShort((short) value);
+                                            bufferManager.putShort(((Integer) value).shortValue());
                                             break;
                                         case ColumnType.Int:
                                             bufferManager.putInt((int) value);
                                             break;
                                         case ColumnType.Float:
-                                            bufferManager.putFloat((float) value);
+                                            if(value instanceof Float){
+                                                bufferManager.putFloat((Float) value);
+                                            }
+                                            else {
+                                                bufferManager.putFloat(((Double) value).floatValue());
+                                            }
                                             break;
                                         case ColumnType.Double:
-                                            bufferManager.putDouble((float) value);
+                                            if(value instanceof BigDecimal){
+                                                bufferManager.putDouble(((BigDecimal) value).doubleValue());
+                                            }else {
+                                                bufferManager.putDouble((Double) value);
+                                            }
                                             break;
                                         case ColumnType.Long:
                                             if (value instanceof BigInteger) {
@@ -347,6 +357,9 @@ public class FGBWriteDriver {
             ColumnMeta column = new ColumnMeta();
             column.name = metadata.getColumnName(i);
             column.type = columnType(metadata.getColumnType(i), typeName);
+            column.width=metadata.getPrecision(i);
+            column.scale=metadata.getScale(i);
+            column.precision=metadata.getPrecision(i);
             columns.add(column);
         }
         HeaderMeta headerMeta = new HeaderMeta();

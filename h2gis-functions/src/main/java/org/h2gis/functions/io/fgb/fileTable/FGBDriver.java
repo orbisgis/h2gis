@@ -24,16 +24,7 @@ import org.h2.index.Cursor;
 import org.h2.result.DefaultRow;
 import org.h2.result.Row;
 import org.h2.result.SearchRow;
-import org.h2.value.Value;
-import org.h2.value.ValueBigint;
-import org.h2.value.ValueBoolean;
-import org.h2.value.ValueDate;
-import org.h2.value.ValueDouble;
-import org.h2.value.ValueGeometry;
-import org.h2.value.ValueInteger;
-import org.h2.value.ValueNull;
-import org.h2.value.ValueSmallint;
-import org.h2.value.ValueVarchar;
+import org.h2.value.*;
 import org.h2gis.api.FileDriver;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.WKTReader;
@@ -234,6 +225,9 @@ public class FGBDriver implements FileDriver {
                         break;
                     case ColumnType.Long:
                         values[propertyIndex] = ValueBigint.get(propertiesBB.getLong());
+                        break;
+                    case ColumnType.Float:
+                        values[propertyIndex] = ValueReal.get(propertiesBB.getFloat());
                         break;
                     case ColumnType.Double:
                         values[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
