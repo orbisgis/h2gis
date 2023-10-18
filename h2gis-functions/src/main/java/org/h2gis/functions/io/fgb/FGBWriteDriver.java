@@ -107,7 +107,7 @@ public class FGBWriteDriver {
      * @param fileName
      * @param deleteFiles
      */
-    public void write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFiles) throws IOException, SQLException {
+    public String write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFiles) throws IOException, SQLException {
         if (tableName == null) {
             throw new SQLException("The select query or the table name must not be null.");
         }
@@ -123,8 +123,23 @@ public class FGBWriteDriver {
                         throw new IOException("The json file already exist.");
                     }
                     PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    JDBCUtilities.attachCancelResultSet(ps, progress);
                     ResultSet rs = ps.executeQuery();
-                    fgbWrite(progress, rs, new FileOutputStream(fileName));
+                    Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs);
+                    int srid =0;
+                    int recordCount = 0;
+                    rs.last();
+                    recordCount = rs.getRow();
+                    Object value = rs.getObject(spatialFieldNameAndIndex.second());
+                    if(value!=null){
+                        Geometry geom = (Geometry) value;
+                        srid = geom.getSRID();
+                    }
+                    rs.beforeFirst();
+                    ProgressVisitor copyProgress = progress.subProcess(recordCount);
+                    doExport(progress, rs,  spatialFieldNameAndIndex.first(), "GEOMETRY",srid, recordCount, new FileOutputStream(fileName));
+                    copyProgress.endOfProgress();
+                    return fileName.getAbsolutePath();
                 } else {
                     throw new SQLException("Only .fgb extension is supported");
                 }
@@ -141,12 +156,12 @@ public class FGBWriteDriver {
                 }
                 fgbWrite(progress, tableName, new FileOutputStream(fileName));
 
+                return fileName.getAbsolutePath();
+
             } else {
                 throw new SQLException("Only .fgb extension is supported");
             }
         }
-
-
     }
 
     private static void writeString(String value, ByteBuffer bufferManager) throws IOException {
@@ -166,157 +181,9 @@ public class FGBWriteDriver {
                       Statement st = connection.createStatement()) {
                     Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, parse);
                     String geomCol = geomMetadata.first();
+                    geomMetadata.second();
                     ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
-
-                    ResultSetMetaData rsmd = rs.getMetaData();
-                    FlatBufferBuilder bufferBuilder = new FlatBufferBuilder();
-
-                    //Write the header
-                    HeaderMeta header = writeHeader(outputStream, bufferBuilder, recordCount, geomMetadata.second(), rsmd);
-
-                    long endHeaderPosition = outputStream.getChannel().position();
-                    //Columns numbers
-                    int columnCount = header.columns.size();
-                    List<PackedRTree.Item> envelopes = null;
-                    if(createIndex && header.featuresCount < Integer.MAX_VALUE) {
-                        envelopes = new ArrayList<>((int) header.featuresCount);
-                        long indexSize = PackedRTree.calcSize((int) header.featuresCount, packedRTreeNodeSize);
-                        byte[] buffer = new byte[512];
-                        long written = 0;
-                        while (written < indexSize) {
-                            if(buffer.length > indexSize - written) {
-                                buffer = new byte[(int)(indexSize - written)];
-                            }
-                            outputStream.write(buffer);
-                            written += buffer.length;
-                        }
-                    }
-                    //Let's iterate the resultset
-                    long featureAddressPointer = 0;
-                    ByteBuffer bufferManager = ByteBuffer.allocate(BYTEBUFFER_CACHE);
-                    bufferManager.order(ByteOrder.LITTLE_ENDIAN);
-                    ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                    while (rs.next()) {
-                        bufferManager.clear();
-                        //Let's serialize the attributes
-                        while (true) {
-                            try {
-                                for (int i = 0; i < columnCount; i++) {
-                                    ColumnMeta column = header.columns.get(i);
-                                    Object value = rs.getObject(column.name);
-                                    if (value == null) {
-                                        continue;
-                                    }
-                                    bufferManager.putShort((short) i);
-                                    byte type = column.type;
-                                    switch (type) {
-                                        case ColumnType.Bool:
-                                            bufferManager.putShort((byte) ((boolean) value ? 1 : 0));
-                                            break;
-                                        case ColumnType.Byte:
-                                            bufferManager.putShort((byte) value);
-                                            break;
-                                        case ColumnType.Short:
-                                            bufferManager.putShort(((Integer) value).shortValue());
-                                            break;
-                                        case ColumnType.Int:
-                                            bufferManager.putInt((int) value);
-                                            break;
-                                        case ColumnType.Float:
-                                            if(value instanceof Float){
-                                                bufferManager.putFloat((Float) value);
-                                            }
-                                            else {
-                                                bufferManager.putFloat(((Double) value).floatValue());
-                                            }
-                                            break;
-                                        case ColumnType.Double:
-                                            if(value instanceof BigDecimal){
-                                                bufferManager.putDouble(((BigDecimal) value).doubleValue());
-                                            }else {
-                                                bufferManager.putDouble((Double) value);
-                                            }
-                                            break;
-                                        case ColumnType.Long:
-                                            if (value instanceof BigInteger) {
-                                                bufferManager.putLong(((BigInteger) value).longValue());
-                                            } else {
-                                                bufferManager.putLong((Long) value);
-                                            }
-                                            break;
-                                        case ColumnType.String:
-                                            writeString(value.toString(), bufferManager);
-                                            break;
-                                        case ColumnType.DateTime:
-                                            if (value instanceof ZonedDateTime) {
-                                                // ISO 8601
-                                                String iso8601Date = ((ZonedDateTime) value).format(DateTimeFormatter.ISO_INSTANT);
-                                                writeString(iso8601Date, bufferManager);
-                                            } else {
-                                                throw new RuntimeException(
-                                                        "Cannot handle type " + value.getClass().getName()+ " with "
-                                                                + ColumnType.names[column.type]);
-                                            }
-                                            break;
-                                        default:
-                                            throw new RuntimeException(
-                                                    "Cannot handle type " + value.getClass().getName()+ " with "
-                                                            + ColumnType.names[column.type]);
-                                    }
-                                }
-                                break;
-                            } catch (BufferOverflowException ex) {
-                                // Not enough cache, increase it
-                                bufferManager = ByteBuffer.allocate(bufferManager.capacity() * 2);
-                                bufferManager.order(ByteOrder.LITTLE_ENDIAN);
-                            }
-                        }
-
-                        int propertiesOffset = 0;
-                        if (bufferManager.position() > 0) {
-                            bufferManager.flip();
-                            propertiesOffset = Feature.createPropertiesVector(bufferBuilder, bufferManager);
-                            bufferManager.clear();
-                        }
-
-
-                        //Let's serialize the geometry
-                        int geometryOffset = 0;
-                        Geometry geom = (Geometry) rs.getObject(geomCol);
-                        if (geom != null) {
-                            geometryOffset = GeometryConversions.serialize(bufferBuilder, geom, header.geometryType);
-                        }
-                        int featureOffset = Feature.createFeature(bufferBuilder, geometryOffset, propertiesOffset, 0);
-                        if (envelopes != null) {
-                            PackedRTree.FeatureItem featureItem = new PackedRTree.FeatureItem();
-                            Envelope geomEnvelope;
-                            if(geom != null && !geom.isEmpty()) {
-                                geomEnvelope = geom.getEnvelopeInternal();
-                            }  else {
-                                geomEnvelope = new Envelope(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
-                                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                            }
-                            featureItem.nodeItem = new NodeItem(geomEnvelope.getMinX(), geomEnvelope.getMinY(),
-                                    geomEnvelope.getMaxX(), geomEnvelope.getMaxY(), featureAddressPointer);
-                            envelopes.add(featureItem);
-                        }
-                        bufferBuilder.finishSizePrefixed(featureOffset);
-                        byte[] featureData = bufferBuilder.sizedByteArray();
-                        featureAddressPointer += featureData.length;
-                        outputStream.write(featureData);
-                        bufferBuilder.clear();
-                        copyProgress.endStep();
-                    }
-                    if(envelopes != null) {
-                        // Write spatial index after the header and before the first feature
-                        NodeItem extend = new NodeItem(0);
-                        envelopes.forEach(x -> extend.expand(x.nodeItem));
-                        PackedRTree.hilbertSort(envelopes, extend);
-                        PackedRTree packedRTree = new PackedRTree(Lists.reverse(envelopes), packedRTreeNodeSize);
-                        FileChannel fileChannel = outputStream.getChannel();
-                        fileChannel.position(endHeaderPosition);
-                        packedRTree.write(outputStream);
-                    }
+                    doExport(progress, rs, geomCol, geomMetadata.second().sfs_geometryType, geomMetadata.second().SRID, recordCount, outputStream);
                 }
             }
         } finally {
@@ -330,7 +197,172 @@ public class FGBWriteDriver {
         }
     }
 
-    private void fgbWrite(ProgressVisitor progress, ResultSet rs, FileOutputStream fileOutputStream) {
+    private String doExport(ProgressVisitor progress, ResultSet rs, String geometryColumn, String geometryType, int srid,  int recordCount, FileOutputStream outputStream) throws SQLException, IOException {
+
+        FlatBufferBuilder bufferBuilder = new FlatBufferBuilder();
+
+        //Write the header
+        HeaderMeta header = writeHeader(outputStream, bufferBuilder, recordCount, geometryType, srid, rs.getMetaData());
+
+        long endHeaderPosition = outputStream.getChannel().position();
+        //Columns numbers
+        int columnCount = header.columns.size();
+        List<PackedRTree.Item> envelopes = null;
+        if(createIndex && header.featuresCount < Integer.MAX_VALUE) {
+            envelopes = new ArrayList<>((int) header.featuresCount);
+            long indexSize = PackedRTree.calcSize((int) header.featuresCount, packedRTreeNodeSize);
+            byte[] buffer = new byte[512];
+            long written = 0;
+            while (written < indexSize) {
+                if(buffer.length > indexSize - written) {
+                    buffer = new byte[(int)(indexSize - written)];
+                }
+                outputStream.write(buffer);
+                written += buffer.length;
+            }
+        }
+        //Let's iterate the resultset
+        long featureAddressPointer = 0;
+        ByteBuffer bufferManager = ByteBuffer.allocate(BYTEBUFFER_CACHE);
+        bufferManager.order(ByteOrder.LITTLE_ENDIAN);
+        ProgressVisitor copyProgress = progress.subProcess(recordCount);
+        while (rs.next()) {
+            bufferManager.clear();
+            //Let's serialize the attributes
+            while (true) {
+                try {
+                    for (int i = 0; i < columnCount; i++) {
+                        ColumnMeta column = header.columns.get(i);
+                        Object value = rs.getObject(column.name);
+                        if (value == null) {
+                            continue;
+                        }
+                        bufferManager.putShort((short) i);
+                        byte type = column.type;
+                        switch (type) {
+                            case ColumnType.Bool:
+                                bufferManager.putShort((byte) ((boolean) value ? 1 : 0));
+                                break;
+                            case ColumnType.Byte:
+                                bufferManager.putShort((byte) value);
+                                break;
+                            case ColumnType.Short:
+                                bufferManager.putShort(((Integer) value).shortValue());
+                                break;
+                            case ColumnType.Int:
+                                bufferManager.putInt((int) value);
+                                break;
+                            case ColumnType.Float:
+                                if(value instanceof Float){
+                                    bufferManager.putFloat((Float) value);
+                                }
+                                else {
+                                    bufferManager.putFloat(((Double) value).floatValue());
+                                }
+                                break;
+                            case ColumnType.Double:
+                                if(value instanceof BigDecimal){
+                                    bufferManager.putDouble(((BigDecimal) value).doubleValue());
+                                }else {
+                                    bufferManager.putDouble((Double) value);
+                                }
+                                break;
+                            case ColumnType.Long:
+                                if (value instanceof BigInteger) {
+                                    bufferManager.putLong(((BigInteger) value).longValue());
+                                } else {
+                                    bufferManager.putLong((Long) value);
+                                }
+                                break;
+                            case ColumnType.String:
+                                writeString(value.toString(), bufferManager);
+                                break;
+                            case ColumnType.DateTime:
+                                if (value instanceof ZonedDateTime) {
+                                    // ISO 8601
+                                    String iso8601Date = ((ZonedDateTime) value).format(DateTimeFormatter.ISO_INSTANT);
+                                    writeString(iso8601Date, bufferManager);
+                                } else {
+                                    throw new RuntimeException(
+                                            "Cannot handle type " + value.getClass().getName()+ " with "
+                                                    + ColumnType.names[column.type]);
+                                }
+                                break;
+                            default:
+                                throw new RuntimeException(
+                                        "Cannot handle type " + value.getClass().getName()+ " with "
+                                                + ColumnType.names[column.type]);
+                        }
+                    }
+                    break;
+                } catch (BufferOverflowException ex) {
+                    // Not enough cache, increase it
+                    bufferManager = ByteBuffer.allocate(bufferManager.capacity() * 2);
+                    bufferManager.order(ByteOrder.LITTLE_ENDIAN);
+                }
+            }
+
+            int propertiesOffset = 0;
+            if (bufferManager.position() > 0) {
+                bufferManager.flip();
+                propertiesOffset = Feature.createPropertiesVector(bufferBuilder, bufferManager);
+                bufferManager.clear();
+            }
+
+            //Let's serialize the geometry
+            int geometryOffset = 0;
+            Geometry geom = (Geometry) rs.getObject(geometryColumn);
+            if (geom != null) {
+                geometryOffset = GeometryConversions.serialize(bufferBuilder, geom, header.geometryType);
+            }
+            int featureOffset = Feature.createFeature(bufferBuilder, geometryOffset, propertiesOffset, 0);
+            if (envelopes != null) {
+                PackedRTree.FeatureItem featureItem = new PackedRTree.FeatureItem();
+                Envelope geomEnvelope;
+                if(geom != null && !geom.isEmpty()) {
+                    geomEnvelope = geom.getEnvelopeInternal();
+                }  else {
+                    geomEnvelope = new Envelope(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
+                            Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+                }
+                featureItem.nodeItem = new NodeItem(geomEnvelope.getMinX(), geomEnvelope.getMinY(),
+                        geomEnvelope.getMaxX(), geomEnvelope.getMaxY(), featureAddressPointer);
+                envelopes.add(featureItem);
+            }
+            bufferBuilder.finishSizePrefixed(featureOffset);
+            byte[] featureData = bufferBuilder.sizedByteArray();
+            featureAddressPointer += featureData.length;
+            outputStream.write(featureData);
+            bufferBuilder.clear();
+            copyProgress.endStep();
+        }
+        if(envelopes != null) {
+            // Write spatial index after the header and before the first feature
+            NodeItem extend = new NodeItem(0);
+            envelopes.forEach(x -> extend.expand(x.nodeItem));
+            PackedRTree.hilbertSort(envelopes, extend);
+            PackedRTree packedRTree = new PackedRTree(Lists.reverse(envelopes), packedRTreeNodeSize);
+            FileChannel fileChannel = outputStream.getChannel();
+            fileChannel.position(endHeaderPosition);
+            packedRTree.write(outputStream);
+        }
+
+        return "";
+    }
+
+    /**
+     * Export the FlatGeoBuffer from a select query
+     * @param progress
+     * @param rs
+     * @param fileOutputStream
+     */
+    private String fgbWrite(ProgressVisitor progress, ResultSet rs, FileOutputStream fileOutputStream) {
+
+
+
+
+        return null;
+
     }
 
     /**
@@ -338,13 +370,14 @@ public class FGBWriteDriver {
      *
      * @param outputStream
      * @param rowCount
-     * @param geometryMetaData
+     * @param geometryType
+     * @param srid
      * @param metadata
      * @return
      * @throws SQLException
      * @throws IOException
      */
-    private HeaderMeta writeHeader(FileOutputStream outputStream, FlatBufferBuilder bufferBuilder, long rowCount, GeometryMetaData geometryMetaData, ResultSetMetaData metadata) throws SQLException, IOException {
+    private HeaderMeta writeHeader(FileOutputStream outputStream, FlatBufferBuilder bufferBuilder, long rowCount, String geometryType, int srid, ResultSetMetaData metadata) throws SQLException, IOException {
         outputStream.write(Constants.MAGIC_BYTES);
         //Get the column information
         List<ColumnMeta> columns = new ArrayList<>();
@@ -364,9 +397,9 @@ public class FGBWriteDriver {
         }
         HeaderMeta headerMeta = new HeaderMeta();
         headerMeta.featuresCount = rowCount;
-        headerMeta.geometryType = geometryType(geometryMetaData.getSfs_geometryType());
+        headerMeta.geometryType = geometryType(geometryType);
         headerMeta.columns = columns;
-        headerMeta.srid = geometryMetaData.getSRID();
+        headerMeta.srid = srid;
         if(createIndex) {
             headerMeta.indexNodeSize = packedRTreeNodeSize;
         } else {
