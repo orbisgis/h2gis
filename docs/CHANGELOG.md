@@ -30,3 +30,4 @@
 + Expose FlatGeobuf driver to the IOMethods
 + FlatGeobuf must supports Unknown geometry type for SQL GEOMETRY
 + FlatGeobuf improve data types
++ FlatGeobuf enable select query on writer

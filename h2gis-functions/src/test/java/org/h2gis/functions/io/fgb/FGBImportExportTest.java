@@ -353,7 +353,6 @@ public class FGBImportExportTest {
             stat.execute("CALL FGBWrite('target/points.fgb', '(SELECT * FROM TABLE_POINTS WHERE ID=1)', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
-
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("ID"));
