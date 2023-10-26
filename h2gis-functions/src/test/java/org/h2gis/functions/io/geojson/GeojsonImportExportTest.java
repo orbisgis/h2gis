@@ -631,7 +631,7 @@ public class GeojsonImportExportTest {
     public void testReadEmptyLineString() throws Exception {
         JTSUtils.ewkb2geometry(JTSUtils.geometry2ewkb(new GeometryFactory().createLineString()));
         try (Statement stat = connection.createStatement()) {
-            stat.execute("DROP TABLE IF EXISTS TABLE_COMPLEX_READ");
+            stat.execute("DROP TABLE IF EXISTS ROAD_EMPTYLINESTRING");
             stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("road_emptylinestring.geojson").getPath()) + ", 'ROAD_EMPTYLINESTRING');");
         }
     }
