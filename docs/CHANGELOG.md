@@ -31,3 +31,4 @@
 + FlatGeobuf must supports Unknown geometry type for SQL GEOMETRY
 + FlatGeobuf improve data types
 + FlatGeobuf enable select query on writer
++ Fix geojson about issue #1374 geojson without coordinates give h2 problems with coordinate dimension incompatibilities
