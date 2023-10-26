@@ -23,6 +23,7 @@ package org.h2gis.functions.io.geojson;
 import org.h2.jdbc.JdbcSQLDataException;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
+import org.h2.util.geometry.JTSUtils;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
@@ -30,6 +31,7 @@ import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTReader;
 
 import java.io.File;
@@ -622,6 +624,15 @@ public class GeojsonImportExportTest {
             assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING(15 20, 0 0)")));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        }
+    }
+
+    @Test
+    public void testReadEmptyLineString() throws Exception {
+        JTSUtils.ewkb2geometry(JTSUtils.geometry2ewkb(new GeometryFactory().createLineString()));
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS ROAD_EMPTYLINESTRING");
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("road_emptylinestring.geojson").getPath()) + ", 'ROAD_EMPTYLINESTRING');");
         }
     }
 

@@ -34,6 +34,7 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1075,7 +1076,7 @@ public class GeoJsonReaderDriver {
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
-            MultiPoint mPoint = GF.createMultiPointFromCoords(parseCoordinates(jp));
+            MultiPoint mPoint = GF.createMultiPoint(parseCoordinates(jp));
             jp.nextToken();//END_OBJECT } geometry
             return mPoint;
         } else {
@@ -1285,13 +1286,19 @@ public class GeoJsonReaderDriver {
      * @throws SQLException
      * @return Coordinate[]
      */
-    private Coordinate[] parseCoordinates(JsonParser jp) throws IOException {
+    private CoordinateSequence parseCoordinates(JsonParser jp) throws IOException {
         jp.nextToken(); // START_ARRAY [ to parse the each positions
         ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
         while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             coords.add(parseCoordinate(jp));
         }
-        return coords.toArray(new Coordinate[0]);
+        // Geojson can't differentiate between XYZ or XYM
+        // so in order to provide M you have to provide Z also
+        // Measure is equal to 1 only if 4 ordinates are provided
+        final int hasM = coordinateDimension > 3 ? 1 : 0;
+        CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[0]), coordinateDimension,
+                hasM);
+        return seq;
     }
 
     /**
