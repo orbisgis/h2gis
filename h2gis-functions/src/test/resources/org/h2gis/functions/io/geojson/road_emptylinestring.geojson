@@ -1,0 +1,69 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::2154"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": []
+      },
+      "properties": {
+        "ID_ROAD": 1,
+        "ID_SOURCE": "TRONROUT0000000060799556",
+        "WIDTH": 5.5,
+        "TYPE": "unclassified",
+        "CROSSING": null,
+        "SURFACE": "asphalt",
+        "SIDEWALK": "no",
+        "MAXSPEED": 80,
+        "DIRECTION": 1,
+        "ZINDEX": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": []
+      },
+      "properties": {
+        "ID_ROAD": 2,
+        "ID_SOURCE": "TRONROUT0000000060799455",
+        "WIDTH": 5.5,
+        "TYPE": "unclassified",
+        "CROSSING": null,
+        "SURFACE": "asphalt",
+        "SIDEWALK": "no",
+        "MAXSPEED": 80,
+        "DIRECTION": 1,
+        "ZINDEX": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": []
+      },
+      "properties": {
+        "ID_ROAD": 3,
+        "ID_SOURCE": "TRONROUT0000000060799419",
+        "WIDTH": 5.5,
+        "TYPE": "unclassified",
+        "CROSSING": null,
+        "SURFACE": "asphalt",
+        "SIDEWALK": "no",
+        "MAXSPEED": 80,
+        "DIRECTION": 3,
+        "ZINDEX": 0
+      }
+    }
+  ]
+}
+
