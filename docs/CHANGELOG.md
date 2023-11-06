@@ -32,3 +32,4 @@
 + FlatGeobuf improve data types
 + FlatGeobuf enable select query on writer
 + Fix geojson about issue #1374 geojson without coordinates give h2 problems with coordinate dimension incompatibilities
++ Add ST_IsProjectedCRS and ST_IsGeographicCRS to check if the CRS is projected or geographic
