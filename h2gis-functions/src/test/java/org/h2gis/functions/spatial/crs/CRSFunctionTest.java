@@ -282,4 +282,40 @@ public class CRSFunctionTest {
         assertTrue(rs.next());
         assertEquals(32736, rs.getInt(1));        
     }
+
+    @Test
+    public void testST_IsProjectedCRS1() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_IsProjectedCRS('SRID=4326;POINT(3.68 59.04)'::GEOMETRY) as result");
+        assertTrue(rs.next());
+        assertFalse( rs.getBoolean(1));
+
+        rs = st.executeQuery("SELECT ST_IsProjectedCRS('POINT(3.68 59.04)'::GEOMETRY) as result");
+        assertTrue(rs.next());
+        assertFalse( rs.getBoolean(1));
+    }
+
+    @Test
+    public void testST_IsProjectedCRS2() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_IsProjectedCRS('SRID=2154;POINT(0 10)'::GEOMETRY) as result");
+        assertTrue(rs.next());
+        assertTrue( rs.getBoolean(1));
+
+        rs = st.executeQuery("SELECT ST_IsProjectedCRS('SRID=0;POINT(0 10)'::GEOMETRY) as result");
+        assertTrue(rs.next());
+        assertFalse( rs.getBoolean(1));
+    }
+
+    @Test
+    public void testST_IsGeographicCRS() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_IsGeographicCRS('SRID=4326;POINT(3.68 59.04)'::GEOMETRY) as result");
+        assertTrue(rs.next());
+        assertTrue( rs.getBoolean(1));
+
+        rs = st.executeQuery("SELECT ST_IsGeographicCRS('POINT(3.68 59.04)'::GEOMETRY) as result");
+        assertTrue(rs.next());
+        assertFalse( rs.getBoolean(1));
+    }
 }

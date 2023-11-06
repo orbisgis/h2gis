@@ -334,7 +334,9 @@ public class H2GISFunctions {
                 new ST_MakeArcLine(),
                 new ST_MakeArcPolygon(),
                 new ST_MinimumBoundingRadius(),
-                new ST_Project()
+                new ST_Project(),
+                new ST_IsProjectedCRS(),
+                new ST_IsGeographicCRS()
         };
     }
 
