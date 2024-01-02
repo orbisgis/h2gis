@@ -77,8 +77,8 @@
         <maven.compiler.source>${java-version}</maven.compiler.source>
 
         <!-- Dependencies versions -->
-        <commons-compress-version>1.21</commons-compress-version>
-        <commons-io-version>2.11.0</commons-io-version>
+        <commons-compress-version>1.25.0</commons-compress-version>
+        <commons-io-version>2.12.0</commons-io-version>
         <h2-version>2.2.224</h2-version>
         <jackson-core-version>2.13.2</jackson-core-version>
         <jts-version>1.19.0</jts-version>
