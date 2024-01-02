@@ -122,7 +122,7 @@ To download the last H2GIS stable release and find documentation please go to [h
 
 You can include H2GIS in your project thanks to Maven repositories.
 
-From maven central, check https://search.maven.org/artifact/org.orbisgis/h2gis/1.5.0/bundle
+From maven central, check https://search.maven.org/artifact/org.orbisgis/h2gis/2.2.1/bundle
 
 To use the current snapshot add in the pom
 ```xml
