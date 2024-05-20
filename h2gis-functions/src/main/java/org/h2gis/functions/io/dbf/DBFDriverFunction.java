@@ -229,6 +229,8 @@ public class DBFDriverFunction implements DriverFunction {
                 stmt.execute("DROP TABLE IF EXISTS " + outputTable);
                 stmt.close();
             }
+            //Check if a cpg file exists
+            //TODO:
             DBFDriver dbfDriver = new DBFDriver();
             dbfDriver.initDriverFromFile(fileName, options);
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
