@@ -449,4 +449,32 @@ public class SHPEngineTest {
             assertTrue(rs.getString(1).contains("PK_INDEX"), "Expected contains PK_INDEX but result is " + rs.getString(1));
         }
     }
+
+    @Test
+    public void readSHPWithCPGFileTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("urock_buildings.shp").getPath()+"', 'SHPtable');");
+        try ( // Query declared Table columns
+              ResultSet rs = st.executeQuery("SELECT * FROM SHPTABLE where objektiden= '71193131-5b61-4d65-a661-fefb173bfd86';")) {
+            assertTrue(rs.next());
+            assertEquals("71193131-5b61-4d65-a661-fefb173bfd86", rs.getString("objektiden"));
+            assertEquals("Bostad;Småhus friliggande",rs.getString("andamal1"));
+        }
+        st.execute("drop table shptable");
+    }
+
+    @Test
+    public void readSHPWithCPGFordeTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL SHPREAD( '"+SHPEngineTest.class.getResource("urock_buildings.shp").getPath()+"', 'SHPtable','windows-1252');");
+        try ( // Query declared Table columns
+              ResultSet rs = st.executeQuery("SELECT * FROM SHPTABLE where objektiden= '3110e3c4-638c-485e-b5fe-a827ebafd071';")) {
+            assertTrue(rs.next());
+            assertEquals("3110e3c4-638c-485e-b5fe-a827ebafd071", rs.getString("objektiden"));
+            assertEquals("Industri;Tillverkning",rs.getString("andamal1"));
+        }
+        st.execute("drop table shptable");
+    }
 }
