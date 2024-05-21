@@ -2,3 +2,4 @@
 - Read CPG file attached to the shapefile- 
 - Declare the schema for the spatial_ref_sys table
 - Add SnapToGrid function
+- Write empty geometry with the shapefile driver
