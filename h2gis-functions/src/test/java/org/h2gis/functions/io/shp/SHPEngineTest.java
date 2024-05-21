@@ -34,6 +34,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -450,6 +452,23 @@ public class SHPEngineTest {
         }
     }
 
+    @Test
+    public void exportImportEmptyGeometry() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS GEOTABLE");
+        stat.execute("create table GEOTABLE(idarea int primary key, the_geom GEOMETRY(POINT))");
+        stat.execute("insert into GEOTABLE values(1, 'POINT (0 0)'::GEOMETRY),(2, 'POINT EMPTY'::GEOMETRY);");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/points_withempty.shp', 'GEOTABLE', true)");
+        stat.execute("CALL SHPRead('target/points_withempty.shp', 'IMPORT_GEOTABLE')");
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_GEOTABLE ORDER BY idarea;");
+        res.next();
+        assertGeometryEquals("POINT(0 0)", res.getObject(1));
+        res.next();
+        assertNull(res.getObject(1));
+        res.close();
+    }
+  
     @Test
     public void readSHPWithCPGFileTest() throws SQLException {
         Statement st = connection.createStatement();
