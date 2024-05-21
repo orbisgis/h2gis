@@ -503,15 +503,49 @@ public class DbaseFileHeader {
 
 		// skip / skip thesreserved bytes in the header.
 		in.skip(17);
-        // read Language driver
-        byte lngDriver = in.get();
-        String encoding = CODE_PAGE_ENCODING.get(lngDriver);
-        if(encoding!=null && forceEncoding == null) {
-            this.fileEncoding = encoding;
-        }
-        // skip reserved
-        in.skip(2);
+		// read Language driver
+		byte lngDriver = in.get();
+		String encoding = CODE_PAGE_ENCODING.get(lngDriver);
+		// skip reserved
+		in.skip(2);
+		//FROM : https://github.com/OSGeo/gdal/blob/master/ogr/ogrsf_frmts/shape/ogrshapelayer.cpp#L526
+		if(forceEncoding!=null){
+			forceEncoding = forceEncoding.toUpperCase();
+			try {
+				//Only code page
+				int codepage = Integer.valueOf(forceEncoding);
+				if ((codepage >= 437 && codepage <= 950) || (codepage >= 1250 && codepage <= 1258)) {
+					this.fileEncoding = new StringBuffer("CP").append(forceEncoding).toString();
+				}
+				else if (forceEncoding.startsWith("8859"))
+				{
+					if(forceEncoding.startsWith("-", 4)){
+						this.fileEncoding ="ISO-8859-5";
+					}else{
+						this.fileEncoding ="ISO-8859-4";
+					}
+				}
+				else if (forceEncoding.startsWith("UTF-8")||forceEncoding.startsWith("UTF8"))
+				{
+					this.fileEncoding ="UTF-8";
+				}
+				else if (forceEncoding.startsWith( "ANSI 1251")) {
+					this.fileEncoding = "CP1251";
+				}
+				else
+				{
+					// Try just using the CPG value directly.  Works for stuff like Big5.
+					fileEncoding = forceEncoding;
+				}
+			}catch (NumberFormatException ex){
+				//Nothing to do
+			}
 
+		}else {
+			if(encoding!=null){
+				this.fileEncoding = encoding;
+			}
+		}
 		// calculate the number of Fields in the header
 		fieldCnt = (headerLength - FILE_DESCRIPTOR_SIZE - 1)
 				/ FILE_DESCRIPTOR_SIZE;
