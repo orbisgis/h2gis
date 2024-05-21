@@ -32,6 +32,7 @@ import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Merge ShapeFileReader and DBFReader.
@@ -57,6 +58,7 @@ public class SHPDriver implements FileDriver {
     private int geometryFieldIndex = 0;
     private ShapeType shapeType;
     public File prjFile;
+    public File cpgFile;
     private int srid =0;
 
 
@@ -168,6 +170,9 @@ public class SHPDriver implements FileDriver {
                 else if(path.equals(fileNamePrefix+".prj")){
                     prjFile = entry.toFile();
                     return true;
+                } else if(path.equals(fileNamePrefix+".cpg")){
+                    cpgFile = entry.toFile();
+                    return true;
                 }
                 return false;
             }
@@ -180,6 +185,14 @@ public class SHPDriver implements FileDriver {
             } 
         }
         if(dbfFile != null) {
+            //Read the CPG file if exists
+            if(cpgFile!=null){
+                BufferedReader br = Files.newBufferedReader(cpgFile.toPath());
+                String codePage;
+                if ((codePage = br.readLine()) != null && forceEncoding==null) {
+                    forceEncoding = codePage.trim();
+                }
+            }
             dbfDriver.initDriverFromFile(dbfFile, forceEncoding);
         } else {
             throw new IllegalArgumentException("DBF File not found");
