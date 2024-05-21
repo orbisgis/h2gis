@@ -28,40 +28,39 @@ import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import java.sql.SQLException;
 
 /**
- *
- * @author Erwan Bocher
+ * Function to snap a geometry according a grid size
+ * @author Erwan Bocher, CNRS, 2024
  */
-public class ST_PrecisionReducer extends DeterministicScalarFunction {
+public class ST_SnapToGrid extends DeterministicScalarFunction {
 
-    public ST_PrecisionReducer() {
-        addProperty(PROP_REMARKS, "Reduce the geometry precision. Decimal_Place is the number of decimals to keep.");
+    public ST_SnapToGrid() {
+        addProperty(PROP_REMARKS, "Snap all points of the input geometry to the grid defined by its origin and cell size.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "precisionReducer";
+        return "execute";
     }
 
     /**
-     * Reduce the geometry precision. Decimal_Place is the number of decimals to
-     * keep.
+     * Reduce the geometry precision. cell_size is resolution of grid to snap the points
      *
      * @param geometry
-     * @param nbDec
+     * @param cell_size
      * @return
      * @throws SQLException
      */
-    public static Geometry precisionReducer(Geometry geometry, int nbDec) throws SQLException {
+    public static Geometry execute(Geometry geometry, float cell_size) throws SQLException {
         if (geometry == null) {
             return null;
         }
-        if(nbDec==0){
+        if(cell_size==0){
             return geometry;
         }
-        if (nbDec < 0) {
-            throw new SQLException("Decimal_places has to be >= 0.");
+        if (cell_size < 0) {
+            throw new SQLException("cell size has to be >= 0.");
         }
-        PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(nbDec));
+        PrecisionModel pm = new PrecisionModel(Math.round(1/cell_size));
         GeometryPrecisionReducer geometryPrecisionReducer = new GeometryPrecisionReducer(pm);
         try {
             return geometryPrecisionReducer.reduce(geometry);

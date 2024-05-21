@@ -62,6 +62,7 @@ import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.ST_PrecisionReducer;
 import org.h2gis.functions.spatial.generalize.ST_Simplify;
 import org.h2gis.functions.spatial.generalize.ST_SimplifyPreserveTopology;
+import org.h2gis.functions.spatial.generalize.ST_SnapToGrid;
 import org.h2gis.functions.spatial.linear_referencing.ST_LineInterpolatePoint;
 import org.h2gis.functions.spatial.linear_referencing.ST_LineSubstring;
 import org.h2gis.functions.spatial.mesh.ST_ConstrainedDelaunay;
@@ -336,7 +337,8 @@ public class H2GISFunctions {
                 new ST_MinimumBoundingRadius(),
                 new ST_Project(),
                 new ST_IsProjectedCRS(),
-                new ST_IsGeographicCRS()
+                new ST_IsGeographicCRS(),
+                new ST_SnapToGrid()
         };
     }
 

@@ -318,6 +318,23 @@ public class ProcessingFunctionTest {
     }
 
     @Test
+    public void test_ST_SnapToGrid1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SnapToGrid('LINESTRING(1.1115678 2.123, 4.111111 3.2374897, 4.11112 3.23748667)'::GEOMETRY, 0.001);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(1.112 2.123,4.111 3.237)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SnapToGrid2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SnapToGrid('LINESTRINGZ(1.1115678 2.123 1, 4.111111 3.2374897 1, 4.11112 3.23748667 1)'::GEOMETRY, 0.001);");
+        rs.next();
+        assertGeometryEquals("LINESTRINGZ(1.112 2.123 1,4.111 3.237 1)", rs.getBytes(1));
+        rs.close();
+    }
+
+
+    @Test
     public void test_ST_RingSideBuffer1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RingSideBuffer('SRID=4326;LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3);");
         assertTrue(rs.next());
