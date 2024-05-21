@@ -158,7 +158,7 @@ public class ShapefileWriter {
         shapeBuffer.putInt(++cnt);
         shapeBuffer.putInt(length);
         shapeBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        if (g == null) {
+        if (g == null || g.isEmpty()) {
             shapeBuffer.putInt(0);
         } else {
             shapeBuffer.putInt(type.id);
