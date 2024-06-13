@@ -55,11 +55,12 @@ public class ST_SymDifference extends DeterministicScalarFunction {
     public static Geometry symDifference(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {
             return null;
-        }        
-        if(a.getSRID()!=b.getSRID()){
+        }
+        if (a.getSRID() == b.getSRID()) {
+            return OverlayNGRobust.overlay(a,b, OverlayNG.SYMDIFFERENCE);
+        } else {
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return OverlayNGRobust.overlay(a,b, OverlayNG.SYMDIFFERENCE);
     }
 
     /**
@@ -73,14 +74,16 @@ public class ST_SymDifference extends DeterministicScalarFunction {
         if(a==null || b==null) {
             return null;
         }
-        if(a.getSRID()!=b.getSRID()){
+        if (a.getSRID() == b.getSRID()) {
+            if (gridSize >= 0) {
+                PrecisionModel pm = new PrecisionModel(1/gridSize);
+                return OverlayNG.overlay(a, b, OverlayNG.SYMDIFFERENCE, pm);
+            } else {
+                return OverlayNGRobust.overlay(a, b, OverlayNG.SYMDIFFERENCE);
+            }
+        } else {
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        if (gridSize >= 0) {
-            PrecisionModel pm = new PrecisionModel(1/gridSize);
-            return OverlayNG.overlay(a, b, OverlayNG.SYMDIFFERENCE, pm);
-        } else {
-            return OverlayNGRobust.overlay(a, b, OverlayNG.SYMDIFFERENCE);
-        }
+
     }
 }

@@ -61,6 +61,9 @@ public class ST_OrderingEquals extends DeterministicScalarFunction{
         }
         ValueGeometry geomA = (ValueGeometry)valueA;
         ValueGeometry geomB = (ValueGeometry)valueB;
+        if(geomA.getGeometry().isEmpty() || geomB.getGeometry().isEmpty()){
+            return false;
+        }
         if(geomA.getSRID()!=geomB.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

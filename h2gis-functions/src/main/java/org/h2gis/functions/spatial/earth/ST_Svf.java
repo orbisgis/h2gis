@@ -90,7 +90,10 @@ public class ST_Svf extends DeterministicScalarFunction{
         }
         if(geoms == null){
             return svf;
-        }        
+        }
+        if(pt.isEmpty()||geoms.isEmpty()){
+            return null;
+        }
         if(pt.getSRID()!=geoms.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

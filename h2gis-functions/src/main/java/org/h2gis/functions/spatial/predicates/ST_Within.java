@@ -51,7 +51,10 @@ public class ST_Within extends DeterministicScalarFunction {
     public static Boolean isWithin(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {
             return null;
-        }        
+        }
+        if(a.isEmpty() || b.isEmpty()){
+            return false;
+        }
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

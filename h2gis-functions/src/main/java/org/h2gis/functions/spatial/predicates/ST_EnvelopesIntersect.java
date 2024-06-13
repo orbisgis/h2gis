@@ -55,6 +55,9 @@ public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
         if(surface==null && testGeometry==null) {
             return null;
         }
+        if(surface.isEmpty() || testGeometry.isEmpty()){
+            return false;
+        }
         
         if(surface.getSRID()!=testGeometry.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");

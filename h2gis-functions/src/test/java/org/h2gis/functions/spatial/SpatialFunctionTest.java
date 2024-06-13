@@ -2676,4 +2676,19 @@ public class SpatialFunctionTest {
         assertGeometryEquals("SRID=4326;POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", rs.getObject(1));
         st.execute("drop table forests");
     }
+
+    @Test
+    public void test_ST_IntersectsEmptyGeometry() throws Exception {
+        ResultSet rs = st.executeQuery("Select st_intersects('POINT EMPTY'::GEOMETRY, 'POINT EMPTY'::GEOMETRY) as op ");
+        rs.next();
+        assertFalse(rs.getBoolean(1));
+        rs.close();
+    }
+    @Test
+    public void test_ST_SRIDEmptyGeometry() throws Exception {
+        ResultSet rs = st.executeQuery("Select st_srid('POINT EMPTY'::GEOMETRY) as the_geom ");
+        rs.next();
+        assertEquals(0,  rs.getObject(1));
+        rs.close();
+    }
 }

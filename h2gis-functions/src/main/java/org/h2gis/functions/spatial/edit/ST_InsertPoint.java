@@ -77,6 +77,9 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
         if(geometry == null || point == null){
             return null;
         }
+        if(point.isEmpty()||geometry.isEmpty()){
+            return geometry;
+        }
         if(geometry.getSRID()!=point.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
