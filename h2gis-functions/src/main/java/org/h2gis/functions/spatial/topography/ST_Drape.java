@@ -57,7 +57,10 @@ public class ST_Drape extends DeterministicScalarFunction{
         }
         if (triangles == null) {
             return geomToDrape;
-        }        
+        }
+        if(geomToDrape.isEmpty()||triangles.isEmpty()){
+            return geomToDrape;
+        }
         if(geomToDrape.getSRID()!=triangles.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

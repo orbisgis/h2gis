@@ -62,7 +62,7 @@ public class ST_Extent extends AbstractFunction implements Aggregate {
     public void add(Object o) throws SQLException {
         if (o instanceof Geometry) {
             Geometry geom = (Geometry) o;            
-            int currentSRID = geom.getSRID();
+            int currentSRID = geom.isEmpty()?0:geom.getSRID();
             if(srid==0){
                 srid=currentSRID;
             }

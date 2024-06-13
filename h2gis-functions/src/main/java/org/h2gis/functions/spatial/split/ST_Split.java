@@ -72,6 +72,9 @@ public class ST_Split extends DeterministicScalarFunction {
         if(geomA == null||geomB == null){
             return null;
         }
+        if(geomA.isEmpty() || geomB.isEmpty()){
+            return geomA;
+        }
         if(geomA.getSRID()!=geomB.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
