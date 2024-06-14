@@ -3,4 +3,5 @@
 - Declare the schema for the spatial_ref_sys table
 - Add SnapToGrid function
 - Write empty geometry with the shapefile driver
-- Allow function execution when the input geometries are empty.
+- Do not ask for SRID when geometry is empty
+- Add the name of the table in the FGB header
