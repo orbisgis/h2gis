@@ -67,6 +67,9 @@ public class ST_ClosestCoordinate extends DeterministicScalarFunction {
         if (point == null || geom == null) {
             return null;
         }
+        if(point.isEmpty()||geom.isEmpty()){
+            return null;
+        }
         if(point.getSRID()!=geom.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

@@ -57,6 +57,13 @@ public class ST_AddPoint extends DeterministicScalarFunction {
         if(geometry == null || point == null){
             return null;
         }
+        if(point.isEmpty()){
+            return geometry;
+        }
+        if(geometry.isEmpty()){
+            return geometry;
+        }
+
         if(geometry.getSRID()!=point.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
@@ -83,6 +90,9 @@ public class ST_AddPoint extends DeterministicScalarFunction {
     public static Geometry addPoint(Geometry geometry, Point point, int position) throws SQLException {
         if(geometry == null || point == null){
             return null;
+        }
+        if(geometry.isEmpty()||point.isEmpty()){
+            return geometry;
         }
         if(geometry.getSRID()!=point.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");

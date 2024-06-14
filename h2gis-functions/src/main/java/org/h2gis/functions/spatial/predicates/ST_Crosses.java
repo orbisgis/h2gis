@@ -52,6 +52,9 @@ public class ST_Crosses extends DeterministicScalarFunction {
         if(a==null || b==null) {
             return null;
         }
+        if(a.isEmpty() || b.isEmpty()){
+            return false;
+        }
         
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");

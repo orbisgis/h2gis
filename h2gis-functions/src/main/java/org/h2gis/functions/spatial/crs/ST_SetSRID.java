@@ -52,6 +52,9 @@ public class ST_SetSRID  extends AbstractFunction implements ScalarFunction {
         if (geometry == null) {
             return null;
         }
+        if(geometry.isEmpty()){
+            return geometry;
+        }
         if (srid == null) {
             throw new IllegalArgumentException("The SRID code cannot be null.");
         }

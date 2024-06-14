@@ -58,10 +58,11 @@ public class ST_Intersection extends DeterministicScalarFunction {
         if (a == null || b == null) {
             return null;
         }
-        if (a.getSRID() != b.getSRID()) {
+        if (a.getSRID() == b.getSRID()) {
+            return OverlayNGRobust.overlay(a, b, OverlayNG.INTERSECTION);
+        } else {
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return OverlayNGRobust.overlay(a, b, OverlayNG.INTERSECTION);
     }
 
     /**
@@ -76,14 +77,15 @@ public class ST_Intersection extends DeterministicScalarFunction {
         if (a == null || b == null) {
             return null;
         }
-        if (a.getSRID() != b.getSRID()) {
-            throw new SQLException("Operation on mixed SRID geometries not supported");
-        }
-        if (gridSize >= 0) {
-            PrecisionModel pm = new PrecisionModel(1/gridSize);
-            return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION, pm);
+        if (a.getSRID() == b.getSRID()) {
+            if (gridSize >= 0) {
+                PrecisionModel pm = new PrecisionModel(1/gridSize);
+                return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION, pm);
+            } else {
+                return OverlayNGRobust.overlay(a, b, OverlayNG.INTERSECTION);
+            }
         } else {
-            return OverlayNGRobust.overlay(a, b, OverlayNG.INTERSECTION);
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
     }
 }

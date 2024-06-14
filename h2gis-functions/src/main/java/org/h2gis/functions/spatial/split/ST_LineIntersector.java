@@ -66,6 +66,9 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
         if(inputLines == null||clipper == null){
             return null;
         }
+        if(inputLines.isEmpty()||clipper.isEmpty()){
+            return inputLines;
+        }
         if(inputLines.getSRID()!=clipper.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

@@ -55,6 +55,9 @@ public class ST_ProjectPoint extends DeterministicScalarFunction{
         if (point == null || geometry==null) {
             return null;
         }
+        if(point.isEmpty()||geometry.isEmpty()){
+            return null;
+        }
         if(point.getSRID()!=geometry.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

@@ -59,9 +59,12 @@ public class ST_Isovist extends DeterministicScalarFunction {
      * @throws SQLException In case of wrong parameters
      */
     public static Geometry isovist(Geometry viewPoint, Geometry lineSegments, double maxDistance) throws SQLException {
-        if (!(viewPoint instanceof Point) || viewPoint.isEmpty()) {
+        if (!(viewPoint instanceof Point)) {
             throw new SQLException("First parameter of ST_Isovist must be a Point");
-        }        
+        }
+        if(viewPoint.isEmpty()||lineSegments.isEmpty()){
+            return null;
+        }
         if(viewPoint.getSRID()!=lineSegments.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

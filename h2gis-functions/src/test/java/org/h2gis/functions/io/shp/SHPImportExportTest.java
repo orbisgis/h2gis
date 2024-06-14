@@ -2,18 +2,18 @@
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
  * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
- *
+ * <p>
  * This code is part of the H2GIS project. H2GIS is free software; you can
  * redistribute it and/or modify it under the terms of the GNU Lesser General
  * Public License as published by the Free Software Foundation; version 3.0 of
  * the License.
- *
+ * <p>
  * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details <http://www.gnu.org/licenses/>.
- *
- *
+ * <p>
+ * <p>
  * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
  * or contact directly: info_at_h2gis.org
  */
@@ -31,11 +31,19 @@ import org.h2gis.functions.io.dbf.DBFWrite;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.internal.SHPDriver;
 import org.h2gis.postgis_jts.PostGISDBFactory;
-import org.junit.jupiter.api.*;
+import org.h2gis.unitTest.GeometryAsserts;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.io.WKTWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,16 +53,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.h2gis.unitTest.GeometryAsserts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-
 import static org.junit.jupiter.api.Assertions.*;
-import org.locationtech.jts.io.WKTReader;
 
 /**
  * Test copy data from SHP to database
@@ -239,7 +240,7 @@ public class SHPImportExportTest {
         // Export in target with special chars
         File shpFile = new File("target/area éxport.shp");
         DriverFunction exp = new SHPDriverFunction();
-        exp.exportTable(connection, "AREA", shpFile, true,new EmptyProgressVisitor());
+        exp.exportTable(connection, "AREA", shpFile, true, new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS myshp");
         DriverFunction manager = new DriverManager();
         manager.importFile(connection, "MYSHP", shpFile, new EmptyProgressVisitor());
@@ -338,7 +339,7 @@ public class SHPImportExportTest {
         // Export in target with special chars
         File shpFile = new File("target/test_export4.shp");
         DriverFunction exp = new SHPDriverFunction();
-        exp.exportTable(connection, "AREA", shpFile, true,new EmptyProgressVisitor());
+        exp.exportTable(connection, "AREA", shpFile, true, new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS myshp");
         SHPDriverFunction driverFunction = new SHPDriverFunction();
         driverFunction.importFile(connection, "MYSHP", shpFile, new EmptyProgressVisitor());
@@ -370,7 +371,7 @@ public class SHPImportExportTest {
         assertEquals(1, shpDriver.getField(0, 0).getInt());
         // The driver can not create POLYGON
         WKTWriter toText = new WKTWriter(3);
-        assertGeometryEquals("MULTIPOLYGON Z(((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", ((ValueGeometry)shpDriver.getField(0, 1)).getGeometry());
+        assertGeometryEquals("MULTIPOLYGON Z(((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", ((ValueGeometry) shpDriver.getField(0, 1)).getGeometry());
         assertEquals(2, shpDriver.getField(1, 0).getInt());
         assertGeometryEquals("MULTIPOLYGON Z(((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", ((ValueGeometry) shpDriver.getField(1, 1)).getGeometry());
     }
@@ -751,7 +752,7 @@ public class SHPImportExportTest {
             stat.execute("CALL SHPRead('target/lines.shp', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
-            GeometryAsserts.assertGeometryEquals("MULTILINESTRING ((1 10, 20 15))",  (Geometry)res.getObject("THE_GEOM"));
+            GeometryAsserts.assertGeometryEquals("MULTILINESTRING ((1 10, 20 15))", (Geometry) res.getObject("THE_GEOM"));
             assertEquals(2, res.getInt("ID"));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
@@ -816,15 +817,15 @@ public class SHPImportExportTest {
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_ORBISGIS;");
             res.next();
             //PK field added by the driver
-            assertEquals(1,res.getObject(1));
+            assertEquals(1, res.getObject(1));
             //Geometry field
             Geometry geom = (Geometry) res.getObject(2);
             assertEquals(4326, geom.getSRID());
             GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(10 10)", geom);
             assertNull(res.getObject(3));
             assertNull(res.getObject(4));
-            assertNull( res.getObject(5));
-            assertNull( res.getObject(6));
+            assertNull(res.getObject(5));
+            assertNull(res.getObject(6));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_ORBISGIS");
         }
@@ -854,7 +855,7 @@ public class SHPImportExportTest {
             stat.execute("insert into punctual values(1, ST_GEOMFROMTEXT('POINT(-10 109 5)',4326))");
             // Create a shape file using table area
             SHPDriverFunction driver = new SHPDriverFunction();
-            driver.exportTable(con, "punctual", shpFile,true, new EmptyProgressVisitor());
+            driver.exportTable(con, "punctual", shpFile, true, new EmptyProgressVisitor());
             // Read this shape file to check values
             assertTrue(shpFile.exists());
             stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
@@ -982,5 +983,26 @@ public class SHPImportExportTest {
         res.next();
         assertTrue(res.getInt(1) == 0);
         res.close();
+    }
+
+
+    @Test
+    public void exportImportTooLongPath() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        StringBuffer sb = new StringBuffer("/tmp/");
+        for (int i = 0; i < 100; i++) {
+            sb.append("folder_").append(i);
+        }
+        new File(sb.toString()).mkdir();
+        String outputFilePath = sb.append("/punctual_export.shp").toString();
+        File shpFile = new File(outputFilePath);
+        stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
+        stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINT Z))");
+        stat.execute("insert into punctual values(1, 'POINTZ(-10 109 5)')");
+        // Create a shape file using table area
+        assertThrows(SQLException.class, () -> {
+            stat.execute("CALL SHPWrite('" + outputFilePath + "', 'PUNCTUAL', true)");
+        });
+        stat.execute("DROP TABLE IF EXISTS PUNCTUAL;");
     }
 }

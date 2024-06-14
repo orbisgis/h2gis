@@ -53,6 +53,9 @@ public class ST_Covers extends DeterministicScalarFunction {
         if(geomA == null||geomB == null){
             return null;
         }
+        if(geomA.isEmpty() || geomB.isEmpty()){
+            return false;
+        }
         
         if(geomA.getSRID()!=geomB.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");

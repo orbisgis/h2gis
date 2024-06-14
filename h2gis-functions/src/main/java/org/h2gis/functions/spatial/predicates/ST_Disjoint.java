@@ -54,7 +54,10 @@ public class ST_Disjoint extends DeterministicScalarFunction {
     public static Boolean geomDisjoint(Geometry a, Geometry b) throws SQLException {
         if(a==null || b==null) {
             return null;
-        }        
+        }
+        if(a.isEmpty() || b.isEmpty()){
+            return false;
+        }
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

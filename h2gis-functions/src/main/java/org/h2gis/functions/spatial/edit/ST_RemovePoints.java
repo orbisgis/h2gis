@@ -55,6 +55,9 @@ public class ST_RemovePoints extends DeterministicScalarFunction {
         if(geometry == null){
             return null;
         }
+        if(geometry.isEmpty()||polygon.isEmpty()){
+            return geometry;
+        }
         if(geometry.getSRID()!=polygon.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

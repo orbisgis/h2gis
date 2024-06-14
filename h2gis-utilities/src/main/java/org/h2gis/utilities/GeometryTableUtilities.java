@@ -1282,7 +1282,7 @@ public class GeometryTableUtilities {
                     for (int i = 0; i < columnCount; i++) {
                         Geometry geom = (Geometry) rs.getObject(i + 1);
                         if (geom != null) {
-                            int currentSRID = geom.getSRID();
+                            int currentSRID = geom.isEmpty()?0:geom.getSRID();
                             if (srid == 0) {
                                 srid = currentSRID;
                             } else if (srid != currentSRID) {
@@ -1406,7 +1406,7 @@ public class GeometryTableUtilities {
                     for (int i = 0; i < columnCount; i++) {
                         Geometry geom = (Geometry) rs.getObject(i + 1);
                         if (geom != null) {
-                            int currentSRID = geom.getSRID();
+                            int currentSRID = geom.isEmpty()?0:geom.getSRID();
                             if (srid == 0) {
                                 srid = currentSRID;
                             } else if (srid != currentSRID) {
