@@ -75,6 +75,7 @@ import org.h2gis.functions.spatial.predicates.*;
 import org.h2gis.functions.spatial.properties.*;
 import org.h2gis.functions.spatial.snap.ST_Project;
 import org.h2gis.functions.spatial.snap.ST_Snap;
+import org.h2gis.functions.spatial.snap.ST_SnapToSelf;
 import org.h2gis.functions.spatial.split.ST_LineIntersector;
 import org.h2gis.functions.spatial.split.ST_Split;
 import org.h2gis.functions.spatial.split.ST_SubDivide;
@@ -338,7 +339,8 @@ public class H2GISFunctions {
                 new ST_Project(),
                 new ST_IsProjectedCRS(),
                 new ST_IsGeographicCRS(),
-                new ST_SnapToGrid()
+                new ST_SnapToGrid(),
+                new ST_SnapToSelf()
         };
     }
 

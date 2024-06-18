@@ -333,6 +333,14 @@ public class ProcessingFunctionTest {
         rs.close();
     }
 
+    @Test
+    public void test_ST_SnapToSelf1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SnapToSelf('POLYGON ((0 0, 1 1, 2 1, 3 0.5, 2 -3, 3 0.499, 0 0))'::GEOMETRY, 0.001);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 0, 1 1, 2 1, 3 0.5, 3 0.499, 0 0))", rs.getBytes(1));
+        rs.close();
+    }
+
 
     @Test
     public void test_ST_RingSideBuffer1() throws Exception {
