@@ -42,7 +42,9 @@ public class WayOSMElement extends OSMElement {
      * @param ref
      */
     public void addRef(String ref) {
-        nodesRef.add(Long.valueOf(ref));
+        if(ref!=null) {
+            nodesRef.add(Long.valueOf(ref));
+        }
     }
 
     /**

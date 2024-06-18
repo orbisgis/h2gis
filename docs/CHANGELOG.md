@@ -5,3 +5,4 @@
 - Write empty geometry with the shapefile driver
 - Do not ask for SRID when geometry is empty
 - Add the name of the table in the FGB header
+- Fix null way id on OSM file
