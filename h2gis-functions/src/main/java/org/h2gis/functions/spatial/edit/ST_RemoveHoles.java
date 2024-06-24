@@ -97,6 +97,6 @@ public class ST_RemoveHoles extends DeterministicScalarFunction {
      * @return Geometry without holes
      */
     public static Polygon removeHolesPolygon(Polygon polygon) {
-        return new Polygon((LinearRing) polygon.getExteriorRing(), null, polygon.getFactory());
+        return new Polygon(polygon.getExteriorRing(), null, polygon.getFactory());
     }
 }
