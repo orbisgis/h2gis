@@ -154,7 +154,11 @@ public class FGBWriteDriver {
                 } else if (fileName.exists()) {
                     throw new IOException("The geojson file already exist.");
                 }
-                fgbWrite(progress, tableName, new FileOutputStream(fileName));
+                String filePath = fileName.getName();
+                final int dotIndex = filePath.lastIndexOf('.');
+                final String fileNameWithoutExt = filePath.substring(0, dotIndex);
+
+                fgbWrite(progress, tableName, new FileOutputStream(fileName), fileNameWithoutExt);
 
                 return fileName.getAbsolutePath();
 
@@ -170,7 +174,7 @@ public class FGBWriteDriver {
         bufferManager.put(stringBytes);
     }
 
-    private void fgbWrite(ProgressVisitor progress, String tableName, FileOutputStream outputStream) throws IOException, SQLException {
+    private void fgbWrite(ProgressVisitor progress, String tableName, FileOutputStream outputStream, String fileNameWithoutExt) throws IOException, SQLException {
         try {
             DBTypes dbTypes = DBUtils.getDBType(connection);
             final TableLocation parse = TableLocation.parse(tableName, dbTypes);
@@ -183,7 +187,7 @@ public class FGBWriteDriver {
                     String geomCol = geomMetadata.first();
                     geomMetadata.second();
                     ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
-                    doExport(progress, rs, geomCol, geomMetadata.second().sfs_geometryType, geomMetadata.second().SRID, recordCount, outputStream, tableName);
+                    doExport(progress, rs, geomCol, geomMetadata.second().sfs_geometryType, geomMetadata.second().SRID, recordCount, outputStream, fileNameWithoutExt);
                 }
             }
         } finally {
@@ -197,12 +201,12 @@ public class FGBWriteDriver {
         }
     }
 
-    private String doExport(ProgressVisitor progress, ResultSet rs, String geometryColumn, String geometryType, int srid,  int recordCount, FileOutputStream outputStream, String name) throws SQLException, IOException {
+    private String doExport(ProgressVisitor progress, ResultSet rs, String geometryColumn, String geometryType, int srid,  int recordCount, FileOutputStream outputStream, String fileName) throws SQLException, IOException {
 
         FlatBufferBuilder bufferBuilder = new FlatBufferBuilder();
 
         //Write the header
-        HeaderMeta header = writeHeader(outputStream, name, bufferBuilder, recordCount, geometryType, srid, rs.getMetaData());
+        HeaderMeta header = writeHeader(outputStream, fileName, bufferBuilder, recordCount, geometryType, srid, rs.getMetaData());
 
         long endHeaderPosition = outputStream.getChannel().position();
         //Columns numbers
@@ -351,24 +355,10 @@ public class FGBWriteDriver {
     }
 
     /**
-     * Export the FlatGeoBuffer from a select query
-     * @param progress
-     * @param rs
-     * @param fileOutputStream
-     */
-    private String fgbWrite(ProgressVisitor progress, ResultSet rs, FileOutputStream fileOutputStream) {
-
-
-
-
-        return null;
-
-    }
-
-    /**
      * Write the header
      *
      * @param outputStream
+     * @param fileName name of the file
      * @param rowCount
      * @param geometryType
      * @param srid
@@ -377,7 +367,7 @@ public class FGBWriteDriver {
      * @throws SQLException
      * @throws IOException
      */
-    private HeaderMeta writeHeader(FileOutputStream outputStream, String name, FlatBufferBuilder bufferBuilder, long rowCount, String geometryType, int srid, ResultSetMetaData metadata) throws SQLException, IOException {
+    private HeaderMeta writeHeader(FileOutputStream outputStream, String fileName, FlatBufferBuilder bufferBuilder, long rowCount, String geometryType, int srid, ResultSetMetaData metadata) throws SQLException, IOException {
         outputStream.write(Constants.MAGIC_BYTES);
         //Get the column information
         List<ColumnMeta> columns = new ArrayList<>();
@@ -396,7 +386,7 @@ public class FGBWriteDriver {
             columns.add(column);
         }
         HeaderMeta headerMeta = new HeaderMeta();
-        headerMeta.name=name;
+        headerMeta.name=fileName;
         headerMeta.featuresCount = rowCount;
         headerMeta.geometryType = geometryType(geometryType);
         headerMeta.columns = columns;
