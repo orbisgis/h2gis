@@ -31,7 +31,7 @@ public class TestUtilities {
     /**
      * A basic utilities to print the column names and values
      * @param res data to print
-     * @throws SQLException
+     * @throws SQLException Table read error.
      */
     public static void printValues(ResultSet res) throws SQLException {
         List<String> columns = JDBCUtilities.getColumnNames(res.getMetaData());
@@ -43,7 +43,7 @@ public class TestUtilities {
     /**
      * A basic utilities to print the column informations
      * @param res data to print
-     * @throws SQLException
+     * @throws SQLException Table read error.
      */
     public static void printColumns(ResultSet res) throws SQLException {
         ResultSetMetaData metadata = res.getMetaData();
