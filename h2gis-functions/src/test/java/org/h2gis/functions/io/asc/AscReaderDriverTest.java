@@ -100,8 +100,6 @@ public class AscReaderDriverTest {
     /**
      * Test reading two time the same asc by pushing more lines
      * asc files may be tiled, it is interesting to have a method to read all asc files into the same output table
-     * @throws IOException
-     * @throws SQLException
      */
     @Test
     public void testReadPrecipTwoTimes() throws IOException, SQLException {

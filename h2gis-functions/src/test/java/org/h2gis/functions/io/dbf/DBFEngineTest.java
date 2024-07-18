@@ -195,7 +195,7 @@ public class  DBFEngineTest {
 
     /**
      * Read a DBF where the encoding is missing in header. Then write it with a good header. Then check the content.
-     * @throws SQLException
+     *
      */
     @Test
     public void readDBFRussianWrongEncodingThenWriteThenRead() throws SQLException {
