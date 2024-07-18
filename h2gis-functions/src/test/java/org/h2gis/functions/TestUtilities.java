@@ -30,7 +30,7 @@ public class TestUtilities {
 
     /**
      * A basic utilities to print the column names and values
-     * @param res
+     * @param res data to print
      * @throws SQLException
      */
     public static void printValues(ResultSet res) throws SQLException {
@@ -42,7 +42,7 @@ public class TestUtilities {
 
     /**
      * A basic utilities to print the column informations
-     * @param res
+     * @param res data to print
      * @throws SQLException
      */
     public static void printColumns(ResultSet res) throws SQLException {
