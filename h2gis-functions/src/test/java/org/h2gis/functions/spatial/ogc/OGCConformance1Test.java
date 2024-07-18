@@ -57,7 +57,6 @@ public class OGCConformance1Test {
     /**
      *  For this test, we will check to see that all of the feature tables are
      *  represented by entries in the GEOMETRY_COLUMNS table/view.
-     *  @throws Exception
      */
     @Test
     public void N1() throws Exception {
@@ -82,7 +81,6 @@ public class OGCConformance1Test {
     /**
      * For this test, we will check to see that all of the geometry tables are
      * represented by entries in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void N2() throws Exception {
@@ -108,7 +106,6 @@ public class OGCConformance1Test {
     /**
      * For this test, we will check to see that the correct storage type for
      * the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void N3() throws Exception {
@@ -121,7 +118,6 @@ public class OGCConformance1Test {
     /**
      * For this test, we will check to see that the correct geometry type for
      * the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void N4() throws Exception {
@@ -134,7 +130,6 @@ public class OGCConformance1Test {
     /**
      * For this test, we will check to see that the correct coordinate dimension for
      * the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void N5() throws Exception {
@@ -147,7 +142,6 @@ public class OGCConformance1Test {
     /**
      * For this test, we will check to see that the correct value of max_ppr
      * for the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void N6() throws Exception {
@@ -160,7 +154,6 @@ public class OGCConformance1Test {
     /**
      * For this test, we will check to see that the correct value of srid for
      * the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void N7() throws Exception {
@@ -173,7 +166,6 @@ public class OGCConformance1Test {
     /**
      * For this test, we will check to see that the correct value of srtext is
      * represented in the SPATIAL_REF_SYS table/view.
-     * @throws Exception
      */
     @Test
     public void N8() throws Exception {
