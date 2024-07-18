@@ -197,7 +197,7 @@ public class FindGeometryMetadataTest {
         st.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable (the_geom GEOMETRY); ");
         ResultSet res = st.executeQuery(
                 "SELECT   "
-                        + "GEOMETRY_SRID as srid, "
+                        + "GEOMETRY_SRID as srid "
                         + " FROM INFORMATION_SCHEMA.COLUMNS"
                         + " WHERE DATA_TYPE = 'GEOMETRY' and TABLE_NAME='GEOTABLE';");
         assertTrue(res.next());
@@ -205,7 +205,7 @@ public class FindGeometryMetadataTest {
 
         res = st.executeQuery(
                 "SELECT   "
-                        + "CASE WHEN GEOMETRY_SRID IS NULL THEN 0 ELSE GEOMETRY_SRID END as srid, "
+                        + "CASE WHEN GEOMETRY_SRID IS NULL THEN 0 ELSE GEOMETRY_SRID END as srid "
                         + " FROM INFORMATION_SCHEMA.COLUMNS"
                         + " WHERE DATA_TYPE = 'GEOMETRY' and TABLE_NAME='GEOTABLE';");
         assertTrue(res.next());

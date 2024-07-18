@@ -8,3 +8,4 @@
 - Fix null way id on OSM file- 
 - Use new sonatype auth
 - Add ST_SnapToSelf function
+- Upgrade to H2 2.3.230
