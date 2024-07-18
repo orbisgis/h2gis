@@ -511,7 +511,6 @@ public class CreateFunctionTest {
     /**
      * Test to create a regular square grid from a subquery
      *
-     * @throws Exception
      */
     @Test
     public void testST_MakeGridFromSubquery1() throws Exception {
@@ -540,7 +539,6 @@ public class CreateFunctionTest {
     /**
      * Test to create a regular square grid from a complex subquery
      *
-     * @throws Exception
      */
     @Test
     public void testST_MakeGridFromSubquery2() throws Exception {

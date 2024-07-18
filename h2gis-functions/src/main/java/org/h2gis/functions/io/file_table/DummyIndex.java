@@ -63,7 +63,7 @@ public class DummyIndex extends Index {
     }
 
     @Override
-    public Cursor find(SessionLocal session, SearchRow first, SearchRow last) {
+    public Cursor find(SessionLocal session, SearchRow first, SearchRow last, boolean b) {
         return new DummyCursor();
     }
 
@@ -106,7 +106,7 @@ public class DummyIndex extends Index {
     }
 
     @Override
-    public long getDiskSpaceUsed() {
+    public long getDiskSpaceUsed(boolean approximate) {
         return 0;
     }    
 

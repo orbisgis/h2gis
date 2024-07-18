@@ -525,7 +525,7 @@ public class H2GISFunctions {
      * @param connection JDBC Connection
      * @param packagePrepend For OSGi environment only, use
      * Bundle-SymbolicName:Bundle-Version:
-     * @throws SQLException
+     * @throws SQLException Throw an exception if the functions are not registered
      */
     private static void registerH2GISFunctions(Connection connection, String packagePrepend) throws SQLException {
         Statement st = connection.createStatement();

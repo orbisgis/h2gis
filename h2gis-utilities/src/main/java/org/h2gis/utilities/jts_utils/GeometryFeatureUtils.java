@@ -113,7 +113,6 @@ public class GeometryFeatureUtils {
      * @param resultSet values
      * @param columns column names
      * @return
-     * @throws Exception
      */
     public static LinkedHashMap getProperties(ResultSet resultSet, Collection<String> columns) throws Exception {
         LinkedHashMap properties = new LinkedHashMap();

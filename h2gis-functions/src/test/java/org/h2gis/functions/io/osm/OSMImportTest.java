@@ -332,7 +332,6 @@ public class OSMImportTest {
     /**
      * A method to test if the internet network is active.
      *
-     * @return
      */
     public static boolean IsNetworkAvailable() {
         try {

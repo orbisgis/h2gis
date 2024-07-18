@@ -135,7 +135,6 @@ public class DBFImportExportTest {
 
     /**
      * Read a DBF where the encoding is missing in header.
-     * @throws SQLException
      */
     @Test
     public void readDBFRussianEncodingTest() throws SQLException {

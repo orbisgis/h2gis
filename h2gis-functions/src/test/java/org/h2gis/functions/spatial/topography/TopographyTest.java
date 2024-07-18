@@ -135,7 +135,6 @@ public class TopographyTest {
 
     /**
      * 10% slope. 10m down after 100m distance.
-     * @throws Exception
      */
     @Test
     public void test_ST_TriangleSlope3() throws Exception {
@@ -147,7 +146,6 @@ public class TopographyTest {
 
     /**
      * 200% slope.
-     * @throws Exception
      */
     @Test
     public void test_ST_TriangleSlope4() throws Exception {

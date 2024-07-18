@@ -30,12 +30,11 @@ import java.util.UUID;
 
 /**
  * Abstract class for test classes.
- * <p>
+ *
  * This abstract class contains method to create a test database and give access to a {@link Statement} to perform SQL
  * queries. To initiate the {@link Statement}, call the {@link BaseTest#statementInit()} or
  * {@link BaseTest#statementInit(String)} method.
- * <p>
- * <p>
+ *
  * This abstract class contains geometries of each kind :
  * ┬─ POINT              ─────────────────┬──┬─ (0 0) centered ─┬──┬─ 2D    ─┬─
  * ├─ LINESTRING         ─────────────────┤  └─ not centered   ─┘  ├─ 3D    ─┤

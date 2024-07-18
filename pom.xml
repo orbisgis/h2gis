@@ -79,7 +79,7 @@
         <!-- Dependencies versions -->
         <commons-compress-version>1.25.0</commons-compress-version>
         <commons-io-version>2.12.0</commons-io-version>
-        <h2-version>2.2.224</h2-version>
+        <h2-version>2.3.230</h2-version>
         <jackson-core-version>2.13.2</jackson-core-version>
         <jts-version>1.19.0</jts-version>
         <junit-version>5.9.2</junit-version>

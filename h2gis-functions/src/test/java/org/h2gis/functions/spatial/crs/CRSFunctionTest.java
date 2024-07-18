@@ -215,9 +215,8 @@ public class CRSFunctionTest {
 
     /**
      * Check the projected geometry using the POSTGIS EWKT style
-     * @param inputGeom
-     * @param expectedGeom
-     * @throws SQLException 
+     * @param inputGeom input geometry
+     * @param expectedGeom expected geometry
      */
     private void checkProjectedGeom(String inputGeom, String expectedGeom) throws SQLException {
         int outPutSRID = ValueGeometry.get(expectedGeom).getSRID();
@@ -226,9 +225,8 @@ public class CRSFunctionTest {
     
      /**
      * Check the projected geometry using the POSTGIS EWKT style
-     * @param inputGeom
-     * @param expectedGeom
-     * @throws SQLException 
+     * @param inputGeom input geometry
+     * @param expectedGeom expected geometry
      */
     private void checkProjectedGeom(String inputGeom, String expectedGeom, double tolerance) throws SQLException {
         int outPutSRID = ValueGeometry.get(expectedGeom).getSRID();

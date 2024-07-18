@@ -374,8 +374,7 @@ public class SHPEngineTest {
     }
 
     /**
-     * Check the call of special case {@link H2TableIndex#find(org.h2.engine.SessionLocal, org.h2.result.SearchRow, org.h2.result.SearchRow)} with null at first and last
-     * @throws SQLException
+     * Check the call of special case {@link H2TableIndex} with null at first and last
      */
     @Test
     public void readSHPOrderDataTest() throws SQLException {
@@ -405,8 +404,7 @@ public class SHPEngineTest {
     }
 
     /**
-     * Check the call of special case {@link H2TableIndex#find(org.h2.engine.SessionLocal, org.h2.result.SearchRow, org.h2.result.SearchRow)} with null at last part only.
-     * @throws SQLException
+     * Check the call of special case {@link H2TableIndex} with null at last part only.
      */
     @Test
     public void readSHPFilteredOrderDataTest() throws SQLException {
@@ -437,7 +435,6 @@ public class SHPEngineTest {
     /**
      * About #806
      * Fix were a pk Index of linked table return a superior cost than spatial index.
-     * @throws SQLException
      */
     @Test
     public void linkedShpSpatialIndexFlatQueryTest() throws SQLException {

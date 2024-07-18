@@ -160,7 +160,7 @@ public class H2MVTable extends MVTable {
         Index scan = getScanIndex(session);
         long remaining = scan.getRowCount(session);
         long total = remaining;
-        Cursor cursor = scan.find(session, null, null);
+        Cursor cursor = scan.find(session, null, null, false);
         long i = 0;
         int bufferSize = (int) Math.min(total, database.getMaxMemoryRows());
         ArrayList<Row> buffer = new ArrayList<>(bufferSize);
@@ -287,7 +287,7 @@ public class H2MVTable extends MVTable {
     }
 
     @Override
-    public long getDiskSpaceUsed() {
+    public long getDiskSpaceUsed(boolean total, boolean approximate) {
         return 0;
     }
 

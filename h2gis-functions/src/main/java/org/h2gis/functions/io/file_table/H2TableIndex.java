@@ -109,7 +109,7 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public Cursor find(SessionLocal session, SearchRow first, SearchRow last) {
+    public Cursor find(SessionLocal session, SearchRow first, SearchRow last, boolean reverse) {
         if (!isScanIndex) {
             Row remakefirst = Row.get(null, 0);
             if(first != null) {
@@ -177,7 +177,7 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public long getDiskSpaceUsed() {
+    public long getDiskSpaceUsed(boolean approximate) {
         return 0;
     }
 

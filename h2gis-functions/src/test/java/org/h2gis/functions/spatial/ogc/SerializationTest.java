@@ -59,7 +59,6 @@ public class SerializationTest {
     /**
      *  For this test, we will check to see that all of the feature tables are
      *  represented by entries in the GEOMETRY_COLUMNS table/view.
-     *  @throws Exception
      */
     @Test
     public void T1() throws Exception {
@@ -83,7 +82,6 @@ public class SerializationTest {
 
     /**
      * For this test, we will determine the SRID of Goose Island.
-     * @throws Exception
      */
     @Test
     public void sridTest() throws Exception {
@@ -95,7 +93,6 @@ public class SerializationTest {
 
     /**
      * For this test, varchar cast geometry in Route 75.
-     * @throws Exception
      */
     @Test
     public void CastTest() throws Exception {
@@ -107,7 +104,6 @@ public class SerializationTest {
 
     /**
      * For this test, varchar cast of the union of Blue Lake and Goose Island.
-     * @throws Exception
      */
     @Test
     public void CastTest2() throws Exception {

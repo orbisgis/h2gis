@@ -142,7 +142,7 @@ public class DummyMVTable extends MVTable {
     }
 
     @Override
-    public long getDiskSpaceUsed() {
+    public long getDiskSpaceUsed(boolean total, boolean approximate) {
         return 0;
     }
 

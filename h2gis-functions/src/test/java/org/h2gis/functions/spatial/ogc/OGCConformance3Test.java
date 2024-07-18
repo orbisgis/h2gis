@@ -60,7 +60,6 @@ public class OGCConformance3Test {
     /**
      *  For this test, we will check to see that all of the feature tables are
      *  represented by entries in the GEOMETRY_COLUMNS table/view.
-     *  @throws Exception
      */
     @Test
     public void T1() throws Exception {
@@ -85,7 +84,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will check to see that the correct geometry column
      * for the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void T2() throws Exception {
@@ -98,7 +96,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will check to see that the correct coordinate dimension for
      * the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void T3() throws Exception {
@@ -111,7 +108,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will check to see that the correct value of srid for
      * the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
      */
     @Test
     public void T4() throws Exception {
@@ -124,7 +120,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will check to see that the correct value of srtext is
      * represented in the SPATIAL_REF_SYS table/view.
-     * @throws Exception
      */
     @Test
     public void T5() throws Exception {
@@ -140,7 +135,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the dimension of Blue Lake.
-     * @throws Exception
      */
     @Test
     public void T6() throws Exception {
@@ -152,7 +146,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine  the type of Route 75.
-     * @throws Exception
      */
     @Test
     public void T7() throws Exception {
@@ -164,7 +157,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the WKT representation of Goose Island.
-     * @throws Exception
      */
     @Test
     public void T8() throws Exception {
@@ -177,7 +169,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will determine the WKB representation of Goose Island. We will test by
      * applying AsText to the result of PolyFromText to the result of AsBinary.
-     * @throws Exception
      */
     @Test
     public void T9() throws Exception {
@@ -189,7 +180,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the SRID of Goose Island.
-     * @throws Exception
      */
     @Test
     public void T10() throws Exception {
@@ -201,7 +191,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine whether the geometry of a segment of Route 5 is empty.
-     * @throws Exception
      */
     @Test
     public void T11() throws Exception {
@@ -213,7 +202,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine whether the geometry of a segment of Blue Lake is simple.
-     * @throws Exception
      */
     @Test
     public void T12() throws Exception {
@@ -225,7 +213,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the boundary of Goose Island.
-     * @throws Exception
      */
     @Test
     public void T13() throws Exception {
@@ -237,7 +224,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the envelope of Goose Island.
-     * @throws Exception
      */
     @Test
     public void T14() throws Exception {
@@ -249,7 +235,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test we will determine the X coordinate of Cam Bridge.
-     * @throws Exception
      */
     @Test
     public void T15() throws Exception {
@@ -261,7 +246,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test we will determine the Y coordinate of Cam Bridge.
-     * @throws Exception
      */
     @Test
     public void T16() throws Exception {
@@ -274,7 +258,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the start point of road segment 102.
-     * @throws Exception
      */
     @Test
     public void T17() throws Exception {
@@ -286,7 +269,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the end point of road segment 102.
-     * @throws Exception
      */
     @Test
     public void T18() throws Exception {
@@ -298,7 +280,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the boundary close state of Goose Island.
-     * @throws Exception
      */
     @Test
     public void T19() throws Exception {
@@ -310,7 +291,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the boundary close and simple state of Goose Island.
-     * @throws Exception
      */
     @Test
     public void T20() throws Exception {
@@ -322,7 +302,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the length of road segment 106.
-     * @throws Exception
      */
     @Test
     public void T21() throws Exception {
@@ -334,7 +313,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the number of points in road segment 102.
-     * @throws Exception
      */
     @Test
     public void T22() throws Exception {
@@ -346,7 +324,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the 1st point in road segment 102.
-     * @throws Exception
      */
     @Test
     public void T23() throws Exception {
@@ -358,7 +335,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the centroid of Goose Island.
-     * @throws Exception
      */
     @Test
     public void T24() throws Exception {
@@ -373,7 +349,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will determine a point on Goose Island.
      * For this test we will have to uses the Contains function (which we don't test until later).
-     * @throws Exception
      */
     @Test
     public void T25() throws Exception {
@@ -385,7 +360,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the area of Goose Island.
-     * @throws Exception
      */
     @Test
     public void T26() throws Exception {
@@ -397,7 +371,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the exterior ring of Blue Lake.
-     * @throws Exception
      */
     @Test
     public void T27() throws Exception {
@@ -409,7 +382,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the number of interior rings of Blue Lake.
-     * @throws Exception
      */
     @Test
     public void T28() throws Exception {
@@ -421,7 +393,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the first interior ring of Blue Lake.
-     * @throws Exception
      */
     @Test
     public void T29() throws Exception {
@@ -433,7 +404,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the number of geometries in Route 75.
-     * @throws Exception
      */
     @Test
     public void T30() throws Exception {
@@ -445,7 +415,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the second geometry in Route 75.
-     * @throws Exception
      */
     @Test
     public void T31() throws Exception {
@@ -457,7 +426,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine if the geometry of Route 75 is closed.
-     * @throws Exception
      */
     @Test
     public void T32() throws Exception {
@@ -469,7 +437,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the length of Route 75.
-     * @throws Exception
      */
     @Test
     public void T33() throws Exception {
@@ -481,7 +448,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the centroid of the ponds.
-     * @throws Exception
      */
     @Test
     public void T34() throws Exception {
@@ -493,7 +459,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine a point on the ponds.
-     * @throws Exception
      */
     @Test
     public void T35() throws Exception {
@@ -505,7 +470,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the area of the ponds.
-     * @throws Exception
      */
     @Test
     public void T36() throws Exception {
@@ -518,7 +482,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will determine if the geometry of Goose Island is equal to the same geometry as
      * constructed from it's WKT representation.
-     * @throws Exception
      */
     @Test
     public void T37() throws Exception {
@@ -533,7 +496,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will determine if the geometry of Goose Island is equal to the same geometry as
      * constructed from it's WKT representation.
-     * @throws Exception
      */
     @Test
     public void T38() throws Exception {
@@ -546,7 +508,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine if the geometry of Cam Stream touches the geometry of Blue Lake.
-     * @throws Exception
      */
     @Test
     public void T39() throws Exception {
@@ -559,7 +520,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine if the geometry of the house at 215 Main Street is within Ashton.
-     * @throws Exception
      */
     @Test
     public void T40() throws Exception {
@@ -573,7 +533,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine if the geometry of Green Forest overlaps the geometry of Ashton.
-     * @throws Exception
      */
     @Test
     public void T41() throws Exception {
@@ -586,7 +545,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine if the geometry of road segment 101 crosses the geometry of Route 75.
-     * @throws Exception
      */
     @Test
     public void T42() throws Exception {
@@ -600,7 +558,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will determine if the geometry of road segment 101 intersects the
      * geometry of Route 75.
-     * @throws Exception
      */
     @Test
     public void T43() throws Exception {
@@ -614,7 +571,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will determine if the geometry of Green Forest
      * contains the geometry of Ashton.
-     * @throws Exception
      */
     @Test
     public void T44() throws Exception {
@@ -628,7 +584,6 @@ public class OGCConformance3Test {
     /**
      * For this test, we will determine if the geometry of Green Forest
      * relates to the geometry of Ashton using the pattern "TTTTTTTTT".
-     * @throws Exception
      */
     @Test
     public void T45() throws Exception {
@@ -641,7 +596,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the distance between Cam Bridge and Ashton.
-     * @throws Exception
      */
     @Test
     public void T46() throws Exception {
@@ -654,7 +608,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the intersection between Cam Stream and Blue Lake.
-     * @throws Exception
      */
     @Test
     public void T47() throws Exception {
@@ -667,7 +620,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the difference between Ashton and Green Forest.
-     * @throws Exception
      */
     @Test
     public void T48() throws Exception {
@@ -682,7 +634,6 @@ public class OGCConformance3Test {
 
     /**
      *  For this test, we will determine the union of Blue Lake and Goose Island.
-     * @throws Exception
      */
     @Test
     public void T49() throws Exception {
@@ -695,7 +646,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the symmetric difference of Blue Lake and Goose Island.
-     * @throws Exception
      */
     @Test
     public void T50() throws Exception {
@@ -710,7 +660,6 @@ public class OGCConformance3Test {
 
     /**
      *  For this test, we will make a 15 m buffer about Cam Bridge.
-     * @throws Exception
      */
     @Test
     public void T51() throws Exception {
@@ -726,7 +675,6 @@ public class OGCConformance3Test {
 
     /**
      * For this test, we will determine the convex hull of Blue Lake.
-     * @throws Exception
      */
     @Test
     public void T52() throws Exception {

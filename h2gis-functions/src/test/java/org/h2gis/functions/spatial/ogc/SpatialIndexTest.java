@@ -62,7 +62,6 @@ public class SpatialIndexTest {
     /**
      *  For this test, we will check to see that all of the feature tables are
      *  represented by entries in the GEOMETRY_COLUMNS table/view.
-     *  @throws Exception
      */
     @Test
     public void T1() throws Exception {
