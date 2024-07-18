@@ -63,8 +63,8 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
     /**
      * Read the ASCII file.
      *
-     * @param connection
-     * @param fileName
+     * @param connection input database connection
+     * @param fileName file to read
      * @throws IOException
      * @throws SQLException
      */
