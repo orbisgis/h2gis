@@ -62,7 +62,7 @@ public class ST_MaximumInscribedCircle extends DeterministicScalarFunction {
             return geom;
         }
         else{
-            LargestEmptyCircle lec = new LargestEmptyCircle(geometry, tolerance);
+            LargestEmptyCircle lec = new LargestEmptyCircle(geometry, null, tolerance);
             Geometry geom =  lec.getCenter().buffer(lec.getRadiusLine().getLength());
             geom.setSRID(geometry.getSRID());
             return geom;

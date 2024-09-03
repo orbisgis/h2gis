@@ -164,4 +164,12 @@ public class GeometryAsserts {
             assertEquals(expectedCoordinates[idPoint].getZ(), resultCoordinates[idPoint].getZ(), epsilon);
         }
     }
+
+    /**
+     * Print a geometry content
+     * @param geometry
+     */
+    public static void printGeometry(Object geometry){
+        System.out.println(ValueGeometry.getFromGeometry(geometry).getString());
+    }
 }
