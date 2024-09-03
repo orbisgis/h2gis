@@ -2684,11 +2684,37 @@ public class SpatialFunctionTest {
         assertFalse(rs.getBoolean(1));
         rs.close();
     }
+
+    @Test
+    public void test_ST_IntersectsPrecision() throws Exception {
+        ResultSet rs = st.executeQuery("Select st_intersects('POLYGON ((414188.5999999999 6422867.1, 414193.7 6422866.5, 414205.1 6422859.4, 414223.7 6422846.8, 414229.6 6422843.2, 414235.2 6422835.4, 414224.7 6422837.9, 414219.4 6422842.1, 414210.9 6422849, 414199.2 6422857.6, 414191.1 6422863.4, 414188.5999999999 6422867.1))'::GEOMETRY, 'LINESTRING (414187.2 6422831.6, 414179 6422836.1, 414182.2 6422841.8, 414176.7 6422844, 414184.5 6422859.5, 414188.6 6422867.1)'::GEOMETRY) as op ");
+        rs.next();
+        assertTrue(rs.getBoolean(1));
+        rs.close();
+    }
+
     @Test
     public void test_ST_SRIDEmptyGeometry() throws Exception {
         ResultSet rs = st.executeQuery("Select st_srid('POINT EMPTY'::GEOMETRY) as the_geom ");
         rs.next();
         assertEquals(0,  rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_CoveredBy() throws Exception {
+        //From PostGIS test
+        ResultSet rs = st.executeQuery("SELECT ST_CoveredBy(smallc,smallc) As smallinsmall,\n" +
+                "  ST_CoveredBy(smallc, bigc) As smallcoveredbybig,\n" +
+                "  ST_CoveredBy(ST_ExteriorRing(bigc), bigc) As exteriorcoveredbybig,\n" +
+                "  ST_Within(ST_ExteriorRing(bigc),bigc) As exeriorwithinbig\n" +
+                "FROM (SELECT ST_Buffer(ST_GeomFromText('POINT(1 2)'), 10) As smallc,\n" +
+                "  ST_Buffer(ST_GeomFromText('POINT(1 2)'), 20) As bigc) As foo;");
+        rs.next();
+        assertTrue(rs.getBoolean(1));
+        assertTrue(rs.getBoolean(2));
+        assertTrue(rs.getBoolean(3));
+        assertFalse(rs.getBoolean(4));
         rs.close();
     }
 }

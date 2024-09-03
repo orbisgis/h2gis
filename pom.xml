@@ -77,11 +77,11 @@
         <maven.compiler.source>${java-version}</maven.compiler.source>
 
         <!-- Dependencies versions -->
-        <commons-compress-version>1.25.0</commons-compress-version>
-        <commons-io-version>2.12.0</commons-io-version>
+        <commons-compress-version>1.27.1</commons-compress-version>
+        <commons-io-version>2.16.1</commons-io-version>
         <h2-version>2.3.230</h2-version>
-        <jackson-core-version>2.13.2</jackson-core-version>
-        <jts-version>1.19.0</jts-version>
+        <jackson-core-version>2.17.2</jackson-core-version>
+        <jts-version>1.20.0</jts-version>
         <junit-version>5.9.2</junit-version>
         <osgi-compendium-version>5.0.0</osgi-compendium-version>
         <osgi-core-version>6.0.0</osgi-core-version>
@@ -93,7 +93,7 @@
         <jna-version>0.5.0</jna-version>
         <cts-version>1.7.1</cts-version>
         <geographiclib-version>2.0</geographiclib-version>
-        <slf4j-version>2.0.10</slf4j-version>
+        <slf4j-version>2.0.16</slf4j-version>
       
         <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>

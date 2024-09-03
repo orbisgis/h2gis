@@ -9,3 +9,4 @@
 - Use new sonatype auth
 - Add ST_SnapToSelf function
 - Upgrade to H2 2.3.230
+- Upgrade to JTS 1.20

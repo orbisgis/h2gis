@@ -340,7 +340,8 @@ public class H2GISFunctions {
                 new ST_IsProjectedCRS(),
                 new ST_IsGeographicCRS(),
                 new ST_SnapToGrid(),
-                new ST_SnapToSelf()
+                new ST_SnapToSelf(),
+                new ST_CoveredBy()
         };
     }
 
@@ -529,6 +530,8 @@ public class H2GISFunctions {
      */
     private static void registerH2GISFunctions(Connection connection, String packagePrepend) throws SQLException {
         Statement st = connection.createStatement();
+        //Set JTS relate to use the new one
+        System.setProperty("jts.relate", "ng");
         for (Function function : getBuiltInsFunctions()) {
             try {
                 registerFunction(st, function, packagePrepend);

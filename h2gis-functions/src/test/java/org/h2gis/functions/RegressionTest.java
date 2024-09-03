@@ -12,11 +12,14 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 import java.sql.*;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class RegressionTest {
@@ -168,5 +171,24 @@ public class RegressionTest {
                 throw e.getCause();
             }
         });
+    }
+
+    @Test
+    public void testRelate() throws SQLException, ParseException {
+        WKTReader reader =  new WKTReader();
+        Geometry gc0 = reader.read(
+                "POLYGON ((414188.5999999999 6422867.1, 414193.7 6422866.5, 414205.1 6422859.4, 414223.7 6422846.8, 414229.6 6422843.2, 414235.2 6422835.4, 414224.7 6422837.9, 414219.4 6422842.1, 414210.9 6422849, 414199.2 6422857.6, 414191.1 6422863.4, 414188.5999999999 6422867.1))");
+        Geometry gc1 = reader.read(
+                "LINESTRING (414187.2 6422831.6, 414179 6422836.1, 414182.2 6422841.8, 414176.7 6422844, 414184.5 6422859.5, 414188.6 6422867.1)");
+        assertTrue(RelateNG.relate(gc0, gc1, RelatePredicate.intersects()));
+    }
+
+    @Disabled
+    @Test
+    public void testBufferPrecision() throws SQLException, ParseException {
+        WKTReader wktReader = new WKTReader();
+        Geometry geom = wktReader.read("POINT(100 90)");
+        BufferOp bufOp  = new BufferOp(geom, new BufferParameters(2));
+        System.out.println(bufOp.getResultGeometry(50));
     }
 }

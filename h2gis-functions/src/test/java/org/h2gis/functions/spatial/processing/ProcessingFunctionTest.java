@@ -272,7 +272,7 @@ public class ProcessingFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Polygonize(st_union('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
                 + " (50 340, 170 250, 300 370))'::GEOMETRY));");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON( ((231.5744116672191 306.8379184620484, 170 250, 101.95319531953196 301.03510351035106, 199 425, 231.5744116672191 306.8379184620484)))")));
+        assertGeometryEquals("MULTIPOLYGON (((101.95319531953196 301.035103510351, 199 425, 231.5744116672191 306.8379184620484, 170 250, 101.95319531953196 301.035103510351)))", rs.getObject(1));
         rs.close();
     }
     
