@@ -48,6 +48,8 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext bc) {
+        //Set JTS relate to use the new one
+        System.setProperty("jts.relate", "ng");
         for(Function function : H2GISFunctions.getBuiltInsFunctions()) {
             bc.registerService(Function.class, function, null);
             if(function instanceof DriverFunction) {
