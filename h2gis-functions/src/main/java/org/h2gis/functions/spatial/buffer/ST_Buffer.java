@@ -122,11 +122,15 @@ public class ST_Buffer extends DeterministicScalarFunction {
                 }
             }            
             BufferOp bufOp  = new BufferOp(geom, bufferParameters);            
-            return bufOp.getResultGeometry(distance);
+            Geometry buff = bufOp.getResultGeometry(distance);
+            System.out.println("Print for debug "+ buff);
+            return buff;
         }
         else if (value instanceof ValueInteger){
             BufferOp bufOp  = new BufferOp(geom, new BufferParameters(value.getInt()));
-            return bufOp.getResultGeometry(distance);
+            Geometry buff = bufOp.getResultGeometry(distance);
+            System.out.println("Print for debug "+ buff);
+            return buff;
         }
         else {
             throw new IllegalArgumentException("The third argument must be an int or a varchar.");
