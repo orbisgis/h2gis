@@ -58,8 +58,6 @@ public class FGBImportExportTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
-        H2GISFunctions.registerFunction(connection.createStatement(), new FGBWrite(), "");
-        H2GISFunctions.registerFunction(connection.createStatement(), new FGBRead(), "");
     }
 
     @AfterAll
