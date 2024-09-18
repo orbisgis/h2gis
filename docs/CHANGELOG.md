@@ -1,14 +1,1 @@
-## Changelog for v2.2.2
-- Read CPG file attached to the shapefile- 
-- Declare the schema for the spatial_ref_sys table
-- Add SnapToGrid function
-- Write empty geometry with the shapefile driver
-- Do not ask for SRID when geometry is empty
-- Add the name of the file in the FGB header
-- Fix null way id on OSM file 
-- Use new sonatype auth
-- Add ST_SnapToSelf function
-- Upgrade to H2 2.3.230
-- Upgrade to JTS 1.20
-- Upgrade to H2 2.3.232
-- Add ST_CoverageUnion function
+## Changelog for v2.2.3
