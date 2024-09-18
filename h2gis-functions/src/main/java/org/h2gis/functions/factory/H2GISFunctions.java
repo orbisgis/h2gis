@@ -28,6 +28,8 @@ import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.asc.AscRead;
 import org.h2gis.functions.io.dbf.DBFRead;
 import org.h2gis.functions.io.dbf.DBFWrite;
+import org.h2gis.functions.io.fgb.FGBRead;
+import org.h2gis.functions.io.fgb.FGBWrite;
 import org.h2gis.functions.io.geojson.GeoJsonRead;
 import org.h2gis.functions.io.geojson.GeoJsonWrite;
 import org.h2gis.functions.io.geojson.ST_AsGeoJSON;
@@ -343,7 +345,9 @@ public class H2GISFunctions {
                 new ST_SnapToGrid(),
                 new ST_SnapToSelf(),
                 new ST_CoveredBy(),
-                new ST_CoverageUnion()
+                new ST_CoverageUnion(),
+                new FGBRead(),
+                new FGBWrite()
         };
     }
 

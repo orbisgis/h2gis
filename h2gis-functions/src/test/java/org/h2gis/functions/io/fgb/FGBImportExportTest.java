@@ -1,30 +1,21 @@
 package org.h2gis.functions.io.fgb;
 
-import com.google.common.io.LittleEndianDataInputStream;
 import org.h2.index.Cursor;
 import org.h2.value.Value;
 import org.h2.value.ValueVarchar;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.URIUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wololo.flatgeobuf.ColumnMeta;
-import org.wololo.flatgeobuf.HeaderMeta;
-import org.wololo.flatgeobuf.NodeItem;
-import org.wololo.flatgeobuf.PackedRTree;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -32,11 +23,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,8 +46,6 @@ public class FGBImportExportTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
-        H2GISFunctions.registerFunction(connection.createStatement(), new FGBWrite(), "");
-        H2GISFunctions.registerFunction(connection.createStatement(), new FGBRead(), "");
     }
 
     @AfterAll
