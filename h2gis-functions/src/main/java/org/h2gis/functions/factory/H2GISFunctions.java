@@ -51,6 +51,7 @@ import org.h2gis.functions.spatial.aggregate.ST_LineMerge;
 import org.h2gis.functions.spatial.buffer.*;
 import org.h2gis.functions.spatial.clean.ST_MakeValid;
 import org.h2gis.functions.spatial.convert.*;
+import org.h2gis.functions.spatial.coverage.ST_CoverageUnion;
 import org.h2gis.functions.spatial.create.*;
 import org.h2gis.functions.spatial.crs.*;
 import org.h2gis.functions.spatial.distance.*;
@@ -341,7 +342,8 @@ public class H2GISFunctions {
                 new ST_IsGeographicCRS(),
                 new ST_SnapToGrid(),
                 new ST_SnapToSelf(),
-                new ST_CoveredBy()
+                new ST_CoveredBy(),
+                new ST_CoverageUnion()
         };
     }
 
