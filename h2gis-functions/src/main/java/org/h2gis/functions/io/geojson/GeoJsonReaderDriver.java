@@ -23,12 +23,9 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.h2.util.geometry.EWKTUtils;
 import org.h2.util.geometry.JTSUtils;
-import org.h2.value.ValueGeometry;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.spatial.convert.ST_GeomFromWKB;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
@@ -112,7 +109,7 @@ public class GeoJsonReaderDriver {
         String fileNameLower = fileName.getName().toLowerCase();
         if (fileName != null && (fileNameLower.endsWith(".geojson") || fileNameLower.endsWith(".json"))) {
             if (!fileName.exists()) {
-                throw new SQLException("The file " + tableLocation + " doesn't exist ");
+                throw new SQLException("The file " + fileName + " doesn't exist ");
             }
             this.dbType = DBUtils.getDBType(connection);
             this.tableLocation = TableLocation.parse(tableReference, dbType).toString();
@@ -1016,19 +1013,19 @@ public class GeoJsonReaderDriver {
                         preparedStatement.clearBatch();
                         batchSize = 0;
                     }
-
                     token = jp.nextToken(); //START_OBJECT new feature                    
                     featureCounter++;
                     progress.setStep((featureCounter / nbFeature) * 100);
-                    if (batchSize > 0) {
-                            preparedStatement.executeBatch();
-                            connection.commit();
-                            preparedStatement.clearBatch();
-                    }
+
                 } else {
                     connection.setAutoCommit(true);
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
                 }
+            }
+            if (batchSize > 0) {
+                preparedStatement.executeBatch();
+                connection.commit();
+                preparedStatement.clearBatch();
             }
             connection.setAutoCommit(true);
             //LOOP END_ARRAY ]

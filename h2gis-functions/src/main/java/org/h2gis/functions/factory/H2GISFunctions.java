@@ -40,6 +40,9 @@ import org.h2gis.functions.io.kml.KMLWrite;
 import org.h2gis.functions.io.kml.ST_AsKml;
 import org.h2gis.functions.io.osm.OSMRead;
 import org.h2gis.functions.io.osm.ST_OSMDownloader;
+import org.h2gis.functions.io.overpass.ST_AsOverpassBbox;
+import org.h2gis.functions.spatial.others.ST_EnvelopeAsText;
+import org.h2gis.functions.io.overpass.ST_OverpassDownloader;
 import org.h2gis.functions.io.shp.SHPRead;
 import org.h2gis.functions.io.shp.SHPWrite;
 import org.h2gis.functions.io.tsv.TSVRead;
@@ -347,7 +350,10 @@ public class H2GISFunctions {
                 new ST_CoveredBy(),
                 new ST_CoverageUnion(),
                 new FGBRead(),
-                new FGBWrite()
+                new FGBWrite(),
+                new ST_OverpassDownloader(),
+                new ST_EnvelopeAsText(),
+                new ST_AsOverpassBbox()
         };
     }
 

@@ -586,6 +586,104 @@ public class GeojsonImportExportTest {
     }
 
     @Test
+    public void testReadGeoJSON4() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS geojson_data; CREATE TABLE geojson_data " +
+                    "as SELECT CONCAT('{ \"type\": \"Point\", \"coordinates\": [', X, ',0] }') as json FROM GENERATE_SERIES(0,3) ORDER BY X");
+            ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON(json) from geojson_data");
+            res.next();
+            assertEquals("POINT (0 0)", res.getString(1));
+            res.next();
+            assertEquals("POINT (1 0)", res.getString(1));
+            res.next();
+            assertEquals("POINT (2 0)", res.getString(1));
+        }
+    }
+
+    @Test
+    public void testReadGeoJSON5() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            String collection="{\n" +
+                    "  \"type\": \"GeometryCollection\",\n" +
+                    "  \"geometries\": [\n" +
+                    "    {\n" +
+                    "      \"type\": \"Point\",\n" +
+                    "      \"coordinates\": [4.404732087, 51.22893535]\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"type\": \"LineString\",\n" +
+                    "      \"coordinates\": [\n" +
+                    "        [4.404732087, 51.22893535],\n" +
+                    "        [4.403982789, 51.229262879],\n" +
+                    "        [4.403812348, 51.229155607]\n" +
+                    "      ]\n" +
+                    "    }\n"+
+                    "  ]\n" +
+                    "}";
+            ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('"+collection+"')");
+            res.next();
+            assertEquals("GEOMETRYCOLLECTION (POINT (4.404732087 51.22893535), LINESTRING (4.404732087 51.22893535, 4.403982789 51.229262879, 4.403812348 51.229155607))", res.getString(1));
+        }
+    }
+
+    @Test
+    public void testReadGeoJSON6() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            String collection="{\n" +
+                    "  \"type\": \"GeometryCollection\",\n" +
+                    "  \"geometries\": [\n" +
+                    "   {\n" +
+                    "      \"type\": \"LineString\",\n" +
+                    "      \"coordinates\": [\n" +
+                    "        [4.404732087, 51.22893535],\n" +
+                    "        [4.403982789, 51.229262879],\n" +
+                    "        [4.403812348, 51.229155607]\n" +
+                    "      ]\n" +
+                    "    },\n"+
+                    "    {\n" +
+                    "      \"type\": \"Point\",\n" +
+                    "      \"coordinates\": [4.404732087, 51.22893535]\n" +
+                    "    }"+
+                    "  ]\n" +
+                    "}";
+            ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('"+collection+"')");
+            res.next();
+            assertEquals("GEOMETRYCOLLECTION (LINESTRING (4.404732087 51.22893535, 4.403982789 51.229262879, 4.403812348 51.229155607), POINT (4.404732087 51.22893535))", res.getString(1));
+        }
+    }
+
+    @Test
+    public void testReadGeoJSON7() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            String collection="{\n" +
+                    "  \"type\": \"GeometryCollection\",\n" +
+                    "  \"geometries\": [\n" +
+                    "    {\n" +
+                    "        \"type\": \"LineString\",\n" +
+                    "        \"coordinates\": [\n" +
+                    "          [-0.0147294, 53.7405502],\n" +
+                    "          [-0.0146484, 53.7406478],\n" +
+                    "          [-0.0141911, 53.7411993]\n"+
+                    "        ]\n" +
+                    "      },"+
+                    "    {\n" +
+                    "      \"type\": \"LineString\",\n" +
+                    "      \"coordinates\": [\n" +
+                    "        [4.404732087, 51.22893535],\n" +
+                    "        [4.403982789, 51.229262879],\n" +
+                    "        [4.403812348, 51.229155607]\n" +
+                    "      ]\n" +
+                    "    }\n"+
+                    "  ]\n" +
+                    "}";
+            ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('"+collection+"')");
+            res.next();
+            assertEquals("GEOMETRYCOLLECTION (LINESTRING (-0.0147294 53.7405502, -0.0146484 53.7406478, -0.0141911 53.7411993), LINESTRING (4.404732087 51.22893535, 4.403982789 51.229262879, 4.403812348 51.229155607))", res.getString(1));
+        }
+    }
+
+
+    @Test
     public void testWriteReadNullGeojsonPoint() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");

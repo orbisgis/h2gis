@@ -36,7 +36,8 @@ import java.util.ArrayList;
  */
 public class GJGeometryReader {
     private final GeometryFactory GF;
-    
+
+    private String geomType;
     public GJGeometryReader(GeometryFactory GF) {
         this.GF=GF;        
     }  
@@ -76,6 +77,37 @@ public class GJGeometryReader {
             throw new SQLException("Unsupported geometry : " + geomType);
         }
     }
+
+    /**
+     * Parses a GeoJSON geometry and returns its JTS representation.
+     *
+     * Syntax:
+     *
+     * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
+     *
+     * @param jp
+     * @throws IOException
+     * @return Geometry
+     */
+    private Geometry parseGeometry(JsonParser jp, String geometryType) throws IOException, SQLException {
+        if (geometryType.equalsIgnoreCase(GeoJsonField.POINT)) {
+            return parsePoint(jp);
+        } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTIPOINT)) {
+            return parseMultiPoint(jp);
+        } else if (geometryType.equalsIgnoreCase(GeoJsonField.LINESTRING)) {
+            return parseLinestring(jp);
+        } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTILINESTRING)) {
+            return parseMultiLinestring(jp);
+        } else if (geometryType.equalsIgnoreCase(GeoJsonField.POLYGON)) {
+            return parsePolygon(jp);
+        } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTIPOLYGON)) {
+            return parseMultiPolygon(jp);
+        } else if (geometryType.equalsIgnoreCase(GeoJsonField.GEOMETRYCOLLECTION)) {
+            return parseGeometryCollection(jp);
+        } else {
+            throw new SQLException("Unsupported geometry : " + geometryType);
+        }
+    }
     
     /**
      * Parses one position
@@ -88,13 +120,12 @@ public class GJGeometryReader {
      * @throws IOException
      * @return Point
      */
-    private Point parsePoint(JsonParser jp) throws IOException, SQLException {
+    public Point parsePoint(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ to parse the coordinate
             Point point = GF.createPoint(parseCoordinate(jp));
-            jp.nextToken();
             return point;
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
@@ -112,14 +143,12 @@ public class GJGeometryReader {
      * @throws IOException
      * @return MultiPoint
      */
-    private MultiPoint parseMultiPoint(JsonParser jp) throws IOException, SQLException {
+    public MultiPoint parseMultiPoint(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
-            MultiPoint mPoint = GF.createMultiPoint(parseCoordinates(jp));
-            jp.nextToken();//END_OBJECT } geometry
-            return mPoint;
+            return GF.createMultiPoint(parseCoordinates(jp));
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
@@ -135,7 +164,7 @@ public class GJGeometryReader {
      *
      * @param jsParser
      */
-    private LineString parseLinestring(JsonParser jp) throws IOException, SQLException {
+    public LineString parseLinestring(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
@@ -157,7 +186,7 @@ public class GJGeometryReader {
      * @param jsParser
      * @return MultiLineString
      */
-    private MultiLineString parseMultiLinestring(JsonParser jp) throws IOException, SQLException {
+    public MultiLineString parseMultiLinestring(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
@@ -200,7 +229,7 @@ public class GJGeometryReader {
      * @param jp
      * @return Polygon
      */
-    private Polygon parsePolygon(JsonParser jp) throws IOException, SQLException {
+    public Polygon parsePolygon(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
@@ -243,7 +272,7 @@ public class GJGeometryReader {
      * @throws SQLException
      * @return MultiPolygon
      */
-    private MultiPolygon parseMultiPolygon(JsonParser jp) throws IOException, SQLException {
+    public MultiPolygon parseMultiPolygon(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
@@ -295,22 +324,26 @@ public class GJGeometryReader {
      * @throws SQLException
      * @return GeometryCollection
      */
-    private GeometryCollection parseGeometryCollection(JsonParser jp) throws IOException, SQLException {
+    public GeometryCollection parseGeometryCollection(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME geometries        
-        String coordinatesField = jp.getText();
-        if (coordinatesField.equalsIgnoreCase(GeoJsonField.GEOMETRIES)) {
+        String geometriesField = jp.getText();
+        if (geometriesField.equalsIgnoreCase(GeoJsonField.GEOMETRIES)) {
             jp.nextToken();//START array
-            //jp.nextToken();//START object
-            ArrayList<Geometry> geometries = new ArrayList<Geometry>();
+            jp.nextToken();//START object
+            ArrayList<Geometry> geometries = new ArrayList<>();
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                geometries.add(parseGeometry(jp));
+                jp.nextToken(); // FIELD_NAME type
+                jp.nextToken(); //VALUE_STRING Point
+                String geometryType = jp.getText();
+                geometries.add(parseGeometry(jp, geometryType));
+                jp.nextToken();
+
             }
             jp.nextToken();//END_OBJECT } geometry
             return GF.createGeometryCollection(geometries.toArray(new Geometry[0]));
         } else {
-            throw new SQLException("Malformed GeoJSON file. Expected 'geometries', found '" + coordinatesField + "'");
+            throw new SQLException("Malformed GeoJSON file. Expected 'geometries', found '" + geometriesField + "'");
         }
-
     }
 
     /**
@@ -323,7 +356,7 @@ public class GJGeometryReader {
      * @throws SQLException
      * @return Coordinate[]
      */
-    private Coordinate[] parseCoordinates(JsonParser jp) throws IOException {
+    public Coordinate[] parseCoordinates(JsonParser jp) throws IOException {
         jp.nextToken(); // START_ARRAY [ to parse the each positions
         ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
         while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
@@ -345,7 +378,7 @@ public class GJGeometryReader {
      * @throws IOException
      * @return Coordinate
      */
-    private Coordinate parseCoordinate(JsonParser jp) throws IOException {
+    public Coordinate parseCoordinate(JsonParser jp) throws IOException {
         jp.nextToken();
         double x = jp.getDoubleValue();// VALUE_NUMBER_FLOAT
         jp.nextToken(); // second value
@@ -363,5 +396,12 @@ public class GJGeometryReader {
         jp.nextToken();
         return coord;
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public String getGeomType() {
+        return geomType;
+    }
 }
