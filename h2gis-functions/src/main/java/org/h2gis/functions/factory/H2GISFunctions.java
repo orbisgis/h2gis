@@ -422,7 +422,7 @@ public class H2GISFunctions {
 
     /**
      * Return a string property of the function
-     * @param function
+     * @param function h2gis function
      * @param propertyKey
      * @return 
      */
@@ -451,7 +451,7 @@ public class H2GISFunctions {
      * @param function Function instance
      * @param packagePrepend For OSGi environment only, use
      * Bundle-SymbolicName:Bundle-Version:
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException Throw an exception if the function cannot be registered
      */
     public static void registerFunction(Statement st,Function function,String packagePrepend) throws SQLException {
         registerFunction(st,function,packagePrepend,true);
@@ -464,7 +464,7 @@ public class H2GISFunctions {
      * @param function Function instance
      * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
      * @param dropAlias Drop alias if exists before define it.
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException Throw an exception if the function cannot be registered
      */
     public static void registerFunction(Statement st,Function function,String packagePrepend,boolean dropAlias) throws SQLException {
         String functionClass = function.getClass().getName();
@@ -558,7 +558,7 @@ public class H2GISFunctions {
      * Unregister spatial type and H2GIS functions from the current connection.
      *
      * @param connection Active H2 connection with DROP ALIAS rights
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException Throw an exception if the function cannot be unregistered
      */
     public static void unRegisterH2GISFunctions(Connection connection) throws SQLException {
         Statement st = connection.createStatement();

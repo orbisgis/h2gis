@@ -156,4 +156,25 @@ public class OverpassFunctionsTest {
         assertTrue(new File(folder.getAbsolutePath() + File.separator + "file_Paimpol.csv").exists());
         assertTrue(new File(folder.getAbsolutePath() + File.separator + "file_Redon.csv").exists());
     }
+
+    @Disabled
+    @Test
+    public void ST_Overpass3() throws Exception {
+       st.execute("select ST_OverpassDownloader(CONCAT('[bbox:', ST_AsOverpassBbox(st_Expand('SRID=4326;POINT(-2.781140 47.643182)'::GEOMETRY, 0.001)), " +
+                "']', '[out:csv(::count, ::\"count:nodes\", ::\"count:ways\", ::\"count:relations\")][timeout:25];\n" +
+                "(\n" +
+                "  node[building=yes];\n" +
+                "  way[building=yes];\n" +
+                "  relation[building=yes];\n" +
+                ");\n" +
+                "out count;'), '/tmp/count_building', true )");
+    }
+
+    @Test
+    public void ST_AsOverpassBbox1() throws Exception {
+        ResultSet res = st.executeQuery("select ST_AsOverpassBbox(st_Expand('SRID=4326;POINT(-2.781140 47.643182)'::GEOMETRY, 0.001))");
+        res.next();
+        assertEquals("47.643082,-2.7812400000000004,47.643282000000006,-2.78104", res.getString(1));
+        res.close();
+    }
 }
