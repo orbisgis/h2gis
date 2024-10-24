@@ -65,8 +65,8 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      *
      * @param connection input database connection
      * @param fileName file to read
-     * @throws IOException
-     * @throws SQLException
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public static void readAscii(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
@@ -81,11 +81,11 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
     /**
      * Read the ASCII file.
      *
-     * @param connection
-     * @param fileName
-     * @param option
-     * @throws IOException
-     * @throws SQLException
+     * @param connection input database connection
+     * @param fileName input file name
+     * @param option options to parse the file
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public static void readAscii(Connection connection, String fileName, Value option) throws IOException, SQLException {
         int zType = 2;
@@ -128,12 +128,12 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
     /**
      * Read the ASCII file.
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
-     * @param option
-     * @throws IOException
-     * @throws SQLException
+     * @param connection database connection
+     * @param fileName input file name
+     * @param tableReference output table name
+     * @param option options to parse the file
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
         int zType = 2;
@@ -168,8 +168,8 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * @param outputFile
      * @param progress
      * @param ascReaderDriver
-     * @throws IOException
-     * @throws SQLException
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     private static void importFile(Connection connection, String tableReference, File outputFile, ProgressVisitor progress, AscReaderDriver ascReaderDriver) throws IOException, SQLException {
         int srid = 0;
@@ -195,8 +195,8 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * 2 for size / 2)
      * @param extractAsPolygons If true pixels are converted to polygon.
      * (default false)
-     * @throws IOException
-     * @throws SQLException
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons) throws IOException, SQLException {
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
@@ -222,8 +222,8 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * 2 for size / 2)
      * @param extractAsPolygons If true pixels are converted to polygon.
      * (default false)
-     * @throws IOException
-     * @throws SQLException
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons, boolean deleteTable) throws IOException, SQLException {
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
@@ -250,8 +250,8 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * 2 for size / 2)
      * @param extractAsPolygons If true pixels are converted to polygon.
      * (default false)
-     * @throws IOException
-     * @throws SQLException
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons, boolean deleteTable, String encoding, int zType) throws IOException, SQLException {
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
