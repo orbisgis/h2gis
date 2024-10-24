@@ -174,7 +174,7 @@ public class OverpassFunctionsTest {
     public void ST_AsOverpassBbox1() throws Exception {
         ResultSet res = st.executeQuery("select ST_AsOverpassBbox(st_Expand('SRID=4326;POINT(-2.781140 47.643182)'::GEOMETRY, 0.001))");
         res.next();
-        assertEquals("47.643082,-2.7812400000000004,47.643282000000006,-2.78104", res.getString(1));
+        assertEquals("47.642182000000005,-2.78214,47.644182,-2.7801400000000003", res.getString(1));
         res.close();
     }
 }
