@@ -59,8 +59,8 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
     /**
      * Copy data from TSV File into a new table in specified connection.
      *
-     * @param connection
-     * @param fileName
+     * @param connection database connection
+     * @param fileName input file
      * @param option table name or true to delete it
      * @throws SQLException
      * @throws FileNotFoundException
@@ -102,8 +102,8 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
     /**
      *
      * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param fileName input file
+     * @param tableReference output table name
      * @param encoding
      * @param deleteTable
      * @throws SQLException
@@ -119,7 +119,7 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
      * Copy data from TSV File into a new table in specified connection.
      *
      * @param connection
-     * @param fileName
+     * @param fileName input file
      * @throws IOException
      * @throws SQLException
      */

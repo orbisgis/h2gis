@@ -102,9 +102,9 @@ public class FGBWriteDriver {
     /**
      * Write the spatial table to a FlatGeobuf file
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param tableName
-     * @param fileName
+     * @param fileName input file
      * @param deleteFiles
      */
     public String write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFiles) throws IOException, SQLException {

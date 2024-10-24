@@ -85,7 +85,7 @@ public class GeoJsonReaderDriver {
      * Driver to import a GeoJSON file into a spatial table.
      *
      * @param connection
-     * @param fileName
+     * @param fileName input file
      * @param encoding
      * @param deleteTable
      */
@@ -99,8 +99,8 @@ public class GeoJsonReaderDriver {
     /**
      * Read the GeoJSON file.
      *
-     * @param progress
-     * @param tableReference
+     * @param progress Progress visitor following the execution.
+     * @param tableReference output table name
      * @return
      * @throws java.sql.SQLException
      * @throws java.io.IOException
@@ -184,7 +184,7 @@ public class GeoJsonReaderDriver {
      * "features": [ ... ] }
      *
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      */
     private void parseGeoJson(ProgressVisitor progress) throws SQLException, IOException {
         this.progress = progress.subProcess(100);

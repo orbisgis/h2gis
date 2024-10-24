@@ -134,7 +134,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * automatically when corresponding markup is found.
      *
      * @param tableName the table used to create all tables
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @return a boolean value if the parser ends successfully or not
      * @throws SQLException if the creation of the tables failed
      * @throws java.io.FileNotFoundException

@@ -116,7 +116,7 @@ public class OSMParser extends DefaultHandler {
      * Read the OSM file and create its corresponding tables.
      *
      * @param tableName
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @return
      * @throws SQLException
      */
@@ -226,7 +226,7 @@ public class OSMParser extends DefaultHandler {
     /**
      * Check if one table already exists
      *
-     * @param connection
+     * @param connection database connection
      * @param dbType Database type.
      * @param requestedTable
      * @param osmTableName

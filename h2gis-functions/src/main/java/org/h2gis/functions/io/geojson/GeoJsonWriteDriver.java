@@ -80,7 +80,7 @@ public class GeoJsonWriteDriver {
     /**
      * Write a resulset to a geojson file
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param rs input resulset
      * @param fileName the output file
      * @param encoding
@@ -144,7 +144,7 @@ public class GeoJsonWriteDriver {
     /**
      * Method to write a resulset to a geojson file
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param rs
      * @param fos
      * @param encoding
@@ -234,7 +234,7 @@ public class GeoJsonWriteDriver {
     /**
      * Method to write a table to a geojson file
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param tableName
      * @param fos
      * @param encoding
@@ -305,9 +305,9 @@ public class GeoJsonWriteDriver {
     /**
      * Write the spatial table to GeoJSON format.
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param tableName
-     * @param fileName
+     * @param fileName input file
      * @param encoding
      * @param deleteFile
      * @throws SQLException

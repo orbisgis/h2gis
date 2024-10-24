@@ -57,9 +57,10 @@ public class KMLWrite extends AbstractFunction implements ScalarFunction {
     /**
      * This method is used to write a spatial table into a KML file
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param tableReference Table name or select query Note : The select query
+     * must be enclosed in parenthesis
      * @throws SQLException
      * @throws IOException
      */

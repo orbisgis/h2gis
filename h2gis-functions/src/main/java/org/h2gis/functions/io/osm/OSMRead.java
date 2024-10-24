@@ -60,9 +60,9 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
 
     /**
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param tableReference output table name
      * @param option true to delete the existing tables or set a chartset
      * encoding
      * @throws FileNotFoundException
@@ -83,8 +83,8 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
 
     /**
      *
-     * @param connection
-     * @param fileName
+     * @param connection database connection
+     * @param fileName input file
      * @param option
      * @throws FileNotFoundException
      * @throws SQLException
@@ -109,9 +109,9 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
 
     /**
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param tableReference output table name
      * @param encoding
      * @param deleteTables
      * @throws FileNotFoundException
@@ -125,8 +125,8 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
 
     /**
      *
-     * @param connection
-     * @param fileName
+     * @param connection database connection
+     * @param fileName input file
      * @throws FileNotFoundException
      * @throws SQLException
      */

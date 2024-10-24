@@ -163,10 +163,10 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
 
     /**
      * Import the file
-     * @param connection
-     * @param tableReference
+     * @param connection database connection
+     * @param tableReference output table name
      * @param outputFile
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param ascReaderDriver
      * @throws IOException Throw exception is the file cannot be accessed
      * @throws SQLException Throw exception is the file name contains unsupported characters
@@ -186,9 +186,9 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
     /**
      * Import a small subset of ASC file.
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param tableReference output table name
      * @param envelope Extract only pixels that intersects the provided geometry
      * envelope, null to disable filter
      * @param downScale Coefficient used for exporting less cells (1 all cells,
@@ -213,9 +213,9 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
     /**
      * Import a small subset of ASC file.
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param tableReference output table name
      * @param envelope Extract only pixels that intersects the provided geometry
      * envelope, null to disable filter
      * @param downScale Coefficient used for exporting less cells (1 all cells,
@@ -242,8 +242,8 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * Import a small subset of ASC file.
      *
      * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param fileName input file
+     * @param tableReference output table name
      * @param envelope Extract only pixels that intersects the provided geometry
      * envelope, null to disable filter
      * @param downScale Coefficient used for exporting less cells (1 all cells,

@@ -57,9 +57,9 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
     /**
      * Export a table into a Tab-separated values file
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param tableReference output table name
      * @throws SQLException
      * @throws IOException
      */
@@ -93,9 +93,9 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
     }
 
     /**
-     * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param tableReference output table name
      * @param encoding
      * @throws SQLException
      * @throws IOException

@@ -51,7 +51,7 @@ public class GPXTablesFactory {
     /**
      * Create the waypoints table that will be used to import GPX data
      *
-     * @param connection
+     * @param connection database connection
      * @param wayPointsTableName
      * @return
      * @throws SQLException
@@ -98,7 +98,7 @@ public class GPXTablesFactory {
     /**
      * Create the route table that will be used to import GPX data
      *
-     * @param connection
+     * @param connection database connection
      * @param routeTableName
      * @return
      * @throws SQLException

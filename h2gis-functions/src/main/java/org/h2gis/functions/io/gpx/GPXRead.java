@@ -113,8 +113,8 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      * Copy data from GPX File into a new table in specified connection.
      *
      *
-     * @param connection
-     * @param fileName
+     * @param connection database connection
+     * @param fileName input file
      * @throws IOException
      * @throws SQLException
      */

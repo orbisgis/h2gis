@@ -154,7 +154,7 @@ public class KMLWriterDriver {
     /**
      * Write the spatial table to a KML format
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @throws SQLException
      */
     private void writeKML(ProgressVisitor progress,File fileName,ResultSet rs,String geomField,  String encoding) throws SQLException {
@@ -179,7 +179,7 @@ public class KMLWriterDriver {
     /**
      * Write the spatial table to a KMZ format
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param fileNameWithExtension
      * @throws SQLException
      */
@@ -218,7 +218,7 @@ public class KMLWriterDriver {
      * Write the KML document Note the document stores only the first geometry
      * column in the placeMark element. The other geomtry columns are ignored.
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param outputStream
      * @throws SQLException
      */

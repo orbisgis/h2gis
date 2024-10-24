@@ -47,7 +47,7 @@ public class GeometryTableUtilities {
      * Read the geometry metadata of the first geometry column
      *
      *
-     * @param connection
+     * @param connection database connection
      * @param geometryTable
      * @return Geometry MetaData
      * @throws java.sql.SQLException
@@ -60,7 +60,7 @@ public class GeometryTableUtilities {
      * Read the geometry metadata of the first geometry column
      *
      *
-     * @param connection
+     * @param connection database connection
      * @param geometryTable
      * @return Geometry MetaData
      * @throws java.sql.SQLException
@@ -141,7 +141,7 @@ public class GeometryTableUtilities {
     /**
      * Read all geometry metadata from a table
      *
-     * @param connection
+     * @param connection database connection
      * @param geometryTable
      * @return Geometry MetaData
      * @throws java.sql.SQLException
@@ -153,7 +153,7 @@ public class GeometryTableUtilities {
     /**
      * Read all geometry metadata from a table
      *
-     * @param connection
+     * @param connection database connection
      * @param geometryTable
      * @return Geometry MetaData
      * @throws java.sql.SQLException
@@ -191,7 +191,7 @@ public class GeometryTableUtilities {
     /**
      * Read the geometry metadata from a column name
      *
-     * @param connection
+     * @param connection database connection
      * @param geometryTable
      * @param geometryColumnName
      * @return Geometry MetaData
@@ -204,7 +204,7 @@ public class GeometryTableUtilities {
     /**
      * Read the geometry metadata from a column name
      *
-     * @param connection
+     * @param connection database connection
      * @param geometryTable
      * @param geometryColumnName
      * @return Geometry MetaData

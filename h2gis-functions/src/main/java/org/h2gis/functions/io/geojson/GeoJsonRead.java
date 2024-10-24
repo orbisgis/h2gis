@@ -59,7 +59,7 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
     /**
      *
      * @param connection
-     * @param fileName
+     * @param fileName input file
      * @throws IOException
      * @throws SQLException
      */
@@ -77,7 +77,7 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
      * Read the GeoJSON file.
      *
      * @param connection
-     * @param fileName
+     * @param fileName input file
      * @param option
      * @throws IOException
      * @throws SQLException

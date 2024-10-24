@@ -69,8 +69,8 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
      * Write the GeoJSON file.
      *
      * @param connection
-     * @param fileName
-     * @param tableReference
+     * @param fileName input file
+     * @param tableReference output table name
      * @throws IOException
      * @throws SQLException
      */

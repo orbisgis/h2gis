@@ -142,7 +142,7 @@ public class CSVDriverFunction implements DriverFunction{
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
      * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @throws SQLException
      * @throws IOException 
      */
@@ -163,7 +163,7 @@ public class CSVDriverFunction implements DriverFunction{
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
      * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @throws SQLException
      * @throws IOException 
      */

@@ -261,7 +261,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @param fileName File path to read
      * @param forceEncoding If defined use this encoding instead of the one
      * defined in dbf header.
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @throws SQLException Table write error
      * @throws IOException File read error
      */

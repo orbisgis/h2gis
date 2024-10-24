@@ -227,7 +227,7 @@ public class TSVDriverFunction implements DriverFunction {
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param encoding
      * @throws SQLException
      * @throws IOException
@@ -243,7 +243,7 @@ public class TSVDriverFunction implements DriverFunction {
      * @param connection
      * @param res
      * @param writer
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param encoding
      * @throws java.sql.SQLException
      */

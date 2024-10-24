@@ -202,13 +202,13 @@ public class AscReaderDriver {
     /**
      * Read asc file
      *
-     * @param connection
-     * @param fileName
-     * @param progress
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param progress Progress visitor following the execution.
+     * @param tableReference output table name
      * @param srid the espg code of the input file
-     * @throws SQLException
-     * @throws IOException
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public String[] read(Connection connection, File fileName, ProgressVisitor progress, String tableReference,
             int srid) throws SQLException, IOException {
@@ -260,13 +260,13 @@ public class AscReaderDriver {
     /**
      * Read the ascii file from inpustream
      *
-     * @param connection
+     * @param connection database connection
      * @param inputStream
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param outputTable
      * @param srid
-     * @throws UnsupportedEncodingException
-     * @throws SQLException
+     * @throws UnsupportedEncodingException  Throw exception is the encoding file is not supported
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      * @return output table name
      */
 
