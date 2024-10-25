@@ -143,8 +143,6 @@ public class CSVDriverFunction implements DriverFunction{
      * @param fileName File path to read
      * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
      * @param progress Progress visitor following the execution.
-     * @throws SQLException
-     * @throws IOException 
      */
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, String csvOptions, ProgressVisitor progress) throws SQLException, IOException {
@@ -164,8 +162,6 @@ public class CSVDriverFunction implements DriverFunction{
      * @param fileName File path to read
      * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
      * @param progress Progress visitor following the execution.
-     * @throws SQLException
-     * @throws IOException 
      */
     @Override
     public String[] importFile(Connection connection, String tableReference, File fileName,

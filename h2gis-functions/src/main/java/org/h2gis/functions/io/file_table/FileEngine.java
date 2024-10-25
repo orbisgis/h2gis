@@ -105,7 +105,6 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
      * @param filePath First argument, file name
      * @param args Additional argument, contains the file name as first argument
      * @return Instance of FileDriver
-     * @throws IOException
      */
     protected  abstract Driver createDriver(File filePath, List<String> args) throws IOException;
 

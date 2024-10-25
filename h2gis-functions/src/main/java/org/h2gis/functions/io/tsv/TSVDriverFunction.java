@@ -229,8 +229,6 @@ public class TSVDriverFunction implements DriverFunction {
      * @param fileName File path to read
      * @param progress Progress visitor following the execution.
      * @param encoding
-     * @throws SQLException
-     * @throws IOException
      */
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {

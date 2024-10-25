@@ -144,8 +144,6 @@ public class SHPDriverFunction implements DriverFunction {
      * @param fileName File path to write, if exists it may be replaced
      * @param encoding File encoding, null will use default encoding
      * @param progress to display the IO progress
-     * @throws SQLException
-     * @throws IOException
      */
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {

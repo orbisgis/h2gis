@@ -115,8 +115,6 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      *
      * @param connection database connection
      * @param fileName input file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();

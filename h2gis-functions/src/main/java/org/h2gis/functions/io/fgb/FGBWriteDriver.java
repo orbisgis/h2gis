@@ -364,8 +364,6 @@ public class FGBWriteDriver {
      * @param srid
      * @param metadata
      * @return
-     * @throws SQLException
-     * @throws IOException
      */
     private HeaderMeta writeHeader(FileOutputStream outputStream, String fileName, FlatBufferBuilder bufferBuilder, long rowCount, String geometryType, int srid, ResultSetMetaData metadata) throws SQLException, IOException {
         outputStream.write(Constants.MAGIC_BYTES);

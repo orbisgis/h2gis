@@ -54,7 +54,6 @@ public class PRJUtil {
      * 
      * @param prjFile
      * @return
-     * @throws IOException 
      */
     public static int getSRID(File prjFile) throws IOException {
         int srid = 0;
@@ -93,7 +92,6 @@ public class PRJUtil {
      * @param prjFile
      * @return
      * @throws SQLException
-     * @throws IOException
      */
     public static int getValidSRID(Connection connection, File prjFile) throws SQLException, IOException {
         int srid = getSRID(prjFile);

@@ -60,10 +60,6 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
      * @param con the database connection
      * @param area The geometry used to compute the area set to the OSM server
      * @param fileName The path to save the osm file
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws java.sql.SQLException
-     * @throws org.cts.op.CoordinateOperationException
      */
     public static void downloadData(Connection con, Geometry area, String fileName) throws FileNotFoundException, IOException, SQLException, CoordinateOperationException {
             downloadData(con,area, fileName, false);
@@ -75,10 +71,6 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
      * @param area The geometry used to compute the area set to the OSM server
      * @param fileName The path to save the osm file
      * @param deleteFile True to delete the file if exists
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws java.sql.SQLException
-     * @throws org.cts.op.CoordinateOperationException
      */
     public static void downloadData(Connection con,Geometry area, String fileName, boolean deleteFile) throws FileNotFoundException, IOException, SQLException, CoordinateOperationException {
         File file = URIUtilities.fileFromString(fileName);
@@ -111,7 +103,6 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
      *
      * @param file
      * @param geometryEnvelope
-     * @throws IOException
      */
     public static void downloadOSMFile(File file, Envelope geometryEnvelope) throws IOException {
         HttpURLConnection urlCon = (HttpURLConnection) createOsmUrl(geometryEnvelope).openConnection();

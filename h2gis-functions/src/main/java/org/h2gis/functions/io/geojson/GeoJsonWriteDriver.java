@@ -148,8 +148,6 @@ public class GeoJsonWriteDriver {
      * @param rs
      * @param fos
      * @param encoding
-     * @throws SQLException
-     * @throws IOException
      */
     private void geojsonWriter(ProgressVisitor progress, ResultSet rs, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding = JsonEncoding.UTF8;
@@ -238,8 +236,6 @@ public class GeoJsonWriteDriver {
      * @param tableName
      * @param fos
      * @param encoding
-     * @throws SQLException
-     * @throws IOException
      */
     private void geojsonWriter(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
         DBTypes dbTypes = DBUtils.getDBType(connection);
@@ -575,7 +571,6 @@ public class GeoJsonWriteDriver {
      *
      * @param point
      * @param gen
-     * @throws IOException
      */
     private void write(Point point, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Point");

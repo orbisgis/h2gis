@@ -40,7 +40,6 @@ public class DBFDriver implements FileDriver {
     /**
      * Init file header for DBF File
      * @param dbfFile DBF File path
-     * @throws IOException
      */
     public void initDriverFromFile(File dbfFile) throws IOException {
         initDriverFromFile(dbfFile, null);
@@ -50,7 +49,6 @@ public class DBFDriver implements FileDriver {
      * Init file header for DBF File
      * @param dbfFile DBF File path
      * @param forceEncoding File encoding to use, null will use the file encoding provided in the file header
-     * @throws IOException
      */
     public void initDriverFromFile(File dbfFile, String forceEncoding) throws IOException {
         // Read columns from files metadata

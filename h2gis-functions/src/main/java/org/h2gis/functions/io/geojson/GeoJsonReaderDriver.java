@@ -202,8 +202,6 @@ public class GeoJsonReaderDriver {
     /**
      * Parses the all GeoJSON feature to create the PreparedStatement.
      *
-     * @throws SQLException
-     * @throws IOException
      */
     private boolean parseMetadata(InputStream is) throws SQLException, IOException {
         try {
@@ -335,8 +333,6 @@ public class GeoJsonReaderDriver {
      * Parses the featureCollection to collect the field properties
      *
      * @param jp
-     * @throws IOException
-     * @throws SQLException
      */
     private void parseFeaturesMetadata(JsonParser jp) throws IOException, SQLException {
         // Passes all the properties until "Feature" object is found
@@ -418,8 +414,6 @@ public class GeoJsonReaderDriver {
      * Parses the geometries to return its properties
      *
      * @param jp
-     * @throws IOException
-     * @throws SQLException
      */
     private void parseParentGeometryMetadata(JsonParser jp) throws IOException, SQLException {
         if (jp.nextToken() != JsonToken.VALUE_NULL) {//START_OBJECT { in case of null geometry
@@ -439,7 +433,6 @@ public class GeoJsonReaderDriver {
      * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
      *
      * @param jp
-     * @throws IOException
      */
     private void parseGeometryMetadata(JsonParser jp, String geometryType) throws IOException, SQLException {
         if (geometryType.equalsIgnoreCase(GeoJsonField.POINT)) {
@@ -476,7 +469,6 @@ public class GeoJsonReaderDriver {
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
      * @param jp
-     * @throws IOException
      */
     private void parsePointMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        

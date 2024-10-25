@@ -60,8 +60,6 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
      * @param connection database connection
      * @param fileName input file
      * @param tableReference output table name
-     * @throws SQLException
-     * @throws IOException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws SQLException, IOException {
         exportTable(connection, fileName, tableReference, null, false);
@@ -76,8 +74,6 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
      * must be enclosed in parenthesis
      * @param option Could be string file encoding charset or boolean value to
      * delete the existing file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
         String encoding = null;
@@ -97,8 +93,6 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
      * @param fileName input file
      * @param tableReference output table name
      * @param encoding
-     * @throws SQLException
-     * @throws IOException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFile) throws SQLException, IOException {
         TSVDriverFunction tSVDriverFunction = new TSVDriverFunction();

@@ -60,8 +60,6 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      * @param connection Active connection
      * @param fileName Shape file name or URI
      * @param tableReference Table name
-     * @throws IOException
-     * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         exportTable(connection, fileName, tableReference, null, false);
@@ -74,8 +72,6 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      * @param tableReference Table name or select query
      * Note : The select query must be enclosed in parenthesis
      * @param option Could be string file encoding charset or boolean value to delete the existing file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
         String encoding = null;
@@ -98,8 +94,6 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      * Note : The select query must be enclosed in parenthesis
      * @param encoding charset encoding
      * @param deleteFiles true to delete output file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFiles) throws IOException, SQLException {
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();

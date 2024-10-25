@@ -61,8 +61,6 @@ public class FGBWrite extends AbstractFunction implements ScalarFunction {
      * @param tableReference Table name or select query Note : The select query
      *                       must be enclosed in parenthesis
      * @param deleteFile     true to delete output file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void execute(Connection connection, String fileName, String tableReference, boolean deleteFile) throws SQLException, IOException {
         execute(connection, fileName, tableReference, deleteFile, "");
@@ -75,8 +73,6 @@ public class FGBWrite extends AbstractFunction implements ScalarFunction {
      * @param fileName       FlatGeobuf file name or URI
      * @param tableReference Table name or select query Note : The select query
      *                       must be enclosed in parenthesis
-     * @throws IOException
-     * @throws SQLException
      */
     public static void execute(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         execute(connection, fileName, tableReference, false);

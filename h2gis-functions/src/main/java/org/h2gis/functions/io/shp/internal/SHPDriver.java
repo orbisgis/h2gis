@@ -72,7 +72,6 @@ public class SHPDriver implements FileDriver {
     /**
      * Insert values in the row
      * @param values
-     * @throws IOException 
      */
     @Override
     public void insertRow(Object[] values) throws IOException {
@@ -111,7 +110,6 @@ public class SHPDriver implements FileDriver {
      * @param shpFile
      * @param shapeType
      * @param dbaseHeader
-     * @throws IOException
      */
     public void initDriver(File shpFile, ShapeType shapeType, DbaseFileHeader dbaseHeader) throws IOException {
         String path = shpFile.getAbsolutePath();
@@ -130,7 +128,6 @@ public class SHPDriver implements FileDriver {
     /**
      * Init this driver from existing files, then open theses files.
      * @param shpFile Shape file path.
-     * @throws IOException
      */
     public void initDriverFromFile(File shpFile) throws IOException {
         initDriverFromFile(shpFile, null);
@@ -140,7 +137,6 @@ public class SHPDriver implements FileDriver {
      * Init this driver from existing files, then open theses files.
      * @param shpFile Shape file path.
      * @param forceEncoding If defined use this encoding instead of the one defined in dbf header.
-     * @throws IOException
      */
     public void initDriverFromFile(File shpFile, String forceEncoding) throws IOException {             // Read columns from files metadata
         this.shpFile = shpFile;        

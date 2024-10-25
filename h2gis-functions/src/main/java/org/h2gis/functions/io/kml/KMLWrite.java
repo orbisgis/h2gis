@@ -61,8 +61,6 @@ public class KMLWrite extends AbstractFunction implements ScalarFunction {
      * @param fileName input file
      * @param tableReference Table name or select query Note : The select query
      * must be enclosed in parenthesis
-     * @throws SQLException
-     * @throws IOException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws SQLException, IOException {
         exportTable(connection, fileName, tableReference, null, false);
@@ -82,8 +80,6 @@ public class KMLWrite extends AbstractFunction implements ScalarFunction {
      * must be enclosed in parenthesis
      * @param option Could be string file encoding charset or boolean value to
      * delete the existing file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
         String encoding = null;

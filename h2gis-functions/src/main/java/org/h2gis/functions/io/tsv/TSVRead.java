@@ -62,9 +62,6 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
      * @param connection database connection
      * @param fileName input file
      * @param option table name or true to delete it
-     * @throws SQLException
-     * @throws FileNotFoundException
-     * @throws IOException
      */
     public static void importTable(Connection connection, String fileName, Value option) throws SQLException, FileNotFoundException, IOException {
         String tableReference = null;
@@ -106,9 +103,6 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
      * @param tableReference output table name
      * @param encoding
      * @param deleteTable
-     * @throws SQLException
-     * @throws FileNotFoundException
-     * @throws IOException
      */
     public static void importTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteTable) throws SQLException, FileNotFoundException, IOException {
         TSVDriverFunction tsvDriver = new TSVDriverFunction();
@@ -120,8 +114,6 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
      *
      * @param connection
      * @param fileName input file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();

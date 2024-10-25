@@ -52,7 +52,7 @@ public class FileUtilities {
      *
      * @param directory the directory
      * @return true if the directory already exists
-     * @throws IOException
+     * @throws IOException Throw an exception if the files cannot be deleted
      */
     public static boolean deleteFiles(File directory) throws IOException {
         return deleteFiles(directory, false);
@@ -65,7 +65,7 @@ public class FileUtilities {
      * @param directory the directory
      * @param delete true to delete the root directory
      * @return true if the directory already exists
-     * @throws IOException
+     * @throws IOException Throw an exception if the files cannot be deleted
      */
     public static boolean deleteFiles(File directory, boolean delete) throws IOException {
         if (directory == null) {
@@ -96,7 +96,7 @@ public class FileUtilities {
      * @param directory the directory
      * @param extension file extension, txt, geojson, shapefile
      * @return path of the files
-     * @throws IOException
+     * @throws IOException Throw an exception if the files cannot be listed
      */
     public static List<String> listFiles(File directory, String extension) throws IOException {
         if (directory == null) {
@@ -123,7 +123,7 @@ public class FileUtilities {
      *
      * @param directory the directory
      * @return path of the files
-     * @throws IOException
+     * @throws IOException Throw an exception if the files cannot be listed
      */
     public static List<String> listFiles(File directory) throws IOException {
         if (directory == null) {
@@ -146,7 +146,7 @@ public class FileUtilities {
      *
      * @param zipFile the zipped file
      * @throws FileNotFoundException
-     * @throws IOException
+     * @throws IOException Throw an exception if the parent file fails
      */
     public static void unzip(File zipFile) throws IOException {
         Path parentDir = zipFile.toPath().getParent();
@@ -165,7 +165,7 @@ public class FileUtilities {
      * @param zipFile the zipped file
      * @param directory the directory to unzi the file
      * @throws FileNotFoundException
-     * @throws IOException
+     * @throws IOException Throw an exception if the file directory is not accessible
      */
     public static void unzip(File zipFile, File directory) throws IOException {
         if (directory == null) {
@@ -228,7 +228,7 @@ public class FileUtilities {
      * @param destinationDir
      * @param zipEntry
      * @return
-     * @throws IOException
+     * @throws IOException Throw an exception if the file directory is not accessible
      */
     public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
         File destFile = new File(destinationDir, zipEntry.getName());
@@ -246,7 +246,6 @@ public class FileUtilities {
      *
      * @param filesToZip
      * @param outFile
-     * @throws IOException
      */
     public static void zip(File[] filesToZip, File outFile) throws IOException {
         if (filesToZip == null) {
@@ -300,7 +299,6 @@ public class FileUtilities {
      * Zips the specified file or folder
      *
      * @param toZip
-     * @throws IOException
      */
     public static void zip(File toZip) throws IOException {
         Path parentDir = toZip.toPath().getParent();
@@ -318,7 +316,6 @@ public class FileUtilities {
      *
      * @param toZip
      * @param outFile
-     * @throws IOException
      */
     public static void zip(File toZip, File outFile) throws IOException {
         if (toZip == null || !toZip.exists()) {
