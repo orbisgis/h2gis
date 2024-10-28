@@ -225,9 +225,9 @@ public class FileUtilities {
 
     /**
      *
-     * @param destinationDir
-     * @param zipEntry
-     * @return
+     * @param destinationDir target directory
+     * @param zipEntry zipentry
+     * @return the zipentry content
      * @throws IOException Throw an exception if the file directory is not accessible
      */
     public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
@@ -381,9 +381,9 @@ public class FileUtilities {
     /**
      * Get the relative path to file, according to the path to base
      *
-     * @param base
-     * @param file
-     * @return
+     * @param base parent file
+     * @param file file to locate according the parent file
+     * @return path of the file
      */
     public static String getRelativePath(File base, File file) {
         String absolutePath = file.getAbsolutePath();

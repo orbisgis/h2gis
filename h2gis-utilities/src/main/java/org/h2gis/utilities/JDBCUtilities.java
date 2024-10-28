@@ -123,7 +123,6 @@ public class JDBCUtilities {
      * @param table      a TableLocation
      * @param fieldName  Field name
      * @return True if the table contains the field
-     * @throws SQLException
      */
     public static boolean hasField(Connection connection, TableLocation table, String fieldName) throws SQLException {
         return hasField(connection, table.toString(), fieldName);
@@ -136,7 +135,6 @@ public class JDBCUtilities {
      * @param tableName  a table name in the form CATALOG.SCHEMA.TABLE
      * @param fieldName  Field name
      * @return True if the table contains the field
-     * @throws SQLException
      */
     public static boolean hasField(Connection connection, String tableName, String fieldName) throws SQLException {
         final Statement statement = connection.createStatement();

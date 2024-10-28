@@ -152,8 +152,7 @@ public class DummyMVTable extends MVTable {
     }
     
     /**
-     * Create 
-     * @return 
+     * Create a dummy index
      */
     private Index createIndex(){
         IndexColumn indexColumn = new IndexColumn("key");

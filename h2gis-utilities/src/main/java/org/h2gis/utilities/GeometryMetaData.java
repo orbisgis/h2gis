@@ -180,7 +180,7 @@ public class GeometryMetaData {
      *
      * 2 if XZ 3 if XZZ or XYM 4 if XYZM
      *
-     * @return
+     * @return the dimension of the geometry
      */
     public int getDimension() {
         return dimension;

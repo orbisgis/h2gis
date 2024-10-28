@@ -84,7 +84,6 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
      * @param source      Source vertex id
      * @param destination Destination vertex id
      * @return Shortest path
-     * @throws SQLException
      */
     public static ResultSet getShortestPath(Connection connection,
                                             String inputTable,
@@ -102,7 +101,6 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
      * @param source      Source vertex id
      * @param destination Destination vertex id
      * @return Shortest path
-     * @throws SQLException
      */
     public static ResultSet getShortestPath(Connection connection,
                                             String inputTable,
@@ -216,10 +214,9 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
      *
      * @param connection Connection
      * @param tableName  TableLocation
-     * @param firstGeometryField
+     * @param firstGeometryField geometry column name
      * @return A map of edge ids to edge geometries, or null if the input table
      * contains no geometry fields
-     * @throws SQLException
      */
     protected static Map<Integer, Geometry> getEdgeGeometryMap(Connection connection,
                                                                TableLocation tableName,

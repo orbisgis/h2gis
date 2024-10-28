@@ -424,7 +424,6 @@ public class H2GISFunctions {
      * Return a string property of the function
      * @param function h2gis function
      * @param propertyKey name of the function
-     * @return 
      */
     private static String getStringProperty(Function function, String propertyKey) {
         Object value = function.getProperty(propertyKey);
@@ -437,7 +436,6 @@ public class H2GISFunctions {
      * @param function
      * @param propertyKey
      * @param defaultValue
-     * @return 
      */
     private static boolean getBooleanProperty(Function function, String propertyKey, boolean defaultValue) {
         Object value = function.getProperty(propertyKey);

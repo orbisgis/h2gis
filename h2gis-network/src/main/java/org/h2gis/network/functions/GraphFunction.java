@@ -42,10 +42,9 @@ public class GraphFunction extends AbstractFunction {
      * @param inputTable  Input table name
      * @param orientation Orientation string
      * @param weight      Weight column name, null for unweighted graphs
-     * @param vertexClass
-     * @param edgeClass
+     * @param vertexClass type of vertex
+     * @param edgeClass type of edge
      * @return Graph
-     * @throws java.sql.SQLException
      */
     protected static KeyedGraph prepareGraph(Connection connection,
                                              String inputTable,

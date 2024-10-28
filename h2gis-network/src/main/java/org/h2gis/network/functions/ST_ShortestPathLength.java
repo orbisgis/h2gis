@@ -104,7 +104,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * @param orientation Orientation string
      * @param arg3        Source vertex id -OR- Source-Destination table
      * @return Distances table
-     * @throws SQLException
      */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,

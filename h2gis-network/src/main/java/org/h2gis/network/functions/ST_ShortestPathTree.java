@@ -85,7 +85,6 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
      * @param orientation Orientation string
      * @param source      Source vertex id
      * @return Shortest path tree
-     * @throws SQLException
      */
     public static ResultSet getShortestPathTree(Connection connection,
                                             String inputTable,
@@ -101,7 +100,6 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
      * @param arg4        Source vertex id or Weight
      * @param arg5        Search radius or Source vertex id
      * @return Shortest path tree
-     * @throws SQLException
      */
     public static ResultSet getShortestPathTree(Connection connection,
                                             String inputTable,
@@ -137,7 +135,6 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
      * @param source      Source vertex id
      * @param radius      Search radius
      * @return Shortest path tree
-     * @throws SQLException
      */
     public static ResultSet getShortestPathTree(Connection connection,
                                             String inputTable,

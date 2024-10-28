@@ -45,7 +45,6 @@ public class URIUtilities {
      *
      * @return Key/Value pairs of query, the key is lowercase and value may be null
      *
-     * @throws java.io.UnsupportedEncodingException
      */
     public static Map<String,String> getQueryKeyValuePairs(URI uri) throws UnsupportedEncodingException {
         Map<String,String> queryParameters = new HashMap<String, String>();

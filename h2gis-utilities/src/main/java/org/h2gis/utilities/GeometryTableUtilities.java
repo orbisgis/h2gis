@@ -48,9 +48,8 @@ public class GeometryTableUtilities {
      *
      *
      * @param connection database connection
-     * @param geometryTable
+     * @param geometryTable table name
      * @return Geometry MetaData
-     * @throws java.sql.SQLException
      */
     public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(Connection connection, String geometryTable) throws SQLException {
         return getFirstColumnMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)));
@@ -61,9 +60,8 @@ public class GeometryTableUtilities {
      *
      *
      * @param connection database connection
-     * @param geometryTable
+     * @param geometryTable table name
      * @return Geometry MetaData
-     * @throws java.sql.SQLException
      */
     public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(Connection connection, TableLocation geometryTable) throws SQLException {
         DBTypes dbTypes = geometryTable.getDbTypes();
@@ -101,9 +99,8 @@ public class GeometryTableUtilities {
      *
      * Use this method only to instantiate a GeometryMetaData object
      *
-     * @param resultSet
+     * @param resultSet active resultset
      * @return Partial geometry metaData
-     * @throws java.sql.SQLException
      */
     public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(ResultSet resultSet) throws SQLException {
         ResultSetMetaData metadata = resultSet.getMetaData();
@@ -121,9 +118,8 @@ public class GeometryTableUtilities {
      * Read the geometry metadata for a resulset
      *
      *
-     * @param resultSet
+     * @param resultSet active resultset
      * @return Geometry MetaData
-     * @throws java.sql.SQLException
      */
     public static LinkedHashMap<String, GeometryMetaData> getMetaData(ResultSet resultSet) throws SQLException {
         LinkedHashMap<String, GeometryMetaData> geometryMetaDatas = new LinkedHashMap<>();
