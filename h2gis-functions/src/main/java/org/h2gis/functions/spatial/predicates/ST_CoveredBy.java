@@ -54,7 +54,6 @@ public class ST_CoveredBy extends DeterministicScalarFunction {
      * @param geomA Geometry A
      * @param geomB Geometry B
      * @return if this geomA is covered by geomB
-     * @throws SQLException
      */
     public static Boolean execute(Geometry geomA, Geometry geomB) throws SQLException {
         if(geomA == null||geomB == null){

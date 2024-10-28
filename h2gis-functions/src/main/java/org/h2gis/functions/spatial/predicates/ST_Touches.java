@@ -44,8 +44,8 @@ public class ST_Touches extends DeterministicScalarFunction {
 
     /**
      * Return true if the geometry A touches the geometry B
-     * @param a Geometry Geometry.
-     * @param b Geometry instance
+     * @param a Geometry A.
+     * @param b Geometry B
      * @return true if the geometry A touches the geometry B
      * @throws java.sql.SQLException
      */

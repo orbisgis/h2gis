@@ -43,7 +43,7 @@ public class ST_EnvelopeAsText extends AbstractFunction implements ScalarFunctio
 
     /**
      * Return a string representation of the Geometry envelope
-     * west, south, east, north -> minX, minY, maxX, maxY
+     * west, south, east, north  :  minX, minY, maxX, maxY
      *
      *
      * @param geom input geometry

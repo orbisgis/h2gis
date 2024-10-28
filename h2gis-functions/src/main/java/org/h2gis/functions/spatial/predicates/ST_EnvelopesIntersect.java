@@ -49,7 +49,6 @@ public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
      * @param testGeometry Geometry instance
      * @return true if the envelope of Geometry A intersects the envelope of
      * Geometry B
-     * @throws java.sql.SQLException
      */
     public static Boolean intersects(Geometry surface,Geometry testGeometry) throws SQLException {
         if(surface==null && testGeometry==null) {

@@ -423,7 +423,7 @@ public class H2GISFunctions {
     /**
      * Return a string property of the function
      * @param function h2gis function
-     * @param propertyKey
+     * @param propertyKey name of the function
      * @return 
      */
     private static String getStringProperty(Function function, String propertyKey) {

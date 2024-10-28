@@ -52,10 +52,9 @@ public class ST_Relate extends DeterministicScalarFunction {
     }
 
     /**
-     * @param a Geometry Geometry.
-     * @param b Geometry instance
+     * @param a Geometry A.
+     * @param b Geometry B
      * @return 9-character String representation of the 2 geometries IntersectionMatrix
-     * @throws java.sql.SQLException
      */
     public static String relate(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {

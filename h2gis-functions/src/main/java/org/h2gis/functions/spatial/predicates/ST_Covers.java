@@ -47,7 +47,6 @@ public class ST_Covers extends DeterministicScalarFunction {
      * @param geomA Geometry A
      * @param geomB Geometry B
      * @return True if no point in geometry B is outside geometry A
-     * @throws java.sql.SQLException
      */
     public static Boolean covers(Geometry geomA, Geometry geomB) throws SQLException {
         if(geomA == null||geomB == null){

@@ -46,7 +46,6 @@ public class ST_Overlaps extends DeterministicScalarFunction {
      * @param a Surface Geometry.
      * @param b Geometry instance
      * @return true if the geometry A overlaps the geometry B
-     * @throws java.sql.SQLException
      */
     public static Boolean isOverlaps(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {

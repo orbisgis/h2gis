@@ -98,11 +98,11 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
 
     /**
      *
-     * @param connection
+     * @param connection database connection
      * @param fileName input file
      * @param tableReference output table name
-     * @param encoding
-     * @param deleteTable
+     * @param encoding file encoding
+     * @param deleteTable true to delete the table
      */
     public static void importTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteTable) throws SQLException, FileNotFoundException, IOException {
         TSVDriverFunction tsvDriver = new TSVDriverFunction();

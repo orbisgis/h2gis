@@ -103,9 +103,9 @@ public class FGBWriteDriver {
      * Write the spatial table to a FlatGeobuf file
      *
      * @param progress Progress visitor following the execution.
-     * @param tableName
+     * @param tableName table to write
      * @param fileName input file
-     * @param deleteFiles
+     * @param deleteFiles true to delete the output file
      */
     public String write(ProgressVisitor progress, String tableName, File fileName, boolean deleteFiles) throws IOException, SQLException {
         if (tableName == null) {
@@ -357,13 +357,13 @@ public class FGBWriteDriver {
     /**
      * Write the header
      *
-     * @param outputStream
+     * @param outputStream output file
      * @param fileName name of the file
-     * @param rowCount
-     * @param geometryType
-     * @param srid
-     * @param metadata
-     * @return
+     * @param rowCount number of rows
+     * @param geometryType type of geometry
+     * @param srid table srid
+     * @param metadata flatbuffer metadata
+     * @return flatbuffer header object
      */
     private HeaderMeta writeHeader(FileOutputStream outputStream, String fileName, FlatBufferBuilder bufferBuilder, long rowCount, String geometryType, int srid, ResultSetMetaData metadata) throws SQLException, IOException {
         outputStream.write(Constants.MAGIC_BYTES);

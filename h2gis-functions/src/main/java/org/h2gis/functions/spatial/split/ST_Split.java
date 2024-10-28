@@ -63,10 +63,9 @@ public class ST_Split extends DeterministicScalarFunction {
      *
      * A default tolerance of 10E-6 is used to snap the cutter point.
      *
-     * @param geomA
-     * @param geomB
-     * @return
-     * @throws SQLException
+     * @param geomA geometry to split
+     * @param geomB geometry for splitting
+     * @return a new geometry split
      */
     public static Geometry split(Geometry geomA, Geometry geomB) throws SQLException {
         if(geomA == null||geomB == null){
@@ -110,8 +109,7 @@ public class ST_Split extends DeterministicScalarFunction {
      * @param geomA the geometry to be splited
      * @param geomB the geometry used to split
      * @param tolerance a distance tolerance to snap the split geometry
-     * @return
-     * @throws java.sql.SQLException
+     * @return a new geometry split
      */
     public static Geometry split(Geometry geomA, Geometry geomB, double tolerance) throws SQLException {
         if (geomA instanceof Polygon) {
@@ -138,9 +136,9 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Split a linestring with a point The point must be on the linestring
      *
-     * @param line
-     * @param pointToSplit
-     * @return
+     * @param line input geometry line
+     * @param pointToSplit input point
+     * @return a new geometry split at a point location
      */
     private static MultiLineString splitLineWithPoint(LineString line, Point pointToSplit, double tolerance) {
         return FACTORY.createMultiLineString(splitLineStringWithPoint(line, pointToSplit, tolerance));

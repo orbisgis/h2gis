@@ -638,8 +638,8 @@ public class GeometryTableUtilities {
      /**
      * Check if the table contains a geometry column
      *
-     * @param connection
-     * @param tableLocation
+     * @param connection database connection
+     * @param tableLocation input table name
      *
      * @return True if the ResultSet contains one geometry field
      *
@@ -652,8 +652,8 @@ public class GeometryTableUtilities {
     /**
      * Check if the table contains a geometry column
      *
-     * @param connection
-     * @param tableLocation
+     * @param connection database connection
+     * @param tableLocation input table name
      *
      * @return True if the ResultSet contains one geometry field
      *

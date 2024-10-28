@@ -403,7 +403,7 @@ public class AscReaderDriver {
     /**
      * Set true to delete the input table if exists
      *
-     * @param deleteTable
+     * @param deleteTable true to delete the table
      */
     public void setDeleteTable(boolean deleteTable) {
         this.deleteTable = deleteTable;

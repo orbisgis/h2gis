@@ -84,10 +84,10 @@ public class GeoJsonReaderDriver {
     /**
      * Driver to import a GeoJSON file into a spatial table.
      *
-     * @param connection
+     * @param connection database connection
      * @param fileName input file
-     * @param encoding
-     * @param deleteTable
+     * @param encoding file encoding
+     * @param deleteTable true to delete the table
      */
     public GeoJsonReaderDriver(Connection connection, File fileName, String encoding, boolean deleteTable) {
         this.connection = connection;

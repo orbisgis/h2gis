@@ -51,10 +51,9 @@ public class ST_CollectionExtract extends DeterministicScalarFunction {
      * EMPTY geometry will be returned. Only points, lines and polygons are
      * extracted.
      *
-     * @param geometry
+     * @param geometry input geometry
      * @param dimension1 one dimension to filter
      * @param dimension2 second dimension to filter
-     * @return
      */
     public static Geometry execute(Geometry geometry, int dimension1, int dimension2) throws SQLException {
         if (geometry == null) {
@@ -77,9 +76,8 @@ public class ST_CollectionExtract extends DeterministicScalarFunction {
      * EMPTY geometry will be returned. Only points, lines and polygons are
      * extracted.
      *
-     * @param geometry
-     * @param dimension
-     * @return
+     * @param geometry input geometry
+     * @param dimension dimension to extract
      */
     public static Geometry execute(Geometry geometry, int dimension) throws SQLException {
         if (geometry == null) {
@@ -96,8 +94,8 @@ public class ST_CollectionExtract extends DeterministicScalarFunction {
 
     /**
      * Filter dimensions from a geometry
-     * @param geometries
-     * @param geometry
+     * @param geometries list og geometries
+     * @param geometry input geometry
      * @param dimension1 one dimension to filter
      * @param dimension2 second dimension to filter
      */
