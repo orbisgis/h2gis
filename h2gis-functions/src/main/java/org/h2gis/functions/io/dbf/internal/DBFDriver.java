@@ -149,7 +149,7 @@ public class DBFDriver implements FileDriver {
 
     /**
      * Get the file reader
-     * @return 
+     * @return {@link DbaseFileReader}
      */
     public DbaseFileReader getDbaseFileReader() {
         return dbaseFileReader;

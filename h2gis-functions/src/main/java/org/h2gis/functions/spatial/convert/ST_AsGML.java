@@ -42,8 +42,8 @@ public class ST_AsGML extends DeterministicScalarFunction{
     
     /**
      * Write the GML
-     * @param geom
-     * @return 
+     * @param geom input geometry
+     * @return GML representation
      */
     public static String toGML(Geometry geom) {
         if (geom == null) {

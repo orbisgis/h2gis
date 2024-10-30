@@ -83,8 +83,8 @@ public class H2GISDBFactory {
 
     /**
      * Return the path of the file database
-     * @param dbName
-     * @return 
+     * @param dbName database path
+     * @return TODO : invalid path to be moved in test
      */
     private static String getDataBasePath(String dbName) {
         if(dbName.startsWith("file://")) {

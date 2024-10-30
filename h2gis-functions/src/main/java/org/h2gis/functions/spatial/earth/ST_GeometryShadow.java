@@ -65,7 +65,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param geometry input geometry
      * @param sunPosition as a point where x = azimuth and y=altitude
      * @param height of the geometry
-     * @return 
+     * @return Geometry
      */
     public static Geometry computeShadow(Geometry geometry, Geometry sunPosition, double height) {
         if (sunPosition != null) {
@@ -86,7 +86,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param azimuth of the sun in radians
      * @param altitude of the sun in radians
      * @param height of the geometry
-     * @return 
+     * @return Geometry
      */
     public static Geometry computeShadow(Geometry geometry, double azimuth, double altitude, double height) {
         return computeShadow(geometry, azimuth, altitude, height, true);

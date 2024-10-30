@@ -72,13 +72,12 @@ public class ST_Svf extends DeterministicScalarFunction{
     
     /**
      * The method to compute the Sky View Factor
-     * @param pt
-     * @param distance
+     * @param pt location to compute the svf
+     * @param distance distance to compute the sky sphere
      * @param rayCount number of rays
      * @param stepRayLength length of sub ray used to limit the number of geometries when requested
-     * @param geoms
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param geoms geometry obstacles
+     * @return double svf value
      */
     public static Double computeSvf(Point pt, Geometry geoms, double distance, int rayCount, int stepRayLength) throws SQLException{   
         Double svf = null;

@@ -44,8 +44,8 @@ public class ST_Perimeter extends DeterministicScalarFunction{
     
     /**
      * Compute the perimeter of a polygon or a multipolygon.
-     * @param geometry
-     * @return 
+     * @param geometry {@link Geometry}
+     * @return perimeter
      */
     public static Double perimeter(Geometry geometry){        
         if(geometry==null){
@@ -59,8 +59,8 @@ public class ST_Perimeter extends DeterministicScalarFunction{
     
     /**
      * Compute the perimeter
-     * @param geometry
-     * @return 
+     * @param geometry {@link Geometry}
+     * @return perimeter
      */
     private static double computePerimeter(Geometry geometry) {
         double sum = 0;

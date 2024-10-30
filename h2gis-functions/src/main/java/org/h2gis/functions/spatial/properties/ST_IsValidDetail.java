@@ -54,7 +54,7 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
      * [0] = isvalid,[1] = reason, [2] = error location
      * 
      * @param geometry
-     * @return 
+     * @return array with all valid details
      */
     public static String[] isValidDetail(Geometry geometry) {
         return isValidDetail(geometry, 0);
@@ -69,9 +69,9 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
      * error returns the location of this error (on the {@link Geometry} 
      * containing the error. 
      * 
-     * @param geometry
-     * @param flag
-     * @return 
+     * @param geometry {@link Geometry}
+     * @param flag  [0] = isvalid,[1] = reason, [2] = error location
+     * @return array of valid details
      */
     public static String[] isValidDetail(Geometry geometry, int flag) {
         if (geometry != null) {            
@@ -88,8 +88,8 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
     
     /**
      * TODO : change the return of this method when H2 will support row values
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return array of valid details
      */
     private static String[] detail(Geometry geometry, boolean flag) {
         String[] details = new String[3];

@@ -171,10 +171,9 @@ public class PRJUtil {
      * This method checks if a SRID value is valid according a list of SRID's
      * avalaible on spatial_ref table of the datababase.
      * 
-     * @param srid
-     * @param connection
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param srid code
+     * @param connection database
+     * @return true if the srid exists
      */
     public static boolean isSRIDValid(int srid, Connection connection) throws SQLException {
         PreparedStatement ps = null;

@@ -50,8 +50,8 @@ public class ST_SunPosition extends DeterministicScalarFunction{
     
     /**
      * Return the current sun position 
-     * @param point
-     * @return 
+     * @param point sum location
+     * @return Geometry
      */
     public static Geometry sunPosition(Geometry point){
         return sunPosition(point, new Timestamp(0));

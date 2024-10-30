@@ -280,7 +280,7 @@ public class SHPDriver implements FileDriver {
 
     /**
      * Get the SRID code
-     * @return 
+     * @return get the SRID
      */
     public int getSrid() {
         return srid;

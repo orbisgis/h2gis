@@ -46,10 +46,9 @@ public class ST_ProjectPoint extends DeterministicScalarFunction{
     
     /**
      * Project a point on a linestring or multilinestring
-     * @param point
-     * @param geometry
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param point {@link Point}
+     * @param geometry {@link Geometry}
+     * @return Geometry
      */
     public static Point projectPoint(Geometry point, Geometry geometry) throws SQLException {
         if (point == null || geometry==null) {

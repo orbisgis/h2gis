@@ -44,7 +44,7 @@ public class IntegerRange extends DeterministicScalarFunction{
      * Return an array of integers with a default step of 1.
      * @param begin from start
      * @param end to end
-     * @return 
+     * @return array of integer
      */
     public static  Integer[] createArray(int begin, int end) {
         return createArray(begin, end, 1);
@@ -55,7 +55,7 @@ public class IntegerRange extends DeterministicScalarFunction{
      * @param begin from start
      * @param end to end
      * @param step increment
-     * @return 
+     * @return array of integer
      */
     public static Integer[] createArray(int begin, int end, int step) {
         if (end < begin) {

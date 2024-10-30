@@ -199,7 +199,7 @@ public class DelaunayData {
     
     /**
      * Return the 3D area of all triangles
-     * @return 
+     * @return the area of the triangles in 3D
      */
     public double get3DArea(){
         if(convertedInput != null) {

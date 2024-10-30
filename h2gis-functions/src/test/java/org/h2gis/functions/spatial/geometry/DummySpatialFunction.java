@@ -49,9 +49,9 @@ public class DummySpatialFunction extends DeterministicScalarFunction {
     /**
      * If true all z are replaced by Double.NaN
      * If false only the first z
-     * @param geom
-     * @param setZtoNaN
-     * @return 
+     * @param geom geometry
+     * @param setZtoNaN true to set the z value to nan
+     * @return new {@link Geometry}
      */
     public static Geometry returnGeom(Geometry geom, boolean setZtoNaN) {
         UpdateZCoordinateSequenceFilter updateZCoordinateSequenceFilter = new UpdateZCoordinateSequenceFilter(Double.NaN, setZtoNaN);

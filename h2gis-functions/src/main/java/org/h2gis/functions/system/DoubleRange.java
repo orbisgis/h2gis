@@ -43,7 +43,7 @@ public class DoubleRange extends DeterministicScalarFunction{
      * Return an array of doubles with a default step of 1.
      * @param begin from start
      * @param end to end
-     * @return 
+     * @return a double array
      */
     public static Double[] createArray(double begin, double end) {
         return createArray(begin, end, 1);
@@ -54,7 +54,7 @@ public class DoubleRange extends DeterministicScalarFunction{
      * @param begin from start
      * @param end to end
      * @param step increment
-     * @return 
+     * @return a double array
      */
     public static Double[]createArray(double begin, double end, double step) {
         if (end < begin) {

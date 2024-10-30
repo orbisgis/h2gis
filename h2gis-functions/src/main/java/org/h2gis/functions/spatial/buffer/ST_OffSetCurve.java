@@ -50,7 +50,7 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
      * @param geometry the geometry
      * @param offset the distance
      * @param parameters the buffer parameters
-     * @return 
+     * @return {@link Geometry}
      */
     public static Geometry offsetCurve(Geometry geometry, double offset, String parameters) {
         if(geometry == null){
@@ -88,7 +88,7 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
      * without buffer parameters
      * @param geometry the geometry
      * @param offset the distance
-     * @return 
+     * @return {@link Geometry}
      */
     public static Geometry offsetCurve(Geometry geometry, double offset) {
         return OffsetCurve.getCurve(geometry, offset);

@@ -44,9 +44,9 @@ public class ST_Simplify extends DeterministicScalarFunction {
     /**
      * Simplify the geometry using the douglad peucker algorithm.
      * 
-     * @param geometry
-     * @param distance
-     * @return 
+     * @param geometry {@link Geometry}
+     * @param distance distance to simplify
+     * @return Geometry
      */
     public static Geometry simplify(Geometry geometry, double distance) {
         if(geometry == null){

@@ -123,10 +123,10 @@ public class ST_Drape extends DeterministicScalarFunction{
     
     /**
      * Drape a multilinestring to a set of triangles
-     * @param polygons
-     * @param triangles
-     * @param sTRtree
-     * @return 
+     * @param polygons {@link MultiPolygon}
+     * @param triangles set of triangles
+     * @param sTRtree {@link STRtree}
+     * @return polygons with z values
      */
     public static Geometry drapeMultiPolygon(MultiPolygon polygons, Geometry triangles, STRtree sTRtree) {
         GeometryFactory factory = polygons.getFactory();         
@@ -142,10 +142,10 @@ public class ST_Drape extends DeterministicScalarFunction{
     
     /**
      * Drape a multilinestring to a set of triangles
-     * @param lines
-     * @param triangles
-     * @param sTRtree
-     * @return 
+     * @param lines {@link MultiLineString}
+     * @param triangles set of triangles
+     * @param sTRtree {@link STRtree}
+     * @return lines with z values
      */
     public static Geometry drapeMultiLineString(MultiLineString lines, Geometry triangles, STRtree sTRtree) {
         GeometryFactory factory = lines.getFactory();         
@@ -162,10 +162,10 @@ public class ST_Drape extends DeterministicScalarFunction{
     
     /**
      * Drape a linestring to a set of triangles
-     * @param line
-     * @param triangles
-     * @param sTRtree
-     * @return 
+     * @param line {@link LineString}
+     * @param triangles set of triangles
+     * @param sTRtree {@link STRtree}
+     * @return line with z values
      */
     public static Geometry drapeLineString(LineString line, Geometry triangles, STRtree sTRtree) {
         GeometryFactory factory = line.getFactory();
@@ -178,10 +178,10 @@ public class ST_Drape extends DeterministicScalarFunction{
 
     /**
      * Drape a polygon on a set of triangles
-     * @param p
-     * @param triangles
-     * @param sTRtree
-     * @return 
+     * @param p {@link Polygon}
+     * @param triangles set of triangles
+     * @param sTRtree {@link STRtree}
+     * @return polygon with z values
      */
     public static Polygon drapePolygon(Polygon p, Geometry triangles, STRtree sTRtree) {
         GeometryFactory factory = p.getFactory();
@@ -193,10 +193,10 @@ public class ST_Drape extends DeterministicScalarFunction{
     
     /**
      * Cut the lines of the polygon with the triangles
-     * @param p
-     * @param triangleLines
-     * @param factory
-     * @return 
+     * @param p {@link Polygon}
+     * @param triangleLines set of triangles
+     * @param factory {@link GeometryFactory}
+     * @return polygon with z values
      */
     private static Polygon processPolygon(Polygon p, Geometry triangleLines, GeometryFactory factory,STRtree sTRtree) {
         Geometry diffExt = p.getExteriorRing().difference(triangleLines);
@@ -213,9 +213,9 @@ public class ST_Drape extends DeterministicScalarFunction{
     
     /**
      * A method to merge a geometry to a set of linestring
-     * @param geom
-     * @param factory
-     * @return 
+     * @param geom {@link Geometry}
+     * @param factory {@link GeometryFactory}
+     * @return merged lines
      */
     public static Geometry lineMerge(Geometry geom, GeometryFactory factory) {
         LineMerger merger = new LineMerger();

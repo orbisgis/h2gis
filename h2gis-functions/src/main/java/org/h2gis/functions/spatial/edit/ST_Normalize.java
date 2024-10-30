@@ -42,8 +42,8 @@ public class ST_Normalize extends DeterministicScalarFunction {
     /**
      * Converts this Geometry to normal form (canonical form).
      * 
-     * @param geometry
-     * @return 
+     * @param geometry Geometry
+     * @return Geometry
      */
     public static Geometry normalize(Geometry geometry) {
         if(geometry == null){

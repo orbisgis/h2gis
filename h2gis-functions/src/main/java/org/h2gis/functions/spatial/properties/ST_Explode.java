@@ -309,8 +309,8 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
         /**
          * Method to perform the select query with a limit clause
-         * @param selectQuery
-         * @return 
+         * @param selectQuery input select query
+         * @return select + limit query
          */
         private String limitQuery(String selectQuery) {
             //Remove the parentheses
