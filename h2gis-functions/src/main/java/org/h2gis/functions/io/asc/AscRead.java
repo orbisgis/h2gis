@@ -165,9 +165,9 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * Import the file
      * @param connection database connection
      * @param tableReference output table name
-     * @param outputFile
+     * @param outputFile output file
      * @param progress Progress visitor following the execution.
-     * @param ascReaderDriver
+     * @param ascReaderDriver {@link AscReaderDriver}
      * @throws IOException Throw exception is the file cannot be accessed
      * @throws SQLException Throw exception is the file name contains unsupported characters
      */
@@ -241,7 +241,7 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
     /**
      * Import a small subset of ASC file.
      *
-     * @param connection
+     * @param connection database
      * @param fileName input file
      * @param tableReference output table name
      * @param envelope Extract only pixels that intersects the provided geometry

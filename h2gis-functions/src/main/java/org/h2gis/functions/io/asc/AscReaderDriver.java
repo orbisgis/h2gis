@@ -261,10 +261,10 @@ public class AscReaderDriver {
      * Read the ascii file from inpustream
      *
      * @param connection database connection
-     * @param inputStream
+     * @param inputStream {@link InputStream}
      * @param progress Progress visitor following the execution.
-     * @param outputTable
-     * @param srid
+     * @param outputTable output table name
+     * @param srid output srid
      * @throws UnsupportedEncodingException  Throw exception is the encoding file is not supported
      * @throws SQLException Throw exception is the file name contains unsupported characters
      * @return output table name
@@ -394,7 +394,7 @@ public class AscReaderDriver {
     /**
      * Use to set the z conversion type 1 = integer 2 = double
      *
-     * @param zType
+     * @param zType value type to manage the z value
      */
     public void setZType(int zType) {
         this.zType = zType;
@@ -412,7 +412,7 @@ public class AscReaderDriver {
     /**
      * Set encoding
      *
-     * @param encoding
+     * @param encoding file encoding
      */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
@@ -421,7 +421,7 @@ public class AscReaderDriver {
     /**
      * Set to true if nodata must be imported. Default is false
      *
-     * @param importNodata
+     * @param importNodata true to read to data value
      */
     public void setImportNodata(boolean importNodata) {
         this.importNodata = importNodata;
