@@ -101,9 +101,7 @@ public class GeoJsonReaderDriver {
      *
      * @param progress Progress visitor following the execution.
      * @param tableReference output table name
-     * @return
-     * @throws java.sql.SQLException
-     * @throws java.io.IOException
+     * @return table name or null
      */
     public String read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
         String fileNameLower = fileName.getName().toLowerCase();

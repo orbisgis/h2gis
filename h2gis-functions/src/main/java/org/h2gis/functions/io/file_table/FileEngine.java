@@ -113,7 +113,6 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
      * Add columns definition of the file into the CreateTableData instance.
      * @param driver driver object
      * @param data Data to initialise
-     * @throws java.io.IOException
      */
     protected abstract void feedCreateTableData(Driver driver,CreateTableData data) throws IOException;
 }

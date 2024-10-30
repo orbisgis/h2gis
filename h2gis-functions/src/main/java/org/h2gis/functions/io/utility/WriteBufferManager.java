@@ -42,8 +42,7 @@ public final class WriteBufferManager {
 	 * Creates a new WriteBufferManager that writes to the specified file
 	 * channel
 	 *
-	 * @param channel
-	 * @throws java.io.IOException
+	 * @param channel {@link FileChannel}
 	 */
 	public WriteBufferManager(FileChannel channel) throws IOException {
 		this.channel = channel;
@@ -53,8 +52,7 @@ public final class WriteBufferManager {
 	/**
 	 * Puts the specified byte at the current position
 	 *
-	 * @param b
-	 * @throws java.io.IOException
+	 * @param b put a short value
 	 */
 	public void putShort(byte b) throws IOException {
 		prepareToAddBytes(1);
@@ -68,8 +66,7 @@ public final class WriteBufferManager {
 	/**
 	 * Moves the window
 	 *
-	 * @param numBytes
-	 * @throws java.io.IOException
+	 * @param numBytes prepare the buffer window
 	 */
 	private void prepareToAddBytes(int numBytes) throws IOException {
 		if (buffer.remaining() < numBytes) {
@@ -90,8 +87,7 @@ public final class WriteBufferManager {
 	/**
 	 * Puts the specified bytes at the current position
 	 *
-	 * @param bs
-	 * @throws java.io.IOException
+	 * @param bs put short value
 	 */
 	public void putShort(byte[] bs) throws IOException {
 		prepareToAddBytes(bs.length);
@@ -102,7 +98,6 @@ public final class WriteBufferManager {
 	 * flushes the cached contents into the channel. It is mandatory to call
 	 * this method to finish the writing of the channel
 	 *
-	 * @throws java.io.IOException
 	 */
 	public void flush() throws IOException {
 		buffer.flip();
@@ -121,8 +116,7 @@ public final class WriteBufferManager {
 	/**
 	 * Puts the specified int at the current position
 	 *
-	 * @param value
-	 * @throws java.io.IOException
+	 * @param value put int value
 	 */
 	public void putInt(int value) throws IOException {
 		prepareToAddBytes(4);
@@ -132,8 +126,7 @@ public final class WriteBufferManager {
 	/**
 	 * Puts the specified double at the current position
 	 *
-	 * @param d
-	 * @throws java.io.IOException
+	 * @param d put double value
 	 */
 	public void putDouble(double d) throws IOException {
 		prepareToAddBytes(8);

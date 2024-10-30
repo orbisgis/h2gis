@@ -62,8 +62,6 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @param tableReference [[catalog.]schema.]table reference
      * @param option Could be string file encoding charset or boolean value to delete the existing table
      * @param fileName File path of the SHP file or URI
-     * @throws java.io.IOException
-     * @throws java.sql.SQLException
      */
     public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
         String encoding =null;
@@ -85,8 +83,6 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @param forceEncoding Use this encoding instead of DBF file header encoding property.
      * @param fileName File path of the SHP file or URI
      * @param deleteTables delete existing tables
-     * @throws java.io.IOException
-     * @throws java.sql.SQLException
      */
     public static void importTable(Connection connection, String fileName, String tableReference,String forceEncoding, boolean deleteTables) throws IOException, SQLException {
         File file = URIUtilities.fileFromString(fileName);
@@ -101,8 +97,6 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @param connection Active connection
      * @param fileName File path of the SHP file or URI
      * @param option [[catalog.]schema.]table reference
-     * @throws java.io.IOException
-     * @throws java.sql.SQLException
      */
     public static void importTable(Connection connection, String fileName, Value option) throws IOException, SQLException {
         String tableReference =null;
@@ -132,8 +126,6 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      *
      * @param connection Active connection
      * @param fileName   File path of the SHP file or URI
-     * @throws java.io.IOException
-     * @throws java.sql.SQLException
      */
     public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();

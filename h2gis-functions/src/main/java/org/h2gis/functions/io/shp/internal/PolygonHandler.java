@@ -304,9 +304,8 @@ public class PolygonHandler implements ShapeHandler {
         }
 
         /**
-         * @param buffer
-         * @param numPoints
-         * @throws java.io.IOException
+         * @param buffer data buffer to read
+         * @param numPoints number of points
          */
         private CoordinateSequence readCoordinates(final ReadBufferManager buffer,
                 final int numPoints, final int dimensions) throws IOException {

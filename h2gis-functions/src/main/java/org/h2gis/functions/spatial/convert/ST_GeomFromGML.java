@@ -51,11 +51,8 @@ public class ST_GeomFromGML extends DeterministicScalarFunction{
     /**
      * Read the GML representation
      * 
-     * @param gmlFile
-     * @return 
-     * @throws org.xml.sax.SAXException 
-     * @throws java.io.IOException 
-     * @throws javax.xml.parsers.ParserConfigurationException 
+     * @param gmlFile read gml geometry
+     * @return Geometry
      */
     public  static Geometry toGeometry(String gmlFile) throws SAXException, IOException, ParserConfigurationException{        
         return toGeometry(gmlFile, 0);
@@ -64,12 +61,9 @@ public class ST_GeomFromGML extends DeterministicScalarFunction{
     /**
      * Read the GML representation with a specified SRID
      *
-     * @param gmlFile
-     * @param srid
-     * @return
-     * @throws org.xml.sax.SAXException
-     * @throws java.io.IOException
-     * @throws javax.xml.parsers.ParserConfigurationException
+     * @param gmlFile gml geometry
+     * @param srid force srid
+     * @return new geometry
      */
     public static Geometry toGeometry(String gmlFile, int srid) throws SAXException, IOException, ParserConfigurationException {
         if (gmlFile == null) {

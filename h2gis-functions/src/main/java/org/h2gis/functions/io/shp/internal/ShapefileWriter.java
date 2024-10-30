@@ -71,9 +71,8 @@ public class ShapefileWriter {
     /**
      * Creates a new instance of ShapeFileWriter
      *
-     * @param shpChannel
-     * @param shxChannel
-     * @throws java.io.IOException
+     * @param shpChannel shp {@link FileChannel}
+     * @param shxChannel shx {@link FileChannel}
      */
     public ShapefileWriter(FileChannel shpChannel, FileChannel shxChannel)
             throws IOException {
@@ -93,7 +92,6 @@ public class ShapefileWriter {
      * the first geometry, then when all geometries are inserted.
      *
      * @param type Shape type
-     * @throws java.io.IOException
      */
     public void writeHeaders(ShapeType type) throws IOException {
         try {
@@ -129,10 +127,9 @@ public class ShapefileWriter {
 
     /**
      * Write a single Geometry to this shapefile. The Geometry must be
-     * compatable with the ShapeType assigned during the writing of the headers.
+     * compatible with the ShapeType assigned during the writing of the headers.
      *
-     * @param g
-     * @throws java.io.IOException
+     * @param g input {@link Geometry}
      */
     public void writeGeometry(Geometry g) throws IOException {
         if (type == null) {
@@ -174,7 +171,6 @@ public class ShapefileWriter {
     /**
      * Close the underlying Channels.
      *
-     * @throws java.io.IOException
      */
     public void close() throws IOException {
         indexBuffer.flush();

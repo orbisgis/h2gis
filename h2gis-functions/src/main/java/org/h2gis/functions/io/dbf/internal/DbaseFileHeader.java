@@ -453,8 +453,7 @@ public class DbaseFileHeader {
 	 *            A readable byte channel. If you have an InputStream you need
 	 *            to use, you can call java.nio.Channels.getChannel(InputStream
 	 *            in).
-         * @throws java.io.IOException
-	 *             If errors occur while reading.
+	 * @throws java.io.IOException If errors occur while reading.
 	 */
 	public void readHeader(FileChannel channel,String forceEncoding) throws IOException {
         if(forceEncoding != null && !forceEncoding.isEmpty()) {
@@ -656,8 +655,7 @@ public class DbaseFileHeader {
 	 *            A channel to write to. If you have an OutputStream you can
 	 *            obtain the correct channel by using
 	 *            java.nio.Channels.newChannel(OutputStream out).
-	 * @throws java.io.IOException
-	 *             If errors occur.
+	 * @throws java.io.IOException If errors occur.
 	 */
 	public void writeHeader(WritableByteChannel out) throws IOException {
 		// take care of the annoying case where no records have been added...

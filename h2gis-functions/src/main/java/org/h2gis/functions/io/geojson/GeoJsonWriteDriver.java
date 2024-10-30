@@ -83,10 +83,8 @@ public class GeoJsonWriteDriver {
      * @param progress Progress visitor following the execution.
      * @param rs input resulset
      * @param fileName the output file
-     * @param encoding
-     * @param deleteFile
-     * @throws SQLException
-     * @throws java.io.IOException
+     * @param encoding file encoding
+     * @param deleteFile true to delete the file if exist
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         if (FileUtilities.isExtensionWellFormated(fileName, "geojson")|| FileUtilities.isExtensionWellFormated(fileName, "json")) {
@@ -304,10 +302,8 @@ public class GeoJsonWriteDriver {
      * @param progress Progress visitor following the execution.
      * @param tableName
      * @param fileName input file
-     * @param encoding
-     * @param deleteFile
-     * @throws SQLException
-     * @throws java.io.IOException
+     * @param encoding file encoding
+     * @param deleteFile true to delete the file if exist
      */
     public void write(ProgressVisitor progress, String tableName, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         String regex = ".*(?i)\\b(select|from)\\b.*";
