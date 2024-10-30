@@ -311,10 +311,8 @@ public class GJGeometryReader {
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
      * [101.0, 0.0], [102.0, 1.0] ] } ]}
      *
-     * @param jp
+     * @param jp {@link JsonParser}
      *
-     * @throws IOException
-     * @throws SQLException
      * @return GeometryCollection
      */
     public GeometryCollection parseGeometryCollection(JsonParser jp) throws IOException, SQLException {
@@ -344,9 +342,7 @@ public class GJGeometryReader {
      *
      * [ [100.0, 0.0], [101.0, 1.0] ]
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      * @return Coordinate[]
      */
     public Coordinate[] parseCoordinates(JsonParser jp) throws IOException {

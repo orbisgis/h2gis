@@ -605,9 +605,7 @@ public class GeoJsonReaderDriver {
      * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      */
     private void parseMultiPolygonMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -638,10 +636,8 @@ public class GeoJsonReaderDriver {
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
      * [101.0, 0.0], [102.0, 1.0] ] } ]
      *
-     * @param jp
+     * @param jp {@link JsonParser}
      *
-     * @throws IOException
-     * @throws SQLException
      * @return GeometryCollection
      */
     private void parseGeometryCollectionMetadata(JsonParser jp) throws IOException, SQLException {
@@ -701,9 +697,7 @@ public class GeoJsonReaderDriver {
      *
      * and check if it's wellformated
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      * @return Coordinate[]
      */
     private void parseCoordinatesMetadata(JsonParser jp) throws IOException {
@@ -850,9 +844,7 @@ public class GeoJsonReaderDriver {
     /**
      * Sets the parsed geometry to the table *
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      */
     private void setGeometry(JsonParser jp, Object[] values) throws IOException, SQLException {
         if (jp.nextToken() != JsonToken.VALUE_NULL) {//START_OBJECT { in case of null geometry
@@ -960,9 +952,7 @@ public class GeoJsonReaderDriver {
     /**
      * Parses the featureCollection
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      */
     private void parseFeatures(JsonParser jp) throws IOException, SQLException {
         // Passes all the properties until "Feature" object is found
@@ -1184,9 +1174,7 @@ public class GeoJsonReaderDriver {
      * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      * @return MultiPolygon
      */
     private MultiPolygon parseMultiPolygon(JsonParser jp) throws IOException, SQLException {
@@ -1235,10 +1223,8 @@ public class GeoJsonReaderDriver {
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
      * [101.0, 0.0], [102.0, 1.0] ] } ]
      *
-     * @param jp
+     * @param jp {@link JsonParser}
      *
-     * @throws IOException
-     * @throws SQLException
      * @return GeometryCollection
      */
     private GeometryCollection parseGeometryCollection(JsonParser jp) throws IOException, SQLException {
@@ -1268,9 +1254,7 @@ public class GeoJsonReaderDriver {
      *
      * [ [100.0, 0.0], [101.0, 1.0] ]
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      * @return Coordinate[]
      */
     private CoordinateSequence parseCoordinates(JsonParser jp) throws IOException {
@@ -1342,9 +1326,7 @@ public class GeoJsonReaderDriver {
 
     /**
      * Parses the GeoJSON data and set the values to the table.
-     *
-     * @throws IOException
-     * @throws SQLException
+     * @param is {@link InputStream}
      */
     private void parseData(InputStream is) throws IOException, SQLException {
         try {
@@ -1628,9 +1610,8 @@ public class GeoJsonReaderDriver {
     /**
      * Return a SQL representation of the SQL type
      *
-     * @param sqlType
-     * @return
-     * @throws SQLException
+     * @param sqlType sql type code
+     * @return sql string data type
      */
     private static String getSQLTypeName(int sqlType) throws SQLException {
         switch (sqlType) {

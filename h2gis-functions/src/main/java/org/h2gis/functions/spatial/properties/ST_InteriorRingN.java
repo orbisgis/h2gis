@@ -53,7 +53,6 @@ public class ST_InteriorRingN extends DeterministicScalarFunction {
      * @param geometry Polygon
      * @param n        Index of interior ring number n in [1-N]
      * @return Interior ring number n or NULL if parameter is null.
-     * @throws SQLException
      */
     public static LineString getInteriorRing(Geometry geometry, Integer n) throws SQLException {
         if(geometry==null){

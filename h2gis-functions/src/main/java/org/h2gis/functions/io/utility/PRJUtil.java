@@ -88,10 +88,9 @@ public class PRJUtil {
      * - is empty     * 
      * then a default srid equals to 0 is added.
      * 
-     * @param connection
-     * @param prjFile
-     * @return
-     * @throws SQLException
+     * @param connection database
+     * @param prjFile prj file
+     * @return a valid srid
      */
     public static int getValidSRID(Connection connection, File prjFile) throws SQLException, IOException {
         int srid = getSRID(prjFile);

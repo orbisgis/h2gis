@@ -288,9 +288,8 @@ public class GPXTablesFactory {
     /**
      * Drop the existing GPX tables used to store the imported OSM GPX 
      *
-     * @param connection
-     * @param tablePrefix
-     * @throws SQLException
+     * @param connection database
+     * @param tablePrefix table prefix
      */
     public static void dropOSMTables(Connection connection, TableLocation tablePrefix) throws SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);

@@ -503,8 +503,7 @@ public class GeoJsonWriteDriver {
     /**
      * Cache the column name and its index.
      *
-     * @param resultSetMetaData
-     * @throws SQLException
+     * @param resultSetMetaData {@link ResultSetMetaData}
      */
     private void cacheMetadata(ResultSetMetaData resultSetMetaData) throws SQLException {
         cachedColumnIndex = new LinkedHashMap<String, Integer>();
@@ -811,10 +810,10 @@ public class GeoJsonWriteDriver {
     /**
      * Return true is the SQL type is supported by the GeoJSON driver.
      *
-     * @param sqlTypeId
-     * @param sqlTypeName
-     * @return
-     * @throws SQLException
+     * @param columnName column name
+     * @param sqlTypeId sql type id
+     * @param sqlTypeName sql type name
+     * @return true if the column is supported
      */
     public boolean isSupportedPropertyType(String columnName, int sqlTypeId, String sqlTypeName) throws SQLException {
         switch (sqlTypeId) {

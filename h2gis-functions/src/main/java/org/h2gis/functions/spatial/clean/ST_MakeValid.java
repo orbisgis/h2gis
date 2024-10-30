@@ -70,12 +70,11 @@ public class ST_MakeValid extends DeterministicScalarFunction{
     
     /**
      *
-     * @param geometry
-     * @param preserveGeomDim
-     * @param preserveDuplicateCoord
-     * @param preserveCoordDim
-     * @return
-     * @throws SQLException
+     * @param geometry input geometry
+     * @param preserveGeomDim true to preserve the dimension
+     * @param preserveDuplicateCoord true to keep duplicate coordinates
+     * @param preserveCoordDim true ti preserve the coordinate dimension
+     * @return Geometry
      */
     public static Geometry validGeom(Geometry geometry, boolean preserveGeomDim, boolean preserveDuplicateCoord, boolean preserveCoordDim) throws SQLException {
         if (geometry == null) {

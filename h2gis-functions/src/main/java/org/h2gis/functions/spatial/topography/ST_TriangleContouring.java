@@ -77,7 +77,6 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
      * @param tableName Table name
      * @param varArgs Iso levels
      * @return Result Set
-     * @throws SQLException
      */
     public static ResultSet triangleContouring(Connection connection, String tableName, Value... varArgs) throws SQLException {
         if (connection.getMetaData().getURL().equals(HACK_URL)) {

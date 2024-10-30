@@ -247,11 +247,10 @@ public class OSMParser extends DefaultHandler {
     /**
      * Create the OMS data model to store the content of the file
      *
-     * @param connection
+     * @param connection database
      * @param dbType Database type.
-     * @param requestedTable
-     * @param osmTableName
-     * @throws SQLException
+     * @param requestedTable table saved
+     * @param osmTableName osm table
      */
     private String[] createOSMDatabaseModel(Connection connection, DBTypes dbType, TableLocation requestedTable, String osmTableName) throws SQLException {
         String nodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE, dbType);

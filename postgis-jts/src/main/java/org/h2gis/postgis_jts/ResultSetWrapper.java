@@ -910,7 +910,6 @@ public class ResultSetWrapper implements ResultSet {
     /**
      * @param value Long value of ctid
      * @return PGObject instance
-     * @throws SQLException
      */
     public static PGobject longToTid(long value) throws SQLException {
         PGobject pGobject = new PGobject();

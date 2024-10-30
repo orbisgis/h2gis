@@ -363,9 +363,8 @@ public class SHPDriverFunction implements DriverFunction {
     /**
      * Return the shape type supported by the shapefile format
      *
-     * @param meta
-     * @return
-     * @throws SQLException
+     * @param meta {@link GeometryMetaData}
+     * @return ShapeType
      */
     private static ShapeType getShapeTypeFromGeometryMetaData(GeometryMetaData meta) throws SQLException {
         ShapeType shapeType;

@@ -1365,7 +1365,6 @@ public class JDBCUtilities {
      *
      * @param resultSetMetaData the metadata of the table
      * @return the name of the column
-     * @throws SQLException
      */
     public static String getFirstNumericColumn(ResultSetMetaData resultSetMetaData) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();
