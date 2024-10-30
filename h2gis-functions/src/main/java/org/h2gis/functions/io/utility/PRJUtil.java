@@ -105,9 +105,7 @@ public class PRJUtil {
      * Return the content of the PRJ file as a single string
      *
      * @param prjFile
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @return prj content
      */
     private static String readPRJFile(File prjFile) throws FileNotFoundException, IOException {
         try (FileInputStream fis = new FileInputStream(prjFile)) {
@@ -127,8 +125,6 @@ public class PRJUtil {
      * @param location input table name
      * @param geomField geometry field name
      * @param fileName path of the prj file
-     * @throws SQLException
-     * @throws FileNotFoundException 
      */   
     public static void writePRJ(Connection connection, TableLocation location, String geomField, File fileName) throws SQLException, FileNotFoundException {
         int srid = GeometryTableUtilities.getSRID(connection, location, geomField);
@@ -141,8 +137,6 @@ public class PRJUtil {
      * @param connection database connection
      * @param srid srid code
      * @param fileName path of the prj file
-     * @throws SQLException
-     * @throws FileNotFoundException 
      */   
     public static void writePRJ(Connection connection, int srid, File fileName) throws SQLException, FileNotFoundException {
         if (srid != 0) {

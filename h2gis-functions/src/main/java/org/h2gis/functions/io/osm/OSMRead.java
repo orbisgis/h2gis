@@ -83,9 +83,7 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      *
      * @param connection database connection
      * @param fileName input file
-     * @param option
-     * @throws FileNotFoundException
-     * @throws SQLException
+     * @param option file options
      */
     public static void importTable(Connection connection, String fileName, Value option) throws SQLException, IOException {
         String tableReference = null;
@@ -122,8 +120,6 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      *
      * @param connection database connection
      * @param fileName input file
-     * @throws FileNotFoundException
-     * @throws SQLException
      */
     public static void importTable(Connection connection, String fileName) throws SQLException, IOException {
         final String name = URIUtilities.fileFromString(fileName).getName();

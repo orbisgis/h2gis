@@ -114,7 +114,7 @@ public class GeometryMetaData {
     /**
      * Linked with the H2 ValueGeometry model
      *
-     * @param valueGeometry
+     * @param valueGeometry input geometry to find metadata
      */
     private GeometryMetaData(ValueGeometry valueGeometry) {
         this.SRID = valueGeometry.getSRID();
@@ -190,7 +190,7 @@ public class GeometryMetaData {
      * Return a string representation of the geometry type as defined in SQL/MM
      * specification. SQL-MM 3: 5.1.4 and OGC SFS 1.2
      *
-     * @return
+     * @return the string representation of the geometry type as defined in SQL/MM
      */
     public String getGeometryType() {
         return geometryType;
@@ -200,7 +200,7 @@ public class GeometryMetaData {
      * Return an integer code representation of the geometry type as defined in
      * SQL/MM specification. SQL-MM 3: 5.1.4 and OGC SFS 1.2
      *
-     * @return
+     * @return the geometry type code
      */
     public int getGeometryTypeCode() {
         return geometryTypeCode;
@@ -209,7 +209,7 @@ public class GeometryMetaData {
     /**
      * Return the SRID
      *
-     * @return
+     * @return the srid
      */
     public int getSRID() {
         return SRID;
@@ -218,7 +218,7 @@ public class GeometryMetaData {
     /**
      * true if the geometry as a M dimension
      *
-     * @return
+     * @return true if the geometry as a M dimension
      */
     public boolean hasM() {
         return hasM;
@@ -227,7 +227,7 @@ public class GeometryMetaData {
     /**
      * true if the geometry as a Z dimension
      *
-     * @return
+     * @return true if the geometry as a Z dimension
      */
     public boolean hasZ() {
         return hasZ;
@@ -243,7 +243,7 @@ public class GeometryMetaData {
 
     /**
      * Get SFS type code
-     * @return
+     * @return the SFS type code
      */
     public String getSfs_geometryType() {
         return sfs_geometryType;
@@ -251,7 +251,7 @@ public class GeometryMetaData {
 
     /**
      * Set the dimension of the geometry
-     * @param dimension
+     * @param dimension set the dimension of the geometry
      */
     public void setDimension(int dimension) {
         this.dimension = dimension;
@@ -259,7 +259,7 @@ public class GeometryMetaData {
 
     /**
      * Set full geometry type with +1000
-     * @param geometryTypeCode
+     * @param geometryTypeCode set the geometry type code
      */
     public void setGeometryTypeCode(int geometryTypeCode) {
         this.geometryTypeCode = geometryTypeCode;
@@ -268,7 +268,7 @@ public class GeometryMetaData {
 
     /**
      * Set the geometry type name
-     * @param geometryType
+     * @param geometryType set the geometry type
      */
     public void setGeometryType(String geometryType) {
         this.geometryType = geometryType;
@@ -276,7 +276,7 @@ public class GeometryMetaData {
 
     /**
      * Set the SRID
-     * @param SRID
+     * @param SRID set the srid
      */
     public void setSRID(int SRID) {
         this.SRID = SRID;
@@ -284,7 +284,7 @@ public class GeometryMetaData {
 
     /**
      * Set the SFS geometry type name
-     * @param sfs_geometryType
+     * @param sfs_geometryType set the SFS geometry type
      */
     public void setSfs_geometryType(String sfs_geometryType) {
         this.sfs_geometryType = sfs_geometryType;
@@ -292,14 +292,14 @@ public class GeometryMetaData {
 
     /**
      * True is geometry has M
-     * @param hasM
+     * @param hasM true if the geometry as a M dimension
      */
     public void setHasM(boolean hasM) {
         this.hasM = hasM;
     }
     /**
      * True is geometry has Z
-     * @param hasZ
+     * @param hasZ true if the geometry as a Z dimension
      */
     public void setHasZ(boolean hasZ) {
         this.hasZ = hasZ;
@@ -308,7 +308,7 @@ public class GeometryMetaData {
     /**
      * Return the SQL representation of the geometry signature
      *
-     * @return
+     * @return SQL geometry representation
      */
     public String getSQL() {
         StringBuilder sb = new StringBuilder("GEOMETRY");
@@ -360,7 +360,7 @@ public class GeometryMetaData {
     /**
      * Read the first bytes of Geometry.
      *
-     * @param geometry
+     * @param geometry input geometry
      * @return Geometry MetaData
      */
     public static GeometryMetaData getMetaData(Geometry geometry) {
@@ -377,7 +377,7 @@ public class GeometryMetaData {
      * POINT(0 0)
      *
      * GEOMETRY
-     *  GEOMETRY(POINTZ)
+     * GEOMETRY(POINTZ)
      * GEOMETRY(POINTZ, 4326)
      *
      * @param geometry string representation
@@ -722,7 +722,7 @@ public class GeometryMetaData {
 
     /**
      * Return the SFS geometry type code
-     * @return
+     * @return the SFS geometry type code
      */
     public int getSfs_geometryTypeCode() {
         return sfs_geometryTypeCode;

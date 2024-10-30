@@ -200,8 +200,8 @@ public class GeographyUtilities {
      * Haversine formula. See https://fr.wikipedia.org/wiki/Formule_de_haversine
      * This calculation is done using the approximate earth radius
      *
-     * @param coordA
-     * @param coordB
+     * @param coordA coordinate A
+     * @param coordB coordinate B
      * @return distance in meters
      */
     public static double getHaversineDistanceInMeters(Coordinate coordA, Coordinate coordB) {

@@ -500,10 +500,9 @@ public class OSMParser extends DefaultHandler {
     }
 
     /**
-     *
-     * @param osmElement
-     * @param attributes
-     * @throws ParseException
+     * Init the commons OSM attributes
+     * @param osmElement {@link OSMElement}
+     * @param attributes {@link Attributes}
      */
     private void setCommonsAttributes(OSMElement osmElement, Attributes attributes) throws SAXException {
         osmElement.setId(attributes.getValue("id"));

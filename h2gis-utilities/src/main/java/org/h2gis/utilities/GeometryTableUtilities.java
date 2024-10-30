@@ -138,9 +138,8 @@ public class GeometryTableUtilities {
      * Read all geometry metadata from a table
      *
      * @param connection database connection
-     * @param geometryTable
+     * @param geometryTable geometry table name
      * @return Geometry MetaData
-     * @throws java.sql.SQLException
      */
     public static LinkedHashMap<String, GeometryMetaData> getMetaData(Connection connection, String geometryTable) throws SQLException {
             return getMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)));
@@ -150,9 +149,8 @@ public class GeometryTableUtilities {
      * Read all geometry metadata from a table
      *
      * @param connection database connection
-     * @param geometryTable
+     * @param geometryTable geometry table name
      * @return Geometry MetaData
-     * @throws java.sql.SQLException
      */
     public static LinkedHashMap<String, GeometryMetaData> getMetaData(Connection connection, TableLocation geometryTable) throws SQLException {
         DBTypes dbTypes = geometryTable.getDbTypes();
@@ -188,10 +186,9 @@ public class GeometryTableUtilities {
      * Read the geometry metadata from a column name
      *
      * @param connection database connection
-     * @param geometryTable
-     * @param geometryColumnName
+     * @param geometryTable geometry table name
+     * @param geometryColumnName geometry column name
      * @return Geometry MetaData
-     * @throws java.sql.SQLException
      */
     public static GeometryMetaData getMetaData(Connection connection, String geometryTable, String geometryColumnName) throws SQLException {
         return getMetaData(connection, TableLocation.parse(geometryTable, getDBType(connection)), geometryColumnName);
@@ -201,10 +198,9 @@ public class GeometryTableUtilities {
      * Read the geometry metadata from a column name
      *
      * @param connection database connection
-     * @param geometryTable
-     * @param geometryColumnName
+     * @param geometryTable geometry table name
+     * @param geometryColumnName geometry column name
      * @return Geometry MetaData
-     * @throws java.sql.SQLException
      */
     public static GeometryMetaData getMetaData(Connection connection, TableLocation geometryTable, String geometryColumnName) throws SQLException {
         GeometryMetaData geometryMetaData = null;
@@ -720,13 +716,12 @@ public class GeometryTableUtilities {
      * Compute the 'estimated' extent of the given spatial table. Use the first
      * geometry field In case of POSTGIS : the estimated is taken from the
      * geometry column's statistics. In case of H2GIS : the estimated is taken
-     * from the spatial index of the geometry column. If the estimated extend is
+     * from the spatial index of the geometry column. If the estimated extent is
      * null the extent is computed.
      *
-     * @param connection
-     * @param tableName
-     * @return
-     * @throws java.sql.SQLException
+     * @param connection database
+     * @param tableName table name
+     * @return the 'estimated' extent of the given spatial table.
      */
     public static Geometry getEstimatedExtent(Connection connection, String tableName) throws SQLException {
         return getEstimatedExtent(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
@@ -736,13 +731,12 @@ public class GeometryTableUtilities {
      * Compute the 'estimated' extent of the given spatial table. Use the first
      * geometry field In case of POSTGIS : the estimated is taken from the
      * geometry column's statistics. In case of H2GIS : the estimated is taken
-     * from the spatial index of the geometry column. If the estimated extend is
+     * from the spatial index of the geometry column. If the estimated extent is
      * null the extent is computed.
      *
-     * @param connection
-     * @param tableLocation
-     * @return an estimated extend of the table as geometry
-     * @throws java.sql.SQLException
+     * @param connection database
+     * @param tableLocation table name
+     * @return an estimated extent of the table as geometry
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation) throws SQLException {
         LinkedHashMap<String, Integer> geometryFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
@@ -757,13 +751,12 @@ public class GeometryTableUtilities {
      * Compute the 'estimated' extent of the given spatial table. In case of
      * POSTGIS : the estimated is taken from the geometry column's statistics.
      * In case of H2GIS : the estimated is taken from the spatial index of the
-     * geometry column. If the estimated extend is null the extent is computed.
+     * geometry column. If the estimated extent is null the extent is computed.
      *
-     * @param connection
-     * @param tableName
-     * @param geometryColumnName
-     * @return an estimated extend of the table as geometry
-     * @throws java.sql.SQLException
+     * @param connection database
+     * @param tableName table name
+     * @param geometryColumnName geometry column name
+     * @return an estimated extent of the table as geometry
      */
     public static Geometry getEstimatedExtent(Connection connection, String tableName, String geometryColumnName) throws SQLException {
         return getEstimatedExtent(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)), geometryColumnName);
@@ -773,13 +766,12 @@ public class GeometryTableUtilities {
      * Compute the 'estimated' extent of the given spatial table. In case of
      * POSTGIS : the estimated is taken from the geometry column's statistics.
      * In case of H2GIS : the estimated is taken from the spatial index of the
-     * geometry column. If the estimated extend is null the extent is computed.
+     * geometry column. If the estimated extent is null the extent is computed.
      *
-     * @param connection
-     * @param tableLocation
-     * @param geometryColumnName
-     * @return  an estimated extend of the table as geometry
-     * @throws java.sql.SQLException
+     * @param connection database
+     * @param tableLocation table name
+     * @param geometryColumnName geometry column name
+     * @return  an estimated extent of the table as geometry
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
         DBTypes dbTypes = tableLocation.getDbTypes();
@@ -856,7 +848,6 @@ public class GeometryTableUtilities {
      *
      * @return The SRID of the first geometry column
      *
-     * @throws SQLException
      */
     public static int getSRID(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
         int srid = 0;
@@ -879,7 +870,6 @@ public class GeometryTableUtilities {
      *
      * @return The SRID of the first geometry column
      *
-     * @throws SQLException
      */
     public static int getSRID(Connection connection, String tableName) throws SQLException {
         return getSRID(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
@@ -893,7 +883,6 @@ public class GeometryTableUtilities {
      *
      * @return The SRID of the first geometry column
      *
-     * @throws SQLException
      */
     public static int getSRID(Connection connection, TableLocation tableLocation) throws SQLException {
         int srid = 0;
@@ -907,15 +896,15 @@ public class GeometryTableUtilities {
         return srid;
     }
 
-    /* Find geometry column names and indexes of a table
+    /**
+     * Find geometry column names and indexes of a table
      *
      * @param connection Active connection
-     * @param tableLocation Table location
+     * @param tableName Table location
      *
      * @return A list of Geometry column names and indexes
      *
-     * @throws SQLException
-     */
+     **/
     public static LinkedHashMap<String, Integer> getGeometryColumnNamesAndIndexes(Connection connection, String tableName) throws SQLException {
         return getGeometryColumnNamesAndIndexes(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
     }
@@ -927,7 +916,6 @@ public class GeometryTableUtilities {
      *
      * @return A list of Geometry column names and indexes
      *
-     * @throws SQLException
      */
     public static LinkedHashMap<String, Integer> getGeometryColumnNamesAndIndexes(Connection connection, TableLocation tableLocation) throws SQLException {
         DBTypes dbTypes = tableLocation.getDbTypes();
@@ -946,7 +934,6 @@ public class GeometryTableUtilities {
      * @param metadata metadata of a resulset
      * @return A list of Geometry column names and indexes
      *
-     * @throws SQLException
      */
     public static LinkedHashMap<String, Integer> getGeometryColumnNamesAndIndexes(ResultSetMetaData metadata) throws SQLException {
         LinkedHashMap<String, Integer> namesWithIndexes = new LinkedHashMap<>();
@@ -967,7 +954,6 @@ public class GeometryTableUtilities {
      *
      * @return A list of Geometry column names and indexes
      *
-     * @throws SQLException
      */
     public static List<String> getGeometryColumnNames(Connection connection, String tableName) throws SQLException {
      return getGeometryColumnNames(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
@@ -981,7 +967,6 @@ public class GeometryTableUtilities {
      *
      * @return A list of Geometry column names and indexes
      *
-     * @throws SQLException
      */
     public static List<String> getGeometryColumnNames(Connection connection, TableLocation tableLocation) throws SQLException {
         DBTypes dbTypes = tableLocation.getDbTypes();
@@ -1000,7 +985,6 @@ public class GeometryTableUtilities {
      * @param metadata metadata of a resulset
      * @return A list of Geometry column names
      *
-     * @throws SQLException
      */
     public static List<String> getGeometryColumnNames(ResultSetMetaData metadata) throws SQLException {
         ArrayList<String> namesWithIndexes = new ArrayList<>();
@@ -1020,7 +1004,6 @@ public class GeometryTableUtilities {
      * @param tableName Table location
      * @return The first geometry column name and its index
      *
-     * @throws SQLException
      */
     public static Tuple<String, Integer> getFirstGeometryColumnNameAndIndex(Connection connection, String tableName) throws SQLException {
         return getFirstGeometryColumnNameAndIndex(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
@@ -1033,7 +1016,6 @@ public class GeometryTableUtilities {
      * @param tableLocation Table location
      * @return The first geometry column name and its index
      *
-     * @throws SQLException
      */
     public static Tuple<String, Integer> getFirstGeometryColumnNameAndIndex(Connection connection, TableLocation tableLocation) throws SQLException {
         DBTypes dbTypes = tableLocation.getDbTypes();
@@ -1053,7 +1035,6 @@ public class GeometryTableUtilities {
      * @param metadata metadata of a resulset
      * @return The first geometry column name and its index
      *
-     * @throws SQLException
      */
     public static Tuple<String, Integer> getFirstGeometryColumnNameAndIndex(ResultSetMetaData metadata) throws SQLException {
         int columnCount = metadata.getColumnCount();
@@ -1066,13 +1047,13 @@ public class GeometryTableUtilities {
     }
 
     /**
+     * Return a resulset of the geometry column view properties from
      *
      * @param connection Active connection
-     * @param catalog
-     * @param schema
-     * @param table
-     * @return
-     * @throws SQLException
+     * @param catalog catalog name
+     * @param schema schema name
+     * @param table table name
+     * @return ResultSet of the geometry column view
      */
     public static ResultSet getGeometryColumnsView(Connection connection, String catalog, String schema, String table)
             throws SQLException {
@@ -1084,13 +1065,12 @@ public class GeometryTableUtilities {
     /**
      * Return a resulset of the geometry column view properties from
      *
-     * @param connection
-     * @param catalog
-     * @param schema
-     * @param table
-     * @param geometryField
-     * @return
-     * @throws SQLException
+     * @param connection Active connection
+     * @param catalog catalog name
+     * @param schema schema name
+     * @param table table name
+     * @param geometryField geometry column name
+     * @return ResultSet of the geometry column view
      */
     public static ResultSet getGeometryColumnsView(Connection connection, String catalog, String schema, String table, String geometryField)
             throws SQLException {
@@ -1464,12 +1444,10 @@ public class GeometryTableUtilities {
      * If the SRID does not exist return null
      * 
      * @param connection Active connection
-     * @param srid 
+     * @param srid srid to check
      * 
      * @return Array of two string that correspond to the authority name and its
      * SRID code
-     *
-     * @throws SQLException
      */
     public static String[] getAuthorityAndSRID(Connection connection, int srid)
             throws SQLException {
@@ -1521,7 +1499,6 @@ public class GeometryTableUtilities {
      * @return Array of two string that correspond to the authority name and its
      * SRID code
      *
-     * @throws SQLException
      */
     public static String[] getAuthorityAndSRID(Connection connection, TableLocation table, String geometryColumnName)
             throws SQLException {
@@ -1552,7 +1529,6 @@ public class GeometryTableUtilities {
      * @param geometryColumnName geometry column name
      * @param srid to force
      * @return true if query is well executed
-     * @throws SQLException
      */
     public static boolean alterSRID(Connection connection, String table, String geometryColumnName, int srid) throws SQLException {
         return alterSRID(connection, TableLocation.parse(table, DBUtils.getDBType(connection)), geometryColumnName, srid);
@@ -1566,7 +1542,6 @@ public class GeometryTableUtilities {
      * @param geometryColumnName geometry column name
      * @param srid to force
      * @return true if query is well executed
-     * @throws SQLException
      */
     public static boolean alterSRID(Connection connection, TableLocation tableLocation, String geometryColumnName, int srid) throws SQLException {
         DBTypes dbTypes = tableLocation.getDbTypes();
@@ -1604,7 +1579,6 @@ public class GeometryTableUtilities {
      * @param tableLocation Table name
      * @param geometryColumnName geometry column name
      * @return true if query is well executed
-     * @throws SQLException
      */
     public static boolean isSpatialIndexed(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
         return JDBCUtilities.isSpatialIndexed(connection,tableLocation, geometryColumnName);
