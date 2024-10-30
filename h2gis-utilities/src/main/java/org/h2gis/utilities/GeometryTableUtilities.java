@@ -523,7 +523,6 @@ public class GeometryTableUtilities {
      *
      * @return Prepared statement
      *
-     * @throws SQLException
      */
     public static PreparedStatement prepareInformationSchemaStatement(Connection connection, String catalog,
             String schema, String table,
@@ -549,7 +548,6 @@ public class GeometryTableUtilities {
      *
      * @return Prepared statement
      *
-     * @throws SQLException
      */
     public static PreparedStatement prepareInformationSchemaStatement(Connection connection, String catalog,
             String schema, String table,
@@ -598,7 +596,6 @@ public class GeometryTableUtilities {
      *
      * @return The name and index of first geometry field
      *
-     * @throws SQLException
      */
     public static Tuple<String, Integer> getFirstGeometryColumnNameAndIndex(ResultSet resultSet) throws SQLException {
         ResultSetMetaData meta = resultSet.getMetaData();
@@ -618,7 +615,6 @@ public class GeometryTableUtilities {
      *
      * @return True if the ResultSet contains one geometry field
      *
-     * @throws SQLException
      */
     public static boolean hasGeometryColumn(ResultSet resultSet) throws SQLException {
         ResultSetMetaData meta = resultSet.getMetaData();
@@ -639,7 +635,6 @@ public class GeometryTableUtilities {
      *
      * @return True if the ResultSet contains one geometry field
      *
-     * @throws SQLException
      */
     public static boolean hasGeometryColumn(Connection connection, String tableLocation) throws SQLException {
         return hasGeometryColumn(connection, TableLocation.parse(tableLocation, getDBType(connection)));
@@ -653,7 +648,6 @@ public class GeometryTableUtilities {
      *
      * @return True if the ResultSet contains one geometry field
      *
-     * @throws SQLException
      */
     public static boolean hasGeometryColumn(Connection connection, TableLocation tableLocation) throws SQLException {
         Statement statement = connection.createStatement();
@@ -683,7 +677,6 @@ public class GeometryTableUtilities {
      * @return A geometry that represents the full extend of the first geometry
      * column in the ResultSet
      *
-     * @throws SQLException
      */
     public static Geometry getEnvelope(ResultSet resultSet) throws SQLException {
         return getEnvelope(resultSet, getFirstGeometryColumnNameAndIndex(resultSet).first());
@@ -700,7 +693,6 @@ public class GeometryTableUtilities {
      *
      * @return The full extend of the geometry column name in the ResultSet
      *
-     * @throws SQLException
      */
     public static Geometry getEnvelope(ResultSet resultSet, String geometryColumnName) throws SQLException {
         //First one
@@ -850,7 +842,6 @@ public class GeometryTableUtilities {
      *
      * @return The SRID of the first geometry column
      *
-     * @throws SQLException
      */
     public static int getSRID(Connection connection,String tableName, String geometryColumnName) throws SQLException {
      return getSRID(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)), geometryColumnName);

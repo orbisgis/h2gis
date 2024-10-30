@@ -37,9 +37,8 @@ public class KMLGeometry {
     /**
      * Convert JTS geometry to a kml geometry representation.
      * 
-     * @param geom
-     * @param sb
-     * @throws SQLException 
+     * @param geom input geometry
+     * @param sb buffer to store the KML
      */
     public static void toKMLGeometry(Geometry geom, StringBuilder sb) throws SQLException {
         toKMLGeometry(geom, ExtrudeMode.NONE, AltitudeMode.NONE, sb);

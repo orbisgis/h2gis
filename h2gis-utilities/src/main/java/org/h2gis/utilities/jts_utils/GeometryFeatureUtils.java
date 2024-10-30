@@ -38,7 +38,6 @@ public class GeometryFeatureUtils {
      * @param connection to the database
      * @param query the select query to execute
      * @return a JSON list
-     * @throws SQLException
      */
     public static ArrayList toList(Connection connection, String query) throws SQLException {
         return toList(connection, query, maxdecimaldigits);
@@ -49,7 +48,6 @@ public class GeometryFeatureUtils {
      * @param query the select query to execute
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @return a JSON list
-     * @throws SQLException
      */
     public static ArrayList<LinkedHashMap> toList(Connection connection, String query, int maxdecimaldigits) throws SQLException {
         if (connection == null || query == null) {

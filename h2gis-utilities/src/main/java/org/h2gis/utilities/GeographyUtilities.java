@@ -220,10 +220,9 @@ public class GeographyUtilities {
      * Return a SRID code from latitude and longitude coordinates
      *
      * @param connection to the database
-     * @param latitude
-     * @param longitude
+     * @param latitude latitude value
+     * @param longitude longitude value
      * @return a SRID code
-     * @throws SQLException
      */
     public static int getSRID(Connection connection, float latitude, float longitude)
             throws SQLException {

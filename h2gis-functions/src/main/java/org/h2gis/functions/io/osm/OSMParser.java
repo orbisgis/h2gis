@@ -115,10 +115,9 @@ public class OSMParser extends DefaultHandler {
     /**
      * Read the OSM file and create its corresponding tables.
      *
-     * @param tableName
+     * @param tableName table name
      * @param progress Progress visitor following the execution.
-     * @return
-     * @throws SQLException
+     * @return list of table names created
      */
     public String[] read(String tableName, ProgressVisitor progress) throws SQLException {
         if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
@@ -228,9 +227,8 @@ public class OSMParser extends DefaultHandler {
      *
      * @param connection database connection
      * @param dbType Database type.
-     * @param requestedTable
-     * @param osmTableName
-     * @throws SQLException
+     * @param requestedTable input table name
+     * @param osmTableName prefixed table name
      */
     private void checkOSMTables(Connection connection, DBTypes dbType, TableLocation requestedTable, String osmTableName) throws SQLException {
         String[] omsTables = new String[]{OSMTablesFactory.NODE, OSMTablesFactory.NODE_TAG, OSMTablesFactory.WAY, OSMTablesFactory.WAY_NODE, 

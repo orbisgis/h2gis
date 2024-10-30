@@ -66,8 +66,6 @@ public class KMLWriterDriver {
      *
      * @param tableName the name of table or a select query
      * @param progress progress monitor
-     * @throws SQLException
-     * @throws java.io.IOException
      */
     public void write( String tableName, ProgressVisitor progress) throws SQLException, IOException {
         String regex = ".*(?i)\\b(select|from)\\b.*";
@@ -155,7 +153,6 @@ public class KMLWriterDriver {
      * Write the spatial table to a KML format
      *
      * @param progress Progress visitor following the execution.
-     * @throws SQLException
      */
     private void writeKML(ProgressVisitor progress,File fileName,ResultSet rs,String geomField,  String encoding) throws SQLException {
         FileOutputStream fos = null;

@@ -163,7 +163,6 @@ public class JDBCUtilities {
      * @param resultSetMetaData Active result set meta data.
      * @param fieldName         Field name, ignore case
      * @return The field index [1-n]; -1 if the field is not found
-     * @throws SQLException
      */
     public static int getFieldIndex(ResultSetMetaData resultSetMetaData, String fieldName) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();
@@ -181,7 +180,6 @@ public class JDBCUtilities {
      * @param resultSetMetaData Active result set meta data.
      * @param columnIndex       Column index
      * @return The column name
-     * @throws SQLException
      */
     public static String getColumnName(ResultSetMetaData resultSetMetaData, Integer columnIndex) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();

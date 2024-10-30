@@ -65,8 +65,6 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @param tableReference output table name
      * @param option true to delete the existing tables or set a chartset
      * encoding
-     * @throws FileNotFoundException
-     * @throws SQLException
      */
     public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws SQLException, IOException {
         String encoding = null;

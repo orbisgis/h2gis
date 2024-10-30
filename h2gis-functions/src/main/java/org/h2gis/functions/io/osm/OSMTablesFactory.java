@@ -78,10 +78,9 @@ public class OSMTablesFactory {
      * timestamp="2008-09-21T21:37:45Z"/>
      * }
      *
-     * @param connection
-     * @param nodeTableName
-     * @return
-     * @throws SQLException
+     * @param connection database
+     * @param nodeTableName table name
+     * @return PreparedStatement
      */
     public static PreparedStatement createNodeTable(Connection connection, String nodeTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {

@@ -144,7 +144,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      *                    Source vertex id -OR- Source-Destination table -OR-
      *                    Destination table
      * @return Distances table
-     * @throws SQLException
      */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
@@ -205,7 +204,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * @param arg4        Source vertex id -OR- Source table
      * @param arg5        Destination vertex id -OR- Destination string -OR- Destination table
      * @return Distances table
-     * @throws SQLException
      */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
@@ -347,7 +345,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * @param graph     Graph
      * @param tableName Table
      * @return Set of VDijkstra
-     * @throws SQLException
      */
     private static Set<VDijkstra> getSet(Statement st,
             KeyedGraph<VDijkstra, Edge> graph, String tableName) throws SQLException {
@@ -408,7 +405,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * @param sourceDestinationTable Source-Destination table name
      * @param graph                  Graph
      * @return Source-Destination map
-     * @throws SQLException
      */
     private static Map<VDijkstra, Set<VDijkstra>> prepareSourceDestinationMap(
             Statement st,
