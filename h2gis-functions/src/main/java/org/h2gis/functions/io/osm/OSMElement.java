@@ -51,7 +51,7 @@ public class OSMElement {
     /**
      * The id of the element
      *
-     * @return
+     * @return id value
      */
     public long getID() {
         return id;
@@ -60,7 +60,7 @@ public class OSMElement {
     /**
      * Set an id to the element
      *
-     * @param id
+     * @param id set id value
      */
     public void setId(String id) {
         this.id = Long.valueOf(id);
@@ -69,7 +69,7 @@ public class OSMElement {
     /**
      * The user
      *
-     * @return
+     * @return user value
      */
     public String getUser() {
         return user;
@@ -105,7 +105,7 @@ public class OSMElement {
 
     /**
      *
-     * @return
+     * @return true if visible
      */
     public boolean getVisible() {
         return visible;
@@ -119,7 +119,7 @@ public class OSMElement {
 
     /**
      *
-     * @return
+     * @return GPX version
      */
     public int getVersion() {
         return version;
@@ -131,7 +131,7 @@ public class OSMElement {
 
     /**
      *
-     * @return
+     * @return change set value
      */
     public int getChangeSet() {
         return changeset;
@@ -145,7 +145,7 @@ public class OSMElement {
 
     /**
      *
-     * @return
+     * @return time stamp
      */
     public Timestamp getTimeStamp() {
         return timestamp;
@@ -167,8 +167,8 @@ public class OSMElement {
 
     /**
      *
-     * @param key
-     * @param value
+     * @param key key value
+     * @param value value
      * @return True if the tag should be inserted in the tag table.
      */
     public boolean addTag(String key, String value) {

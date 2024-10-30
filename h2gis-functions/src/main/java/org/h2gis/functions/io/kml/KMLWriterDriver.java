@@ -177,8 +177,7 @@ public class KMLWriterDriver {
      * Write the spatial table to a KMZ format
      *
      * @param progress Progress visitor following the execution.
-     * @param fileNameWithExtension
-     * @throws SQLException
+     * @param fileNameWithExtension file name
      */
     private void writeKMZ(ProgressVisitor progress,File fileName, String fileNameWithExtension, ResultSet rs,String geomField,  String encoding) throws SQLException {
         ZipOutputStream zos = null;
@@ -216,8 +215,7 @@ public class KMLWriterDriver {
      * column in the placeMark element. The other geomtry columns are ignored.
      *
      * @param progress Progress visitor following the execution.
-     * @param outputStream
-     * @throws SQLException
+     * @param outputStream {@link FileOutputStream}
      */
     private void writeKMLDocument(ProgressVisitor progress, OutputStream outputStream, ResultSet rs, String geomField,  String encoding) throws SQLException {
         try {
@@ -278,8 +276,8 @@ public class KMLWriterDriver {
      * </SimpleField>
      * </Schema>
      *
-     * @param xmlOut
-     * @param metaData
+     * @param xmlOut {@link XMLStreamWriter}
+     * @param metaData {@link ResultSetMetaData}
      */
     private void writeSchema(XMLStreamWriter xmlOut, ResultSetMetaData metaData) throws XMLStreamException, SQLException {
         columnCount = metaData.getColumnCount();
@@ -313,10 +311,9 @@ public class KMLWriterDriver {
      *
      * <SimpleField type="string" name="string">
      *
-     * @param xmlOut
-     * @param columnName
-     * @param columnType
-     * @throws XMLStreamException
+     * @param xmlOut {@link XMLStreamWriter}
+     * @param columnName column name
+     * @param columnType column type
      */
     private void writeSimpleField(XMLStreamWriter xmlOut, String columnName, String columnType) throws XMLStreamException {
         xmlOut.writeStartElement("SimpleField");
@@ -352,9 +349,9 @@ public class KMLWriterDriver {
      * </Placemark>
      * }
      *
-     * @param xmlOut
-     * @param rs
-     * @param geomField
+     * @param xmlOut {@link XMLStreamWriter}
+     * @param rs {@link ResultSet}
+     * @param geomField geometry column
      */
     public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs, String geomField) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("Placemark");
@@ -403,7 +400,7 @@ public class KMLWriterDriver {
      * </ExtendedData>
      * }
      *
-     * @param xmlOut
+     * @param xmlOut {@link XMLStreamWriter}
      */
     public void writeExtendedData(XMLStreamWriter xmlOut, ResultSet rs) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("ExtendedData");
@@ -421,7 +418,7 @@ public class KMLWriterDriver {
 
     /**
      *
-     * @param xmlOut
+     * @param xmlOut {@link XMLStreamWriter}
      */
     public void writeSimpleData(XMLStreamWriter xmlOut, String columnName, String value) throws XMLStreamException {
         xmlOut.writeStartElement("SimpleData");
@@ -433,10 +430,9 @@ public class KMLWriterDriver {
     /**
      * Return the kml type representation from SQL data type
      *
-     * @param sqlTypeId
-     * @param sqlTypeName
-     * @return
-     * @throws SQLException
+     * @param sqlTypeId sql type code
+     * @param sqlTypeName sql type name
+     * @return kml type
      */
     private static String getKMLType(int sqlTypeId, String sqlTypeName) throws SQLException {
         switch (sqlTypeId) {

@@ -44,7 +44,7 @@ public class ST_AsOverpassBbox extends AbstractFunction implements ScalarFunctio
     /**
      * Return a string representation of the Geometry envelope conform
      * to be overpass format :
-     * south, west, north, east -> minY,minX, maxY, maxX
+     * south, west, north, east :  minY,minX, maxY, maxX
      *
      *
      * @param geom input geometry
