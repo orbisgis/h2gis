@@ -196,9 +196,8 @@ public final class ReadBufferManager {
         /**
          * Gets the byte[] value at the current position
          *
-         * @param buffer
-         * @return
-         * @throws java.io.IOException
+         * @param buffer byte array
+         * @return ByteBuffer
          */
         public ByteBuffer get(byte[] buffer) throws IOException {
                 int windowOffset = getWindowOffset(positionInFile, buffer.length);
