@@ -398,11 +398,9 @@ public class FileUtilities {
      * Check if the file is well formatted regarding an extension prefix.
      * Check also if the file doesn't exist.
      * 
-     * @param file
-     * @param prefix
-     * @return
-     * @throws SQLException 
-     * @throws java.io.FileNotFoundException 
+     * @param file file to import
+     * @param prefix file extension
+     * @return true if the file exists
      */
     public static boolean isFileImportable(File file, String prefix) throws SQLException, FileNotFoundException{
         if (isExtensionWellFormated(file, prefix)) {
@@ -418,9 +416,9 @@ public class FileUtilities {
     
     /**
      * Check if the file has the good extension
-     * @param file
-     * @param prefix
-     * @return 
+     * @param file file to import
+     * @param prefix file extension
+     * @return true if the file exists
      */
     public static boolean isExtensionWellFormated(File file, String prefix) {
         String path = file.getAbsolutePath();

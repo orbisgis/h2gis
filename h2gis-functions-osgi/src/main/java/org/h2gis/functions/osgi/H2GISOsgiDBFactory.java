@@ -127,11 +127,10 @@ public class H2GISOsgiDBFactory {
 
         /**
          * Create a database and return a DataSource
-         * @param dbName
-         * @param initSpatial
-         * @param h2Parameters
-         * @return
-         * @throws SQLException
+         * @param dbName database name
+         * @param initSpatial true to init spatial functions
+         * @param h2Parameters database parameters
+         * @return a connection
          */
     public static DataSource createDataSource(String dbName ,boolean initSpatial, String h2Parameters) throws SQLException {
         // Create H2 memory DataSource
@@ -156,7 +155,7 @@ public class H2GISOsgiDBFactory {
      * 
      * @param dbName  path to the database
      * @param h2_PARAMETERS Additional h2 parameters
-     * @return 
+     * @return path to the database
      */
     private static String initDBFile( String dbName, String h2_PARAMETERS ) {
         String dbFilePath = getDataBasePath(dbName);
