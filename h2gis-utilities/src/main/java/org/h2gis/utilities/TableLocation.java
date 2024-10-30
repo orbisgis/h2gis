@@ -429,7 +429,7 @@ public class TableLocation {
     /**
      * Return the dbtype used by tablelocation.
      * Default is H2
-     * @return
+     * @return the {@link DBTypes}
      */
     public DBTypes getDbTypes() {
         return dbTypes;
