@@ -67,12 +67,11 @@ public class ST_RingSideBuffer extends DeterministicScalarFunction{
 
     /**
      *
-     * @param geom
-     * @param bufferDistance
-     * @param numBuffer
-     * @param parameters
-     * @return
-     * @throws java.sql.SQLException
+     * @param geom {@link Geometry}
+     * @param bufferDistance buffer distance
+     * @param numBuffer numberof rings
+     * @param parameters buffer parameters
+     * @return ring side geometries
      */
     public static Geometry ringSideBuffer(Geometry geom, double bufferDistance,
                                       int numBuffer, String parameters) throws SQLException {

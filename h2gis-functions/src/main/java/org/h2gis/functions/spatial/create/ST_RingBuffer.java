@@ -66,12 +66,11 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
 
     /**
      *
-     * @param geom
-     * @param bufferDistance
-     * @param numBuffer
-     * @param parameters
-     * @return
-     * @throws java.sql.SQLException
+     * @param geom {@link Geometry}
+     * @param bufferDistance buffer distance
+     * @param numBuffer number of rings
+     * @param parameters buffer parameters
+     * @return ring buffer geometry
      */
     public static Geometry ringBuffer(Geometry geom, double bufferDistance,
                                       int numBuffer, String parameters) throws SQLException {

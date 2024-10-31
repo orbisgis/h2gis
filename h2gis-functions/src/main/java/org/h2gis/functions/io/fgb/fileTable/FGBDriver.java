@@ -167,7 +167,7 @@ public class FGBDriver implements FileDriver {
 
     /**
      * @param featureAddress Feature address in the file relative to the first feature
-     * @return
+     * @return values from the a flatgeobuffer feature
      */
     public static Value[] getFieldsFromFileLocation(FileChannel fileChannel, long featureAddress, long featuresOffset,
                                                     HeaderMeta headerMeta, int geometryFieldIndex) throws IOException {

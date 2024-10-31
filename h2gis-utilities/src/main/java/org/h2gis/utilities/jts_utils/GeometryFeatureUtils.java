@@ -110,7 +110,7 @@ public class GeometryFeatureUtils {
      * Convert the resulSet values to JSON list
      * @param resultSet values
      * @param columns column names
-     * @return
+     * @return a map with columns and values
      */
     public static LinkedHashMap getProperties(ResultSet resultSet, Collection<String> columns) throws Exception {
         LinkedHashMap properties = new LinkedHashMap();
@@ -123,7 +123,7 @@ public class GeometryFeatureUtils {
     /**
      * Convert a Geometry to a JSON map
      * @param geom the geometry
-     * @return
+     * @return Map to store the geometry as json representation
      */
     public static LinkedHashMap toMap(Geometry geom){
         return toMap(geom, 9);

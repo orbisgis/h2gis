@@ -52,8 +52,8 @@ public class PRJUtil {
      * - is empty
      * then a default srid equals to 0 is added.
      * 
-     * @param prjFile
-     * @return
+     * @param prjFile prj file
+     * @return srid code
      */
     public static int getSRID(File prjFile) throws IOException {
         int srid = 0;

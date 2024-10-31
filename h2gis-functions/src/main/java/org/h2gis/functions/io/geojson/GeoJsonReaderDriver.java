@@ -1277,7 +1277,6 @@ public class GeoJsonReaderDriver {
      * @param coordinates Number array
      * @param index Index to extract in array
      * @param defaultValue Value to return if out of bounds
-     * @return
      */
     private static double getOrDefault(List<Double> coordinates, int index, double defaultValue) {
         return index < coordinates.size() ? coordinates.get(index) : defaultValue;
@@ -1406,8 +1405,8 @@ public class GeoJsonReaderDriver {
      * "crs":{ "type":"name", "properties": {"name":"urn:ogc:def:crs:EPSG::4326"
      * } }
      *
-     * @param jp
-     * @return
+     * @param jp {@link JsonParser}
+     * @return SRID of the geojson file
      */
     private int readCRS(JsonParser jp) throws IOException, SQLException {
         int srid = 0;

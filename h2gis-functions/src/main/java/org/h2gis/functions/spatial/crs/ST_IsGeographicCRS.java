@@ -54,9 +54,9 @@ public class ST_IsGeographicCRS extends DeterministicScalarFunction {
     /**
      * Return true if the geometry has a geographic CRS
      *
-     * @param geometry
-     * @return
-     * @throws SQLException
+     * @param connection database
+     * @param geometry {@link Geometry}
+     * @return true if the geometry has a geographic CRS
      */
     public static Boolean execute(Connection connection, Geometry geometry) throws SQLException {
         if (geometry == null) {

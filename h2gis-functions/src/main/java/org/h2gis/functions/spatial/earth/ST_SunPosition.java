@@ -60,10 +60,9 @@ public class ST_SunPosition extends DeterministicScalarFunction{
     /**
      * Return the sun position for a given date
      * 
-     * @param point
-     * @param date
-     * @return
-     * @throws IllegalArgumentException 
+     * @param point location of the point
+     * @param date date
+     * @return sum position as a point
      */
     public static Geometry sunPosition(Geometry point, Timestamp date) throws IllegalArgumentException{
         if(point == null){

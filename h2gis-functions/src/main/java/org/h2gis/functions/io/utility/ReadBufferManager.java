@@ -229,9 +229,9 @@ public final class ReadBufferManager {
         }
 
         /**
-         * Gets the positionf of this buffer in the file it's reading.
+         * Gets the position of this buffer in the file it's reading.
          *
-         * @return
+         * @return index of the position
          */
         public long getPosition() {
                 return positionInFile;

@@ -388,7 +388,7 @@ public class GJGeometryReader {
 
     /**
      *
-     * @return
+     * @return GeoJSON geometry type
      */
     public String getGeomType() {
         return geomType;

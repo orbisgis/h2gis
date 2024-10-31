@@ -45,8 +45,8 @@ public class ST_Multi extends DeterministicScalarFunction {
 
     /**
      * Construct a geometry collection from a geometry
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return a {@link org.locationtech.jts.geom.GeometryCollection}
      */
     public static  Geometry toCollection(Geometry geometry){
         if(geometry==null){

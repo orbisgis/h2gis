@@ -122,7 +122,7 @@ public final class GpxPreparser extends DefaultHandler {
     /**
      * Gives the version of the gpx file.
      *
-     * @return
+     * @return version value
      */
     public String getVersion() {
         return version;

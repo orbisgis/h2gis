@@ -95,7 +95,7 @@ public class ST_GeneratePointsInGrid extends DeterministicScalarFunction {
      * @param cellSizeY size of the y cell
      * @param useMask set to true to keep the points loacted inside the input
      * geometry
-     * @return
+     * @return a list of coordinates
      */
     static List<Coordinate> createGridPoints(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask) {
         Envelope env = geom.getEnvelopeInternal();

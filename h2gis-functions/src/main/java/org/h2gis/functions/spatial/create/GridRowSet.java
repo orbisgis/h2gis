@@ -185,7 +185,7 @@ public class GridRowSet implements SimpleRowSource {
     /**
      * Return true is cell is represented as point, false as a polygon
      *
-     * @return
+     * @return trie if the grid is computed at center cell
      */
     public boolean isCenterCell() {
         return isCenterCell;
@@ -211,7 +211,7 @@ public class GridRowSet implements SimpleRowSource {
 
     /**
      * Return if the delta x and y must be expressed as number of columns and rows
-     * @return
+     * @return true is the number of row and columns are fixed
      */
     public boolean isRowColumnNumber(){
         return this.isRowColumnNumber;

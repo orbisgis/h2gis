@@ -70,9 +70,9 @@ public class GeometryCoordinateDimension {
      * Force the dimension of the MultiPoint and update correctly the coordinate
      * dimension
      *
-     * @param mp
-     * @param dimension
-     * @return
+     * @param mp {@link MultiPoint}
+     * @param dimension coordinate dimension
+     * @return geometry with reduced dimension
      */
     public static MultiPoint convert(MultiPoint mp, int dimension) {
         int nb = mp.getNumGeometries();

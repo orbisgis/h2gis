@@ -156,7 +156,7 @@ public class GpxParser extends AbstractGpxParserDefault {
     /**
      * Gives copyright and license information governing use of the file.
      *
-     * @return
+     * @return copyright value
      */
     @Override
     public String getCopyright() {

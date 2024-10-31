@@ -56,9 +56,9 @@ public class ST_IsProjectedCRS extends DeterministicScalarFunction {
     /**
      * Return true if the CRS is a projected one
      *
-     * @param geometry
-     * @return
-     * @throws java.sql.SQLException
+     * @param connection database
+     * @param geometry {@link Geometry}
+     * @return true if the CRS is a projected one
      */
     public static Boolean execute(Connection connection, Geometry geometry) throws SQLException {
         if (geometry == null) {

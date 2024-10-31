@@ -100,7 +100,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param altitude of the sun in radians
      * @param height of the geometry
      * @param doUnion unified or not the polygon shadows
-     * @return
+     * @return geometry shadows
      */
     public static Geometry computeShadow(Geometry geometry, double azimuth, double altitude, double height, boolean doUnion) {
         if (geometry == null) {

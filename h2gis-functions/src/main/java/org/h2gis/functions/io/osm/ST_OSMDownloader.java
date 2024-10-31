@@ -135,8 +135,8 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
     /**
      * Build the OSM URL based on a given envelope
      *
-     * @param geometryEnvelope
-     * @return
+     * @param geometryEnvelope {@link Envelope}
+     * @return bbox Overpass url
      */
     private static URL createOsmUrl(Envelope geometryEnvelope) {
         try {

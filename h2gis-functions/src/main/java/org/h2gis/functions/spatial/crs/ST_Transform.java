@@ -73,11 +73,10 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
     /**
      * Returns a new geometry transformed to the SRID referenced by the integer 
      * parameter available in the spatial_ref_sys table
-     * @param connection
-     * @param geom
-     * @param codeEpsg
-     * @return
-     * @throws SQLException 
+     * @param connection database
+     * @param geom Geometry
+     * @param codeEpsg srid code
+     * @return reprojected geometry
      */
     public static Geometry ST_Transform(Connection connection, Geometry geom, Integer codeEpsg) throws SQLException, CoordinateOperationException {
         if (geom == null) {

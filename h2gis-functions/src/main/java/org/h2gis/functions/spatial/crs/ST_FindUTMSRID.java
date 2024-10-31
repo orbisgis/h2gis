@@ -45,10 +45,9 @@ public class ST_FindUTMSRID extends DeterministicScalarFunction {
     
     /**
      * Find UTM SRID from a geometry
-     * @param connection
-     * @param geometry
-     * @return
-     * @throws java.sql.SQLException 
+     * @param connection database
+     * @param geometry {@link Geometry}
+     * @return srid
      */
     public static int findSRID(Connection connection, Geometry geometry) throws SQLException {        
         if(geometry==null){

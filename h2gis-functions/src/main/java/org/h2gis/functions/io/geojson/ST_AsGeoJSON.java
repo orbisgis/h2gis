@@ -47,8 +47,8 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
     /**
      * Convert the geometry to a GeoJSON representation.
      *
-     * @param geom
-     * @return
+     * @param geom Geometry
+     * @return geojson representation
      */
     public static String toGeojson(Geometry geom) {
         if(geom==null){
@@ -64,7 +64,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * @param geom input geometry
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @return
+     * @return geojson representation
      */
     public static String toGeojson(Geometry geom, int maxdecimaldigits) {
         if(geom==null){
