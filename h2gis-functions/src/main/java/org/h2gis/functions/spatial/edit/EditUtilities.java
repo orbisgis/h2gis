@@ -36,10 +36,10 @@ public class EditUtilities {
      * Gets the coordinate of a Geometry that is the nearest of a given Point,
      * with a distance tolerance.
      *
-     * @param g
-     * @param p
-     * @param tolerance
-     * @return
+     * @param g {@link Geometry}
+     * @param p {@link Point}
+     * @param tolerance tolerance
+     * @return GeometryLocation
      */
     public static GeometryLocation getVertexToSnap(Geometry g, Point p, double tolerance) {
         DistanceOp distanceOp = new DistanceOp(g, p);
@@ -48,6 +48,5 @@ public class EditUtilities {
             return snapedPoint;
         }
         return null;
-
     }
 }

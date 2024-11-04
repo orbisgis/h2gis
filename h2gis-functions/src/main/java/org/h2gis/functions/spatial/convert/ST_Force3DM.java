@@ -216,10 +216,7 @@ public class ST_Force3DM extends DeterministicScalarFunction {
      * @return a new CoordinateArraySequence
      */
     private static CoordinateArraySequence convertSequence(CoordinateSequence cs, double mValue) {
-        boolean hasM=false;
-        if(cs.getMeasures()==1){
-            hasM =true;
-        }
+        boolean hasM= cs.getMeasures() == 1;
         CoordinateXYM[] coordsXYM = new CoordinateXYM[cs.size()];
         for (int i = 0; i < cs.size(); i++) {
             Coordinate coordTmp = cs.getCoordinate(i);

@@ -50,10 +50,9 @@ public class ST_AddZ extends DeterministicScalarFunction {
      * Add a z with to the existing value (do the sum). NaN values are not
      * updated.
      *
-     * @param geometry
-     * @param z
-     * @return
-     * @throws java.sql.SQLException
+     * @param geometry {@link Geometry}
+     * @param z z value
+     * @return Geometry
      */
     public static Geometry addZ(Geometry geometry, double z) throws SQLException {
         if(geometry == null){

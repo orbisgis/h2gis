@@ -128,7 +128,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param lineString the input linestring
      * @param shadowOffset computed according the sun position and the height of
      * the geometry
-     * @return
+     * @return Geometry
      */
     private static Geometry shadowLine(LineString lineString, double[] shadowOffset, GeometryFactory factory, boolean doUnion) {
         Coordinate[] coords = lineString.getCoordinates();
@@ -152,7 +152,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param polygon the input polygon
      * @param shadowOffset computed according the sun position and the height of
      * the geometry
-     * @return
+     * @return Geometry
      */
     private static Geometry shadowPolygon(Polygon polygon, double[] shadowOffset, GeometryFactory factory, boolean doUnion) {
         Coordinate[] shellCoords = polygon.getExteriorRing().getCoordinates();
@@ -186,7 +186,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param point the input point
      * @param shadowOffset computed according the sun position and the height of
      * the geometry
-     * @return
+     * @return Geometry
      */
     private static Geometry shadowPoint(Point point, double[] shadowOffset, GeometryFactory factory) {
         Coordinate startCoord = point.getCoordinate();
@@ -205,7 +205,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param azimuth in radians from north.
      * @param altitude in radians from east.
      * @param height of the geometry
-     * @return
+     * @return the shadow offset in X and Y directions
      */
     public static double[] shadowOffset(double azimuth, double altitude, double height) {
         double spread = 1 / Math.tan(altitude);
@@ -215,9 +215,9 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
     /**
      * Move the input coordinate according X and Y offset
      *
-     * @param inputCoordinate
-     * @param shadowOffset
-     * @return
+     * @param inputCoordinate Coordinate
+     * @param shadowOffset X and Y shadow offset
+     * @return moved coordinate
      */
     private static Coordinate moveCoordinate(Coordinate inputCoordinate, double[] shadowOffset) {
         return new Coordinate(inputCoordinate.x + shadowOffset[0], inputCoordinate.y + shadowOffset[1], 0);

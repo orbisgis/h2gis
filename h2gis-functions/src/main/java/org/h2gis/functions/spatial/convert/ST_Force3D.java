@@ -193,9 +193,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
     /**
      * Force the dimension of the LineString and update correctly the coordinate
      * dimension
-     * @param lineString
-     * @param zValue
-     * @return
+     * @param lineString {@link LineString}
+     * @param zValue z value
+     * @return LineString
      */
     public static LineString convert(LineString lineString,double zValue) {
         return gf.createLineString(convertSequence(lineString.getCoordinateSequence(),zValue));
@@ -204,9 +204,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
     /**
      * Force the dimension of the LinearRing and update correctly the coordinate
      * dimension
-     * @param linearRing
-     * @param zValue
-     * @return
+     * @param linearRing linearRing
+     * @param zValue z value
+     * @return LinearRing
      */
     public static LinearRing convert(LinearRing linearRing,double zValue) {
         return gf.createLinearRing(convertSequence(linearRing.getCoordinateSequence(),zValue));

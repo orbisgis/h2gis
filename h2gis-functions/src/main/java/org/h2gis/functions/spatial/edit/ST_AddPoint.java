@@ -48,10 +48,9 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      * Returns a new geometry based on an existing one, with a specific point as
      * a new vertex. A default distance 10E-6 is used to snap the input point.
      *
-     * @param geometry
-     * @param point
-     * @return
-     * @throws SQLException
+     * @param geometry {@link Geometry}
+     * @param point {@link Point}
+     * @return Geometry with the new point
      */
     public static Geometry addPoint(Geometry geometry, Point point) throws SQLException {
         if(geometry == null || point == null){
@@ -117,11 +116,11 @@ public class ST_AddPoint extends DeterministicScalarFunction {
     /**
      * Adds a Point into a MultiPoint geometry.
      *
-     * @param g
-     * @param vertexPoint
-     * @param position
-     * @param factory
-     * @return
+     * @param g {@link MultiPoint}
+     * @param vertexPoint {@link Point}
+     * @param position vertex position
+     * @param factory {@link GeometryFactory}
+     * @return Geometry with the new vertex
      */
     private static Geometry insertVertexInMultipoint(MultiPoint g, Point vertexPoint, int position, GeometryFactory factory) throws SQLException {
         ArrayList<Point> geoms = new ArrayList<Point>();
@@ -145,11 +144,10 @@ public class ST_AddPoint extends DeterministicScalarFunction {
     /**
      * Inserts a vertex into a LineString with a given tolerance.
      *
-     * @param lineString
-     * @param vertexPoint
-     * @param factory
-     * @return
-     * @throws SQLException
+     * @param lineString {@link LineString}
+     * @param vertexPoint {@link Point}
+     * @param factory {@link GeometryFactory}
+     * @return Geometry with the new vertex
      */
     private static LineString insertVertexInLineString(LineString lineString, Point vertexPoint, GeometryFactory factory) throws SQLException {
         CoordinateSequence coordSeq = lineString.getCoordinateSequence();
@@ -159,11 +157,10 @@ public class ST_AddPoint extends DeterministicScalarFunction {
     /**
      * Inserts a vertex into a LineString with a given tolerance.
      *
-     * @param lineString
-     * @param vertexPoint
-     * @param factory
-     * @return
-     * @throws SQLException
+     * @param lineString {@link LineString}
+     * @param vertexPoint {@link Point}
+     * @param factory {@link GeometryFactory}
+     * @return Geometry with the new vertex
      */
     private static LineString insertVertexInLineString(LineString lineString, Point vertexPoint, int position, GeometryFactory factory) throws SQLException {
         return factory.createLineString(addCoordinate(lineString.getCoordinateSequence(), vertexPoint.getCoordinate(),position ));
@@ -171,10 +168,10 @@ public class ST_AddPoint extends DeterministicScalarFunction {
     /**
      * Expand the coordinates array and add a coordinate at the given position
      *
-     * @param coorseq
-     * @param position
-     * @param point
-     * @return
+     * @param coorseq {@link CoordinateSequence}
+     * @param position vertex position
+     * @param point {@link Point}
+     * @return Coordinate array
      */
     public static  Coordinate[] addCoordinate(CoordinateSequence coorseq,   Coordinate point, int position) {
         if(position<=coorseq.size() ){

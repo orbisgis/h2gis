@@ -47,7 +47,7 @@ public class ST_OSMMapLink extends DeterministicScalarFunction {
      * Create the OSM map link based on the bounding box of the geometry.
      *
      * @param geom the input geometry.
-     * @return
+     * @return OSM link
      */
     public static String generateLink(Geometry geom) {
         return generateLink(geom, false);
@@ -58,7 +58,7 @@ public class ST_OSMMapLink extends DeterministicScalarFunction {
      *
      * @param geom the input geometry.
      * @param withMarker true to place a marker on the center of the BBox.
-     * @return
+     * @return osm link
      */
     public static String generateLink(Geometry geom, boolean withMarker) {
         if (geom == null) {

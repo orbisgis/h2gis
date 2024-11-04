@@ -59,7 +59,7 @@ public class MaxDistanceOp {
     /**
      * Return the max distance
      *
-     * @return
+     * @return distance
      */
     public Double getDistance() {
         if (geomA == null || geomB == null) {
@@ -81,7 +81,7 @@ public class MaxDistanceOp {
     /**
      * Return the two coordinates to build the max distance line
      *
-     * @return
+     * @return Coordinate array
      */
     public Coordinate[] getCoordinatesDistance() {
         if (geomA == null || geomB == null) {
@@ -148,7 +148,7 @@ public class MaxDistanceOp {
         /**
          * Return the maximum distance
          *
-         * @return
+         * @return distance
          */
         public double getDistance() {
             return distance;
@@ -158,7 +158,7 @@ public class MaxDistanceOp {
          * Return the maximum distance as two coordinates. 
          * Usefull to draw it as a line
          *
-         * @return
+         * @return Coordinate array
          */
         public Coordinate[] getCoordinatesDistance() {
             if (startCoord == null || endCoord == null) {

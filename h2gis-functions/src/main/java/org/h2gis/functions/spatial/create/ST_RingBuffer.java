@@ -143,13 +143,12 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
     /**
      * Compute a ring buffer with a positive offset
      * 
-     * @param geom
-     * @param bufferDistance
-     * @param numBuffer
-     * @param bufferParameters
-     * @param doDifference
-     * @return
-     * @throws SQLException 
+     * @param geom {@link Geometry}
+     * @param bufferDistance buffer distance
+     * @param numBuffer number of rings
+     * @param bufferParameters buffer parameters
+     * @param doDifference true to build the difference
+     * @return Geometry
      */
     public static Geometry computePositiveRingBuffer(Geometry geom, double bufferDistance,
             int numBuffer, BufferParameters bufferParameters, boolean doDifference) throws SQLException {
@@ -176,13 +175,12 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
     /**
      * Compute a ring buffer with a negative offset
      * 
-     * @param geom
-     * @param bufferDistance
-     * @param numBuffer
-     * @param bufferParameters
-     * @param doDifference
-     * @return
-     * @throws SQLException 
+     * @param geom {@link Geometry}
+     * @param bufferDistance buffer distance
+     * @param numBuffer number of rings
+     * @param bufferParameters buffer parameters
+     * @param doDifference true to build the difference
+     * @return Geometry
      */
     public static Geometry computeNegativeRingBuffer(Geometry geom, double bufferDistance,
             int numBuffer, BufferParameters bufferParameters, boolean doDifference) throws SQLException {
@@ -213,11 +211,10 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
     /**
      * Calculate the ring buffer
      * 
-     * @param geom
-     * @param bufferSize
-     * @param bufferParameters
-     * @return
-     * @throws SQLException 
+     * @param geom {@link Geometry}
+     * @param bufferSize buffer size
+     * @param bufferParameters buffer parameters
+     * @return Geometry
      */
     public static Geometry runBuffer(final Geometry geom, final double bufferSize,
             final BufferParameters bufferParameters) throws SQLException {

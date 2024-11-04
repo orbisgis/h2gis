@@ -49,9 +49,8 @@ public class OverpassTool {
     /**
      * Prepare the connection to the overpass endpoint
      *
-     * @param overpassQuery
-     * @return
-     * @throws Exception
+     * @param overpassQuery overpass query
+     * @return HttpURLConnection
      */
     public HttpURLConnection prepareConnection(String overpassQuery) throws Exception {
         Matcher timeoutMatcher = Pattern.compile("\\[timeout:(\\d+)\\]").matcher(overpassQuery);
