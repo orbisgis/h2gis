@@ -44,7 +44,7 @@ public class ST_Touches extends DeterministicScalarFunction {
 
     /**
      * Return true if the geometry A touches the geometry B
-     * @param a Geometry A.
+     * @param a Geometry A
      * @param b Geometry B
      * @return true if the geometry A touches the geometry B
      */

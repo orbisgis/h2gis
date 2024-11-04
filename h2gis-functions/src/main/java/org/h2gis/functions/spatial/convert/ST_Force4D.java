@@ -50,8 +50,8 @@ public class ST_Force4D extends DeterministicScalarFunction {
      * Converts a geometry to XYZM.
      * If a geometry has no Z  or M measure, then a 0 is tacked on.
      *
-     * @param geom
-     * @return
+     * @param geom {@link Geometry}
+     * @return Geometry
      */
     public static Geometry force4D(Geometry geom) {
         if (geom == null) {

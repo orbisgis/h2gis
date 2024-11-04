@@ -433,9 +433,9 @@ public class H2GISFunctions {
     /**
      * Return a boolean property of the function
      * 
-     * @param function
-     * @param propertyKey
-     * @param defaultValue
+     * @param function H2GIS function
+     * @param propertyKey alias
+     * @param defaultValue default value
      */
     private static boolean getBooleanProperty(Function function, String propertyKey, boolean defaultValue) {
         Object value = function.getProperty(propertyKey);

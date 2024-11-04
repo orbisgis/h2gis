@@ -48,8 +48,8 @@ public class ST_Force3D extends DeterministicScalarFunction {
      * Converts a XY geometry to XYZ. If a geometry has no Z component, then a 0
      * Z coordinate is tacked on.
      *
-     * @param geom
-     * @return
+     * @param geom {@link Geometry}
+     * @return 3D {@link Geometry}
      */
     public static Geometry force3D(Geometry geom) {
         if (geom == null) {
@@ -61,9 +61,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
      * Converts a XY geometry to XYZ. If a geometry has no Z component, then a 0
      * Z coordinate is tacked on.
      *
-     * @param geom
-     * @param zValue
-     * @return
+     * @param geom {@link Geometry}
+     * @param zValue z value
+     * @return Z {@link Geometry}
      */
     public static Geometry force3D(Geometry geom, double zValue) {
         if (geom == null) {
@@ -77,7 +77,7 @@ public class ST_Force3D extends DeterministicScalarFunction {
      * dimension
      * @param geom the input geometry
      * @param zValue to update
-     * @return
+     * @return Z {@link Geometry}
      */
     public static Geometry force(Geometry geom, double zValue) {
         Geometry g = geom;
@@ -110,9 +110,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
      * Force the dimension of the MultiPoint and update correctly the coordinate
      * dimension
      *
-     * @param mp
-     * @param zValue
-     * @return
+     * @param mp {@link MultiPoint}
+     * @param zValue Z value
+     * @return Z {@link Geometry}
      */
     public static MultiPoint convert(MultiPoint mp, double zValue) {
         int nb = mp.getNumGeometries();
@@ -126,9 +126,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
     /**
      * Force the dimension of the GeometryCollection and update correctly the coordinate
      * dimension
-     * @param gc
-     * @param zValue
-     * @return
+     * @param gc {@link GeometryCollection}
+     * @param zValue Z value
+     * @return Z {@link GeometryCollection}
      */
     public static GeometryCollection convert(GeometryCollection gc, double zValue) {
         int nb = gc.getNumGeometries();
@@ -142,9 +142,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
     /**
      * Force the dimension of the MultiPolygon and update correctly the coordinate
      * dimension
-     * @param multiPolygon
-     * @param zValue
-     * @return
+     * @param multiPolygon {@link MultiPolygon}
+     * @param zValue z value
+     * @return Z {@link MultiPolygon}
      */
     public static MultiPolygon convert(MultiPolygon multiPolygon,double zValue) {
         int nb = multiPolygon.getNumGeometries();
@@ -158,9 +158,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
     /**
      * Force the dimension of the MultiLineString and update correctly the coordinate
      * dimension
-     * @param multiLineString
-     * @param zValue
-     * @return
+     * @param multiLineString {@link MultiLineString}
+     * @param zValue Z value
+     * @return Z {@link MultiLineString}
      */
     public static MultiLineString convert(MultiLineString multiLineString, double zValue) {
         int nb = multiLineString.getNumGeometries();
@@ -174,9 +174,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
     /**
      * Force the dimension of the Polygon and update correctly the coordinate
      * dimension
-     * @param polygon
-     * @param zValue
-     * @return
+     * @param polygon {@link Polygon}
+     * @param zValue Z value
+     * @return Z {@link Polygon}
      */
     public static Polygon convert(Polygon polygon, double zValue) {
         LinearRing shell = gf.createLinearRing(convertSequence(polygon.getExteriorRing().getCoordinateSequence(),zValue));

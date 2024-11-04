@@ -48,7 +48,7 @@ public class ST_DWithin extends DeterministicScalarFunction {
      * @param geomA Geometry A
      * @param geomB Geometry B
      * @param distance Distance
-     * @return True if if the geometries are within the specified distance of one another
+     * @return True if the geometries are within the specified distance of one another
      */
     public static Boolean isWithinDistance(Geometry geomA, Geometry geomB, Double distance) throws SQLException {
         if(geomA == null||geomB == null){
