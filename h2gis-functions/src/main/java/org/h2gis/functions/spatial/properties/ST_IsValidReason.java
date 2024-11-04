@@ -80,8 +80,8 @@ public class ST_IsValidReason extends DeterministicScalarFunction{
     
     /**
      *
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return give the valid reason
      */
     private static String validReason(Geometry geometry, boolean flag) {    
         IsValidOp validOP = new IsValidOp(geometry);

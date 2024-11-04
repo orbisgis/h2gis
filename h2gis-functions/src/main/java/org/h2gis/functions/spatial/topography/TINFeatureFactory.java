@@ -41,10 +41,9 @@ public final class TINFeatureFactory {
         /**
          * A factory to create a DTriangle from a Geometry
          *
-         * @param geom
-         * @return
-         * @throws IllegalArgumentException
-         * If there are not exactly 3 coordinates in geom.
+         * @param geom {@link Geometry}
+         * @return Triangle
+         * @throws IllegalArgumentException If there are not exactly 3 coordinates in geom.
          */
         public static Triangle createTriangle(Geometry geom) throws IllegalArgumentException {
                 Coordinate[] coordinates = geom.getCoordinates();

@@ -93,10 +93,10 @@ public class ST_Drape extends DeterministicScalarFunction{
 
     /**
      * Drape a multipoint geometry to a set of triangles
-     * @param pts
-     * @param triangles
-     * @param sTRtree
-     * @return
+     * @param pts {@link Geometry}
+     * @param triangles {@link Geometry}
+     * @param sTRtree {@link STRtree}
+     * @return Geometry
      */
     public static Geometry drapePoints(Geometry pts, Geometry triangles, STRtree sTRtree) {
         GeometryFactory factory = pts.getFactory();
@@ -110,10 +110,10 @@ public class ST_Drape extends DeterministicScalarFunction{
 
     /**
      * Drape a point geometry to a set of triangles
-     * @param pts
-     * @param triangles
-     * @param sTRtree
-     * @return
+     * @param pts {@link Geometry}
+     * @param triangles {@link Geometry}
+     * @param sTRtree {@link STRtree}
+     * @return Geometry
      */
     public static Geometry drapePoint(Geometry pts, Geometry triangles, STRtree sTRtree) {
         GeometryFactory factory = pts.getFactory();
@@ -226,9 +226,9 @@ public class ST_Drape extends DeterministicScalarFunction{
 
     /**
      * Update the coordinates and compute the z values
-     * @param cs
-     * @param indexedTriangles
-     * @return
+     * @param cs {@link CoordinateSequence}
+     * @param indexedTriangles {@link STRtree}
+     * @return CoordinateArraySequence
      */
     private static CoordinateArraySequence updateCoordinates(CoordinateSequence cs, STRtree indexedTriangles) {
         int updateDim = cs.getDimension();

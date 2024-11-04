@@ -47,8 +47,8 @@ public class ST_Is3D extends DeterministicScalarFunction{
     
     /**
      * Returns 1 if a geometry has a z-coordinate, otherwise 0.
-     * @param geom
-     * @return
+     * @param geom {@link Geometry}
+     * @return 1 if it's a 3D geom, 0 otherwise
      */
     public static int is3D(Geometry geom) throws IOException {
          if (geom == null) {

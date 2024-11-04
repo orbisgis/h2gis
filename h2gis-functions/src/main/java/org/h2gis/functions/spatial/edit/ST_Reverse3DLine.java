@@ -47,8 +47,8 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
      * Returns a 1 dimension geometry with vertex order reversed using the ascending 
      * value.
      *
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return Geometry
      */
     public static Geometry reverse3DLine(Geometry geometry) {
        return reverse3DLine(geometry, "asc");
@@ -59,9 +59,9 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
      * ascending (asc) or descending (desc) 
      * 
      *
-     * @param geometry
-     * @param order
-     * @return
+     * @param geometry {@link Geometry}
+     * @param order asc to reverse in ascending , desc to reverse in descending
+     * @return Geometry
      */
     public static Geometry reverse3DLine(Geometry geometry, String order) {
         if(geometry == null){
@@ -79,9 +79,9 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
      * Reverses a LineString according to the z value. The z of the first point
      * must be lower than the z of the end point.
      *
-     * @param lineString
+     * @param lineString {@link LineString}
      * @param order asc to reverse in ascending , desc to reverse in descending
-     * @return
+     * @return LineString
      */
     private static LineString reverse3D(LineString lineString, String order) {
         CoordinateSequence seq = lineString.getCoordinateSequence();
@@ -109,9 +109,9 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
      * point must be lower than the z end point if desc : the z first point must
      * be greater than the z end point
      *
-     * @param multiLineString
+     * @param multiLineString {@link MultiLineString}
      * @param order asc to reverse in ascending , desc to reverse in descending
-     * @return
+     * @return MultiLineString
      */
     public static MultiLineString reverse3D(MultiLineString multiLineString, String order) {
         int num = multiLineString.getNumGeometries();

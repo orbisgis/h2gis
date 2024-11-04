@@ -22,17 +22,17 @@ public class ST_SubDivide extends DeterministicScalarFunction {
     /**
      * Divide the geometry into quadrants
      *
-     * @param geom
-     * @return
+     * @param geom {@link Geometry}
+     * @return geometry
      */
     public static Geometry divide(Geometry geom) {
         return divideOnePass(geom);
     }
 
     /**
-     * @param geom
-     * @param maxvertices
-     * @return
+     * @param geom {@link Geometry}
+     * @param maxvertices max number of vertices
+     * @return Geometry
      */
     public static Geometry divide(Geometry geom, int maxvertices) {
         Geometry res = FACTORY.buildGeometry(subdivide_recursive(geom, maxvertices));
@@ -46,7 +46,7 @@ public class ST_SubDivide extends DeterministicScalarFunction {
      *
      * @param geom        input geometry
      * @param maxvertices number of vertices in the final geometry
-     * @return
+     * @return geometry
      */
     public static List<Geometry> subdivide_recursive(Geometry geom, int maxvertices) {
         if(geom ==null){
@@ -108,7 +108,7 @@ public class ST_SubDivide extends DeterministicScalarFunction {
      * Divide the geometry in quadrants
      *
      * @param geom input geometry
-     * @return
+     * @return geometry
      */
     private static Geometry divideOnePass(Geometry geom) {
         if(geom ==null){

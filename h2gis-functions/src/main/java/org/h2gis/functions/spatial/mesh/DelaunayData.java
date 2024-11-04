@@ -217,8 +217,8 @@ public class DelaunayData {
     /**
      * Computes the 3D area of a triangle.
      *
-     * @param triangle
-     * @return
+     * @param triangle {@link DelaunayTriangle}
+     * @return triangle area
      */
     private double computeTriangleArea3D(DelaunayTriangle triangle) {
         TriangulationPoint[] points = triangle.points;       

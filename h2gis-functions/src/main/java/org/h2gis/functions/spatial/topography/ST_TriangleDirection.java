@@ -48,9 +48,8 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
 
     /**
      * Compute the main slope direction
-     * @param geometry
-     * @return
-     * @throws IllegalArgumentException
+     * @param geometry {@link Geometry}
+     * @return LineString
      */
     public static LineString computeDirection(Geometry geometry) throws IllegalArgumentException {
         if(geometry == null){

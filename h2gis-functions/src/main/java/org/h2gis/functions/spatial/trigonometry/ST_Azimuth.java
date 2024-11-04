@@ -46,9 +46,9 @@ public class ST_Azimuth extends DeterministicScalarFunction{
     /**
      * This code compute the angle in radian as postgis does.
      * @author :  Jose Martinez-Llario from JASPA. JAva SPAtial for SQL
-     * @param pointA
-     * @param pointB
-     * @return
+     * @param pointA {@link Geometry} A
+     * @param pointB {@link Geometry} B
+     * @return azimuth
      */
     public static Double azimuth(Geometry pointA, Geometry pointB){
         if(pointA == null||pointB == null){

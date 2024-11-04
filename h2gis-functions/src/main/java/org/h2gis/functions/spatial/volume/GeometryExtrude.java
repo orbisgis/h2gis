@@ -99,9 +99,9 @@ public class GeometryExtrude {
     /**
      * Extract the linestring "roof".
      *
-     * @param lineString
-     * @param height
-     * @return
+     * @param lineString {@link LineString}
+     * @param height value
+     * @return Roof geometry
      */
     public static Geometry extractRoof(LineString lineString, double height) {
         LineString result = (LineString)lineString.copy();
@@ -162,9 +162,9 @@ public class GeometryExtrude {
 
     /**
      * Extrude the LineString as a set of walls.
-     * @param lineString
-     * @param height
-     * @return
+     * @param lineString {@link LineString}
+     * @param height value
+     * @return Walls geometry
      */
     public static MultiPolygon extractWalls(LineString lineString, double height) {
         GeometryFactory factory = lineString.getFactory();
@@ -234,10 +234,10 @@ public class GeometryExtrude {
      * Create a polygon corresponding to the wall.
      * 
      *
-     * @param beginPoint
-     * @param endPoint
-     * @param height
-     * @return
+     * @param beginPoint start {@link Coordinate}
+     * @param endPoint end {@link Coordinate}
+     * @param height value
+     * @return Extruded {@link Polygon}
      */
     private static Polygon extrudeEdge(final Coordinate beginPoint,
             Coordinate endPoint, final double height, GeometryFactory factory) {

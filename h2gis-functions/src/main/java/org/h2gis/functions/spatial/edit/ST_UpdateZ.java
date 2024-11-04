@@ -66,7 +66,7 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
      * dimension
      * @param geom the input geometry
      * @param zValue to update
-     * @return
+     * @return Geometry
      */
     public static Geometry force(Geometry geom, double zValue) {
         Geometry g = geom;
@@ -99,9 +99,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
      * Force the dimension of the MultiPoint and update correctly the coordinate
      * dimension
      *
-     * @param mp
-     * @param zValue
-     * @return
+     * @param mp {@link MultiPoint}
+     * @param zValue z value
+     * @return Geometry
      */
     public static MultiPoint convert(MultiPoint mp, double zValue) {
         int nb = mp.getNumGeometries();
@@ -115,9 +115,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
     /**
      * Force the dimension of the GeometryCollection and update correctly the coordinate
      * dimension
-     * @param gc
-     * @param zValue
-     * @return
+     * @param gc {@link GeometryCollection}
+     * @param zValue z value
+     * @return GeometryCollection
      */
     public static GeometryCollection convert(GeometryCollection gc, double zValue) {
         int nb = gc.getNumGeometries();
@@ -131,9 +131,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
     /**
      * Force the dimension of the MultiPolygon and update correctly the coordinate
      * dimension
-     * @param multiPolygon
-     * @param zValue
-     * @return
+     * @param multiPolygon {@link MultiPolygon}
+     * @param zValue z value
+     * @return MultiPolygon
      */
     public static MultiPolygon convert(MultiPolygon multiPolygon,double zValue) {
         int nb = multiPolygon.getNumGeometries();
@@ -147,9 +147,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
     /**
      * Force the dimension of the MultiLineString and update correctly the coordinate
      * dimension
-     * @param multiLineString
-     * @param zValue
-     * @return
+     * @param multiLineString MultiLineString
+     * @param zValue z value
+     * @return MultiLineString
      */
     public static MultiLineString convert(MultiLineString multiLineString, double zValue) {
         int nb = multiLineString.getNumGeometries();
@@ -163,9 +163,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
     /**
      * Force the dimension of the Polygon and update correctly the coordinate
      * dimension
-     * @param polygon
-     * @param zValue
-     * @return
+     * @param polygon {@link Polygon}
+     * @param zValue z value
+     * @return Polygon
      */
     public static Polygon convert(Polygon polygon, double zValue) {
         LinearRing shell = gf.createLinearRing(convertSequence(polygon.getExteriorRing().getCoordinateSequence(),zValue));
@@ -182,9 +182,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
     /**
      * Force the dimension of the LineString and update correctly the coordinate
      * dimension
-     * @param lineString
-     * @param zValue
-     * @return
+     * @param lineString {@link LineString}
+     * @param zValue z value
+     * @return LineString
      */
     public static LineString convert(LineString lineString,double zValue) {
         return gf.createLineString(convertSequence(lineString.getCoordinateSequence(),zValue));
@@ -193,9 +193,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
     /**
      * Force the dimension of the LinearRing and update correctly the coordinate
      * dimension
-     * @param linearRing
-     * @param zValue
-     * @return
+     * @param linearRing {@link LinearRing}
+     * @param zValue z value
+     * @return LinearRing
      */
     public static LinearRing convert(LinearRing linearRing,double zValue) {
         return gf.createLinearRing(convertSequence(linearRing.getCoordinateSequence(),zValue));

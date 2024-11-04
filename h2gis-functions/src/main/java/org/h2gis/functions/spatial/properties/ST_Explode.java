@@ -81,11 +81,10 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
     /**
      * Explode Geometry Collection into multiple geometries
-     * @param connection
+     * @param connection database
      * @param tableName the name of the input table
      * @param fieldName the name of geometry field. If null the first geometry column is used.
-     * @return
-     * @throws java.sql.SQLException
+     * @return ResultSet
      */
     public static ResultSet explode(Connection connection, String tableName, String fieldName) throws SQLException {
         ExplodeResultSet rowSource = new ExplodeResultSet(connection,
@@ -224,8 +223,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
         /**
          * Return the exploded geometries as multiple rows
-         * @return
-         * @throws SQLException 
+         * @return ResultSet
          */
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);

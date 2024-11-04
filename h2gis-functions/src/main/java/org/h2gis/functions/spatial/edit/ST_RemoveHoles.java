@@ -78,8 +78,8 @@ public class ST_RemoveHoles extends DeterministicScalarFunction {
     /**
      * Create a new multiPolygon without hole.
      *
-     * @param multiPolygon
-     * @return
+     * @param multiPolygon {@link MultiPolygon}
+     * @return Geometry without holes
      */
     public static MultiPolygon removeHolesMultiPolygon(MultiPolygon multiPolygon) {
         int num = multiPolygon.getNumGeometries();
@@ -93,8 +93,8 @@ public class ST_RemoveHoles extends DeterministicScalarFunction {
     /**
      * Create a new polygon without hole.
      *
-     * @param polygon
-     * @return
+     * @param polygon {@link Polygon}
+     * @return Geometry without holes
      */
     public static Polygon removeHolesPolygon(Polygon polygon) {
         return new Polygon((LinearRing) polygon.getExteriorRing(), null, polygon.getFactory());
