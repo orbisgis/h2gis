@@ -51,7 +51,6 @@ public class ST_LineSubstring extends DeterministicScalarFunction {
      * @param start the start fraction between 0 and 1
      * @param end the end fraction between 0 and 1
      * @return single or multiparts lines
-     * @throws SQLException
      */
     public static Geometry execute(Geometry geometry, double start, double end) throws SQLException {
         if(geometry==null){

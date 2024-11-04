@@ -125,8 +125,7 @@ public class SpatialRefRegistry  extends AbstractProjRegistry implements Registr
     /**
      * Set the database connection
      *
-     * @param connection
-     */
+     * @param connection database     */
     public void setConnection(Connection connection) {
         this.connection = connection;
     }

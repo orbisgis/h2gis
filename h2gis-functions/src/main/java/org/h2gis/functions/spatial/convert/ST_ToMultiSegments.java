@@ -53,7 +53,6 @@ public class ST_ToMultiSegments extends DeterministicScalarFunction {
      *
      * @param geom Geometry
      * @return A MultiLineString of the geometry's distinct segments
-     * @throws SQLException
      */
     public static MultiLineString createSegments(Geometry geom) throws SQLException {
         if (geom != null) {

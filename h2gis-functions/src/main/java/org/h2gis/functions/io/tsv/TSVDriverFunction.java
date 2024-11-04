@@ -238,12 +238,10 @@ public class TSVDriverFunction implements DriverFunction {
     /**
      * Export a resultset to a TSV file
      *
-     * @param connection
-     * @param res
+     * @param connection database     * @param res
      * @param writer
      * @param progress Progress visitor following the execution.
      * @param encoding
-     * @throws java.sql.SQLException
      */
     public void exportFromResultSet(Connection connection, ResultSet res, Writer writer, String encoding, ProgressVisitor progress) throws SQLException {
         Csv csv = new Csv();

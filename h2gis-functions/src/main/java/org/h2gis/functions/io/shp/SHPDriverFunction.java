@@ -156,7 +156,6 @@ public class SHPDriverFunction implements DriverFunction {
      * @param fileName File path to write, if exists it may be replaced
      * @param progress to display the IO progress
      * @param encoding File encoding, null will use default encoding
-     * @throws java.sql.SQLException
      */
     private String[] doExport(Connection connection, Integer spatialFieldIndex, ResultSet rs, int recordCount, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
         int srid = 0;

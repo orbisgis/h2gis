@@ -53,7 +53,6 @@ public class ST_Holes extends DeterministicScalarFunction {
      *
      * @param geom Geometry
      * @return The geometry's holes
-     * @throws SQLException
      */
     public static GeometryCollection execute(Geometry geom) throws SQLException {
         if (geom != null) {

@@ -58,8 +58,7 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
 
     /**
      *
-     * @param connection
-     * @param fileName input file
+     * @param connection database     * @param fileName input file
      */
     public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
@@ -74,8 +73,7 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
     /**
      * Read the GeoJSON file.
      *
-     * @param connection
-     * @param fileName input file
+     * @param connection database     * @param fileName input file
      * @param option
      */
     public static void importTable(Connection connection, String fileName, Value option) throws IOException, SQLException {

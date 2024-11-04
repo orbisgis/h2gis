@@ -59,10 +59,8 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
     /**
      * Explode Geometry Collection into multiple geometries
-     * @param connection
-     * @param tableName the name of the input table or select query
+     * @param connection database     * @param tableName the name of the input table or select query
      * @return A result set with the same content of specified table but with atomic geometries and duplicate values.
-     * @throws java.sql.SQLException
      */
     public static ResultSet explode(Connection connection, String tableName) throws SQLException {
         String regex = ".*(?i)\\b(select|from)\\b.*";

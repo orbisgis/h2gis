@@ -49,7 +49,6 @@ public class ST_Distance extends DeterministicScalarFunction {
      * @param b Geometry instance or null
      * @return the 2-dimensional minimum Cartesian distance between two geometries
      * in projected units (spatial ref units)
-     * @throws java.sql.SQLException
      */
     public static Double distance(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {

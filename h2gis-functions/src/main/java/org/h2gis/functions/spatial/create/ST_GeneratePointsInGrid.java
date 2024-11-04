@@ -67,7 +67,6 @@ public class ST_GeneratePointsInGrid extends DeterministicScalarFunction {
      * @param useMask set to true to keep the points loacted inside the input
      * geometry
      * @return a regular distribution of points as multipoint
-     * @throws java.sql.SQLException
      */
     public static Geometry generatePointsInGrid(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask) throws SQLException {
         if (geom == null) {

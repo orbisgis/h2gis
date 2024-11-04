@@ -112,8 +112,7 @@ public class TSVRead extends AbstractFunction implements ScalarFunction {
     /**
      * Copy data from TSV File into a new table in specified connection.
      *
-     * @param connection
-     * @param fileName input file
+     * @param connection database     * @param fileName input file
      */
     public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();

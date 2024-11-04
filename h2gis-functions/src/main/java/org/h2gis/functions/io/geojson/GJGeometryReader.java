@@ -49,7 +49,7 @@ public class GJGeometryReader {
      *
      * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
      *
-     * @param jsParser json parser
+     * @param jsParser {@link JsonParser}
      * @return Geometry
      */
     public Geometry parseGeometry(JsonParser jsParser) throws IOException, SQLException {        
@@ -83,7 +83,8 @@ public class GJGeometryReader {
      *
      * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
      *
-     * @param jp
+     * @param jp {@link JsonParser}
+     * @param geometryType  geometry type
      * @return Geometry
      */
     private Geometry parseGeometry(JsonParser jp, String geometryType) throws IOException, SQLException {
@@ -113,7 +114,7 @@ public class GJGeometryReader {
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
-     * @param  jp
+     * @param  jp {@link JsonParser}
      * @return Point
      */
     public Point parsePoint(JsonParser jp) throws IOException, SQLException {
@@ -135,7 +136,7 @@ public class GJGeometryReader {
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jp json parser
+     * @param jp {@link JsonParser}
      * @return MultiPoint
      */
     public MultiPoint parseMultiPoint(JsonParser jp) throws IOException, SQLException {
@@ -157,7 +158,7 @@ public class GJGeometryReader {
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jsParser json parser
+     * @param jp {@link JsonParser}
      */
     public LineString parseLinestring(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -178,7 +179,7 @@ public class GJGeometryReader {
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
-     * @param jsParser json parser
+     * @param jp {@link JsonParser}
      * @return MultiLineString
      */
     public MultiLineString parseMultiLinestring(JsonParser jp) throws IOException, SQLException {
@@ -221,7 +222,7 @@ public class GJGeometryReader {
      *
      *
      *
-     * @param jp
+     * @param jp {@link JsonParser}
      * @return Polygon
      */
     public Polygon parsePolygon(JsonParser jp) throws IOException, SQLException {
@@ -262,7 +263,7 @@ public class GJGeometryReader {
      * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
-     * @param jp
+     * @param jp {@link JsonParser}
      * @return MultiPolygon
      */
     public MultiPolygon parseMultiPolygon(JsonParser jp) throws IOException, SQLException {
@@ -363,8 +364,7 @@ public class GJGeometryReader {
      *
      * 100.0, 0.0]
      *
-     * @param jp
-     * @throws IOException
+     * @param jp {@link JsonParser}
      * @return Coordinate
      */
     public Coordinate parseCoordinate(JsonParser jp) throws IOException {

@@ -52,7 +52,6 @@ public class ST_Intersection extends DeterministicScalarFunction {
      * @param b Geometry instance
      *
      * @return the intersection between two geometries
-     * @throws java.sql.SQLException
      */
     public static Geometry intersection(Geometry a, Geometry b) throws SQLException {
         if (a == null || b == null) {
@@ -71,7 +70,6 @@ public class ST_Intersection extends DeterministicScalarFunction {
      * @param gridSize size of a grid to snap the input geometries
      *
      * @return the intersection between two geometries
-     * @throws java.sql.SQLException
      */
     public static Geometry intersection(Geometry a, Geometry b, double gridSize) throws SQLException {
         if (a == null || b == null) {

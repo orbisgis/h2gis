@@ -61,7 +61,6 @@ public class ST_FurthestCoordinate extends DeterministicScalarFunction {
      * @param geom  Geometry
      * @return The furthest coordinate(s) contained in the given geometry starting from
      *         the given point, using the 2D distance
-     * @throws java.sql.SQLException
      */
     public static Geometry getFurthestCoordinate(Point point, Geometry geom) throws SQLException {
         if (point == null || geom == null) {

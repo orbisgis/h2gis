@@ -66,8 +66,7 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
     /**
      * Write the GeoJSON file.
      *
-     * @param connection
-     * @param fileName input file
+     * @param connection database     * @param fileName input file
      * @param tableReference output table name
      */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {

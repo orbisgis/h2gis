@@ -60,8 +60,7 @@ public class GridRowSet implements SimpleRowSource {
     /**
      * The grid will be computed according a table stored in the database
      *
-     * @param connection
-     * @param deltaX
+     * @param connection database     * @param deltaX
      * @param deltaY
      * @param tableName
      */
@@ -76,8 +75,7 @@ public class GridRowSet implements SimpleRowSource {
     /**
      * The grid will be computed according the envelope of a geometry
      *
-     * @param connection
-     * @param deltaX
+     * @param connection database     * @param deltaX
      * @param deltaY
      * @param geometry
      */
@@ -281,7 +279,6 @@ public class GridRowSet implements SimpleRowSource {
      * Give the regular grid
      *
      * @return ResultSet
-     * @throws SQLException
      */
     public ResultSet getResultSet() throws SQLException {
         SimpleResultSet srs = new SimpleResultSet(this);

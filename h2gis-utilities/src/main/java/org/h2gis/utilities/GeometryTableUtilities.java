@@ -1481,7 +1481,6 @@ public class GeometryTableUtilities {
      *
      * @return Array of two string that correspond to the authority name and its
      * SRID code
-     * @throws java.sql.SQLException
      *
      */
     public static String[] getAuthorityAndSRID(Connection connection, String table, String geometryColumnName) throws SQLException{
