@@ -48,10 +48,9 @@ public class ST_MultiplyZ extends DeterministicScalarFunction {
      * Multiply the z values of the geometry by another double value. NaN values
      * are not updated.
      *
-     * @param geometry
-     * @param z
-     * @return
-     * @throws java.sql.SQLException
+     * @param geometry {@link Geometry}
+     * @param z z value
+     * @return Z {@link Geometry}
      */
     public static Geometry multiplyZ(Geometry geometry, double z) throws SQLException {
         if(geometry == null){

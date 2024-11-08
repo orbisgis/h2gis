@@ -49,7 +49,6 @@ public class ST_Snap extends DeterministicScalarFunction {
      * @param geometryB a geometry to snap
      * @param distance the tolerance to use
      * @return the snapped geometries
-     * @throws java.sql.SQLException
      */
     public static Geometry snap(Geometry geometryA, Geometry geometryB, double distance) throws SQLException {
         if (geometryA == null || geometryB == null) {

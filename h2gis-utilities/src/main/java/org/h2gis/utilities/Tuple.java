@@ -22,8 +22,8 @@ package org.h2gis.utilities;
 /**
  * Basic tuple class
  * @author Erwan Bocher
- * @param <T>
- * @param <U> 
+ * @param <T> First tuple object
+ * @param <U> Second tuple object
  */
 public class Tuple<T, U> {
 
@@ -43,8 +43,6 @@ public class Tuple<T, U> {
     public U second() {
         return _2;
     }
-    
-    
 
     @Override
     public String toString() {

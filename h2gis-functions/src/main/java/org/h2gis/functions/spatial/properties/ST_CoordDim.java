@@ -48,7 +48,6 @@ public class ST_CoordDim extends DeterministicScalarFunction {
      *
      * @param geom Geometry
      * @return The dimension of the coordinates of the given geometry
-     * @throws IOException
      */
     public static Integer getCoordinateDimension(Geometry geom) throws IOException {
         if (geom == null) {

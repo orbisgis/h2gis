@@ -37,7 +37,7 @@ public class UpdateGeometryZ {
      * dimension and change the z value
      * @param geom the input geometry
      * @param z the value to update
-     * @return 
+     * @return Geometry
      */
      public static Geometry force(Geometry geom, double z) {
         Geometry g = geom;
@@ -63,9 +63,9 @@ public class UpdateGeometryZ {
      /**
       * Force the dimension of the GeometryCollection and update correctly the coordinate 
       * dimension
-      * @param gc
-      * @param z
-      * @return 
+      * @param gc {@link GeometryCollection}
+      * @param z Z value
+      * @return Geometry
       */
     public static GeometryCollection convert(GeometryCollection gc, double z) {
         int nb = gc.getNumGeometries();
@@ -79,9 +79,9 @@ public class UpdateGeometryZ {
     /**
      * Force the dimension of the MultiPolygon and update correctly the coordinate 
      * dimension
-     * @param multiPolygon
-     * @param z
-     * @return 
+     * @param multiPolygon MultiPolygon
+     * @param z Z value
+     * @return MultiPolygon
      */
     public static MultiPolygon convert(MultiPolygon multiPolygon,double z) {
         int nb = multiPolygon.getNumGeometries();
@@ -95,9 +95,9 @@ public class UpdateGeometryZ {
      /**
      * Force the dimension of the MultiLineString and update correctly the coordinate 
      * dimension
-     * @param multiLineString
-     * @param z
-     * @return 
+     * @param multiLineString {@link MultiLineString}
+     * @param z value
+     * @return MultiLineString
      */
     public static MultiLineString convert(MultiLineString multiLineString, double z) {
         int nb = multiLineString.getNumGeometries();
@@ -111,9 +111,9 @@ public class UpdateGeometryZ {
     /**
      * Force the dimension of the Polygon and update correctly the coordinate 
      * dimension
-     * @param polygon
-     * @param z
-     * @return 
+     * @param polygon {@link Polygon}
+     * @param z value
+     * @return Polygon
      */
     public static Polygon convert(Polygon polygon, double z) {
         LinearRing shell = gf.createLinearRing(convertSequence(polygon.getExteriorRing().getCoordinates(),z));
@@ -130,9 +130,9 @@ public class UpdateGeometryZ {
     /**
      * Force the dimension of the LineString and update correctly the coordinate 
      * dimension
-     * @param lineString
-     * @param z
-     * @return 
+     * @param lineString {@link LineString}
+     * @param z value
+     * @return LineString
      */
     public static LineString convert(LineString lineString,double z) {
         return gf.createLineString(convertSequence(lineString.getCoordinates(),z));
@@ -141,9 +141,9 @@ public class UpdateGeometryZ {
     /**
      * Force the dimension of the LinearRing and update correctly the coordinate 
      * dimension
-     * @param linearRing
-     * @param z
-     * @return 
+     * @param linearRing {@link LinearRing}
+     * @param z value
+     * @return LinearRing
      */
     public static LinearRing convert(LinearRing linearRing,double z) {
         return gf.createLinearRing(convertSequence(linearRing.getCoordinates(),z));

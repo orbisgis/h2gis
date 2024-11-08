@@ -32,10 +32,10 @@ public final class CoordinatesUtils {
         /**
          * Interpolates a z value (linearly) between the two coordinates.
          *
-         * @param firstCoordinate
-         * @param lastCoordinate
-         * @param toBeInterpolated
-         * @return
+         * @param firstCoordinate first coordinate
+         * @param lastCoordinate last coordinate
+         * @param toBeInterpolated coordinate to interpolate
+         * @return z value
          */
         public static double interpolate(Coordinate firstCoordinate, Coordinate lastCoordinate, Coordinate toBeInterpolated) {
                 if (Double.isNaN(firstCoordinate.getZ())) {
@@ -64,9 +64,9 @@ public final class CoordinatesUtils {
          *
          * The equality is done only in 2D (z values are not checked).
          *
-         * @param coords
-         * @param coord
-         * @return
+         * @param coords coordinate array
+         * @param coord coordinate to check
+         * @return true if the coordinate is found
          */
         public static boolean contains2D(Coordinate[] coords, Coordinate coord) {
                 for (Coordinate coordinate : coords) {
@@ -82,9 +82,9 @@ public final class CoordinatesUtils {
          *
          * The equality is done in 3D (z values ARE checked).
          *
-         * @param coords
-         * @param coord
-         * @return
+         * @param coords coordinate array
+         * @param coord coordinate
+         * @return true if the coordinate is found
          */
         public static boolean contains3D(Coordinate[] coords, Coordinate coord) {
                 for (Coordinate coordinate : coords) {
@@ -214,8 +214,8 @@ public final class CoordinatesUtils {
          * Returns the 3D length of the geometry
          *
          *
-         * @param geom
-         * @return
+         * @param geom {@link Geometry}
+         * @return length in 3D
          */
         public static double length3D(Geometry geom) {
                 double sum = 0;
@@ -234,8 +234,8 @@ public final class CoordinatesUtils {
         /**
          * Returns the 3D perimeter of a line string.
          *
-         * @param lineString
-         * @return
+         * @param lineString {@link LineString}
+         * @return length in 3D
          */
         public static double length3D(LineString lineString) {
                 return length3D(lineString.getCoordinateSequence());
@@ -244,8 +244,8 @@ public final class CoordinatesUtils {
         /**
          * Returns the 3D perimeter of a polygon
          *
-         * @param polygon
-         * @return
+         * @param polygon {@link Polygon}
+         * @return length in 3D
          */
         public static double length3D(Polygon polygon) {
                 double len = 0.0;

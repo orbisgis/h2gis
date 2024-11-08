@@ -143,7 +143,6 @@ public class DbaseFileReader {
      * @param pos Pos index in the buffer
      * @param length Array length to extract
      * @return byte array extracted from the buffer
-     * @throws IOException
      */
     private byte[] getBytes(long pos, int length) throws IOException {
         byte[] bytes = new byte[length];

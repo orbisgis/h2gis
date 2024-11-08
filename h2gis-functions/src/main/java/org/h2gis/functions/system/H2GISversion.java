@@ -49,7 +49,7 @@ public class H2GISversion extends DeterministicScalarFunction{
      * Return the H2GIS version available in the version txt file Otherwise
      * return unknown
      *
-     * @return
+     * @return H2GIS version
      */
     public static String geth2gisVersion() {
         try (InputStream fs = H2GISFunctions.class.getResourceAsStream("/org/h2gis/functions/system/version.txt")) {

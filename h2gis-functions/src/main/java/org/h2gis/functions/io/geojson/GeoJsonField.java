@@ -26,14 +26,14 @@ package org.h2gis.functions.io.geojson;
  * @author Hai Trung Pham
  */
 public class GeoJsonField {
-    
-    static String NAME="name";
-    static String CRS ="crs"; // 2008
-    static String FEATURES="features";
-    static String FEATURECOLLECTION="featurecollection";
-    static String FEATURE="feature";
-    static String GEOMETRY="geometry";
-    static String PROPERTIES="properties";
+
+    public static String NAME="name";
+    public static String CRS ="crs"; // 2008
+    public static String FEATURES="features";
+    public static String FEATURECOLLECTION="featurecollection";
+    public static String FEATURE="feature";
+    public static String GEOMETRY="geometry";
+    public static String PROPERTIES="properties";
 
     /**
      * If a Feature has a commonly used identifier, that identifier
@@ -41,20 +41,20 @@ public class GeoJsonField {
      *       "id", and the value of this member is either a JSON string or
      *       number.
      */
-    static String FEATURE_ID="id";
-    static String POINT="point";
-    static String LINESTRING="linestring";
-    static String POLYGON="polygon";
-    static String MULTIPOINT="multipoint";
-    static String MULTILINESTRING="multilinestring";
-    static String MULTIPOLYGON="multipolygon";
-    static String COORDINATES="coordinates";
-    static String GEOMETRYCOLLECTION="geometrycollection";
-    static String GEOMETRIES="geometries";
-    static String CRS_URN_EPSG="urn:ogc:def:crs:epsg::"; // 2008
-    static String CRS_URN_OGC="urn:ogc:def:crs:ogc:1.3:CRS84"; // 2008
-    static String LINK="link"; // 2008
-    static String BBOX="bbox";
-    static String TYPE="type";
+    static public String FEATURE_ID="id";
+    static public String POINT="point";
+    static public String LINESTRING="linestring";
+    static public String POLYGON="polygon";
+    static public String MULTIPOINT="multipoint";
+    static public String MULTILINESTRING="multilinestring";
+    static public String MULTIPOLYGON="multipolygon";
+    static public String COORDINATES="coordinates";
+    static public String GEOMETRYCOLLECTION="geometrycollection";
+    static public String GEOMETRIES="geometries";
+    static public String CRS_URN_EPSG="urn:ogc:def:crs:epsg::"; // 2008
+    static public String CRS_URN_OGC="urn:ogc:def:crs:ogc:1.3:CRS84"; // 2008
+    static public String LINK="link"; // 2008
+    static public String BBOX="bbox";
+    static public  String TYPE="type";
 
 }

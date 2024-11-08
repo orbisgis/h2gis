@@ -58,8 +58,7 @@ public class ST_Clip extends DeterministicScalarFunction {
      * Clip a [Multi]Polygon or [Multi]LineString geometry with another [Multi]Polygon or [Multi]LineString geometry
      * @param geomToClip [Multi]Polygon or [Multi]LineString
      * @param geomForClip [Multi]Polygon or [Multi]LineString
-     * @return
-     * @throws SQLException
+     * @return Geometry
      */
     public static Geometry execute(Geometry geomToClip, Geometry geomForClip) throws SQLException, ParseException {
         if (geomToClip == null) {

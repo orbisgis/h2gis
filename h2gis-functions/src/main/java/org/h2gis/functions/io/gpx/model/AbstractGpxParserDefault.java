@@ -122,7 +122,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives copyright and license information governing use of the file.
      *
-     * @return
+     * @return copyright value
      */
     abstract String getCopyright();
     
@@ -134,10 +134,9 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * automatically when corresponding markup is found.
      *
      * @param tableName the table used to create all tables
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @return a boolean value if the parser ends successfully or not
-     * @throws SQLException if the creation of the tables failed
-     * @throws java.io.FileNotFoundException
+     * @throws SQLException or FileNotFoundException if the creation of the tables failed
      */
     public String[] read(String tableName, ProgressVisitor progress) throws SQLException, FileNotFoundException {
         if (FileUtilities.isFileImportable(fileName, "gpx")) {
@@ -313,7 +312,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the date when this file is created.
      *
-     * @return
+     * @return time value
      */
     public String getTime() {
         return time;
@@ -322,7 +321,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the version number of the GPX document.
      *
-     * @return
+     * @return gpx version of the document
      */
     public String getVersion() {
         return version;
@@ -331,7 +330,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the name or URL of the software that created the GPX document.
      *
-     * @return
+     * @return gpx creator
      */
     public String getCreator() {
         return creator;
@@ -340,7 +339,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the minimum longitude given by {@code <bounds>} element.
      *
-     * @return
+     * @return the minimum longitude
      */
     public double getMinLon() {
         return minLon;
@@ -349,7 +348,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the maximum longitude given by {@code <bounds>} element.
      *
-     * @return
+     * @return the maximum longitude
      */
     public double getMaxLon() {
         return maxLon;
@@ -358,7 +357,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the minimum latitude given by {@code <bounds>} element.
      *
-     * @return
+     * @return the minimum latitude
      */
     public double getMinLat() {
         return minLat;
@@ -367,7 +366,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the maximum latitude given by {@code <bounds>} element.
      *
-     * @return
+     * @return the maximum latitude
      */
     public double getMaxLat() {
         return maxLat;
@@ -376,7 +375,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives a description of the contents of the GPX file.
      *
-     * @return
+     * @return the description value
      */
     public String getDesc() {
         return desc;
@@ -386,7 +385,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * Gives keywords associated with the file. Search engines or databases can
      * use this information to classify the data.
      *
-     * @return
+     * @return the keywords
      */
     public String getKeywords() {
         return keywords;
@@ -395,7 +394,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives URLs associated with the location described in the file.
      *
-     * @return
+     * @return urls
      */
     public String getFullLink() {
         return "Link : " + link + "\nText of hyperlink : " + linkText;
@@ -406,16 +405,16 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * gives an email address if exist. Also gives a link to Web site or other
      * external information about person if exist.
      *
-     * @return
+     * @return author
      */
     public String getFullAuthor() {
         return "Author : " + authorName + "\nEmail : " + email + "\nLink : " + authorLink + "\nText : " + authorLinkText;
     }
 
     /**
-     * Set the link related to the author of the ducument.
+     * Set the link related to the author of the document.
      *
-     * @param authorLink
+     * @param authorLink the link related to the author
      */
     public void setAuthorLink(String authorLink) {
         this.authorLink = authorLink;
@@ -424,7 +423,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Set the description of the link related to the author.
      *
-     * @param authorLinkText
+     * @param authorLinkText the description of the link related to the author
      */
     public void setAuthorLinkText(String authorLinkText) {
         this.authorLinkText = authorLinkText;
@@ -433,7 +432,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Set the name of the author of the document.
      *
-     * @param authorName
+     * @param authorName the name of the author
      */
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
@@ -442,7 +441,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Set the email of the author of the document.
      *
-     * @param email
+     * @param email the email of the author
      */
     public void setEmail(String email) {
         this.email = email;
@@ -451,16 +450,16 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Set the link related to the document.
      *
-     * @param link
+     * @param link link related to the document
      */
     public void setLink(String link) {
         this.link = link;
     }
 
     /**
-     * Set the description of hte document link.
+     * Set the description of the document link.
      *
-     * @param linkText
+     * @param linkText the description of the document link
      */
     public void setLinkText(String linkText) {
         this.linkText = linkText;
@@ -469,7 +468,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the name of the document.
      *
-     * @return
+     * @return the name of the document
      */
     public String getName() {
         return name;
@@ -478,7 +477,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Set the name of the document.
      *
-     * @param name
+     * @param name the name of the document
      */
     public void setName(String name) {
         this.name = name;
@@ -487,7 +486,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the parser used to parse waypoint.
      *
-     * @return
+     * @return the wpt parse
      */
     public AbstractGpxParserWpt getWptParser() {
         return wptParser;
@@ -496,7 +495,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Set the parser used to parse waypoint.
      *
-     * @param wptParser
+     * @param wptParser set the wptParser
      */
     public void setWptParser(AbstractGpxParserWpt wptParser) {
         this.wptParser = wptParser;
@@ -505,7 +504,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Set the parser used to parse routes.
      *
-     * @param rteParser
+     * @param rteParser set the RTE parser
      */
     public void setRteParser(AbstractGpxParserRte rteParser) {
         this.rteParser = rteParser;
@@ -514,7 +513,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Gives the parser used to parse routes.
      *
-     * @return
+     * @return the Rte parser
      */
     public AbstractGpxParserRte getRteParser() {
         return rteParser;
@@ -523,7 +522,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Set the parser used to parse the track
      *
-     * @param trkParser
+     * @param trkParser set the trk parser
      */
     public void setTrkParser(AbstractGpxParserTrk trkParser) {
         this.trkParser = trkParser;
@@ -532,7 +531,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     /**
      * Givers the parser used to parse the track
      *
-     * @return
+     * @return the Trk parser
      */
     public AbstractGpxParserTrk getTrkParser() {
         return trkParser;

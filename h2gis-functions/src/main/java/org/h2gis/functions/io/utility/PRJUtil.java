@@ -52,9 +52,8 @@ public class PRJUtil {
      * - is empty
      * then a default srid equals to 0 is added.
      * 
-     * @param prjFile
-     * @return
-     * @throws IOException 
+     * @param prjFile prj file
+     * @return srid code
      */
     public static int getSRID(File prjFile) throws IOException {
         int srid = 0;
@@ -89,11 +88,9 @@ public class PRJUtil {
      * - is empty     * 
      * then a default srid equals to 0 is added.
      * 
-     * @param connection
-     * @param prjFile
-     * @return
-     * @throws SQLException
-     * @throws IOException
+     * @param connection database
+     * @param prjFile prj file
+     * @return a valid srid
      */
     public static int getValidSRID(Connection connection, File prjFile) throws SQLException, IOException {
         int srid = getSRID(prjFile);
@@ -107,9 +104,7 @@ public class PRJUtil {
      * Return the content of the PRJ file as a single string
      *
      * @param prjFile
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @return prj content
      */
     private static String readPRJFile(File prjFile) throws FileNotFoundException, IOException {
         try (FileInputStream fis = new FileInputStream(prjFile)) {
@@ -129,8 +124,6 @@ public class PRJUtil {
      * @param location input table name
      * @param geomField geometry field name
      * @param fileName path of the prj file
-     * @throws SQLException
-     * @throws FileNotFoundException 
      */   
     public static void writePRJ(Connection connection, TableLocation location, String geomField, File fileName) throws SQLException, FileNotFoundException {
         int srid = GeometryTableUtilities.getSRID(connection, location, geomField);
@@ -143,8 +136,6 @@ public class PRJUtil {
      * @param connection database connection
      * @param srid srid code
      * @param fileName path of the prj file
-     * @throws SQLException
-     * @throws FileNotFoundException 
      */   
     public static void writePRJ(Connection connection, int srid, File fileName) throws SQLException, FileNotFoundException {
         if (srid != 0) {
@@ -179,10 +170,9 @@ public class PRJUtil {
      * This method checks if a SRID value is valid according a list of SRID's
      * avalaible on spatial_ref table of the datababase.
      * 
-     * @param srid
-     * @param connection
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param srid code
+     * @param connection database
+     * @return true if the srid exists
      */
     public static boolean isSRIDValid(int srid, Connection connection) throws SQLException {
         PreparedStatement ps = null;

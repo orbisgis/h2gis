@@ -153,8 +153,8 @@ public class H2MVTable extends MVTable {
 
     /**
      * Rebuild the index
-     * @param session
-     * @param index
+     * @param session database session
+     * @param index table index
      */
     private void rebuild(SessionLocal session, Index index){
         Index scan = getScanIndex(session);

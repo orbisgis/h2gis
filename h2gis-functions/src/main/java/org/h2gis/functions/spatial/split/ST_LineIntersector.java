@@ -57,10 +57,9 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
     
     /**
      * Split a lineal geometry by a another geometry
-     * @param inputLines
-     * @param clipper
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param inputLines lines
+     * @param clipper geometry to clip the lines
+     * @return new clipped lines
      */
     public static Geometry lineIntersector(Geometry inputLines, Geometry clipper) throws IllegalArgumentException, SQLException {
         if(inputLines == null||clipper == null){
@@ -101,9 +100,9 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
     /***
      * Convert the input geometries as a list of segments and mark them with a flag
      * to identify input and output geometries.
-     * @param inputLines
-     * @param clipper
-     * @return 
+     * @param inputLines lines
+     * @param clipper geometry to clip
+     * @return array of segments
      */
     public static ArrayList<SegmentString> getSegments(Geometry inputLines, Geometry clipper) {
         ArrayList<SegmentString> segments = new ArrayList<SegmentString>();        

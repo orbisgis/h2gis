@@ -44,10 +44,9 @@ public class ST_ShortestLine extends  DeterministicScalarFunction{
  
     /**
      * Compute the shortest line between two geometries.
-     * @param geomA
-     * @param geomB
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param geomA {@link Geometry} A
+     * @param geomB {@link Geometry} B
+     * @return Geometry
      */
     public static LineString shortestLine(Geometry geomA, Geometry geomB) throws SQLException{
         if (geomA == null || geomB == null) {

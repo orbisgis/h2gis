@@ -47,9 +47,8 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Returns a version of the given geometry with duplicated points removed.
      *
-     * @param geometry
-     * @return
-     * @throws java.sql.SQLException
+     * @param geometry {@link Geometry}
+     * @return Geometry without repeated points
      */
     public static Geometry removeRepeatedPoints(Geometry geometry) throws SQLException, SQLException {
         return removeDuplicateCoordinates(geometry, 0);
@@ -58,10 +57,9 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      /**
      * Returns a version of the given geometry with duplicated points removed.
      *
-     * @param geometry
-     * @param tolerance to delete the coordinates
-     * @return
-     * @throws java.sql.SQLException
+     * @param geometry {@link Geometry}
+     * @param tolerance distance to delete the coordinates
+     * @return Geometry without repeated points
      */
     public static Geometry removeRepeatedPoints(Geometry geometry, double tolerance) throws SQLException {
         return removeDuplicateCoordinates(geometry, tolerance);
@@ -70,10 +68,9 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated points within a geometry.
      *
-     * @param geom
-     * @param tolerance to delete the coordinates
-     * @return
-     * @throws java.sql.SQLException
+     * @param geom {@link Geometry}
+     * @param tolerance distance to delete the coordinates
+     * @return Geometry without repeated points
      */
     public static Geometry removeDuplicateCoordinates(Geometry geom, double tolerance) throws SQLException {
         if (geom == null) {
@@ -103,10 +100,9 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates within a LineString.
      *
-     * @param linestring
-     * @param tolerance to delete the coordinates
-     * @return
-     * @throws java.sql.SQLException
+     * @param linestring {@link LineString}
+     * @param tolerance distance to delete the coordinates
+     * @return Geometry without repeated points
      */
     public static LineString removeDuplicateCoordinates(LineString linestring, double tolerance) throws SQLException {
         Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linestring.getCoordinates(), tolerance, false);
@@ -119,9 +115,9 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates within a linearRing.
      *
-     * @param linearRing
+     * @param linearRing {@link LinearRing}
      * @param tolerance to delete the coordinates
-     * @return
+     * @return Geometry without repeated points
      */
     public static LinearRing removeDuplicateCoordinates(LinearRing linearRing, double tolerance) {
         Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linearRing.getCoordinates(), tolerance, true);
@@ -131,9 +127,9 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates in a MultiLineString.
      *
-     * @param multiLineString
+     * @param multiLineString {@link MultiLineString}
      * @param tolerance to delete the coordinates
-     * @return
+     * @return Geometry without repeated points
      */
     public static MultiLineString removeDuplicateCoordinates(MultiLineString multiLineString, double tolerance) throws SQLException {
         ArrayList<LineString> lines = new ArrayList<LineString>();
@@ -150,8 +146,7 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      *
      * @param polygon the input polygon
      * @param tolerance to delete the coordinates
-     * @return
-     * @throws java.sql.SQLException
+     * @return Geometry without repeated points
      */
     public static Polygon removeDuplicateCoordinates(Polygon polygon, double tolerance) throws SQLException {
         GeometryFactory factory = polygon.getFactory();
@@ -171,10 +166,9 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates within a MultiPolygon.
      *
-     * @param multiPolygon
+     * @param multiPolygon {@link MultiPolygon}
      * @param tolerance to delete the coordinates
-     * @return
-     * @throws java.sql.SQLException
+     * @return Geometry without repeated points
      */
     public static MultiPolygon removeDuplicateCoordinates(MultiPolygon multiPolygon, double tolerance) throws SQLException {
         ArrayList<Polygon> polys = new ArrayList<Polygon>();
@@ -189,10 +183,9 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates within a GeometryCollection
      *
-     * @param geometryCollection
+     * @param geometryCollection {@link GeometryCollection}
      * @param tolerance to delete the coordinates
-     * @return
-     * @throws java.sql.SQLException
+     * @return Geometry without repeated points
      */
     public static GeometryCollection removeDuplicateCoordinates(GeometryCollection geometryCollection, double tolerance) throws SQLException {
         ArrayList<Geometry> geoms = new ArrayList<>();

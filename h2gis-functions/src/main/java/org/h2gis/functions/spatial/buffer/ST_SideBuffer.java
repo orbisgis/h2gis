@@ -51,9 +51,9 @@ public class ST_SideBuffer extends DeterministicScalarFunction{
     
     /**
      * Compute a single side buffer with default parameters
-     * @param geometry
-     * @param distance
-     * @return 
+     * @param geometry input geometry
+     * @param distance buffer distance
+     * @return Geometry
      */
     public static Geometry singleSideBuffer(Geometry geometry, double distance){
         if(geometry==null){
@@ -66,10 +66,10 @@ public class ST_SideBuffer extends DeterministicScalarFunction{
      * Compute a single side buffer with join and mitre parameters
      * Note :
      * The End Cap Style for single-sided buffers is always ignored, and forced to the equivalent of flat.   
-     * @param geometry
-     * @param distance
-     * @param parameters
-     * @return 
+     * @param geometry input geometry
+     * @param distance buffer distance
+     * @param parameters buffer parameters
+     * @return Geometry
      */
     public static Geometry singleSideBuffer(Geometry geometry, double distance, String parameters){
         if(geometry == null){
@@ -103,10 +103,10 @@ public class ST_SideBuffer extends DeterministicScalarFunction{
     
     /**
      * Compute the buffer
-     * @param geometry
-     * @param distance
-     * @param bufferParameters
-     * @return 
+     * @param geometry input geometry
+     * @param distance buffer distance
+     * @param bufferParameters buffer parameters
+     * @return Geometry
      */
     private static Geometry computeSingleSideBuffer(Geometry geometry, double distance, BufferParameters bufferParameters){
         bufferParameters.setSingleSided(true);

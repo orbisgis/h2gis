@@ -57,8 +57,7 @@ public class IndexFile {
 	 *
 	 * @param channel
 	 *            The channel to read from.
-	 * @throws java.io.IOException
-	 *             If an error occurs.
+	 * @throws java.io.IOException If an error occurs.
 	 */
 	public IndexFile(FileChannel channel)
 			throws IOException {
@@ -112,10 +111,8 @@ public class IndexFile {
 	/**
 	 * Get the offset of the record (in 16-bit words).
 	 *
-	 * @param index
-	 *            The index, from 0 to getRecordCount - 1
+	 * @param index The index, from 0 to getRecordCount - 1
 	 * @return The offset in 16-bit words.
-	 * @throws java.io.IOException
 	 */
 	public int getOffset(int index) throws IOException {
 		int ret = -1;
@@ -132,10 +129,8 @@ public class IndexFile {
 	/**
 	 * Get the offset of the record (in real bytes, not 16-bit words).
 	 *
-	 * @param index
-	 *            The index, from 0 to getRecordCount - 1
+	 * @param index The index, from 0 to getRecordCount - 1
 	 * @return The offset in bytes.
-	 * @throws java.io.IOException
 	 */
 	public int getOffsetInBytes(int index) throws IOException {
 		return this.getOffset(index) * 2;
@@ -144,10 +139,8 @@ public class IndexFile {
 	/**
 	 * Get the content length of the given record in bytes, not 16 bit words.
 	 *
-	 * @param index
-	 *            The index, from 0 to getRecordCount - 1
+	 * @param index The index, from 0 to getRecordCount - 1
 	 * @return The lengh in bytes of the record.
-	 * @throws java.io.IOException
 	 */
 	public int getContentLength(int index) throws IOException {
 		int ret = -1;

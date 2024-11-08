@@ -51,10 +51,9 @@ public class GPXTablesFactory {
     /**
      * Create the waypoints table that will be used to import GPX data
      *
-     * @param connection
-     * @param wayPointsTableName
-     * @return
-     * @throws SQLException
+     * @param connection database connection
+     * @param wayPointsTableName table name
+     * @return PreparedStatement
      */
     public static PreparedStatement createWayPointsTable(Connection connection, String wayPointsTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
@@ -98,10 +97,9 @@ public class GPXTablesFactory {
     /**
      * Create the route table that will be used to import GPX data
      *
-     * @param connection
-     * @param routeTableName
-     * @return
-     * @throws SQLException
+     * @param connection database connection
+     * @param routeTableName table name
+     * @return PreparedStatement
      */
     public static PreparedStatement createRouteTable(Connection connection, String routeTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
@@ -133,10 +131,9 @@ public class GPXTablesFactory {
     /**
      * Createthe route points table to store the route waypoints
      *
-     * @param connection
-     * @param routePointsTable
-     * @return
-     * @throws SQLException
+     * @param connection database
+     * @param routePointsTable table name
+     * @return PreparedStatement
      */
     public static PreparedStatement createRoutePointsTable(Connection connection, String routePointsTable) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
@@ -182,10 +179,9 @@ public class GPXTablesFactory {
     /**
      * Creat the track table
      *
-     * @param connection
-     * @param trackTableName
-     * @return
-     * @throws SQLException
+     * @param connection database
+     * @param trackTableName table name
+     * @return PreparedStatement
      */
     public static PreparedStatement createTrackTable(Connection connection, String trackTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
@@ -217,10 +213,9 @@ public class GPXTablesFactory {
     /**
      * Create the track segments table to store the segments of a track
      *
-     * @param connection
-     * @param trackSegementsTableName
-     * @return
-     * @throws SQLException
+     * @param connection database
+     * @param trackSegementsTableName table name
+     * @return PreparedStatement
      */
     public static PreparedStatement createTrackSegmentsTable(Connection connection, String trackSegementsTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
@@ -245,10 +240,9 @@ public class GPXTablesFactory {
     /**
      * Create the track points table to store the track waypoints
      *
-     * @param connection
-     * @param trackPointsTableName
-     * @return
-     * @throws SQLException
+     * @param connection database
+     * @param trackPointsTableName table name
+     * @return PreparedStatement
      */
     public static PreparedStatement createTrackPointsTable(Connection connection, String trackPointsTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
@@ -294,9 +288,8 @@ public class GPXTablesFactory {
     /**
      * Drop the existing GPX tables used to store the imported OSM GPX 
      *
-     * @param connection
-     * @param tablePrefix
-     * @throws SQLException
+     * @param connection database
+     * @param tablePrefix table prefix
      */
     public static void dropOSMTables(Connection connection, TableLocation tablePrefix) throws SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);

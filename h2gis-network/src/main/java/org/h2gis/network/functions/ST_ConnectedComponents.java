@@ -86,7 +86,6 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
      * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @return True if the calculation was successful
-     * @throws SQLException
      */
     public static boolean getConnectedComponents(Connection connection,
                                                  String inputTable,

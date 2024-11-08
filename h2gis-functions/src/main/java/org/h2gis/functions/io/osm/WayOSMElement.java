@@ -50,7 +50,7 @@ public class WayOSMElement extends OSMElement {
     /**
      * Return the list of nodes
      *
-     * @return
+     * @return list of nodes
      */
     public List<Long> getNodesRef() {
         return nodesRef;

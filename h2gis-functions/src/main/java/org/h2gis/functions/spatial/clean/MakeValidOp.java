@@ -556,8 +556,8 @@ public class MakeValidOp {
     /**
      * Return a set of segments from a linestring
      *
-     * @param lines
-     * @return
+     * @param lines collection of lines
+     * @return a set of segments
      */
     private Set<LineString> getSegments(Collection<LineString> lines) {
         Set<LineString> set = new HashSet<>();

@@ -68,8 +68,6 @@ public class DBFWrite  extends AbstractFunction implements ScalarFunction {
      * Note : The select query must be enclosed in parenthesis
      * @param encoding charset encoding
      * @param deleteFile true to delete output file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference,String encoding, boolean deleteFile) throws IOException, SQLException {
         DBFDriverFunction driverFunction = new DBFDriverFunction();
@@ -83,8 +81,6 @@ public class DBFWrite  extends AbstractFunction implements ScalarFunction {
      * @param tableReference Table name or select query
      * Note : The select query must be enclosed in parenthesis
      * @param option Could be string file encoding charset or boolean value to delete the existing file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
         String encoding = null;

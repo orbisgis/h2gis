@@ -55,7 +55,6 @@ public class ST_Project extends DeterministicScalarFunction {
      * @param distance is given in meters
      * @param azimuth is given in radians and measured clockwise from true north.
      * @return a project point
-     * @throws SQLException
      */
     public static Geometry execute(Geometry geometry, double distance, double azimuth) throws SQLException {
         if(geometry==null){

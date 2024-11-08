@@ -52,7 +52,7 @@ public class FileUtilities {
      *
      * @param directory the directory
      * @return true if the directory already exists
-     * @throws IOException
+     * @throws IOException Throw an exception if the files cannot be deleted
      */
     public static boolean deleteFiles(File directory) throws IOException {
         return deleteFiles(directory, false);
@@ -65,7 +65,7 @@ public class FileUtilities {
      * @param directory the directory
      * @param delete true to delete the root directory
      * @return true if the directory already exists
-     * @throws IOException
+     * @throws IOException Throw an exception if the files cannot be deleted
      */
     public static boolean deleteFiles(File directory, boolean delete) throws IOException {
         if (directory == null) {
@@ -96,7 +96,7 @@ public class FileUtilities {
      * @param directory the directory
      * @param extension file extension, txt, geojson, shapefile
      * @return path of the files
-     * @throws IOException
+     * @throws IOException Throw an exception if the files cannot be listed
      */
     public static List<String> listFiles(File directory, String extension) throws IOException {
         if (directory == null) {
@@ -123,7 +123,7 @@ public class FileUtilities {
      *
      * @param directory the directory
      * @return path of the files
-     * @throws IOException
+     * @throws IOException Throw an exception if the files cannot be listed
      */
     public static List<String> listFiles(File directory) throws IOException {
         if (directory == null) {
@@ -145,8 +145,6 @@ public class FileUtilities {
      * Unzip to a directory
      *
      * @param zipFile the zipped file
-     * @throws FileNotFoundException
-     * @throws IOException
      */
     public static void unzip(File zipFile) throws IOException {
         Path parentDir = zipFile.toPath().getParent();
@@ -164,8 +162,6 @@ public class FileUtilities {
      *
      * @param zipFile the zipped file
      * @param directory the directory to unzi the file
-     * @throws FileNotFoundException
-     * @throws IOException
      */
     public static void unzip(File zipFile, File directory) throws IOException {
         if (directory == null) {
@@ -225,10 +221,10 @@ public class FileUtilities {
 
     /**
      *
-     * @param destinationDir
-     * @param zipEntry
-     * @return
-     * @throws IOException
+     * @param destinationDir target directory
+     * @param zipEntry zipentry
+     * @return the zipentry content
+     * @throws IOException Throw an exception if the file directory is not accessible
      */
     public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
         File destFile = new File(destinationDir, zipEntry.getName());
@@ -244,9 +240,8 @@ public class FileUtilities {
      /**
      * Zips the specified files
      *
-     * @param filesToZip
-     * @param outFile
-     * @throws IOException
+     * @param filesToZip input files to zip
+     * @param outFile output file zipped
      */
     public static void zip(File[] filesToZip, File outFile) throws IOException {
         if (filesToZip == null) {
@@ -299,8 +294,7 @@ public class FileUtilities {
     /**
      * Zips the specified file or folder
      *
-     * @param toZip
-     * @throws IOException
+     * @param toZip file or folder to zip
      */
     public static void zip(File toZip) throws IOException {
         Path parentDir = toZip.toPath().getParent();
@@ -316,9 +310,8 @@ public class FileUtilities {
     /**
      * Zips the specified file or folder
      *
-     * @param toZip
-     * @param outFile
-     * @throws IOException
+     * @param toZip input file or folder to zip
+     * @param outFile output file zipped
      */
     public static void zip(File toZip, File outFile) throws IOException {
         if (toZip == null || !toZip.exists()) {
@@ -384,9 +377,9 @@ public class FileUtilities {
     /**
      * Get the relative path to file, according to the path to base
      *
-     * @param base
-     * @param file
-     * @return
+     * @param base parent file
+     * @param file file to locate according the parent file
+     * @return path of the file
      */
     public static String getRelativePath(File base, File file) {
         String absolutePath = file.getAbsolutePath();
@@ -401,11 +394,9 @@ public class FileUtilities {
      * Check if the file is well formatted regarding an extension prefix.
      * Check also if the file doesn't exist.
      * 
-     * @param file
-     * @param prefix
-     * @return
-     * @throws SQLException 
-     * @throws java.io.FileNotFoundException 
+     * @param file file to import
+     * @param prefix file extension
+     * @return true if the file exists
      */
     public static boolean isFileImportable(File file, String prefix) throws SQLException, FileNotFoundException{
         if (isExtensionWellFormated(file, prefix)) {
@@ -421,9 +412,9 @@ public class FileUtilities {
     
     /**
      * Check if the file has the good extension
-     * @param file
-     * @param prefix
-     * @return 
+     * @param file file to import
+     * @param prefix file extension
+     * @return true if the file exists
      */
     public static boolean isExtensionWellFormated(File file, String prefix) {
         String path = file.getAbsolutePath();

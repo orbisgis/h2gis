@@ -59,7 +59,6 @@ public class ST_Extrude extends DeterministicScalarFunction {
      * @param geometry Input geometry
      * @param height   Desired height
      * @return Collection (floor, walls, ceiling)
-     * @throws SQLException
      */
     public static GeometryCollection extrudeGeometry(Geometry geometry, double height) throws SQLException {
         if(geometry == null){
@@ -83,7 +82,6 @@ public class ST_Extrude extends DeterministicScalarFunction {
      * @param height   Desired height
      * @param flag     1 (walls), 2 (roof)
      * @return Walls or roof
-     * @throws SQLException
      */
     public static Geometry extrudeGeometry(Geometry geometry, double height, int flag) throws SQLException {
         if (geometry == null) {

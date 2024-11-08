@@ -49,7 +49,6 @@ public class H2GISOsgiDBFactory {
      * Open the connection to an existing database
      * @param dbName name of the database
      * @return a connection to the database
-     * @throws SQLException
      */
     public static Connection openSpatialDataBase(String dbName) throws SQLException {
         String dbFilePath = getDataBasePath(dbName);       
@@ -63,8 +62,6 @@ public class H2GISOsgiDBFactory {
      * Create a spatial database
      * @param dbName filename
      * @return Connection
-     * @throws SQLException
-     * @throws ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName)throws SQLException, ClassNotFoundException {
         return createSpatialDataBase(dbName,true);
@@ -88,7 +85,6 @@ public class H2GISOsgiDBFactory {
      * @param dbName DataBase name, or path URI
      * @param initSpatial True to enable basic spatial capabilities
      * @return DataSource
-     * @throws SQLException
      */
     public static DataSource createDataSource(String dbName ,boolean initSpatial) throws SQLException {
         return createDataSource(dbName, initSpatial, H2_PARAMETERS);
@@ -98,7 +94,6 @@ public class H2GISOsgiDBFactory {
      * Create a database, init spatial funcyion and return a DataSource
      * @param properties for the opening of the DataBase.
      * @return a DataSource
-     * @throws SQLException
      */
     public static DataSource createDataSource(Properties properties) throws SQLException {
         return createDataSource(properties, true);
@@ -109,7 +104,6 @@ public class H2GISOsgiDBFactory {
      * @param properties for the opening of the DataBase.
      * @param initSpatial true to load the spatial functions
      * @return a DataSource
-     * @throws SQLException
      */
     public static DataSource createDataSource(Properties properties, boolean initSpatial) throws SQLException {
         // Create H2 memory DataSource
@@ -127,11 +121,10 @@ public class H2GISOsgiDBFactory {
 
         /**
          * Create a database and return a DataSource
-         * @param dbName
-         * @param initSpatial
-         * @param h2Parameters
-         * @return
-         * @throws SQLException
+         * @param dbName database name
+         * @param initSpatial true to init spatial functions
+         * @param h2Parameters database parameters
+         * @return a connection
          */
     public static DataSource createDataSource(String dbName ,boolean initSpatial, String h2Parameters) throws SQLException {
         // Create H2 memory DataSource
@@ -156,7 +149,7 @@ public class H2GISOsgiDBFactory {
      * 
      * @param dbName  path to the database
      * @param h2_PARAMETERS Additional h2 parameters
-     * @return 
+     * @return path to the database
      */
     private static String initDBFile( String dbName, String h2_PARAMETERS ) {
         String dbFilePath = getDataBasePath(dbName);

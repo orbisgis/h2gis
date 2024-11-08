@@ -46,8 +46,8 @@ public class ST_3DArea extends DeterministicScalarFunction{
      * Compute the 3D area of a polygon a geometrycollection that contains
      * polygons
      *
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return 3D area
      */
     public static Double st3darea(Geometry geometry) {
         if (geometry == null) {
@@ -66,8 +66,8 @@ public class ST_3DArea extends DeterministicScalarFunction{
     /**
      * Compute the 3D area of a polygon
      *
-     * @param geometry
-     * @return
+     * @param geometry {@link Polygon}
+     * @return 3D area
      */
     private static Double compute3DArea(Polygon geometry) {
         DelaunayData delaunayData = new DelaunayData();

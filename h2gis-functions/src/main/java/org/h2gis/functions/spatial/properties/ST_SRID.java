@@ -47,7 +47,6 @@ public class ST_SRID extends DeterministicScalarFunction {
     /**
      * @param geometry Geometry instance or null
      * @return SRID value or 0 if input geometry does not have one.
-     * @throws IOException
      */
     public static Integer getSRID(Geometry geometry) throws IOException {
         if(geometry==null) {

@@ -39,10 +39,9 @@ public class ST_EstimatedExtent extends AbstractFunction implements ScalarFuncti
     
     /**
      * Compute the estimated extent based on the first geometry column
-     * @param connection
-     * @param tableName
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param connection database
+     * @param tableName table name
+     * @return the estimated geometry extent
      */
     public static Geometry computeEstimatedExtent(Connection connection,
                                       String tableName) throws SQLException{
@@ -51,11 +50,10 @@ public class ST_EstimatedExtent extends AbstractFunction implements ScalarFuncti
     
     /**
      * Compute the estimated extent based on a geometry field
-     * @param connection
-     * @param tableName
-     * @param geometryColumn
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param connection database
+     * @param tableName table name
+     * @param geometryColumn geometry column name
+     * @return the estimated geometry extent
      */
     public static Geometry computeEstimatedExtent(Connection connection,
                                       String tableName, String geometryColumn) throws SQLException{  

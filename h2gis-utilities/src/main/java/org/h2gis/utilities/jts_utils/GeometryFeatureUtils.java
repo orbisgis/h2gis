@@ -38,7 +38,6 @@ public class GeometryFeatureUtils {
      * @param connection to the database
      * @param query the select query to execute
      * @return a JSON list
-     * @throws SQLException
      */
     public static ArrayList toList(Connection connection, String query) throws SQLException {
         return toList(connection, query, maxdecimaldigits);
@@ -49,7 +48,6 @@ public class GeometryFeatureUtils {
      * @param query the select query to execute
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
      * @return a JSON list
-     * @throws SQLException
      */
     public static ArrayList<LinkedHashMap> toList(Connection connection, String query, int maxdecimaldigits) throws SQLException {
         if (connection == null || query == null) {
@@ -112,7 +110,7 @@ public class GeometryFeatureUtils {
      * Convert the resulSet values to JSON list
      * @param resultSet values
      * @param columns column names
-     * @return
+     * @return a map with columns and values
      */
     public static LinkedHashMap getProperties(ResultSet resultSet, Collection<String> columns) throws Exception {
         LinkedHashMap properties = new LinkedHashMap();
@@ -125,7 +123,7 @@ public class GeometryFeatureUtils {
     /**
      * Convert a Geometry to a JSON map
      * @param geom the geometry
-     * @return
+     * @return Map to store the geometry as json representation
      */
     public static LinkedHashMap toMap(Geometry geom){
         return toMap(geom, 9);

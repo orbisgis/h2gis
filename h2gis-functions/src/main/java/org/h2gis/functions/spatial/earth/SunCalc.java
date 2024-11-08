@@ -115,10 +115,10 @@ public class SunCalc {
     /**
      * Sun azimuth in radians (direction along the horizon, measured from north to east)
      * e.g. 0 is north
-     * @param H
-     * @param phi
-     * @param d
-     * @return 
+     * @param H height
+     * @param phi phi
+     * @param d distance
+     * @return azimuth
      */
     private static double getAzimuth(double H, double phi, double d) {
         return Math.atan2(Math.sin(H),
@@ -128,10 +128,10 @@ public class SunCalc {
     /**
      * Sun altitude above the horizon in radians.
      * e.g. 0 at the horizon and PI/2 at the zenith 
-     * @param H
-     * @param phi
-     * @param d
-     * @return 
+     * @param H heigth
+     * @param phi phi
+     * @param d distance
+     * @return altitude
      */
     private static double getAltitude(double H, double phi, double d) {
         return Math.asin(Math.sin(phi) * Math.sin(d) + Math.cos(phi)
@@ -147,10 +147,10 @@ public class SunCalc {
      * horizon and PI/2 at the zenith (straight over your head). 
      * 
      *
-     * @param date
-     * @param lat
-     * @param lng
-     * @return
+     * @param date date
+     * @param lat latitude
+     * @param lng longitude
+     * @return location
      */
     public static Coordinate getPosition(Date date, double lat,
             double lng) {
@@ -174,9 +174,9 @@ public class SunCalc {
     
     /**
      * Test if the point has valid latitude and longitude coordinates.
-     * @param latitude
-     * @param longitude
-     * @return 
+     * @param latitude latitude
+     * @param longitude longitude
+     * @return true if the values are in the range
      */
     public static boolean isGeographic(double latitude,
             double longitude) {

@@ -35,7 +35,6 @@ public interface SpatialResultSetMetaData extends ResultSetMetaData {
      *
      * @return {@link GeometryTypeCodes} of the provided column.
      *
-     * @throws SQLException
      */
     int getGeometryType(int column) throws SQLException;
 
@@ -49,7 +48,6 @@ public interface SpatialResultSetMetaData extends ResultSetMetaData {
     /**
      * @return Column index of the first geometry in this result set.
      *
-     * @throws SQLException
      */
     int getFirstGeometryFieldIndex() throws SQLException;
 }

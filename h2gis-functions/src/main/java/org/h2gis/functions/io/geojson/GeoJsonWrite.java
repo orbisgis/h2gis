@@ -57,8 +57,6 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
      * @param tableReference Table name or select query Note : The select query
      * must be enclosed in parenthesis
      * @param deleteFile true to delete output file
-     * @throws IOException
-     * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, boolean deleteFile) throws IOException, SQLException {
         GeoJsonDriverFunction geoJsonDriver = new GeoJsonDriverFunction();
@@ -68,11 +66,8 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
     /**
      * Write the GeoJSON file.
      *
-     * @param connection
-     * @param fileName
-     * @param tableReference
-     * @throws IOException
-     * @throws SQLException
+     * @param connection database     * @param fileName input file
+     * @param tableReference output table name
      */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         exportTable(connection, fileName, tableReference, false);

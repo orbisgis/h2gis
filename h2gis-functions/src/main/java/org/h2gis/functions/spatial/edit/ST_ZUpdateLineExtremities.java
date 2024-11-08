@@ -50,11 +50,11 @@ public class ST_ZUpdateLineExtremities extends DeterministicScalarFunction {
      * Update the start and end Z values. If the interpolate is true the
      * vertices are interpolated according the start and end z values.
      *
-     * @param geometry
-     * @param startZ
-     * @param endZ
-     * @param interpolate
-     * @return
+     * @param geometry {@link Geometry}
+     * @param startZ start z
+     * @param endZ end z
+     * @param interpolate true to interpolate the intermediate values
+     * @return Z {@link Geometry}
      */
     public static Geometry updateZExtremities(Geometry geometry, double startZ, double endZ, boolean interpolate) {
         if(geometry == null){
@@ -79,12 +79,12 @@ public class ST_ZUpdateLineExtremities extends DeterministicScalarFunction {
      * Updates all z values by a new value using the specified first and the
      * last coordinates.
      *
-     * @param geom
-     * @param startZ
-     * @param endZ
+     * @param lineString {@link LineString}
+     * @param startZ start z
+     * @param endZ end z
      * @param interpolate is true the z value of the vertices are interpolate 
      * according the length of the line.
-     * @return
+     * @return Z {@link Geometry}
      */
     private static Geometry force3DStartEnd(LineString lineString, final double startZ,
             final double endZ, final boolean interpolate) {

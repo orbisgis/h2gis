@@ -48,8 +48,8 @@ public class ST_ForcePolygonCW extends DeterministicScalarFunction {
      * Forces (Multi)Polygons to use a clockwise orientation for their exterior ring, and a counter-clockwise orientation
      * for their interior rings.
      * Non-polygonal geometries are returned unchanged.
-     * @param geom
-     * @return
+     * @param geom {@link Geometry}
+     * @return Geometry
      */
     public static Geometry execute(Geometry geom) throws SQLException {
         if (geom != null) {

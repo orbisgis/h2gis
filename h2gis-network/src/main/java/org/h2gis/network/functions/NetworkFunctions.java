@@ -41,7 +41,6 @@ public class NetworkFunctions {
     
     /**
      * @return instance of all built-ins functions
-     * @throws java.sql.SQLException
      */
     public static Function[] getBuiltInsFunctions() throws SQLException {
         return new Function[]{
@@ -59,7 +58,6 @@ public class NetworkFunctions {
      * Init H2 DataBase with the network functions
      *
      * @param connection Active connection
-     * @throws SQLException
      */
     public static void load(Connection connection) throws SQLException {
         Statement st = connection.createStatement();

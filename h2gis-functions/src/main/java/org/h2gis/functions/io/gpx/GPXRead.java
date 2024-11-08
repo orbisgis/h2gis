@@ -99,8 +99,6 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      * @param fileName File path of the SHP file
      * @param encoding  charset encoding
      * @param deleteTables  true to delete the existing tables
-     * @throws java.io.IOException
-     * @throws java.sql.SQLException
      */
     public static void importTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteTables) throws IOException, SQLException {
         GPXDriverFunction gpxdf = new GPXDriverFunction();
@@ -113,10 +111,8 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      * Copy data from GPX File into a new table in specified connection.
      *
      *
-     * @param connection
-     * @param fileName
-     * @throws IOException
-     * @throws SQLException
+     * @param connection database connection
+     * @param fileName input file
      */
     public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();

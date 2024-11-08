@@ -50,7 +50,6 @@ public class ST_SymDifference extends DeterministicScalarFunction {
      * @param a Geometry instance.
      * @param b Geometry instance
      * @return the symmetric difference between two geometries
-     * @throws java.sql.SQLException
      */
     public static Geometry symDifference(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {
@@ -68,7 +67,6 @@ public class ST_SymDifference extends DeterministicScalarFunction {
      * @param b Geometry instance
      * @param gridSize size of a grid to snap the input geometries
      * @return the symmetric difference between two geometries
-     * @throws java.sql.SQLException
      */
     public static Geometry symDifference(Geometry a,Geometry b, double gridSize) throws SQLException {
         if(a==null || b==null) {

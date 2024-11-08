@@ -55,7 +55,7 @@ public class JsonWriteDriver {
     /**
      * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
      *
-     * @param connection
+     * @param connection database connection
      */
     public JsonWriteDriver(Connection connection) {
         this.connection = connection;

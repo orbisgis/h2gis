@@ -45,10 +45,9 @@ public class ST_SnapToGrid extends DeterministicScalarFunction {
     /**
      * Reduce the geometry precision. cell_size is resolution of grid to snap the points
      *
-     * @param geometry
-     * @param cell_size
-     * @return
-     * @throws SQLException
+     * @param geometry Geometry
+     * @param cell_size snapping grid tolerance
+     * @return Geometry
      */
     public static Geometry execute(Geometry geometry, float cell_size) throws SQLException {
         if (geometry == null) {

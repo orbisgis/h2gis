@@ -55,7 +55,6 @@ public class DBFEngine extends FileEngine<DBFDriver> {
      * Parse the DBF file then init the provided data structure
      * @param header dbf header
      * @param data Data to initialise
-     * @throws java.io.IOException
      */
     public static void feedTableDataFromHeader(DbaseFileHeader header, CreateTableData data) throws IOException {
         int numFields = header.getNumFields();
@@ -71,7 +70,6 @@ public class DBFEngine extends FileEngine<DBFDriver> {
      * @param header DBF File Header
      * @param i DBF Type identifier
      * @return H2 {@see Value}
-     * @throws java.io.IOException
      */
     private static TypeInfo dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
         switch (header.getFieldType(i)) {

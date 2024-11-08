@@ -51,7 +51,6 @@ public class ST_SnapToSelf extends DeterministicScalarFunction {
      * @param geometryA a geometry to snap
      * @param distance the tolerance to use
      * @return the snapped geometries
-     * @throws SQLException
      */
     public static Geometry execute(Geometry geometryA, double distance ) throws SQLException {
         return execute(geometryA, distance, true);
@@ -63,7 +62,6 @@ public class ST_SnapToSelf extends DeterministicScalarFunction {
      * @param distance the tolerance to use
      * @param clean true to clean the geometry
      * @return the snapped geometries
-     * @throws SQLException
      */
     public static Geometry execute(Geometry geometryA, double distance, boolean clean ) throws SQLException {
         if (geometryA == null ) {

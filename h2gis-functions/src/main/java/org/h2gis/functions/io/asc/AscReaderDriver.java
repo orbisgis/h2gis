@@ -202,13 +202,13 @@ public class AscReaderDriver {
     /**
      * Read asc file
      *
-     * @param connection
-     * @param fileName
-     * @param progress
-     * @param tableReference
+     * @param connection database connection
+     * @param fileName input file
+     * @param progress Progress visitor following the execution.
+     * @param tableReference output table name
      * @param srid the espg code of the input file
-     * @throws SQLException
-     * @throws IOException
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public String[] read(Connection connection, File fileName, ProgressVisitor progress, String tableReference,
             int srid) throws SQLException, IOException {
@@ -260,13 +260,13 @@ public class AscReaderDriver {
     /**
      * Read the ascii file from inpustream
      *
-     * @param connection
-     * @param inputStream
-     * @param progress
-     * @param outputTable
-     * @param srid
-     * @throws UnsupportedEncodingException
-     * @throws SQLException
+     * @param connection database connection
+     * @param inputStream {@link InputStream}
+     * @param progress Progress visitor following the execution.
+     * @param outputTable output table name
+     * @param srid output srid
+     * @throws UnsupportedEncodingException  Throw exception is the encoding file is not supported
+     * @throws SQLException Throw exception is the file name contains unsupported characters
      * @return output table name
      */
 
@@ -394,7 +394,7 @@ public class AscReaderDriver {
     /**
      * Use to set the z conversion type 1 = integer 2 = double
      *
-     * @param zType
+     * @param zType value type to manage the z value
      */
     public void setZType(int zType) {
         this.zType = zType;
@@ -403,7 +403,7 @@ public class AscReaderDriver {
     /**
      * Set true to delete the input table if exists
      *
-     * @param deleteTable
+     * @param deleteTable true to delete the table
      */
     public void setDeleteTable(boolean deleteTable) {
         this.deleteTable = deleteTable;
@@ -412,7 +412,7 @@ public class AscReaderDriver {
     /**
      * Set encoding
      *
-     * @param encoding
+     * @param encoding file encoding
      */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
@@ -421,7 +421,7 @@ public class AscReaderDriver {
     /**
      * Set to true if nodata must be imported. Default is false
      *
-     * @param importNodata
+     * @param importNodata true to read to data value
      */
     public void setImportNodata(boolean importNodata) {
         this.importNodata = importNodata;

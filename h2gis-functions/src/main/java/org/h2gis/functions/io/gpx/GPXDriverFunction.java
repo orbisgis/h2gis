@@ -116,10 +116,8 @@ public class GPXDriverFunction implements DriverFunction {
      * @param connection Active connection, do not close this connection.
      * @param tableReference prefix uses to store the GPX tables
      * @param fileName File path to read
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param deleteTables true to delete the existing tables
-     * @throws SQLException Table write error
-     * @throws IOException File read error
      */
     @Override
     public String[] importFile(Connection connection, String tableReference, File fileName, boolean deleteTables,ProgressVisitor progress

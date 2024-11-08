@@ -60,10 +60,8 @@ public class ShapefileReader {
          *
          * @param channel
          *            The ReadableByteChannel this reader will use.
-         * @throws java.io.IOException
-         *             If problems arise.
-         * @throws ShapefileException
-         *             If for some reason the file contains invalid records.
+         * @throws java.io.IOException If problems arise.
+         * @throws ShapefileException If for some reason the file contains invalid records.
          */
         public ShapefileReader(FileChannel channel) throws IOException,
                 ShapefileException {
@@ -75,10 +73,8 @@ public class ShapefileReader {
         /**
          * A short cut for reading the header from the given channel.
          *
-         * @param channel
-         *            The channel to read from.
-         * @throws java.io.IOException
-         *             If problems arise.
+         * @param channel The channel to read from.
+         * @throws java.io.IOException If problems arise.
          * @return A ShapefileHeader object.
          */
         public static ShapefileHeader readHeader(ReadableByteChannel channel) throws IOException {
@@ -120,8 +116,7 @@ public class ShapefileReader {
         /**
          * Clean up any resources. Closes the channel.
          *
-         * @throws java.io.IOException
-         *             If errors occur while closing the channel.
+         * @throws java.io.IOException If errors occur while closing the channel.
          */
         public void close() throws IOException {
                 if (channel != null && channel.isOpen()) {
@@ -134,8 +129,7 @@ public class ShapefileReader {
         /**
          * Fetch the next record information.
          *
-         * @param offset
-         * @throws java.io.IOException
+         * @param offset data buffer offset to read the geometry
          * @return The record instance associated with this reader.
          */
         public Geometry geomAt(int offset) throws IOException {

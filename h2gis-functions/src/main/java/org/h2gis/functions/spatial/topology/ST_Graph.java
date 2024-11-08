@@ -105,7 +105,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param connection Connection
      * @param tableName  Input table containing LINESTRINGs
      * @return true if both output tables were created
-     * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
                                       String tableName) throws SQLException {
@@ -124,7 +123,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param tableName        Input table
      * @param value            Name of column containing LINESTRINGs or an array of columns
      * @return true if both output tables were created
-     * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
                                       String tableName,
@@ -172,7 +170,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param secondValue Name of column containing LINESTRINGs
      * @param thirdValue        Tolerance
      * @return true if both output tables were created
-     * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
                                       String tableName,
@@ -251,7 +248,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param orientBySlope    True if edges should be oriented by the z-value of
      *                         their first and last coordinates (decreasing)
      * @return true if both output tables were created
-     * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
                                       String inputTable,
@@ -290,7 +286,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *                         their first and last coordinates (decreasing)
      * @param deleteTables     True delete the existing tables
      * @return true if both output tables were created
-     * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
                                       String inputTable,
@@ -330,7 +325,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param deleteTables     True delete the existing tables
      * @param columns          an array of columns to keep
      * @return true if both output tables were created
-     * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
                                       String inputTable,

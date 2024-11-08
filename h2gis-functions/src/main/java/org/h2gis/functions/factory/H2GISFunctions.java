@@ -40,6 +40,9 @@ import org.h2gis.functions.io.kml.KMLWrite;
 import org.h2gis.functions.io.kml.ST_AsKml;
 import org.h2gis.functions.io.osm.OSMRead;
 import org.h2gis.functions.io.osm.ST_OSMDownloader;
+import org.h2gis.functions.io.overpass.ST_AsOverpassBbox;
+import org.h2gis.functions.spatial.others.ST_EnvelopeAsText;
+import org.h2gis.functions.io.overpass.ST_OverpassDownloader;
 import org.h2gis.functions.io.shp.SHPRead;
 import org.h2gis.functions.io.shp.SHPWrite;
 import org.h2gis.functions.io.tsv.TSVRead;
@@ -347,7 +350,10 @@ public class H2GISFunctions {
                 new ST_CoveredBy(),
                 new ST_CoverageUnion(),
                 new FGBRead(),
-                new FGBWrite()
+                new FGBWrite(),
+                new ST_OverpassDownloader(),
+                new ST_EnvelopeAsText(),
+                new ST_AsOverpassBbox()
         };
     }
 
@@ -416,9 +422,8 @@ public class H2GISFunctions {
 
     /**
      * Return a string property of the function
-     * @param function
-     * @param propertyKey
-     * @return 
+     * @param function h2gis function
+     * @param propertyKey name of the function
      */
     private static String getStringProperty(Function function, String propertyKey) {
         Object value = function.getProperty(propertyKey);
@@ -428,10 +433,9 @@ public class H2GISFunctions {
     /**
      * Return a boolean property of the function
      * 
-     * @param function
-     * @param propertyKey
-     * @param defaultValue
-     * @return 
+     * @param function H2GIS function
+     * @param propertyKey alias
+     * @param defaultValue default value
      */
     private static boolean getBooleanProperty(Function function, String propertyKey, boolean defaultValue) {
         Object value = function.getProperty(propertyKey);
@@ -445,7 +449,7 @@ public class H2GISFunctions {
      * @param function Function instance
      * @param packagePrepend For OSGi environment only, use
      * Bundle-SymbolicName:Bundle-Version:
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException Throw an exception if the function cannot be registered
      */
     public static void registerFunction(Statement st,Function function,String packagePrepend) throws SQLException {
         registerFunction(st,function,packagePrepend,true);
@@ -458,7 +462,7 @@ public class H2GISFunctions {
      * @param function Function instance
      * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
      * @param dropAlias Drop alias if exists before define it.
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException Throw an exception if the function cannot be registered
      */
     public static void registerFunction(Statement st,Function function,String packagePrepend,boolean dropAlias) throws SQLException {
         String functionClass = function.getClass().getName();
@@ -552,7 +556,7 @@ public class H2GISFunctions {
      * Unregister spatial type and H2GIS functions from the current connection.
      *
      * @param connection Active H2 connection with DROP ALIAS rights
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException Throw an exception if the function cannot be unregistered
      */
     public static void unRegisterH2GISFunctions(Connection connection) throws SQLException {
         Statement st = connection.createStatement();

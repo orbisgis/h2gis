@@ -37,9 +37,8 @@ public class KMLGeometry {
     /**
      * Convert JTS geometry to a kml geometry representation.
      * 
-     * @param geom
-     * @param sb
-     * @throws SQLException 
+     * @param geom input geometry
+     * @param sb buffer to store the KML
      */
     public static void toKMLGeometry(Geometry geom, StringBuilder sb) throws SQLException {
         toKMLGeometry(geom, ExtrudeMode.NONE, AltitudeMode.NONE, sb);
@@ -48,10 +47,10 @@ public class KMLGeometry {
     /**
      * Convert JTS geometry to a kml geometry representation.
      *
-     * @param geometry
-     * @param extrude
-     * @param altitudeModeEnum
-     * @param sb
+     * @param geometry input geometry
+     * @param extrude extrude mode
+     * @param altitudeModeEnum altitude mode
+     * @param sb buffer to store the KML
      */
     public static void toKMLGeometry(Geometry geometry, ExtrudeMode extrude, int altitudeModeEnum, StringBuilder sb) throws SQLException {
         if (geometry instanceof Point) {
@@ -282,7 +281,7 @@ public class KMLGeometry {
      * {@code
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
      * }
-     * @param coords
+     * @param coords coordinates array
      */
     public static void appendKMLCoordinates(Coordinate[] coords, StringBuilder sb) {
         sb.append("<coordinates>");
@@ -306,8 +305,8 @@ public class KMLGeometry {
      *
      * <extrude>0</extrude>
      *
-     * @param extrude
-     * @param sb
+     * @param extrude {@link ExtrudeMode}
+     * @param sb buffer to store the KML
      */
     private static void appendExtrude(ExtrudeMode extrude, StringBuilder sb) {
         if (extrude.equals(ExtrudeMode.TRUE)) {
@@ -324,8 +323,8 @@ public class KMLGeometry {
      *
      * <altitudeMode>clampToGround</altitudeMode>
      *
-     * @param altitudeModeEnum
-     * @param sb
+     * @param altitudeModeEnum {@link AltitudeMode}
+     * @param sb buffer to store the KML
      */
     private static void appendAltitudeMode(int altitudeModeEnum, StringBuilder sb) {
         AltitudeMode.append(altitudeModeEnum, sb);

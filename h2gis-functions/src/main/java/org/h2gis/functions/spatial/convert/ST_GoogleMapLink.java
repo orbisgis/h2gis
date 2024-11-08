@@ -47,8 +47,8 @@ public class ST_GoogleMapLink extends DeterministicScalarFunction{
     /**
      * Generate a Google Map link URL based on the center of the bounding box of the input geometry
      * 
-     * @param geom
-     * @return 
+     * @param geom input geometry
+     * @return google url location
      */
     public static String generateGMLink(Geometry geom) {
         return generateGMLink(geom, "m", 19);
@@ -58,9 +58,9 @@ public class ST_GoogleMapLink extends DeterministicScalarFunction{
      * Generate a Google Map link URL based on the center of the bounding box of the input geometry
      * and set the layer type
      * 
-     * @param geom
-     * @param layerType
-     * @return 
+     * @param geom input geometry
+     * @param layerType layer type
+     * @return google map url location
      */
     public static String generateGMLink(Geometry geom, String layerType) {
         return generateGMLink(geom, layerType, 19);
@@ -70,10 +70,10 @@ public class ST_GoogleMapLink extends DeterministicScalarFunction{
      * Generate a Google Map link URL based on the center of the bounding box of the input geometry.
      * Set the layer type and the zoom level.
      * 
-     * @param geom
-     * @param layerType
-     * @param zoom
-     * @return 
+     * @param geom input geometry
+     * @param layerType layer type
+     * @param zoom zoom level
+     * @return google map url location
      */
     public static String generateGMLink(Geometry geom, String layerType, int zoom) {
         if (geom == null) {

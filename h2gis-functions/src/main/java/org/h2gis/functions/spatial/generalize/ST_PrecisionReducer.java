@@ -46,10 +46,9 @@ public class ST_PrecisionReducer extends DeterministicScalarFunction {
      * Reduce the geometry precision. Decimal_Place is the number of decimals to
      * keep.
      *
-     * @param geometry
-     * @param nbDec
-     * @return
-     * @throws SQLException
+     * @param geometry {@link Geometry}
+     * @param nbDec decimal places
+     * @return Geometry
      */
     public static Geometry precisionReducer(Geometry geometry, int nbDec) throws SQLException {
         if (geometry == null) {

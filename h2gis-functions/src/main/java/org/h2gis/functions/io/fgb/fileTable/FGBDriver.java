@@ -78,7 +78,6 @@ public class FGBDriver implements FileDriver {
      * Init file header for DBF File
      *
      * @param fgbFile DBF File path
-     * @throws IOException
      */
     public void initDriverFromFile(File fgbFile) throws IOException {
         // Read columns from files metadata
@@ -149,7 +148,6 @@ public class FGBDriver implements FileDriver {
     /**
      * Using the Spatial index it is possible to quickly cache the file address of all features.
      * Using this function before doing a random access should reduce the access time.
-     * @throws IOException
      */
     public void cacheFeatureAddressFromIndex() throws IOException {
         if(headerMeta.indexNodeSize > 0) {
@@ -169,8 +167,7 @@ public class FGBDriver implements FileDriver {
 
     /**
      * @param featureAddress Feature address in the file relative to the first feature
-     * @return
-     * @throws IOException
+     * @return values from the a flatgeobuffer feature
      */
     public static Value[] getFieldsFromFileLocation(FileChannel fileChannel, long featureAddress, long featuresOffset,
                                                     HeaderMeta headerMeta, int geometryFieldIndex) throws IOException {

@@ -54,8 +54,7 @@ public class ST_GeneratePoints extends DeterministicScalarFunction {
      *
      * @param geom input geometry as polygon or multipolygon
      * @param nPts number of random points
-     * @return
-     * @throws java.sql.SQLException
+     * @return random points
      */
     public static Geometry generatePoints(Geometry geom, int nPts) throws SQLException {
         if (geom == null) {

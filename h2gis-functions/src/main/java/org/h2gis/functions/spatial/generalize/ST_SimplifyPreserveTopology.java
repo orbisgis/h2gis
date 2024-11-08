@@ -44,9 +44,9 @@ public class ST_SimplifyPreserveTopology extends DeterministicScalarFunction {
      * having the same dimension and number of components as the input, and with
      * the components having the same topological relationship.
      *
-     * @param geometry
-     * @param distance
-     * @return
+     * @param geometry {@link Geometry}
+     * @param distance distance
+     * @return Geometry
      */
     public static Geometry simplyPreserve(Geometry geometry, double distance) {
         if(geometry == null){

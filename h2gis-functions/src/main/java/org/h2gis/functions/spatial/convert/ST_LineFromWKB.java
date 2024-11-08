@@ -50,8 +50,6 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
      * Convert WKT into a LinearRing
      * @param bytes Byte array
      * @return LineString instance of null if bytes null
-     * @throws SQLException WKB Parse error
-     * @throws java.io.IOException
      */
     public static Geometry toLineString(byte[] bytes) throws SQLException, IOException {
         return toLineString(bytes, 0);
@@ -63,8 +61,6 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
      * @param bytes Byte array
      * @param srid SRID
      * @return LineString instance of null if bytes null
-     * @throws SQLException WKB Parse error
-     * @throws java.io.IOException
      */
     public static Geometry toLineString(byte[] bytes, int srid) throws SQLException, IOException {
         if (bytes == null) {

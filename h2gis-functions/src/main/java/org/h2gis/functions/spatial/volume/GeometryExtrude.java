@@ -41,9 +41,9 @@ public class GeometryExtrude {
     /**
      * Extrude the polygon as a collection of geometries
      * The output geometryCollection contains the floor, the walls and the roof.
-     * @param polygon
-     * @param height
-     * @return 
+     * @param polygon {@link Polygon}
+     * @param height value
+     * @return polygon extruded
      */
     public static GeometryCollection extrudePolygonAsGeometry(Polygon polygon, double height){
         GeometryFactory factory = polygon.getFactory();
@@ -76,9 +76,9 @@ public class GeometryExtrude {
      /**
      * Extrude the linestring as a collection of geometries
      * The output geometryCollection contains the floor, the walls and the roof.
-     * @param lineString
-     * @param height
-     * @return 
+     * @param lineString lineString
+     * @param height value
+     * @return lineString extruded
      */
     public static GeometryCollection extrudeLineStringAsGeometry(LineString lineString, double height){
         Geometry[] geometries = new Geometry[3];        
@@ -99,9 +99,9 @@ public class GeometryExtrude {
     /**
      * Extract the linestring "roof".
      *
-     * @param lineString
-     * @param height
-     * @return
+     * @param lineString {@link LineString}
+     * @param height value
+     * @return Roof geometry
      */
     public static Geometry extractRoof(LineString lineString, double height) {
         LineString result = (LineString)lineString.copy();
@@ -142,9 +142,9 @@ public class GeometryExtrude {
     /**
      * Extract the roof of a polygon
      * 
-     * @param polygon
-     * @param height
-     * @return 
+     * @param polygon {@link Polygon}
+     * @param height value
+     * @return roof extracted
      */
     public static Polygon extractRoof(Polygon polygon, double height) {
         GeometryFactory factory = polygon.getFactory();
@@ -162,9 +162,9 @@ public class GeometryExtrude {
 
     /**
      * Extrude the LineString as a set of walls.
-     * @param lineString
-     * @param height
-     * @return
+     * @param lineString {@link LineString}
+     * @param height value
+     * @return Walls geometry
      */
     public static MultiPolygon extractWalls(LineString lineString, double height) {
         GeometryFactory factory = lineString.getFactory();
@@ -180,8 +180,8 @@ public class GeometryExtrude {
     /**
      * Reverse the LineString to be oriented clockwise.
      * All NaN z values are replaced by a zero value.
-     * @param lineString
-     * @return 
+     * @param lineString {@link LineString}
+     * @return LineString oriented clockwise
      */
     private static LineString getClockWise(final LineString lineString) {
         final Coordinate c0 = lineString.getCoordinateN(0);
@@ -197,8 +197,8 @@ public class GeometryExtrude {
 
     /**
      * Reverse the LineString to be oriented counter-clockwise.
-     * @param lineString
-     * @return 
+     * @param lineString {@link LineString}
+     * @return LineString oriented counter-clockwise
      */
     private static LineString getCounterClockWise(final LineString lineString) {
         final Coordinate c0 = lineString.getCoordinateN(0);
@@ -214,8 +214,8 @@ public class GeometryExtrude {
 
     /**
      * Reverse the polygon to be oriented clockwise
-     * @param polygon
-     * @return 
+     * @param polygon {@link Polygon}
+     * @return extract floor geometry
      */
     private static Polygon extractFloor(final Polygon polygon) {
         GeometryFactory factory = polygon.getFactory();
@@ -234,10 +234,10 @@ public class GeometryExtrude {
      * Create a polygon corresponding to the wall.
      * 
      *
-     * @param beginPoint
-     * @param endPoint
-     * @param height
-     * @return
+     * @param beginPoint start {@link Coordinate}
+     * @param endPoint end {@link Coordinate}
+     * @param height value
+     * @return Extruded {@link Polygon}
      */
     private static Polygon extrudeEdge(final Coordinate beginPoint,
             Coordinate endPoint, final double height, GeometryFactory factory) {

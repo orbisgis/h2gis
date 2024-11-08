@@ -49,8 +49,8 @@ public class ST_ForcePolygonCCW extends DeterministicScalarFunction {
      * Forces (Multi)Polygons to use a counter-clockwise orientation for their exterior ring,
      * and a clockwise orientation for their interior rings.
      * Non-polygonal geometries are returned unchanged
-     * @param geom
-     * @return
+     * @param geom Geometry
+     * @return Geometry
      */
     public static Geometry execute(Geometry geom) throws SQLException {
         if (geom != null) {
@@ -65,9 +65,8 @@ public class ST_ForcePolygonCCW extends DeterministicScalarFunction {
      * Forces (Multi)Polygons to use a counter-clockwise orientation for their exterior ring,
      * and a clockwise orientation for their interior rings.
      * Non-polygonal geometries are returned unchanged
-     * @param geometry
-     * @param geometries
-     * @return
+     * @param geometry {@link Geometry}
+     * @param geometries list of {@link Geometry}
      */
     private static void forcePolygonCCW(final Geometry geometry,
                                        final List<Geometry> geometries) throws SQLException {

@@ -56,11 +56,10 @@ public class ST_RingSideBuffer extends DeterministicScalarFunction{
     
     /**
      * Compute a ring buffer on one side of the geometry
-     * @param geom
-     * @param bufferSize
-     * @param numBuffer
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param geom input geometry
+     * @param bufferSize buffer distance
+     * @param numBuffer number of rings
+     * @return Geometry
      */
     public static Geometry ringSideBuffer(Geometry geom, double bufferSize, int numBuffer) throws SQLException {
         return ringSideBuffer(geom, bufferSize, numBuffer, "endcap=flat");
@@ -68,12 +67,11 @@ public class ST_RingSideBuffer extends DeterministicScalarFunction{
 
     /**
      *
-     * @param geom
-     * @param bufferDistance
-     * @param numBuffer
-     * @param parameters
-     * @return
-     * @throws java.sql.SQLException
+     * @param geom {@link Geometry}
+     * @param bufferDistance buffer distance
+     * @param numBuffer numberof rings
+     * @param parameters buffer parameters
+     * @return ring side geometries
      */
     public static Geometry ringSideBuffer(Geometry geom, double bufferDistance,
                                       int numBuffer, String parameters) throws SQLException {
@@ -82,13 +80,12 @@ public class ST_RingSideBuffer extends DeterministicScalarFunction{
 
     /**
      * Compute a ring buffer on one side of the geometry
-     * @param geom
-     * @param bufferDistance
-     * @param numBuffer
-     * @param parameters
-     * @param doDifference
-     * @throws SQLException 
-     * @return 
+     * @param geom input geometry
+     * @param bufferDistance buffer distance
+     * @param numBuffer number of rings
+     * @param parameters buffer parameters
+     * @param doDifference true to apply a return the buffer difference
+     * @return Geometry
      */
     public static Geometry ringSideBuffer(Geometry geom, double bufferDistance,
             int numBuffer, String parameters, boolean doDifference) throws SQLException {

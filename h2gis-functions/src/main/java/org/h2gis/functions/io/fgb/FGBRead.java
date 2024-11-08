@@ -57,8 +57,6 @@ public class FGBRead extends AbstractFunction implements ScalarFunction {
      * @param fileName       FlatGeobuf file name or URI
      * @param tableReference Table name or select query Note : The select query
      *                       must be enclosed in parenthesis
-     * @throws IOException
-     * @throws SQLException
      */
     public static void execute(Connection connection, String fileName, String tableReference, boolean deleteTable) throws SQLException, IOException {
         File file = URIUtilities.fileFromString(fileName);
@@ -73,8 +71,6 @@ public class FGBRead extends AbstractFunction implements ScalarFunction {
      * @param fileName       FlatGeobuf file name or URI
      * @param tableReference Table name or select query Note : The select query
      *                       must be enclosed in parenthesis
-     * @throws IOException
-     * @throws SQLException
      */
     public static void execute(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         execute(connection, fileName, tableReference, false);

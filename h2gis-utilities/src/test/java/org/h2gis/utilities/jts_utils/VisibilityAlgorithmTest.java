@@ -51,7 +51,6 @@ public class VisibilityAlgorithmTest {
   /**
    * Test with geometry crossing 0 coordinates
    *
-   * @throws ParseException
    */
   @Test
   public void testIsoVistCross0() throws ParseException {
@@ -72,7 +71,6 @@ public class VisibilityAlgorithmTest {
   /**
    * Test with geometry with only positive values
    *
-   * @throws ParseException
    */
   @Test
   public void testIsoVistNoCross() throws ParseException {

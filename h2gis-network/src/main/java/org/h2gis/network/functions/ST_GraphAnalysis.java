@@ -92,11 +92,6 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
      * @param inputTable  Input table
      * @param orientation Global orientation
      * @return True if the calculation was successful
-     * @throws SQLException
-     * @throws NoSuchMethodException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
      */
     public static boolean doGraphAnalysis(Connection connection,
                                           String inputTable,
@@ -115,11 +110,6 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
      * @param orientation Global orientation
      * @param weight      Edge weight column name
      * @return True if the calculation was successful
-     * @throws SQLException
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
      */
     public static boolean doGraphAnalysis(Connection connection,
                                           String inputTable,

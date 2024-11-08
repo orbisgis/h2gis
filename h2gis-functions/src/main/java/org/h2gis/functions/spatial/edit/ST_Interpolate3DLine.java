@@ -44,8 +44,8 @@ public class ST_Interpolate3DLine extends DeterministicScalarFunction {
 
     /**
      *
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return Geometry
      */
     public static Geometry interpolateLine(Geometry geometry) {
         if(geometry == null){
@@ -63,8 +63,8 @@ public class ST_Interpolate3DLine extends DeterministicScalarFunction {
      * Interpolate a linestring according the start and the end coordinates z
      * value. If the start or the end z is NaN return the input linestring
      *
-     * @param lineString
-     * @return
+     * @param lineString {@link LineString}
+     * @return LineString
      */
     private static LineString linearZInterpolation(LineString lineString) {
         double startz = lineString.getStartPoint().getCoordinate().z;
@@ -81,8 +81,8 @@ public class ST_Interpolate3DLine extends DeterministicScalarFunction {
     /**
      * Interpolate each linestring of the multilinestring.
      *
-     * @param multiLineString
-     * @return
+     * @param multiLineString {@link MultiLineString    }
+     * @return MultiLineString
      */
     private static MultiLineString linearZInterpolation(MultiLineString multiLineString) {
         int nbGeom = multiLineString.getNumGeometries();

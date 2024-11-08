@@ -71,7 +71,7 @@ public class GeoJsonWriteDriver {
     /**
      * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
      *
-     * @param connection
+     * @param connection database connection
      */
     public GeoJsonWriteDriver(Connection connection) {
         this.connection = connection;
@@ -80,13 +80,11 @@ public class GeoJsonWriteDriver {
     /**
      * Write a resulset to a geojson file
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param rs input resulset
      * @param fileName the output file
-     * @param encoding
-     * @param deleteFile
-     * @throws SQLException
-     * @throws java.io.IOException
+     * @param encoding file encoding
+     * @param deleteFile true to delete the file if exist
      */
     public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         if (FileUtilities.isExtensionWellFormated(fileName, "geojson")|| FileUtilities.isExtensionWellFormated(fileName, "json")) {
@@ -144,12 +142,10 @@ public class GeoJsonWriteDriver {
     /**
      * Method to write a resulset to a geojson file
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param rs
      * @param fos
      * @param encoding
-     * @throws SQLException
-     * @throws IOException
      */
     private void geojsonWriter(ProgressVisitor progress, ResultSet rs, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding = JsonEncoding.UTF8;
@@ -234,12 +230,10 @@ public class GeoJsonWriteDriver {
     /**
      * Method to write a table to a geojson file
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param tableName
      * @param fos
      * @param encoding
-     * @throws SQLException
-     * @throws IOException
      */
     private void geojsonWriter(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
         DBTypes dbTypes = DBUtils.getDBType(connection);
@@ -305,13 +299,11 @@ public class GeoJsonWriteDriver {
     /**
      * Write the spatial table to GeoJSON format.
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @param tableName
-     * @param fileName
-     * @param encoding
-     * @param deleteFile
-     * @throws SQLException
-     * @throws java.io.IOException
+     * @param fileName input file
+     * @param encoding file encoding
+     * @param deleteFile true to delete the file if exist
      */
     public void write(ProgressVisitor progress, String tableName, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         String regex = ".*(?i)\\b(select|from)\\b.*";
@@ -511,8 +503,7 @@ public class GeoJsonWriteDriver {
     /**
      * Cache the column name and its index.
      *
-     * @param resultSetMetaData
-     * @throws SQLException
+     * @param resultSetMetaData {@link ResultSetMetaData}
      */
     private void cacheMetadata(ResultSetMetaData resultSetMetaData) throws SQLException {
         cachedColumnIndex = new LinkedHashMap<String, Integer>();
@@ -575,7 +566,6 @@ public class GeoJsonWriteDriver {
      *
      * @param point
      * @param gen
-     * @throws IOException
      */
     private void write(Point point, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Point");
@@ -820,10 +810,10 @@ public class GeoJsonWriteDriver {
     /**
      * Return true is the SQL type is supported by the GeoJSON driver.
      *
-     * @param sqlTypeId
-     * @param sqlTypeName
-     * @return
-     * @throws SQLException
+     * @param columnName column name
+     * @param sqlTypeId sql type id
+     * @param sqlTypeName sql type name
+     * @return true if the column is supported
      */
     public boolean isSupportedPropertyType(String columnName, int sqlTypeId, String sqlTypeName) throws SQLException {
         switch (sqlTypeId) {

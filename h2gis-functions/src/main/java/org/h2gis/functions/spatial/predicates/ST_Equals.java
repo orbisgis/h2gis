@@ -45,10 +45,9 @@ public class ST_Equals extends DeterministicScalarFunction {
     /**
      * Return true if Geometry A is equal to Geometry B
      *
-     * @param a Geometry Geometry.
-     * @param b Geometry instance
+     * @param a Geometry A
+     * @param b Geometry B
      * @return true if Geometry A is equal to Geometry B
-     * @throws java.sql.SQLException
      */
     public static Boolean geomEquals(Geometry a, Geometry b) throws SQLException {
         if(a==null || b==null) {

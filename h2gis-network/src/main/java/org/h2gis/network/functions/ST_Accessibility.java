@@ -82,7 +82,6 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
      * @param arg3        Destination string or destination table
      * @return Table with closest destination id and distance to closest
      * destination
-     * @throws SQLException
      */
     public static ResultSet getAccessibility(Connection connection,
                                              String inputTable,
@@ -99,7 +98,6 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
      * @param arg4        Destination string or destination table
      * @return Table with closest destination id and distance to closest
      * destination
-     * @throws SQLException
      */
     public static ResultSet getAccessibility(Connection connection,
                                              String inputTable,

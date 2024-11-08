@@ -31,8 +31,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Returns a version of the given geometry with duplicated coordinates removed.
      *
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return Geometry without duplicated coordinates
      */
     public static Geometry removeDuplicatedCoordinates(Geometry geometry) {
         return removeCoordinates(geometry);
@@ -41,8 +41,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Removes duplicated coordinates within a geometry.
      *
-     * @param geom
-     * @return
+     * @param geom {@link Geometry}
+     * @return Geometry without duplicated coordinates
      */
     public static Geometry removeCoordinates(Geometry geom) {
         if(geom ==null){
@@ -72,8 +72,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Removes duplicated coordinates within a MultiPoint.
      *
-     * @param g
-     * @return
+     * @param g {@link MultiPoint}
+     * @return MultiPoint without duplicated points
      */
     public static MultiPoint removeCoordinates(MultiPoint g) {
         Coordinate[] coords = CoordinateUtils.removeDuplicatedCoordinates(g.getCoordinates(),false);
@@ -83,8 +83,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Removes duplicated coordinates within a LineString.
      *
-     * @param g
-     * @return
+     * @param g {@link LineString}
+     * @return LineString without duplicated coordinates
      */
     public static LineString removeCoordinates(LineString g) {
         Coordinate[] coords = CoordinateUtils.removeDuplicatedCoordinates(g.getCoordinates(), false);
@@ -94,8 +94,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Removes duplicated coordinates within a linearRing.
      *
-     * @param g
-     * @return
+     * @param g {@link LinearRing}
+     * @return LinearRing without duplicated coordinates
      */
     public static LinearRing removeCoordinates(LinearRing g) {
         Coordinate[] coords = CoordinateUtils.removeDuplicatedCoordinates(g.getCoordinates(),false);
@@ -105,8 +105,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Removes duplicated coordinates in a MultiLineString.
      *
-     * @param g
-     * @return
+     * @param g {@link MultiLineString}
+     * @return MultiLineString without duplicated coordinates
      */
     public static MultiLineString removeCoordinates(MultiLineString g) {
         ArrayList<LineString> lines = new ArrayList<LineString>();
@@ -121,8 +121,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Removes duplicated coordinates within a Polygon.
      *
-     * @param poly
-     * @return
+     * @param poly {@link Polygon}
+     * @return Polygon without duplicated coordinates
      */
     public static Polygon removeCoordinates(Polygon poly) {
         GeometryFactory factory =poly.getFactory();
@@ -139,8 +139,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Removes duplicated coordinates within a MultiPolygon.
      *
-     * @param g
-     * @return
+     * @param g {@link MultiPolygon}
+     * @return MultiPolygon without duplicated coordinates
      */
     public static MultiPolygon removeCoordinates(MultiPolygon g) {
         ArrayList<Polygon> polys = new ArrayList<Polygon>();
@@ -155,8 +155,8 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
     /**
      * Removes duplicated coordinates within a GeometryCollection
      *
-     * @param g
-     * @return
+     * @param g {@link GeometryCollection}
+     * @return GeometryCollection without duplicated coordinates
      */
     public static GeometryCollection removeCoordinates(GeometryCollection g) {
         ArrayList<Geometry> geoms = new ArrayList<Geometry>();

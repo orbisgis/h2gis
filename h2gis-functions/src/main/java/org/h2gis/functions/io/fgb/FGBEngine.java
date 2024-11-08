@@ -149,7 +149,6 @@ public class FGBEngine extends FileEngine<FGBDriver> {
     /**
      * @param columnMeta
      * @return H2 {@see Value}
-     * @throws java.io.IOException
      * @see "https://github.com/flatgeobuf/flatgeobuf/blob/master/src/fbs/header.fbs"
      */
     private static TypeInfo fgbTypeToH2Type(ColumnMeta columnMeta) throws IOException {

@@ -67,8 +67,8 @@ public final class AltitudeMode {
      * Generate a string value corresponding to the altitude mode.
      * 
      *
-     * @param altitudeMode
-     * @param sb
+     * @param altitudeMode {@link AltitudeMode}
+     * @param sb buffer to store the kml
      */
     public static void append(int altitudeMode, StringBuilder sb) {
         switch (altitudeMode) {

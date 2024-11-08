@@ -70,7 +70,6 @@ public class GpxParser extends AbstractGpxParserDefault {
      * @param qName qName of the local element (with prefix)
      * @param attributes Attributes of the local element (contained in the
      * markup)
-     * @throws SAXException
      */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -156,7 +155,7 @@ public class GpxParser extends AbstractGpxParserDefault {
     /**
      * Gives copyright and license information governing use of the file.
      *
-     * @return
+     * @return copyright value
      */
     @Override
     public String getCopyright() {

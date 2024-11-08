@@ -44,10 +44,9 @@ public class ST_LongestLine extends DeterministicScalarFunction{
     
     /**
      * Return the longest line between the points of two geometries.
-     * @param geomA
-     * @param geomB
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param geomA {@link Geometry} A
+     * @param geomB {@link Geometry} B
+     * @return Geometry
      */
     public static Geometry longestLine(Geometry geomA, Geometry geomB) throws SQLException {
         if(geomA ==null || geomB==null){

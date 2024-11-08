@@ -50,8 +50,7 @@ public class ST_MakePoint extends DeterministicScalarFunction {
      *
      * @param x X-coordinate
      * @param y Y-coordinate
-     * @return The POINT constructed from the given coordinatesk
-     * @throws java.sql.SQLException
+     * @return The POINT constructed from the given coordinates
      */
     public static Point createPoint(double x, double y) throws SQLException {
         return createPoint(x, y, Coordinate.NULL_ORDINATE);
@@ -64,7 +63,6 @@ public class ST_MakePoint extends DeterministicScalarFunction {
      * @param y Y-coordinate
      * @param z Z-coordinate
      * @return The POINT constructed from the given coordinates
-     * @throws SQLException
      */
     public static Point createPoint(double x, double y, double z) throws SQLException {
         return GF.createPoint(new Coordinate(x, y, z));

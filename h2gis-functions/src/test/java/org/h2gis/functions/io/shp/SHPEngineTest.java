@@ -349,11 +349,10 @@ public class SHPEngineTest {
     /**
      * Check if the column is indexed or not.
      * Cannot check if the index is spatial or not
-     * @param connection
-     * @param tableLocation
-     * @param geometryColumnName
-     * @return
-     * @throws SQLException
+     * @param connection database connection
+     * @param tableLocation input table name
+     * @param geometryColumnName  geometry column
+     * @return true is the column is indexed
      */
     private static boolean hasIndex(Connection connection, TableLocation tableLocation, String geometryColumnName) throws SQLException {
         String schema = tableLocation.getSchema();

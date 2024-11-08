@@ -44,7 +44,6 @@ public class TableLocation {
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
-     * @throws SQLException
      */
     public TableLocation(ResultSet rs) throws SQLException {
         this(rs.getString("TABLE_CAT"),rs.getString("TABLE_SCHEM"),rs.getString("TABLE_NAME"));
@@ -430,7 +429,7 @@ public class TableLocation {
     /**
      * Return the dbtype used by tablelocation.
      * Default is H2
-     * @return
+     * @return the {@link DBTypes}
      */
     public DBTypes getDbTypes() {
         return dbTypes;

@@ -49,9 +49,9 @@ public class ST_ToMultiLine extends DeterministicScalarFunction {
     /**
      * Constructs a MultiLineString from the given geometry's coordinates.
      *
-     * @param geom Geometry
+     * @param geom Geometry input geometry
      * @return A MultiLineString constructed from the given geometry's coordinates
-     * @throws SQLException
+     *
      */
     public static MultiLineString execute(Geometry geom) throws SQLException {
         if (geom != null) {

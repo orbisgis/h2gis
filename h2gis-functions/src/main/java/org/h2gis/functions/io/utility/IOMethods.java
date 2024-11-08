@@ -97,7 +97,6 @@ public class IOMethods {
      * @param targetTable      The name of the table in the H2GIS database
      * @param delete           True to delete the table if exists
      * @return the name of the linked table
-     * @throws java.sql.SQLException
      */
     public static String linkedTable(Connection targetConnection, Properties properties, String sourceTable, String targetTable,
                                      boolean delete) throws SQLException {
@@ -117,8 +116,6 @@ public class IOMethods {
      * @param delete           True to delete the table if exists
      * @param fetchSize          The number of rows fetched from the linked table
      * @return the name of the linked table
-     * @throws java.sql.SQLException
-     * @return The absolute path of the exported files
      */
     public static String linkedTable(Connection targetConnection, Properties properties, String sourceTable, String targetTable,
                                      boolean delete, int fetchSize) throws SQLException {
@@ -137,8 +134,6 @@ public class IOMethods {
      * @param targetTable      The name of the table in the H2GIS database
      * @param delete           True to delete the table if exists
      * @return the name of the linked table
-     * @throws java.sql.SQLException
-     * @return The absolute path of the exported files
      */
     public static String linkedTable(Connection targetConnection, Map<String, String> databaseProperties, String sourceTable, String targetTable,
                                      boolean delete) throws SQLException {
@@ -157,7 +152,6 @@ public class IOMethods {
      * @param delete             True to delete the table if exists
      * @param fetchSize          The number of rows fetched from the linked table
      * @return the name of the linked table
-     * @throws java.sql.SQLException
      */
     public static String linkedTable(Connection targetConnection, Map<String, String> databaseProperties, String sourceTable, String targetTable,
                                      boolean delete, int fetchSize) throws SQLException {
@@ -249,7 +243,6 @@ public class IOMethods {
      * @param filePath   The path of the file
      * @param tableName  The name of the table created to store the file
      * @param delete     True to delete the table if exists
-     * @throws java.sql.SQLException
      */
     public static String linkedFile(Connection connection, String filePath, String tableName, boolean delete) throws SQLException {
         final DBTypes dbType = DBUtils.getDBType(connection);
@@ -311,7 +304,6 @@ public class IOMethods {
      *                         0 create a new table, 1 update the target table if exists
      * @param batch_size       batch size value before sending the data
      * @return name of the export table formatted according the database target
-     * @throws java.sql.SQLException
      */
     public static String exportToDataBase(Connection sourceConnection, String sourceTable,
                                           Connection targetConnection, String targetTable, int mode, int batch_size) throws SQLException {
@@ -614,7 +606,6 @@ public class IOMethods {
      * @param encoding   Encoding of the file. Can be null
      * @param deleteFile true to delete the file if exists
      * @return The absolute path of the exported files
-     * @throws java.sql.SQLException
      */
     public String[] exportToFile(Connection connection, String tableName,
                                  String filePath, String encoding, boolean deleteFile) throws SQLException {
@@ -647,7 +638,6 @@ public class IOMethods {
      * @param encoding    An encoding value to read the file. Can be null
      * @param deleteTable True to delete the table if exists
      * @return the name of table imported and formated according the database rules
-     * @throws java.sql.SQLException
      */
     public String[] importFile(Connection connection, String filePath, String tableName, String encoding,
                                boolean deleteTable) throws SQLException {

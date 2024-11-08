@@ -49,7 +49,6 @@ public class ST_LineInterpolatePoint extends DeterministicScalarFunction {
      * @param geometry the input lines
      * @param start the start fraction between 0 and 1
      * @return single or multiparts lines
-     * @throws SQLException
      */
     public static Geometry execute(Geometry geometry, double start) throws SQLException {
         if(geometry==null){

@@ -103,7 +103,6 @@ public class TableUtilities {
      *
      * @return True if this connection only wants the list of columns
      *
-     * @throws java.sql.SQLException
      */
     public static boolean isColumnListConnection(Connection connection) throws SQLException {
         return connection.getMetaData().getURL().equals("jdbc:columnlist:connection");
@@ -117,7 +116,6 @@ public class TableUtilities {
      *
      * @return corresponding TableLocation
      *
-     * @throws SQLException
      */
     public static TableLocation parseInputTable(Connection connection,
                                                 String inputTable) throws SQLException {

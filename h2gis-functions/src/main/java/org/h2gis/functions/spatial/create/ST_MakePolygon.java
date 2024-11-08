@@ -46,8 +46,8 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
     /**
      * Creates a Polygon formed by the given shell.
      *
-     * @param shell
-     * @return
+     * @param shell Geometry
+     * @return Polygon
      */
     public static Polygon makePolygon(Geometry shell) throws IllegalArgumentException {
         if(shell == null) {
@@ -60,9 +60,9 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
     /**
      * Creates a Polygon formed by the given shell and holes.
      *
-     * @param shell
-     * @param holes
-     * @return
+     * @param shell {@link Geometry}
+     * @param holes {@link Geometry}
+     * @return Polygon
      */
     public static Polygon makePolygon(Geometry shell, Geometry holes) throws IllegalArgumentException {
         if (shell == null) {
@@ -84,9 +84,8 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
     /**
      * Check if a geometry is a linestring and if its closed.
      *
-     * @param geometry
-     * @return
-     * @throws IllegalArgumentException
+     * @param geometry {@link Geometry}
+     * @return LinearRing
      */
     private static LinearRing checkLineString(Geometry geometry) throws IllegalArgumentException {
         if (geometry instanceof LinearRing) {

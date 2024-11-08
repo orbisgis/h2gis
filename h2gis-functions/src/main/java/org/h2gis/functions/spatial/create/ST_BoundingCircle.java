@@ -44,8 +44,8 @@ public class ST_BoundingCircle extends DeterministicScalarFunction {
     /**
      * Computes the bounding circle
      *
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return geometry bounding circle
      */
     public static Geometry computeBoundingCircle(Geometry geometry) {
         if (geometry == null) {

@@ -46,10 +46,9 @@ public class ST_RemovePoints extends DeterministicScalarFunction {
     /**
      * Remove all vertices that are located within a polygon
      *
-     * @param geometry
-     * @param polygon
-     * @return
-     * @throws SQLException
+     * @param geometry {@link Geometry}
+     * @param polygon {@link Polygon}
+     * @return Geometry
      */
     public static Geometry removePoint(Geometry geometry, Polygon polygon) throws SQLException {
         if(geometry == null){

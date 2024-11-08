@@ -55,12 +55,10 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
      * Create a regular grid of points using the first input value to compute
      * the full extent.
      *
-     * @param connection
-     * @param value could be the name of a table or a geometry.
+     * @param connection database     * @param value could be the name of a table or a geometry.
      * @param deltaX the X cell size
      * @param deltaY the Y cell size
      * @return a resultset that contains all cells as a set of polygons
-     * @throws SQLException
      */
     public static ResultSet createGridPoints(Connection connection, Value value, double deltaX, double deltaY) throws SQLException {
         if(value == null){

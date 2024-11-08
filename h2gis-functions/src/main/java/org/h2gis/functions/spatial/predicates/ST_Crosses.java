@@ -43,10 +43,9 @@ public class ST_Crosses extends DeterministicScalarFunction {
     }
 
     /**
-     * @param a Geometry Geometry.
-     * @param b Geometry instance
+     * @param a Geometry A
+     * @param b Geometry B
      * @return true if Geometry A crosses Geometry B
-     * @throws java.sql.SQLException
      */
     public static Boolean geomCrosses(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {

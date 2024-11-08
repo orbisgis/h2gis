@@ -63,10 +63,9 @@ public class ST_Split extends DeterministicScalarFunction {
      *
      * A default tolerance of 10E-6 is used to snap the cutter point.
      *
-     * @param geomA
-     * @param geomB
-     * @return
-     * @throws SQLException
+     * @param geomA geometry to split
+     * @param geomB geometry for splitting
+     * @return a new geometry split
      */
     public static Geometry split(Geometry geomA, Geometry geomB) throws SQLException {
         if(geomA == null||geomB == null){
@@ -110,8 +109,7 @@ public class ST_Split extends DeterministicScalarFunction {
      * @param geomA the geometry to be splited
      * @param geomB the geometry used to split
      * @param tolerance a distance tolerance to snap the split geometry
-     * @return
-     * @throws java.sql.SQLException
+     * @return a new geometry split
      */
     public static Geometry split(Geometry geomA, Geometry geomB, double tolerance) throws SQLException {
         if (geomA instanceof Polygon) {
@@ -138,9 +136,9 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Split a linestring with a point The point must be on the linestring
      *
-     * @param line
-     * @param pointToSplit
-     * @return
+     * @param line input geometry line
+     * @param pointToSplit input point
+     * @return a new geometry split at a point location
      */
     private static MultiLineString splitLineWithPoint(LineString line, Point pointToSplit, double tolerance) {
         return FACTORY.createMultiLineString(splitLineStringWithPoint(line, pointToSplit, tolerance));
@@ -149,10 +147,10 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Splits a LineString using a Point, with a distance tolerance.
      *
-     * @param line
-     * @param pointToSplit
-     * @param tolerance
-     * @return
+     * @param line input line
+     * @param pointToSplit point to split the line
+     * @param tolerance distance to snap the point on the line
+     * @return splited line
      */
     private static LineString[] splitLineStringWithPoint(LineString line, Point pointToSplit, double tolerance) {
         Coordinate[] coords = line.getCoordinates();
@@ -196,10 +194,10 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Splits a MultilineString using a point.
      *
-     * @param multiLineString
-     * @param pointToSplit
-     * @param tolerance
-     * @return
+     * @param multiLineString input multiline
+     * @param pointToSplit point to split the multiline
+     * @param tolerance distance to snap the point to the multiline
+     * @return multiline splited
      */
     private static MultiLineString splitMultiLineStringWithPoint(MultiLineString multiLineString, Point pointToSplit, double tolerance) {
         ArrayList<LineString> linestrings = new ArrayList<LineString>();
@@ -224,9 +222,9 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Splits a Polygon with a LineString.
      *
-     * @param polygon
-     * @param lineString
-     * @return
+     * @param polygon input polygon
+     * @param lineString line to split the polygon
+     * @return polygon splited
      */
     private static Collection<Polygon> splitPolygonizer(Polygon polygon, LineString lineString) throws SQLException {
         LinkedList<LineString> result = new LinkedList<LineString>();
@@ -254,9 +252,9 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Splits a Polygon using a LineString.
      *
-     * @param polygon
-     * @param lineString
-     * @return
+     * @param polygon input polygon
+     * @param lineString line to split the polygon
+     * @return polygon splited
      */
     private static Geometry splitPolygonWithLine(Polygon polygon, LineString lineString) throws SQLException {
         Collection<Polygon> pols = polygonWithLineSplitter(polygon, lineString);
@@ -269,9 +267,9 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Splits a Polygon using a LineString.
      *
-     * @param polygon
-     * @param lineString
-     * @return
+     * @param polygon input polygon
+     * @param lineString line to split the polygon
+     * @return polygon splited
      */
     private static Collection<Polygon> polygonWithLineSplitter(Polygon polygon, LineString lineString) throws SQLException {
         Collection<Polygon> polygons = splitPolygonizer(polygon, lineString);
@@ -290,9 +288,9 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Splits a MultiPolygon using a LineString.
      *
-     * @param multiPolygon
-     * @param lineString
-     * @return
+     * @param multiPolygon input multiPolygon
+     * @param lineString line to split the polygon
+     * @return polygon splited
      */
     private static Geometry splitMultiPolygonWithLine(MultiPolygon multiPolygon, LineString lineString) throws SQLException {
         ArrayList<Polygon> allPolygons = new ArrayList<Polygon>();

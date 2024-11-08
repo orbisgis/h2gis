@@ -49,8 +49,8 @@ public class ST_Polygonize extends DeterministicScalarFunction {
      * Creates a GeometryCollection containing possible polygons formed 
      * from the constituent linework of a set of geometries.
      * 
-     * @param geometry
-     * @return 
+     * @param geometry {@link Geometry}
+     * @return new polygons
      */
     public static Geometry execute(Geometry geometry) {
         if(geometry == null){

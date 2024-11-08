@@ -23,12 +23,9 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.h2.util.geometry.EWKTUtils;
 import org.h2.util.geometry.JTSUtils;
-import org.h2.value.ValueGeometry;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.spatial.convert.ST_GeomFromWKB;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
@@ -87,10 +84,10 @@ public class GeoJsonReaderDriver {
     /**
      * Driver to import a GeoJSON file into a spatial table.
      *
-     * @param connection
-     * @param fileName
-     * @param encoding
-     * @param deleteTable
+     * @param connection database connection
+     * @param fileName input file
+     * @param encoding file encoding
+     * @param deleteTable true to delete the table
      */
     public GeoJsonReaderDriver(Connection connection, File fileName, String encoding, boolean deleteTable) {
         this.connection = connection;
@@ -102,17 +99,15 @@ public class GeoJsonReaderDriver {
     /**
      * Read the GeoJSON file.
      *
-     * @param progress
-     * @param tableReference
-     * @return
-     * @throws java.sql.SQLException
-     * @throws java.io.IOException
+     * @param progress Progress visitor following the execution.
+     * @param tableReference output table name
+     * @return table name or null
      */
     public String read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
         String fileNameLower = fileName.getName().toLowerCase();
         if (fileName != null && (fileNameLower.endsWith(".geojson") || fileNameLower.endsWith(".json"))) {
             if (!fileName.exists()) {
-                throw new SQLException("The file " + tableLocation + " doesn't exist ");
+                throw new SQLException("The file " + fileName + " doesn't exist ");
             }
             this.dbType = DBUtils.getDBType(connection);
             this.tableLocation = TableLocation.parse(tableReference, dbType).toString();
@@ -187,7 +182,7 @@ public class GeoJsonReaderDriver {
      * "features": [ ... ] }
      *
      *
-     * @param progress
+     * @param progress Progress visitor following the execution.
      */
     private void parseGeoJson(ProgressVisitor progress) throws SQLException, IOException {
         this.progress = progress.subProcess(100);
@@ -205,8 +200,6 @@ public class GeoJsonReaderDriver {
     /**
      * Parses the all GeoJSON feature to create the PreparedStatement.
      *
-     * @throws SQLException
-     * @throws IOException
      */
     private boolean parseMetadata(InputStream is) throws SQLException, IOException {
         try {
@@ -338,8 +331,6 @@ public class GeoJsonReaderDriver {
      * Parses the featureCollection to collect the field properties
      *
      * @param jp
-     * @throws IOException
-     * @throws SQLException
      */
     private void parseFeaturesMetadata(JsonParser jp) throws IOException, SQLException {
         // Passes all the properties until "Feature" object is found
@@ -421,8 +412,6 @@ public class GeoJsonReaderDriver {
      * Parses the geometries to return its properties
      *
      * @param jp
-     * @throws IOException
-     * @throws SQLException
      */
     private void parseParentGeometryMetadata(JsonParser jp) throws IOException, SQLException {
         if (jp.nextToken() != JsonToken.VALUE_NULL) {//START_OBJECT { in case of null geometry
@@ -442,7 +431,6 @@ public class GeoJsonReaderDriver {
      * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
      *
      * @param jp
-     * @throws IOException
      */
     private void parseGeometryMetadata(JsonParser jp, String geometryType) throws IOException, SQLException {
         if (geometryType.equalsIgnoreCase(GeoJsonField.POINT)) {
@@ -479,7 +467,6 @@ public class GeoJsonReaderDriver {
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
      * @param jp
-     * @throws IOException
      */
     private void parsePointMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -618,9 +605,7 @@ public class GeoJsonReaderDriver {
      * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      */
     private void parseMultiPolygonMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -651,10 +636,8 @@ public class GeoJsonReaderDriver {
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
      * [101.0, 0.0], [102.0, 1.0] ] } ]
      *
-     * @param jp
+     * @param jp {@link JsonParser}
      *
-     * @throws IOException
-     * @throws SQLException
      * @return GeometryCollection
      */
     private void parseGeometryCollectionMetadata(JsonParser jp) throws IOException, SQLException {
@@ -714,9 +697,7 @@ public class GeoJsonReaderDriver {
      *
      * and check if it's wellformated
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      * @return Coordinate[]
      */
     private void parseCoordinatesMetadata(JsonParser jp) throws IOException {
@@ -863,9 +844,7 @@ public class GeoJsonReaderDriver {
     /**
      * Sets the parsed geometry to the table *
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      */
     private void setGeometry(JsonParser jp, Object[] values) throws IOException, SQLException {
         if (jp.nextToken() != JsonToken.VALUE_NULL) {//START_OBJECT { in case of null geometry
@@ -973,9 +952,7 @@ public class GeoJsonReaderDriver {
     /**
      * Parses the featureCollection
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      */
     private void parseFeatures(JsonParser jp) throws IOException, SQLException {
         // Passes all the properties until "Feature" object is found
@@ -1016,19 +993,19 @@ public class GeoJsonReaderDriver {
                         preparedStatement.clearBatch();
                         batchSize = 0;
                     }
-
                     token = jp.nextToken(); //START_OBJECT new feature                    
                     featureCounter++;
                     progress.setStep((featureCounter / nbFeature) * 100);
-                    if (batchSize > 0) {
-                            preparedStatement.executeBatch();
-                            connection.commit();
-                            preparedStatement.clearBatch();
-                    }
+
                 } else {
                     connection.setAutoCommit(true);
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
                 }
+            }
+            if (batchSize > 0) {
+                preparedStatement.executeBatch();
+                connection.commit();
+                preparedStatement.clearBatch();
             }
             connection.setAutoCommit(true);
             //LOOP END_ARRAY ]
@@ -1197,9 +1174,7 @@ public class GeoJsonReaderDriver {
      * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      * @return MultiPolygon
      */
     private MultiPolygon parseMultiPolygon(JsonParser jp) throws IOException, SQLException {
@@ -1248,10 +1223,8 @@ public class GeoJsonReaderDriver {
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
      * [101.0, 0.0], [102.0, 1.0] ] } ]
      *
-     * @param jp
+     * @param jp {@link JsonParser}
      *
-     * @throws IOException
-     * @throws SQLException
      * @return GeometryCollection
      */
     private GeometryCollection parseGeometryCollection(JsonParser jp) throws IOException, SQLException {
@@ -1281,9 +1254,7 @@ public class GeoJsonReaderDriver {
      *
      * [ [100.0, 0.0], [101.0, 1.0] ]
      *
-     * @param jp
-     * @throws IOException
-     * @throws SQLException
+     * @param jp {@link JsonParser}
      * @return Coordinate[]
      */
     private CoordinateSequence parseCoordinates(JsonParser jp) throws IOException {
@@ -1306,7 +1277,6 @@ public class GeoJsonReaderDriver {
      * @param coordinates Number array
      * @param index Index to extract in array
      * @param defaultValue Value to return if out of bounds
-     * @return
      */
     private static double getOrDefault(List<Double> coordinates, int index, double defaultValue) {
         return index < coordinates.size() ? coordinates.get(index) : defaultValue;
@@ -1355,9 +1325,7 @@ public class GeoJsonReaderDriver {
 
     /**
      * Parses the GeoJSON data and set the values to the table.
-     *
-     * @throws IOException
-     * @throws SQLException
+     * @param is {@link InputStream}
      */
     private void parseData(InputStream is) throws IOException, SQLException {
         try {
@@ -1437,8 +1405,8 @@ public class GeoJsonReaderDriver {
      * "crs":{ "type":"name", "properties": {"name":"urn:ogc:def:crs:EPSG::4326"
      * } }
      *
-     * @param jp
-     * @return
+     * @param jp {@link JsonParser}
+     * @return SRID of the geojson file
      */
     private int readCRS(JsonParser jp) throws IOException, SQLException {
         int srid = 0;
@@ -1641,9 +1609,8 @@ public class GeoJsonReaderDriver {
     /**
      * Return a SQL representation of the SQL type
      *
-     * @param sqlType
-     * @return
-     * @throws SQLException
+     * @param sqlType sql type code
+     * @return sql string data type
      */
     private static String getSQLTypeName(int sqlType) throws SQLException {
         switch (sqlType) {

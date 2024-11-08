@@ -49,8 +49,8 @@ public class ST_IsValidReason extends DeterministicScalarFunction{
      * Returns text stating whether a geometry is valid. 
      * If not, returns a reason why.
      * 
-     * @param geometry
-     * @return 
+     * @param geometry {@link Geometry}
+     * @return Returns text stating whether a geometry is valid. If not, returns a reason why
      */
     public static String isValidReason(Geometry geometry) {
         return isValidReason(geometry, 0);
@@ -60,9 +60,10 @@ public class ST_IsValidReason extends DeterministicScalarFunction{
      * Returns text stating whether a geometry is valid. 
      * If not, returns a reason why.
      * 
-     * @param geometry
-     * @param flag
-     * @return 
+     * @param geometry {@link Geometry}
+     * @param flag 1 = It will validate inverted shells and exverted holes according the ESRI SDE model.
+     * 0 = It will based on the OGC geometry model.
+     * @return valid reason
      */
     public static String isValidReason(Geometry geometry, int flag) {
         if (geometry != null) {
@@ -79,8 +80,8 @@ public class ST_IsValidReason extends DeterministicScalarFunction{
     
     /**
      *
-     * @param geometry
-     * @return
+     * @param geometry {@link Geometry}
+     * @return give the valid reason
      */
     private static String validReason(Geometry geometry, boolean flag) {    
         IsValidOp validOP = new IsValidOp(geometry);

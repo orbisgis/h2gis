@@ -107,7 +107,7 @@ public class GeographyUtilsTest {
     /**
      * Util to display the envelope as geometry
      *
-     * @param env
+     * @param env set {@link Envelope}
      */
     public void displayAsGeometry(Envelope env) {
         GeometryFactory gf = new GeometryFactory();

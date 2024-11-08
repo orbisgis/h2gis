@@ -328,7 +328,6 @@ public class DBFDriverFunction implements DriverFunction {
      * @param header DBAse file header
      * @param cols array columns that will be populated
      * @return Array of columns ex: ["id INTEGER", "len DOUBLE"]
-     * @throws IOException
      */
     public static String getSQLColumnTypes(DbaseFileHeader header, DBTypes dbTypes, List<Column> cols) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();

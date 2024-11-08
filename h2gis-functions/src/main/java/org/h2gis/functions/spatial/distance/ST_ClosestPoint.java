@@ -52,7 +52,6 @@ public class ST_ClosestPoint extends DeterministicScalarFunction {
      * @param geomA Geometry A
      * @param geomB Geometry B
      * @return The 2D point on geometry A that is closest to geometry B
-     * @throws java.sql.SQLException
      */
     public static Point closestPoint(Geometry geomA, Geometry geomB) throws SQLException {
         if (geomA == null || geomB == null) {

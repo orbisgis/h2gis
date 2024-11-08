@@ -50,10 +50,8 @@ public class ST_GeomFromGeoJSON extends DeterministicScalarFunction{
     /**
      * Convert a geojson geometry to geometry.
      *
-     * @param geojson
-     * @return
-     * @throws java.io.IOException
-     * @throws java.sql.SQLException
+     * @param geojson input geojson
+     * @return a {@link Geometry}
      */
     public static Geometry geomFromGeoJSON(String geojson) throws IOException, SQLException {
         if (geojson == null) {

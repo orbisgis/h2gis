@@ -56,7 +56,6 @@ public class ST_GeometryN extends DeterministicScalarFunction {
      * @param geometry GeometryCollection
      * @param n        Index of Geometry number n in [1-N]
      * @return Geometry number n or Null if parameter is null.
-     * @throws SQLException
      */
     public static Geometry getGeometryN(Geometry geometry, Integer n) throws SQLException {
         if (geometry == null) {

@@ -97,7 +97,6 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * @return The newly prepared graph, or null if the graph could not
      * be created
      *
-     * @throws java.sql.SQLException
      */
     protected KeyedGraph<V, E> prepareGraph() throws SQLException {
         LOGGER.debug("Loading graph into memory...");

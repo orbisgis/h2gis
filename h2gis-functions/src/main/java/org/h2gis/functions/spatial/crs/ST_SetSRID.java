@@ -43,10 +43,9 @@ public class ST_SetSRID  extends AbstractFunction implements ScalarFunction {
 
     /**
      * Set a new SRID to the geometry
-     * @param geometry
-     * @param srid
-     * @return
-     * @throws IllegalArgumentException 
+     * @param geometry {@link Geometry}
+     * @param srid srid code
+     * @return Geometry with an srid
      */
     public static Geometry setSRID(Geometry geometry, Integer srid) throws IllegalArgumentException {
         if (geometry == null) {

@@ -74,7 +74,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Gives the actual contentBuffer
      *
-     * @return
+     * @return get buffer
      */
     public StringBuilder getContentBuffer() {
         return contentBuffer;
@@ -83,7 +83,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the contentBuffer.
      *
-     * @param contentBuffer
+     * @param contentBuffer set a buffer
      */
     public void setContentBuffer(StringBuilder contentBuffer) {
         this.contentBuffer = contentBuffer;
@@ -93,7 +93,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
      * Gives a string representing the value of the element which is being
      * parsed.
      *
-     * @return
+     * @return get the current element
      */
     public String getCurrentElement() {
         return currentElement;
@@ -103,7 +103,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
      * Set the string representing the value of the element which is being
      * parsed.
      *
-     * @param currentElement
+     * @param currentElement set current element
      */
     public void setCurrentElement(String currentElement) {
         this.currentElement = currentElement;
@@ -112,7 +112,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Gives the point which is being parsed.
      *
-     * @return
+     * @return current gpx point
      */
     public GPXPoint getCurrentPoint() {
         return currentPoint;
@@ -121,7 +121,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the point which will be parsed.
      *
-     * @param currentPoint
+     * @param currentPoint set current gpx point
      */
     public void setCurrentPoint(GPXPoint currentPoint) {
         this.currentPoint = currentPoint;
@@ -129,7 +129,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
 
     /**
      * Gives the XMLReader used to parse the document.
-     * @return 
+     * @return get {@link XMLReader}
      */
     public XMLReader getReader() {
         return reader;
@@ -138,7 +138,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the XMLReader used to parse the document.
      *
-     * @param reader
+     * @param reader set {@link XMLReader}
      */
     public void setReader(XMLReader reader) {
         this.reader = reader;
@@ -147,7 +147,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Gives the actual StringStack elementNames
      *
-     * @return
+     * @return the element names
      */
     public StringStack getElementNames() {
         return elementNames;
@@ -156,7 +156,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the actual StringStack elementNames
      *
-     * @param elementNames
+     * @param elementNames set element names
      */
     public void setElementNames(StringStack elementNames) {
         this.elementNames = elementNames;
@@ -174,7 +174,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the indicator to know if we are in a specific element.
      *
-     * @param specificElement
+     * @param specificElement set true it's a specific element type
      */
     public void setSpecificElement(boolean specificElement) {
         this.specificElement = specificElement;
@@ -183,7 +183,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Get the PreparedStatement of the waypoints table.
      *
-     * @return
+     * @return the waypoints preparedstatement
      */
     public PreparedStatement getWptPreparedStmt() {
         return wptPreparedStmt;
@@ -192,7 +192,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the PreparedStatement of the waypoints table.
      *
-     * @param wptPreparedStmt
+     * @param wptPreparedStmt set the waypoints preparedstatement
      */
     public void setWptPreparedStmt(PreparedStatement wptPreparedStmt) {
         this.wptPreparedStmt = wptPreparedStmt;
@@ -201,7 +201,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the PreparedStatement of the route table.
      *
-     * @param rtePreparedStmt
+     * @param rtePreparedStmt set the routes preparedstatement
      */
     public void setRtePreparedStmt(PreparedStatement rtePreparedStmt) {
         this.rtePreparedStmt = rtePreparedStmt;
@@ -210,7 +210,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Gives the preparedstatement used to store route data
      *
-     * @return
+     * @return get the routes preparedstatement
      */
     public PreparedStatement getRtePreparedStmt() {
         return rtePreparedStmt;
@@ -219,7 +219,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the PreparedStatement of the route points table.
      *
-     * @param rteptPreparedStmt
+     * @param rteptPreparedStmt set the routes preparedstatement
      */
     public void setRteptPreparedStmt(PreparedStatement rteptPreparedStmt) {
         this.rteptPreparedStmt = rteptPreparedStmt;
@@ -228,7 +228,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Gives the prepared statement used to store the route points.
      *
-     * @return
+     * @return the routes preparedstatement
      */
     public PreparedStatement getRteptPreparedStmt() {
         return rteptPreparedStmt;
@@ -236,7 +236,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
 
     /**
      * Gives the prepared statement used to store the track.
-     * @return 
+     * @return the track preparedstatement
      */
     public PreparedStatement getTrkPreparedStmt() {
         return trkPreparedStmt;
@@ -244,7 +244,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
 
     /**
      * Gives the prepared statement used to store the track points.
-     * @return 
+     * @return the points preparedstatement
      */
     public PreparedStatement getTrkPointsPreparedStmt() {
         return trkPointsPreparedStmt;
@@ -252,7 +252,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
 
     /**
      * Gives the prepared statement used to store the track segments.
-     * @return 
+     * @return the track preparedstatement
      */
     public PreparedStatement getTrkSegmentsPreparedStmt() {
         return trkSegmentsPreparedStmt;
@@ -260,7 +260,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
 
     /**
      * Set the prepared statement used to store the track.
-     * @param trkPreparedStmt 
+     * @param trkPreparedStmt  set the preparedstatement to save the tracks
      */
     public void setTrkPreparedStmt(PreparedStatement trkPreparedStmt) {
         this.trkPreparedStmt = trkPreparedStmt;
@@ -268,7 +268,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
 
     /**
      * Set the prepared statement used to store the track segments.
-     * @param trkSegmentsPreparedStmt 
+     * @param trkSegmentsPreparedStmt set the preparedstatement to save the lines
      */
     public void setTrkSegmentsPreparedStmt(PreparedStatement trkSegmentsPreparedStmt) {
         this.trkSegmentsPreparedStmt = trkSegmentsPreparedStmt;
@@ -276,7 +276,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
 
     /**
      * Set the prepared statement used to store the track points.
-     * @param trkPointsPreparedStmt 
+     * @param trkPointsPreparedStmt set the preparedstatement to store points
      */
     public void setTrkPointsPreparedStmt(PreparedStatement trkPointsPreparedStmt) {
         this.trkPointsPreparedStmt = trkPointsPreparedStmt;
@@ -285,7 +285,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Gives the segment which is being parsed.
      *
-     * @return
+     * @return current gpx line
      */
     public GPXLine getCurrentSegment() {
         return currentSegment;
@@ -294,7 +294,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the segment which will be parsed.
      *
-     * @param currentSegment
+     * @param currentSegment input GPX line
      */
     public void setCurrentSegment(GPXLine currentSegment) {
         this.currentSegment = currentSegment;
@@ -303,7 +303,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Gives a geometryFactory to construct gpx geometries
      *
-     * @return
+     * @return current geometry factory
      */
     public GeometryFactory getGeometryFactory() {
         return geometryFactory;
@@ -312,7 +312,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Gives the line which is being parsed.
      *
-     * @return
+     * @return gpx line
      */
     public GPXLine getCurrentLine() {
         return currentLine;
@@ -321,7 +321,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the line which will be parsed.
      *
-     * @param currentLine
+     * @param currentLine set the line to parse
      */
     public void setCurrentLine(GPXLine currentLine) {
         this.currentLine = currentLine;

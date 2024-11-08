@@ -37,6 +37,8 @@ import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.GeographyUtilities;
+
+import static org.h2gis.unitTest.GeometryAsserts.printGeometry;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -65,7 +67,7 @@ public class CRSFunctionTest {
         st.close();
     }
 
-        @AfterAll
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -303,6 +305,7 @@ public class CRSFunctionTest {
         rs = st.executeQuery("SELECT ST_IsProjectedCRS('SRID=0;POINT(0 10)'::GEOMETRY) as result");
         assertTrue(rs.next());
         assertFalse( rs.getBoolean(1));
+        rs.close();
     }
 
     @Test
@@ -315,5 +318,16 @@ public class CRSFunctionTest {
         rs = st.executeQuery("SELECT ST_IsGeographicCRS('POINT(3.68 59.04)'::GEOMETRY) as result");
         assertTrue(rs.next());
         assertFalse( rs.getBoolean(1));
+        rs.close();
+    }
+
+    //TODO : fix CTS projection
+    @Disabled
+    @Test
+    public void testMollweidCRS() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM('SRID=4326;POINT(3.68 59.04)'::GEOMETRY, 54009) as result");
+        printGeometry(rs.getObject(1));
+        rs.close();
     }
 }

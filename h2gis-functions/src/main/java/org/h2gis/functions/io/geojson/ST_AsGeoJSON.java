@@ -47,8 +47,8 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
     /**
      * Convert the geometry to a GeoJSON representation.
      *
-     * @param geom
-     * @return
+     * @param geom Geometry
+     * @return geojson representation
      */
     public static String toGeojson(Geometry geom) {
         if(geom==null){
@@ -64,7 +64,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * @param geom input geometry
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @return
+     * @return geojson representation
      */
     public static String toGeojson(Geometry geom, int maxdecimaldigits) {
         if(geom==null){
@@ -81,7 +81,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * @param geom input geometry
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonGeometry(Geometry geom, int maxdecimaldigits, StringBuilder sb) {
         if (geom instanceof Point) {
@@ -123,9 +123,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
-     * @param point
+     * @param point input point
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonPoint(Point point, int maxdecimaldigits, StringBuilder sb) {
         Coordinate coord = point.getCoordinate();
@@ -147,9 +147,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param multiPoint
+     * @param multiPoint input {@link MultiPoint}
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonMultiPoint(MultiPoint multiPoint,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"MultiPoint\",\"coordinates\":");
@@ -164,9 +164,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param lineString
+     * @param lineString input {@link MultiLineString}
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonLineString(LineString lineString, int maxdecimaldigits, StringBuilder sb) {
         sb.append("{\"type\":\"LineString\",\"coordinates\":");
@@ -183,9 +183,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
-     * @param multiLineString
+     * @param multiLineString input {@link MultiLineString}
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonMultiLineString(MultiLineString multiLineString,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"MultiLineString\",\"coordinates\":[");
@@ -218,9 +218,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ] ] }
      *
      *
-     * @param polygon
+     * @param polygon input {@link Polygon}
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonPolygon(Polygon polygon,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"Polygon\",\"coordinates\":[");
@@ -244,9 +244,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
-     * @param multiPolygon
+     * @param multiPolygon input {@link MultiPolygon}
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonMultiPolygon(MultiPolygon multiPolygon, int maxdecimaldigits, StringBuilder sb) {
         sb.append("{\"type\":\"MultiPolygon\",\"coordinates\":[");
@@ -284,9 +284,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
      * [101.0, 0.0], [102.0, 1.0] ] } ] }
      *
-     * @param geometryCollection
+     * @param geometryCollection input {@link GeometryCollection}
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonGeometryCollection(GeometryCollection geometryCollection,int maxdecimaldigits,  StringBuilder sb) {
         sb.append("{\"type\":\"GeometryCollection\",\"geometries\":[");
@@ -315,9 +315,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * [[X1,Y1],[X2,Y2]]
      *
-     * @param coords
+     * @param coords input coordinates array
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonCoordinates(Coordinate[] coords, int maxdecimaldigits, StringBuilder sb) {
         sb.append("[");
@@ -339,9 +339,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      *
      * [X,Y] or [X,Y,Z]
      *
-     * @param coord
+     * @param coord input {@link Coordinate}
      * @param maxdecimaldigits argument may be used to reduce the maximum number of decimal places
-     * @param sb
+     * @param sb buffer to store the geojson
      */
     public static void toGeojsonCoordinate(Coordinate coord, int maxdecimaldigits, StringBuilder sb) {
         sb.append("[");

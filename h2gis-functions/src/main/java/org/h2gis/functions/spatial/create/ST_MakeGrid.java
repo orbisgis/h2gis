@@ -59,12 +59,10 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
      * Create a regular grid using the first input argument to compute the full
      * extent.
      *
-     * @param connection
-     * @param value could be the name of a table or a geometry.
+     * @param connection database     * @param value could be the name of a table or a geometry.
      * @param deltaX the X cell size
      * @param deltaY the Y cell size
      * @return a resultset that contains all cells as a set of polygons
-     * @throws SQLException
      */
     public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY) throws SQLException {
         if(value == null){
@@ -86,12 +84,10 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
      * Create a regular grid using the first input argument to compute the full
      * extent.
      *
-     * @param connection
-     * @param value could be the name of a table or a geometry.
+     * @param connection database     * @param value could be the name of a table or a geometry.
      * @param deltaX the X cell size
      * @param deltaY the Y cell size
      * @return a resultset that contains all cells as a set of polygons
-     * @throws SQLException
      */
     public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean isColumnsRowsMeasure) throws SQLException {
         if(value == null){

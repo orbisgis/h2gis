@@ -45,8 +45,8 @@ public class ST_3DPerimeter extends DeterministicScalarFunction{
     
     /**
      * Compute the 3D perimeter of a polygon or a multipolygon.
-     * @param geometry
-     * @return 
+     * @param geometry {@link Geometry}
+     * @return the 3D perimeter
      */
     public static Double st3Dperimeter(Geometry geometry){        
         if(geometry==null){
@@ -60,8 +60,8 @@ public class ST_3DPerimeter extends DeterministicScalarFunction{
     
     /**
      * Compute the 3D perimeter
-     * @param geometry
-     * @return 
+     * @param geometry {@link Geometry}
+     * @return 3D perimeter
      */
     private static double compute3DPerimeter(Geometry geometry) {
         double sum = 0;

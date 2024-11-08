@@ -144,8 +144,6 @@ public class SHPDriverFunction implements DriverFunction {
      * @param fileName File path to write, if exists it may be replaced
      * @param encoding File encoding, null will use default encoding
      * @param progress to display the IO progress
-     * @throws SQLException
-     * @throws IOException
      */
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
@@ -158,7 +156,6 @@ public class SHPDriverFunction implements DriverFunction {
      * @param fileName File path to write, if exists it may be replaced
      * @param progress to display the IO progress
      * @param encoding File encoding, null will use default encoding
-     * @throws java.sql.SQLException
      */
     private String[] doExport(Connection connection, Integer spatialFieldIndex, ResultSet rs, int recordCount, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
         int srid = 0;
@@ -261,7 +258,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @param fileName File path to read
      * @param forceEncoding If defined use this encoding instead of the one
      * defined in dbf header.
-     * @param progress
+     * @param progress Progress visitor following the execution.
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
@@ -365,9 +362,8 @@ public class SHPDriverFunction implements DriverFunction {
     /**
      * Return the shape type supported by the shapefile format
      *
-     * @param meta
-     * @return
-     * @throws SQLException
+     * @param meta {@link GeometryMetaData}
+     * @return ShapeType
      */
     private static ShapeType getShapeTypeFromGeometryMetaData(GeometryMetaData meta) throws SQLException {
         ShapeType shapeType;

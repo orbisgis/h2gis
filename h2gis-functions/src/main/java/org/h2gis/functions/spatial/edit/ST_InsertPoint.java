@@ -53,10 +53,9 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
      * Returns a new geometry based on an existing one, with a specific point as
      * a new vertex. A default distance 10E-6 is used to snap the input point.
      *
-     * @param geometry
-     * @param point
-     * @return
-     * @throws SQLException
+     * @param geometry {@link Geometry}
+     * @param point {@link Point}
+     * @return Geometry with the new point
      */
     public static Geometry insertPoint(Geometry geometry, Point point) throws SQLException {
         return insertPoint(geometry, point, PRECISION);
@@ -140,10 +139,10 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
     /**
      * Adds a Point into a MultiPoint geometry.
      *
-     * @param g
-     * @param vertexPoint
-     * @param factory
-     * @return
+     * @param g {@link Geometry}
+     * @param vertexPoint {@link Point}
+     * @param factory {@link GeometryFactory}
+     * @return geometry
      */
     private static Geometry insertVertexInMultipoint(Geometry g, Point vertexPoint, GeometryFactory factory) {
         ArrayList<Point> geoms = new ArrayList<Point>();
@@ -158,12 +157,11 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
     /**
      * Inserts a vertex into a LineString with a given tolerance.
      *
-     * @param lineString
-     * @param vertexPoint
-     * @param tolerance
-     * @param factory
-     * @return
-     * @throws SQLException
+     * @param lineString {@link LineString}
+     * @param vertexPoint {@link Point}
+     * @param tolerance tolerance
+     * @param factory {@link GeometryFactory}
+     * @return LineString with the new {@link Point}
      */
     private static LineString insertVertexInLineString(LineString lineString, Point vertexPoint,
                                                        double tolerance,  GeometryFactory factory) throws SQLException {
@@ -189,12 +187,11 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
     /**
      * Adds a vertex into a Polygon with a given tolerance.
      *
-     * @param polygon
-     * @param vertexPoint
-     * @param tolerance
-     * @param factory
-     * @return
-     * @throws SQLException
+     * @param polygon {@link Polygon}
+     * @param vertexPoint {@link Point}
+     * @param tolerance tolerance
+     * @param factory {@link GeometryFactory}
+     * @return Polygon with the new {@link Point}
      */
     private static Polygon insertVertexInPolygon(Polygon polygon,
                                                  Point vertexPoint, double tolerance,  GeometryFactory factory) throws SQLException {
@@ -241,10 +238,10 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
     /**
      * Return minimum distance between a geometry and a point.
      *
-     * @param geometry
-     * @param vertexPoint
-     * @param tolerance
-     * @return
+     * @param geometry {@link Geometry}
+     * @param vertexPoint {@link Point}
+     * @param tolerance tolerance
+     * @return distance to snap the {@link Point}
      */
     private static double computeDistance(Geometry geometry, Point vertexPoint, double tolerance) {
         DistanceOp distanceOp = new DistanceOp(geometry, vertexPoint, tolerance);
@@ -254,11 +251,11 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
     /**
      * Adds a vertex into a LinearRing with a given tolerance.
      *
-     * @param lineString
-     * @param vertexPoint
-     * @param tolerance
-     * @param factory
-     * @return
+     * @param lineString {@link LineString}
+     * @param vertexPoint {@link Point}
+     * @param tolerance tolerance
+     * @param factory {@link GeometryFactory}
+     * @return linearRing with the new {@link Point}
      */
     private static LinearRing insertVertexInLinearRing(LineString lineString,
                                                        Point vertexPoint, double tolerance,  GeometryFactory factory) {

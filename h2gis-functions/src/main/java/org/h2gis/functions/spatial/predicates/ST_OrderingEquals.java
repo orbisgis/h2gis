@@ -50,10 +50,9 @@ public class ST_OrderingEquals extends DeterministicScalarFunction{
     /**
      * Returns true if the given geometries represent the same geometry and points are in the same directional order.
      * 
-     * @param valueA
-     * @param valueB
-     * @return 
-     * @throws java.sql.SQLException 
+     * @param valueA geometry A to compare
+     * @param valueB geometry B to compare
+     * @return true if the same order
      */
     public static boolean orderingEquals(Value valueA, Value valueB) throws SQLException{
         if(!(valueA instanceof ValueGeometry) || !(valueB instanceof ValueGeometry)) {

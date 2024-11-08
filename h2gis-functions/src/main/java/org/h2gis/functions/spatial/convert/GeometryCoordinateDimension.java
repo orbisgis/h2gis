@@ -37,7 +37,7 @@ public class GeometryCoordinateDimension {
      * @param geom the input geometry
      * @param dimension supported dimension is 2, 3
      * if the dimension is set to 3 the z measure are set to 0
-     * @return 
+     * @return Geometry
      */
      public static Geometry force(Geometry geom, int dimension) {
          Geometry g = geom;
@@ -70,9 +70,9 @@ public class GeometryCoordinateDimension {
      * Force the dimension of the MultiPoint and update correctly the coordinate
      * dimension
      *
-     * @param mp
-     * @param dimension
-     * @return
+     * @param mp {@link MultiPoint}
+     * @param dimension coordinate dimension
+     * @return geometry with reduced dimension
      */
     public static MultiPoint convert(MultiPoint mp, int dimension) {
         int nb = mp.getNumGeometries();
@@ -86,9 +86,9 @@ public class GeometryCoordinateDimension {
      /**
       * Force the dimension of the GeometryCollection and update correctly the coordinate 
       * dimension
-      * @param gc
-      * @param dimension
-      * @return 
+      * @param gc {@link GeometryCollection}
+      * @param dimension dimension to extract
+      * @return Geometry
       */
     public static GeometryCollection convert(GeometryCollection gc, int dimension) {
         int nb = gc.getNumGeometries();
@@ -102,9 +102,9 @@ public class GeometryCoordinateDimension {
     /**
      * Force the dimension of the MultiPolygon and update correctly the coordinate 
      * dimension
-     * @param multiPolygon
-     * @param dimension
-     * @return 
+     * @param multiPolygon {@link MultiPolygon}
+     * @param dimension dimension to extract
+     * @return Geometry
      */
     public static MultiPolygon convert(MultiPolygon multiPolygon,int dimension) {
         int nb = multiPolygon.getNumGeometries();
@@ -118,9 +118,9 @@ public class GeometryCoordinateDimension {
      /**
      * Force the dimension of the MultiLineString and update correctly the coordinate 
      * dimension
-     * @param multiLineString
-     * @param dimension
-     * @return 
+     * @param multiLineString {@link MultiLineString}
+     * @param dimension dimension to extract
+     * @return Geometry
      */
     public static MultiLineString convert(MultiLineString multiLineString, int dimension) {
         int nb = multiLineString.getNumGeometries();
@@ -134,9 +134,9 @@ public class GeometryCoordinateDimension {
     /**
      * Force the dimension of the Polygon and update correctly the coordinate 
      * dimension
-     * @param polygon
-     * @param dimension
-     * @return 
+     * @param polygon {@link Polygon}
+     * @param dimension dimension to extract
+     * @return Geometry
      */
     public static Polygon convert(Polygon polygon, int dimension) {
         LinearRing shell = gf.createLinearRing(convertSequence(polygon.getExteriorRing().getCoordinateSequence(),dimension));
@@ -153,9 +153,9 @@ public class GeometryCoordinateDimension {
     /**
      * Force the dimension of the LineString and update correctly the coordinate 
      * dimension
-     * @param lineString
-     * @param dimension
-     * @return 
+     * @param lineString {@link LineString}
+     * @param dimension dimension to extract
+     * @return Geometry
      */
     public static LineString convert(LineString lineString,int dimension) {
         return gf.createLineString(convertSequence(lineString.getCoordinateSequence(),dimension));
@@ -164,9 +164,9 @@ public class GeometryCoordinateDimension {
     /**
      * Force the dimension of the LinearRing and update correctly the coordinate 
      * dimension
-     * @param linearRing
-     * @param dimension
-     * @return 
+     * @param linearRing {@link LinearRing}
+     * @param dimension dimension to extract
+     * @return LinearRing
      */
     public static LinearRing convert(LinearRing linearRing,int dimension) {
         return gf.createLinearRing(convertSequence(linearRing.getCoordinateSequence(),dimension));

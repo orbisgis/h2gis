@@ -392,7 +392,6 @@ public class GeometryTableUtilsTest {
     /**
      * Check constraint pass
      *
-     * @throws SQLException
      */
     @Test
     public void testColumnSRIDGeometryColumns3() throws SQLException {
@@ -410,7 +409,6 @@ public class GeometryTableUtilsTest {
     /**
      * Check constraint pass
      *
-     * @throws SQLException
      */
     @Test
     public void testColumnSRIDGeometryColumns() throws SQLException {
@@ -427,7 +425,6 @@ public class GeometryTableUtilsTest {
     /**
      * Check constraint pass
      *
-     * @throws SQLException
      */
     @Test
     public void testColumnSRIDGeometryColumns2() throws SQLException {
@@ -444,7 +441,6 @@ public class GeometryTableUtilsTest {
     /**
      * Check constraint pass
      *
-     * @throws SQLException
      */
     @Test
     public void testColumnSRIDGeometryColumns4() throws SQLException {
@@ -463,7 +459,6 @@ public class GeometryTableUtilsTest {
     /**
      * Check constraint pass
      *
-     * @throws SQLException
      */
     @Test
     public void testColumnSRIDGeometryColumns5() throws SQLException {

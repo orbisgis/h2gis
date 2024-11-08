@@ -82,10 +82,10 @@ public final class CoordinateUtils {
     /**
      * Interpolates a z value (linearly) between the two coordinates.
      *
-     * @param firstCoordinate
-     * @param lastCoordinate
-     * @param toBeInterpolated
-     * @return
+     * @param firstCoordinate first coordinate
+     * @param lastCoordinate last coordinate
+     * @param toBeInterpolated coordinate to be interpolate
+     * @return coordinate with z interpolated
      */
     public static double interpolate(Coordinate firstCoordinate, Coordinate lastCoordinate, Coordinate toBeInterpolated) {
         if (Double.isNaN(firstCoordinate.getZ())) {
@@ -103,9 +103,9 @@ public final class CoordinateUtils {
      *
      * The equality is done only in 2D (z values are not checked).
      *
-     * @param coords
-     * @param coord
-     * @return
+     * @param coords array of coordinates
+     * @param coord coordinate
+     * @return true if the array contains the coordinate
      */
     public static boolean contains2D(Coordinate[] coords, Coordinate coord) {
         for (Coordinate coordinate : coords) {
@@ -147,7 +147,7 @@ public final class CoordinateUtils {
      * 
      * @param coords the input coordinates
      * @param closeRing is true the first coordinate is added at the end to close the array
-     * @return 
+     * @return the input coordinates without duplicates
      */
     public static Coordinate[] removeDuplicatedCoordinates(Coordinate[] coords, boolean closeRing) {
         LinkedHashSet<Coordinate> finalCoords = new LinkedHashSet<Coordinate>();
@@ -181,7 +181,7 @@ public final class CoordinateUtils {
      * @param tolerance to delete the coordinates
      * @param duplicateFirstLast false to delete the last coordinate 
      * if there are equals
-     * @return 
+     * @return the input coordinates without repeated coordinates
      */
     public static Coordinate[] removeRepeatedCoordinates(Coordinate[] coords, double tolerance, boolean duplicateFirstLast) {
         ArrayList<Coordinate> finalCoords = new ArrayList<Coordinate>();        
@@ -214,7 +214,7 @@ public final class CoordinateUtils {
      *
      * @param value the double value
      * @param places the number of decimal places
-     * @return
+     * @return rounded value
      */
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();

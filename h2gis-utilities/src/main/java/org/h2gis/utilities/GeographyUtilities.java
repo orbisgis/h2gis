@@ -200,8 +200,8 @@ public class GeographyUtilities {
      * Haversine formula. See https://fr.wikipedia.org/wiki/Formule_de_haversine
      * This calculation is done using the approximate earth radius
      *
-     * @param coordA
-     * @param coordB
+     * @param coordA coordinate A
+     * @param coordB coordinate B
      * @return distance in meters
      */
     public static double getHaversineDistanceInMeters(Coordinate coordA, Coordinate coordB) {
@@ -220,10 +220,9 @@ public class GeographyUtilities {
      * Return a SRID code from latitude and longitude coordinates
      *
      * @param connection to the database
-     * @param latitude
-     * @param longitude
+     * @param latitude latitude value
+     * @param longitude longitude value
      * @return a SRID code
-     * @throws SQLException
      */
     public static int getSRID(Connection connection, float latitude, float longitude)
             throws SQLException {

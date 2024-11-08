@@ -46,7 +46,7 @@ public class ST_MinimumRectangle extends DeterministicScalarFunction{
     /**
      * Gets the minimum rectangular {@link Polygon} which encloses the input geometry.
      * @param geometry Input geometry
-     * @return 
+     * @return Geometry
      */
     public static Geometry computeMinimumRectangle(Geometry geometry){
         if(geometry == null){

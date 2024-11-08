@@ -46,10 +46,9 @@ public class ST_Disjoint extends DeterministicScalarFunction {
     /**
      * Return true if the two Geometries are disjoint
      *
-     * @param a Geometry Geometry.
-     * @param b Geometry instance
+     * @param a Geometry A.
+     * @param b Geometry B
      * @return true if the two Geometries are disjoint
-     * @throws java.sql.SQLException
      */
     public static Boolean geomDisjoint(Geometry a, Geometry b) throws SQLException {
         if(a==null || b==null) {

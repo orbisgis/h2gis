@@ -115,10 +115,9 @@ public class OSMParser extends DefaultHandler {
     /**
      * Read the OSM file and create its corresponding tables.
      *
-     * @param tableName
-     * @param progress
-     * @return
-     * @throws SQLException
+     * @param tableName table name
+     * @param progress Progress visitor following the execution.
+     * @return list of table names created
      */
     public String[] read(String tableName, ProgressVisitor progress) throws SQLException {
         if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
@@ -226,11 +225,10 @@ public class OSMParser extends DefaultHandler {
     /**
      * Check if one table already exists
      *
-     * @param connection
+     * @param connection database connection
      * @param dbType Database type.
-     * @param requestedTable
-     * @param osmTableName
-     * @throws SQLException
+     * @param requestedTable input table name
+     * @param osmTableName prefixed table name
      */
     private void checkOSMTables(Connection connection, DBTypes dbType, TableLocation requestedTable, String osmTableName) throws SQLException {
         String[] omsTables = new String[]{OSMTablesFactory.NODE, OSMTablesFactory.NODE_TAG, OSMTablesFactory.WAY, OSMTablesFactory.WAY_NODE, 
@@ -249,11 +247,10 @@ public class OSMParser extends DefaultHandler {
     /**
      * Create the OMS data model to store the content of the file
      *
-     * @param connection
+     * @param connection database
      * @param dbType Database type.
-     * @param requestedTable
-     * @param osmTableName
-     * @throws SQLException
+     * @param requestedTable table saved
+     * @param osmTableName osm table
      */
     private String[] createOSMDatabaseModel(Connection connection, DBTypes dbType, TableLocation requestedTable, String osmTableName) throws SQLException {
         String nodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE, dbType);
@@ -502,10 +499,9 @@ public class OSMParser extends DefaultHandler {
     }
 
     /**
-     *
-     * @param osmElement
-     * @param attributes
-     * @throws ParseException
+     * Init the commons OSM attributes
+     * @param osmElement {@link OSMElement}
+     * @param attributes {@link Attributes}
      */
     private void setCommonsAttributes(OSMElement osmElement, Attributes attributes) throws SAXException {
         osmElement.setId(attributes.getValue("id"));

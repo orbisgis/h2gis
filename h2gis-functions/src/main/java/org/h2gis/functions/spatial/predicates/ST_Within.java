@@ -43,10 +43,9 @@ public class ST_Within extends DeterministicScalarFunction {
     }
 
     /**
-     * @param a Surface Geometry.
-     * @param b Geometry instance
+     * @param a {@link Geometry} A
+     * @param b {@link Geometry} B
      * @return true if the geometry A is within the geometry B
-     * @throws java.sql.SQLException
      */
     public static Boolean isWithin(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {

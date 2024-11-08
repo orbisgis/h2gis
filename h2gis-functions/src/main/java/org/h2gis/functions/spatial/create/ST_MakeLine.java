@@ -52,7 +52,6 @@ public class ST_MakeLine extends DeterministicScalarFunction {
      * @param pointA The first POINT or MULTIPOINT
      * @param optionalPoints Optional POINTs or MULTIPOINTs
      * @return The LINESTRING constructed from the given POINTs or MULTIPOINTs
-     * @throws SQLException
      */
     public static LineString createLine(Geometry pointA, Geometry... optionalPoints) throws SQLException {
         if( pointA == null || optionalPoints.length > 0 && optionalPoints[0] == null) {
@@ -77,7 +76,6 @@ public class ST_MakeLine extends DeterministicScalarFunction {
      * @param points Points
      * @return The LINESTRING constructed from the given collection of POINTs
      * and/or MULTIPOINTs
-     * @throws SQLException
      */
     public static LineString createLine(GeometryCollection points) throws SQLException {
         if(points == null) {

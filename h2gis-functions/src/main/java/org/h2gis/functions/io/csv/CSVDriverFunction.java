@@ -142,9 +142,7 @@ public class CSVDriverFunction implements DriverFunction{
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
      * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
-     * @param progress
-     * @throws SQLException
-     * @throws IOException 
+     * @param progress Progress visitor following the execution.
      */
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, String csvOptions, ProgressVisitor progress) throws SQLException, IOException {
@@ -163,9 +161,7 @@ public class CSVDriverFunction implements DriverFunction{
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
      * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
-     * @param progress
-     * @throws SQLException
-     * @throws IOException 
+     * @param progress Progress visitor following the execution.
      */
     @Override
     public String[] importFile(Connection connection, String tableReference, File fileName,

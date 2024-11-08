@@ -44,8 +44,8 @@ public class ST_Force2D extends DeterministicScalarFunction {
     /**
      * Converts a XYZ geometry to XY.
      *
-     * @param geom
-     * @return
+     * @param geom {@link Geometry}
+     * @return Geometry in 2D
      */
     public static Geometry force2D(Geometry geom) {
         if (geom == null) {

@@ -47,8 +47,8 @@ public class ST_Node extends DeterministicScalarFunction{
     
     /**
      * Nodes a geometry using a monotone chain and a spatial index
-     * @param geom
-     * @return 
+     * @param geom {@link Geometry}
+     * @return geometry noded
      */
     public static Geometry node(Geometry geom) {
         if (geom == null) {

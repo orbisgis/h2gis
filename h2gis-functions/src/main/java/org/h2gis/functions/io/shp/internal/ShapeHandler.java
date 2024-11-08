@@ -53,7 +53,6 @@ public interface ShapeHandler {
      * @param buffer The ByteBuffer to read from.
      * @param type The shape type
      * @return A geometry object.
-     * @throws java.io.IOException
      */
     Geometry read(ReadBufferManager buffer, ShapeType type) throws IOException;
 

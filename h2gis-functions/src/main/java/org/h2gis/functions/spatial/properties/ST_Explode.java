@@ -59,10 +59,8 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
     /**
      * Explode Geometry Collection into multiple geometries
-     * @param connection
-     * @param tableName the name of the input table or select query
+     * @param connection database     * @param tableName the name of the input table or select query
      * @return A result set with the same content of specified table but with atomic geometries and duplicate values.
-     * @throws java.sql.SQLException
      */
     public static ResultSet explode(Connection connection, String tableName) throws SQLException {
         String regex = ".*(?i)\\b(select|from)\\b.*";
@@ -81,11 +79,10 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
     /**
      * Explode Geometry Collection into multiple geometries
-     * @param connection
+     * @param connection database
      * @param tableName the name of the input table
      * @param fieldName the name of geometry field. If null the first geometry column is used.
-     * @return
-     * @throws java.sql.SQLException
+     * @return ResultSet
      */
     public static ResultSet explode(Connection connection, String tableName, String fieldName) throws SQLException {
         ExplodeResultSet rowSource = new ExplodeResultSet(connection,
@@ -224,8 +221,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
         /**
          * Return the exploded geometries as multiple rows
-         * @return
-         * @throws SQLException 
+         * @return ResultSet
          */
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
@@ -309,8 +305,8 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
         /**
          * Method to perform the select query with a limit clause
-         * @param selectQuery
-         * @return 
+         * @param selectQuery input select query
+         * @return select + limit query
          */
         private String limitQuery(String selectQuery) {
             //Remove the parentheses

@@ -49,8 +49,8 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     /**
      * Converts a XY, XYZ geometry to XYM.
      *
-     * @param geom
-     * @return
+     * @param geom {@link Geometry}
+     * @return Geometry
      */
     public static Geometry force3DM(Geometry geom) {
         if (geom == null) {
@@ -62,9 +62,9 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     /**
      * Converts a XY, XYZ geometry to XYM.
      *
-     * @param geom
-     * @param mValue
-     * @return
+     * @param geom {@link Geometry}
+     * @param mValue m value
+     * @return M Geometry
      */
     public static Geometry force3DM(Geometry geom, double mValue) {
         if (geom == null) {
@@ -78,7 +78,8 @@ public class ST_Force3DM extends DeterministicScalarFunction {
      * Force the dimension of the geometry and update correctly the coordinate
      * dimension
      * @param geom the input geometry
-     * @return
+     * @param mValue m value
+     * @return M Geometry
      */
     public static Geometry forceXYM(Geometry geom, double mValue) {
         int dimension =2;
@@ -117,9 +118,9 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     /**
      * Force the dimension of the GeometryCollection and update correctly the coordinate
      * dimension
-     * @param gc
-     * @param mValue
-     * @return
+     * @param gc {@link GeometryCollection}
+     * @param mValue m value
+     * @return GeometryCollection
      */
     public static GeometryCollection convert(GeometryCollection gc, double mValue) {
         int nb = gc.getNumGeometries();
@@ -133,9 +134,9 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     /**
      * Force the dimension of the MultiPolygon and update correctly the coordinate
      * dimension
-     * @param multiPolygon
-     * @param mValue
-     * @return
+     * @param multiPolygon {@link MultiPolygon}
+     * @param mValue m value
+     * @return M {@link MultiPolygon}
      */
     public static MultiPolygon convert(MultiPolygon multiPolygon,double mValue) {
         int nb = multiPolygon.getNumGeometries();
@@ -149,9 +150,9 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     /**
      * Force the dimension of the MultiLineString and update correctly the coordinate
      * dimension
-     * @param multiLineString
-     * @param mValue
-     * @return
+     * @param multiLineString {@link MultiLineString}
+     * @param mValue m value
+     * @return M {@link MultiLineString}
      */
     public static MultiLineString convert(MultiLineString multiLineString, double mValue) {
         int nb = multiLineString.getNumGeometries();
@@ -165,9 +166,9 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     /**
      * Force the dimension of the Polygon and update correctly the coordinate
      * dimension
-     * @param polygon
-     * @param mValue
-     * @return
+     * @param polygon {@link Polygon}
+     * @param mValue M value
+     * @return M {@link Polygon}
      */
     public static Polygon convert(Polygon polygon, double mValue) {
         CoordinateSequence cs = polygon.getExteriorRing().getCoordinateSequence();
@@ -188,9 +189,9 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     /**
      * Force the dimension of the LineString and update correctly the coordinate
      * dimension
-     * @param lineString
-     * @param mValue
-     * @return
+     * @param lineString {@link LineString}
+     * @param mValue M value
+     * @return M {@link LineString}
      */
     public static LineString convert(LineString lineString,double mValue) {
         return gf.createLineString(convertSequence(lineString.getCoordinateSequence(),mValue));
@@ -199,9 +200,9 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     /**
      * Force the dimension of the LinearRing and update correctly the coordinate
      * dimension
-     * @param linearRing
-     * @param mValue
-     * @return
+     * @param linearRing {@link LinearRing}
+     * @param mValue M value
+     * @return M {@link LinearRing}
      */
     public static LinearRing convert(LinearRing linearRing,double mValue) {
         return gf.createLinearRing(convertSequence(linearRing.getCoordinateSequence(),mValue));
@@ -215,10 +216,7 @@ public class ST_Force3DM extends DeterministicScalarFunction {
      * @return a new CoordinateArraySequence
      */
     private static CoordinateArraySequence convertSequence(CoordinateSequence cs, double mValue) {
-        boolean hasM=false;
-        if(cs.getMeasures()==1){
-            hasM =true;
-        }
+        boolean hasM= cs.getMeasures() == 1;
         CoordinateXYM[] coordsXYM = new CoordinateXYM[cs.size()];
         for (int i = 0; i < cs.size(); i++) {
             Coordinate coordTmp = cs.getCoordinate(i);

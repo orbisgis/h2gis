@@ -46,10 +46,9 @@ public class ST_MaxDistance extends DeterministicScalarFunction{
     /**
      * Return the maximum distance
      *
-     * @param geomA
-     * @param geomB
-     * @return
-     * @throws java.sql.SQLException
+     * @param geomA {@link Geometry} A
+     * @param geomB {@link Geometry} B
+     * @return max distance
      */
     public static Double maxDistance(Geometry geomA, Geometry geomB) throws SQLException {
         if(geomA ==null || geomB==null){

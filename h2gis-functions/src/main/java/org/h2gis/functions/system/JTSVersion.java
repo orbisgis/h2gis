@@ -42,7 +42,7 @@ public class JTSVersion extends DeterministicScalarFunction{
     /**
      * Return the JTS version
      *
-     * @return
+     * @return JTS version
      */
     public static String getjtsVersion() {
         org.locationtech.jts.JTSVersion jtsVersion = org.locationtech.jts.JTSVersion.CURRENT_VERSION;

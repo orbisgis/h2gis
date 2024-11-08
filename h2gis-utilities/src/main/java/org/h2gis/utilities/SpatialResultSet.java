@@ -71,7 +71,6 @@ public interface SpatialResultSet extends ResultSet {
      * @param columnIndex Field index
      * @param geometry Geometry instance
      *
-     * @throws SQLException
      */
     void updateGeometry(int columnIndex, Geometry geometry) throws SQLException;
 
@@ -81,7 +80,6 @@ public interface SpatialResultSet extends ResultSet {
      * @param columnLabel Field name
      * @param geometry Geometry instance
      *
-     * @throws SQLException
      */
     void updateGeometry(String columnLabel, Geometry geometry) throws SQLException;
 
