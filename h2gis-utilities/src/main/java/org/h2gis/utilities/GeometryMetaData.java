@@ -235,7 +235,7 @@ public class GeometryMetaData {
 
     /**
      * Set SFS type code
-     * @param sfs_geometryTypeCode
+     * @param sfs_geometryTypeCode SFS geometry type code
      */
     public void setSfs_geometryTypeCode(int sfs_geometryTypeCode) {
         this.sfs_geometryTypeCode = sfs_geometryTypeCode;

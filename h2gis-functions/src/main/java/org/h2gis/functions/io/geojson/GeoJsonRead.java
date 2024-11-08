@@ -73,8 +73,9 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
     /**
      * Read the GeoJSON file.
      *
-     * @param connection database     * @param fileName input file
-     * @param option
+     * @param connection database
+     * @param fileName input file
+     * @param option file option
      */
     public static void importTable(Connection connection, String fileName, Value option) throws IOException, SQLException {
         String tableReference = null;
