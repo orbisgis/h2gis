@@ -4,3 +4,4 @@
 - Add ST_AsOverpassBbox function
 - Add ST_OverpassDownloader function
 - Fix bug when read GeometryCollection with the ST_GeomFromGeoJSON function 
+- Fix github actions

@@ -51,7 +51,7 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * Build a constrained delaunay triangulation based on a geometry
      * (point, line, polygon)
      *
-     * @param geometry
+     * @param geometry {@link Geometry}
      * @return a set of polygons (triangles)
      */
     public static GeometryCollection createCDT(Geometry geometry) throws SQLException {

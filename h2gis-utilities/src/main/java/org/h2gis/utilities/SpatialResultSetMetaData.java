@@ -31,7 +31,7 @@ import java.sql.SQLException;
 public interface SpatialResultSetMetaData extends ResultSetMetaData {
 
     /**
-     * @param column
+     * @param column column index
      *
      * @return {@link GeometryTypeCodes} of the provided column.
      *
