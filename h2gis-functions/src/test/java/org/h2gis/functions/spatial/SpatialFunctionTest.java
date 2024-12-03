@@ -296,6 +296,28 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_Empty_ST_Extent() throws Exception {
+        st.execute("drop table if exists ptClouds");
+        st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom GEOMETRY(MultiPoint));"
+                + "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)),"
+                + "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154)),"
+                + "(ST_MPointFromText('MULTIPOINT EMPTY',2154)),"
+                + "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
+        ResultSet rs = st.executeQuery("select ST_Extent(the_geom) tableEnv from ptClouds;");
+        assertTrue(rs.next());
+        Object resultObj = rs.getObject("tableEnv");
+        assertTrue(resultObj instanceof Geometry);
+        Envelope result = ((Geometry) resultObj).getEnvelopeInternal();
+        Envelope expected = new Envelope(-5, 99, -21, 124);
+        assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
+        assertEquals(expected.getMaxX(), result.getMaxX(), 1e-12);
+        assertEquals(expected.getMinY(), result.getMinY(), 1e-12);
+        assertEquals(expected.getMaxY(), result.getMaxY(), 1e-12);
+        assertFalse(rs.next());
+        st.execute("drop table ptClouds");
+    }
+
+    @Test
     public void test_TableEnvelope() throws Exception {
         st.execute("drop table if exists ptClouds");
         st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom GEOMETRY(MultiPoint));"
