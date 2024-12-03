@@ -5,3 +5,4 @@
 - Add ST_OverpassDownloader function
 - Fix bug when read GeometryCollection with the ST_GeomFromGeoJSON function 
 - Fix github actions
+- Fix mixed srid error on empty geometry with ST_Extent #1400
