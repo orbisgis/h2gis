@@ -61,15 +61,16 @@ public class ST_Extent extends AbstractFunction implements Aggregate {
     @Override
     public void add(Object o) throws SQLException {
         if (o instanceof Geometry) {
-            Geometry geom = (Geometry) o;            
-            int currentSRID = geom.isEmpty()?0:geom.getSRID();
-            if(srid==0){
-                srid=currentSRID;
+            Geometry geom = (Geometry) o;
+            if(!geom.isEmpty()) {
+                int currentSRID = geom.getSRID();
+                if (srid == 0) {
+                    srid = currentSRID;
+                } else if (srid != currentSRID) {
+                    throw new SQLException("Operation on mixed SRID geometries not supported");
+                }
+                aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
             }
-            else if(srid!=currentSRID){
-                throw new SQLException("Operation on mixed SRID geometries not supported");
-            }
-            aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
         }
     }
 

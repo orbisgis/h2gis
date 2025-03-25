@@ -55,7 +55,7 @@ public class JDBCUtilities {
         /**
          * Build a new {@code TABLE_TYPE} from a {@code String table_type_name}.
          *
-         * @param table_type_name
+         * @param table_type_name table type
          * @return A {@code TABLE_TYPE} value.
          */
         public static TABLE_TYPE fromString(String table_type_name) {
@@ -817,8 +817,6 @@ public class JDBCUtilities {
 
     /**
      * A simple method to generate a DDL create table command from a table name
-     * <p>
-     * <p>
      * Takes into account only data types
      *
      * @param connection database

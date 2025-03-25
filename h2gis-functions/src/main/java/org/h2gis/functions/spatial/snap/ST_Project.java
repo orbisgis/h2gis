@@ -51,7 +51,7 @@ public class ST_Project extends DeterministicScalarFunction {
 
     /**
      * Project a point using a given distance and azimuth
-     * @param geometry
+     * @param geometry {@link Geometry}
      * @param distance is given in meters
      * @param azimuth is given in radians and measured clockwise from true north.
      * @return a project point
