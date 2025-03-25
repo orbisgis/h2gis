@@ -167,7 +167,7 @@ public class GeometryAsserts {
 
     /**
      * Print a geometry content
-     * @param geometry
+     * @param geometry {@link Geometry}
      */
     public static void printGeometry(Object geometry){
         System.out.println(ValueGeometry.getFromGeometry(geometry).getString());

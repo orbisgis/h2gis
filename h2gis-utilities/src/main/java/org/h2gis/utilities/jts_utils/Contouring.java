@@ -492,7 +492,6 @@ public class Contouring {
      * @param triangleData Triangle Coordinates and Marker values
      * @param isoLvls Iso level to extract.
      * @return processedTriangles Return sub-triangle corresponding to iso levels. iso level are stored in markers (same for m0,m1,m2)
-     * @throws TopologyException
      */
     public static Map<Short, Deque<TriMarkers>> processTriangle(TriMarkers triangleData, List<Double> isoLvls) throws TopologyException {
         TriMarkers currentTriangle = triangleData;

@@ -79,9 +79,9 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      * Returns a new geometry based on an existing one, with a specific point as
      * a new vertex.
      *
-     * @param geometry
-     * @param point
-     * @param position
+     * @param geometry {@link Geometry}
+     * @param point {@link Point}
+     * @param position index
      * @return same geometry if the vertex cannot be inserted
      * @throws SQLException If the vertex can be inserted but it makes the
      * geometry to be in an invalid shape

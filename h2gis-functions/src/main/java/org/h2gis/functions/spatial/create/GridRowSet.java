@@ -61,9 +61,10 @@ public class GridRowSet implements SimpleRowSource {
     /**
      * The grid will be computed according a table stored in the database
      *
-     * @param connection database     * @param deltaX
-     * @param deltaY
-     * @param tableName
+     * @param connection database
+     * @param deltaX x size
+     * @param deltaY y size
+     * @param tableName table name
      */
     public GridRowSet(Connection connection, double deltaX, double deltaY, String tableName) {
         this.connection = connection;
@@ -76,9 +77,10 @@ public class GridRowSet implements SimpleRowSource {
     /**
      * The grid will be computed according the envelope of a geometry
      *
-     * @param connection database     * @param deltaX
-     * @param deltaY
-     * @param geometry
+     * @param connection database
+     * @param deltaX x size
+     * @param deltaY y size
+     * @param geometry {@link Geometry}
      */
     public GridRowSet(Connection connection, double deltaX, double deltaY, Geometry geometry) {
         this.connection = connection;

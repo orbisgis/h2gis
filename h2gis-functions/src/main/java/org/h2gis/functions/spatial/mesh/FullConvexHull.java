@@ -45,7 +45,7 @@ public class FullConvexHull
 
     /**
      * Create a new convex hull construction for the input {@link Geometry}.
-     * @param geometry
+     * @param geometry {@link Geometry}
      */
     public FullConvexHull(Geometry geometry)
     {

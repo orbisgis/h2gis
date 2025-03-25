@@ -112,7 +112,7 @@ public class AbstractGpxParserWpt extends AbstractGpxParser {
     /**
      * Set the parent of this specific parser.
      *
-     * @param parent
+     * @param parent {@link AbstractGpxParserDefault}
      */
     public void setParent(AbstractGpxParserDefault parent) {
         this.parent = parent;
