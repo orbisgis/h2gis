@@ -1434,4 +1434,52 @@ public class JDBCUtilities {
                 return false;
         }
     }
+
+
+    /**
+     * Returns the first autoincremented column name of a table.
+     *
+     * @param connection Active connection to the database
+     * @param tableLocation  a table name in the form CATALOG.SCHEMA.TABLE
+     * @return The first numeric column name .
+     * @throws SQLException If jdbc throws an error
+     */
+    public static String getFirstAutoIncrementColumn(Connection connection, TableLocation tableLocation) throws SQLException {
+        if (!tableExists(connection, tableLocation)) {
+            throw new SQLException("Table " + tableLocation + " not found.");
+        }
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        try (ResultSet columns = databaseMetaData.getColumns(null, null, tableLocation.getTable(), null)) {
+            while (columns.next()) {
+                if(columns.getBoolean("IS_AUTOINCREMENT")){
+                    return columns.getString("COLUMN_NAME");
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * Returns the first autoincremented column name of a table.
+     *
+     * @param connection Active connection to the database
+     * @param tableName  a table name in the form CATALOG.SCHEMA.TABLE
+     * @return The first numeric column name .
+     * @throws SQLException If jdbc throws an error
+     */
+    public static String getFirstAutoIncrementColumn(Connection connection, String tableName) throws SQLException {
+        if (!tableExists(connection, tableName)) {
+            throw new SQLException("Table " + tableName + " not found.");
+        }
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        try (ResultSet columns = databaseMetaData.getColumns(null, null, tableName, null)) {
+            while (columns.next()) {
+                if(columns.getBoolean("IS_AUTOINCREMENT")){
+                    return columns.getString("COLUMN_NAME");
+                }
+            }
+        }
+        return null;
+    }
 }
