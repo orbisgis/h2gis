@@ -448,7 +448,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + lastPointLastGeom + " END_POINT, "
                     + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
                     + columns
-                    + " FROM " + tableName + " WHERE ST_ISEMPTY(ROAD) = FALSE");
+                    + " FROM " + tableName + " WHERE ST_ISEMPTY("+ geomCol+") = FALSE");
         } else {
             // If the tolerance is zero, there is no need to call ST_Expand.
             st.execute("CREATE  TABLE "+ COORDS_TABLE+" AS "
@@ -456,7 +456,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + firstPointFirstGeom + " START_POINT, "
                     + lastPointLastGeom + " END_POINT "
                     + columns
-                    + " FROM " + tableName + " WHERE ST_ISEMPTY(ROAD) = FALSE");
+                    + " FROM " + tableName + " WHERE ST_ISEMPTY("+geomCol+") = FALSE");
         }
     }
 
