@@ -354,4 +354,22 @@ public class FGBImportExportTest {
             assertFalse(rs.next());
         }
     }
+    @Test
+    public void testWriteReadEmptyFGB() throws Exception {
+        File file = new File("target/empty_file.fgb");
+        file.deleteOnExit();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT, 4326))");
+            stat.execute("CALL FGBWrite('/tmp/empty_file.fgb', 'TABLE_POINTS', true);");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("CALL FGBRead('/tmp/empty_file.fgb', 'TABLE_POINTS', true);");
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
+            List<String> columns = JDBCUtilities.getColumnNames(rs.getMetaData());
+            assertEquals(2, columns.size());
+            assertTrue(columns.contains("THE_GEOM"));
+            assertTrue(columns.contains("ID"));
+            assertFalse(rs.next());
+        }
+    }
 }
