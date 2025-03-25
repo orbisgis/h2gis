@@ -34,7 +34,6 @@ public class GPXCoordinate {
      *
      * @param attributes Attributes of the point. Here it is latitude and
      * longitude
-     * @throws NumberFormatException
      * @return a coordinate
      */
     public static Coordinate createCoordinate(Attributes attributes) throws NumberFormatException {

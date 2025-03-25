@@ -50,8 +50,8 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
     /**
      * Replace the z with same value. NaN values are also updated.
      *
-     * @param geometry
-     * @param z
+     * @param geometry {@link Geometry}
+     * @param z z value
      * @return geometry
      */
     public static Geometry updateZ(Geometry geometry, double z) {

@@ -62,7 +62,7 @@ public class ST_Delaunay extends DeterministicScalarFunction {
     /**
      * Build a delaunay triangulation based on all coordinates of the geometry
      *
-     * @param geometry
+     * @param geometry {@link Geometry}
      * @param flag  for flag=0 (default flag) or a MULTILINESTRING for flag=1
      * @return a set of polygons (triangles)
      */

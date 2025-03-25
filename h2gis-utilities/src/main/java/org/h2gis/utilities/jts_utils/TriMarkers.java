@@ -183,8 +183,8 @@ public class TriMarkers extends Triangle {
 
     /**
      * Get the vector with the highest down slope in the plan.
-     * @param normal
-     * @param epsilon
+     * @param normal {@link Vector3D}
+     * @param epsilon tolerance
      * @return the steepest vector.
      */
     public static Vector3D getSteepestVector(final Vector3D normal, final double epsilon) {
