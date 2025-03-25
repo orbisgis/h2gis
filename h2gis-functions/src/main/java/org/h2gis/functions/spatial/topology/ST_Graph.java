@@ -419,13 +419,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     /**
      * Return the first and last coordinates table
-     * @param st
-     * @param tableName
-     * @param pkCol
-     * @param geomCol
-     * @param tolerance
+     * @param st {@link Statement}
+     * @param tableName table name
+     * @param pkCol primary key column name
+     * @param geomCol geometry column name
+     * @param tolerance distance
      * @param columns an array of columns
-     * @throws SQLException 
      */
     private static void firstFirstLastLast(Statement st,
                                            TableLocation tableName,
@@ -593,10 +592,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     /**
      * Edges direction according the slope (start and end z)
-     * @param st
-     * @param nodesName
-     * @param edgesName
-     * @throws SQLException 
+     * @param st {@link Statement}
+     * @param nodesName nodes table name
+     * @param edgesName edges table name
      */
     private static void orientBySlope(Statement st,
                                       TableLocation nodesName,

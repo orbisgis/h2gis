@@ -57,7 +57,7 @@ public class Driver extends JtsWrapper {
     /**
      * Mangles the PostGIS URL to return the original PostGreSQL URL.
      *
-     * @param url
+     * @param url jdbc url
      * @return Mangled PostGIS URL
      */
     public static String mangleURL(String url) throws SQLException {
