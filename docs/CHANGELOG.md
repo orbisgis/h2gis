@@ -4,3 +4,4 @@
 - Add ST_AsOverpassBbox function
 - Add ST_OverpassDownloader function
 - Fix bug when read GeometryCollection with the ST_GeomFromGeoJSON function 
+- ST_MAKEGRID and ST_MAKEGRIDPOINTS : add an option to order the cells starting from the upper left corner 

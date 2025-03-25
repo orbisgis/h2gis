@@ -46,7 +46,7 @@ public class GridRowSet implements SimpleRowSource {
     private static int cellJ = 0;
     private int maxI, maxJ;
     private double deltaX, deltaY;
-    private double minX, minY;
+    private double minX, minY, maxY;
     private int id = 0;
     private final Connection connection;
     private boolean firstRow = true;
@@ -56,6 +56,7 @@ public class GridRowSet implements SimpleRowSource {
     private boolean isCenterCell = false;
     private int srid;
     private boolean isRowColumnNumber =false;
+    private boolean upperCornerOrder=false;
 
     /**
      * The grid will be computed according a table stored in the database
@@ -102,7 +103,14 @@ public class GridRowSet implements SimpleRowSource {
             return null;
         }
         if (isCenterCell) {
-            return new Object[]{getCellPoint(), id++, cellI, cellJ + 1};
+            if(upperCornerOrder){
+                return new Object[]{getCellPointUpper(), id++, cellI, cellJ + 1};
+            }else {
+                return new Object[]{getCellPoint(), id++, cellI, cellJ + 1};
+            }
+        }
+        if(upperCornerOrder){
+            return new Object[]{getCellPolygonUpper(), id++, cellI, cellJ + 1};
         }
         return new Object[]{getCellPolygon(), id++, cellI, cellJ + 1};
     }
@@ -167,6 +175,46 @@ public class GridRowSet implements SimpleRowSource {
     }
 
     /**
+     * Compute the polygon corresponding to the cell starting
+     * to the upper corner
+     *
+     * @return Polygon of the cell
+     */
+    private Polygon getCellPolygonUpper() {
+        final Coordinate[] summits = new Coordinate[5];
+        double x1 = minX + cellI * deltaX;
+        double y1 = maxY - cellJ * deltaY;
+        double x2 = minX + (cellI + 1) * deltaX;
+        double y2 = maxY - (cellJ + 1) * deltaY;
+        summits[0] = new Coordinate(x1, y1);
+        summits[1] = new Coordinate(x2, y1);
+        summits[2] = new Coordinate(x2, y2);
+        summits[3] = new Coordinate(x1, y2);
+        summits[4] = new Coordinate(x1, y1);
+        final LinearRing g = GF.createLinearRing(summits);
+        final Polygon gg = GF.createPolygon(g, null);
+        cellI++;
+        gg.setSRID(srid);
+        return gg;
+    }
+
+
+    /**
+     * Compute the point of the cell according the upper corner
+     *
+     * @return Center point of the cell
+     */
+    private Point getCellPointUpper() {
+        double x1 = (minX + cellI * deltaX) + (deltaX / 2d);
+        double y1 = (maxY - cellJ * deltaY) - (deltaY / 2d);
+        cellI++;
+        Point gg = GF.createPoint(new Coordinate(x1, y1));
+        gg.setSRID(srid);
+        return gg;
+    }
+
+
+    /**
      * Compute the point of the cell
      *
      * @return Center point of the cell
@@ -222,12 +270,14 @@ public class GridRowSet implements SimpleRowSource {
     private void initParameters() throws SQLException {
         this.minX = envelope.getMinX();
         this.minY = envelope.getMinY();
+        this.maxY=envelope.getMaxY();
         if(isRowColumnNumber()){
             if(deltaX<1 || deltaY<1){
                 throw new SQLException("The number of columns and rows must be greater or equals than 1.");
             }
             this.minX = envelope.getMinX();
             this.minY = envelope.getMinY();
+            this.maxY=envelope.getMaxY();
             double dx = envelope.getMaxX()-minX;
             double dy = envelope.getMaxY()-minY;
             this.maxI = (int) deltaX;
@@ -287,5 +337,9 @@ public class GridRowSet implements SimpleRowSource {
         srs.addColumn("ID_COL", Types.INTEGER, 10, 0);
         srs.addColumn("ID_ROW", Types.INTEGER, 10, 0);
         return srs;
+    }
+
+    public void setUpperOrder(boolean upperOrder) {
+        this.upperCornerOrder=upperOrder;
     }
 }
