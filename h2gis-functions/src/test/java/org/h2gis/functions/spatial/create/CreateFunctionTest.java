@@ -696,7 +696,7 @@ public class CreateFunctionTest {
 
     @Test
     public void testST_MakeGridColumnsRows() throws Exception {
-        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 2, true);");
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 2, false, true);");
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 4);
@@ -716,7 +716,7 @@ public class CreateFunctionTest {
 
     @Test
     public void testST_MakeGridColumnsRows2() throws Exception {
-        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 2, true);");
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 2, false, true);");
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 2);
@@ -733,7 +733,8 @@ public class CreateFunctionTest {
 
     @Test
     public void testST_MakeGridColumnsRows3() throws Exception {
-        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 1, true);");
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM " +
+                "st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 1, false, true);");
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 2);
@@ -1133,5 +1134,52 @@ public class CreateFunctionTest {
         }
         rs.close();
         st.execute("DROP TABLE tmp_geoms;");
+    }
+
+
+    @Test
+    public void testST_MakeGridPointsUpperOrder() throws Exception {
+        st.execute("drop table if exists grid; " +
+                "CREATE TABLE grid AS SELECT * FROM ST_MakeGridPoints('POLYGON ((0 0, 2 0, 2 2, 0 2, 0 0))'::GEOMETRY, 1, 1, true);");
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select * from grid order by id;");
+        rs.next();
+        assertGeometryEquals("POINT (0.5 1.5)", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POINT (1.5 1.5)", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POINT (0.5 0.5)", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POINT (1.5 0.5)", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    @Test
+    public void test_ST_MakeGridUpperCorner() throws Exception {
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))'));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1, true);");
+        ResultSet rs = st.executeQuery("select count(*) from grid ;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select * from grid order by id_row desc, id_col asc;");
+        assertEquals(1111, rs.getMetaData().getColumnType(1));
+        rs.next();
+        assertGeometryEquals("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE input_table, grid;");
     }
 }
