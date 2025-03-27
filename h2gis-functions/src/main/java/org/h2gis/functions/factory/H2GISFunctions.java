@@ -67,6 +67,7 @@ import org.h2gis.functions.spatial.earth.ST_Svf;
 import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.ST_PrecisionReducer;
 import org.h2gis.functions.spatial.generalize.ST_Simplify;
+import org.h2gis.functions.spatial.generalize.ST_SimplifyVW;
 import org.h2gis.functions.spatial.generalize.ST_SimplifyPreserveTopology;
 import org.h2gis.functions.spatial.generalize.ST_SnapToGrid;
 import org.h2gis.functions.spatial.linear_referencing.ST_LineInterpolatePoint;
@@ -247,6 +248,7 @@ public class H2GISFunctions {
                 new ST_Rotate(),
                 new ST_Scale(),
                 new ST_Simplify(),
+                new ST_SimplifyVW(),
                 new ST_SimplifyPreserveTopology(),
                 new ST_Snap(),
                 new ST_Split(),

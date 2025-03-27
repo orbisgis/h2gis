@@ -3,6 +3,7 @@
 - Add ST_EnvelopeAsText function
 - Add ST_AsOverpassBbox function
 - Add ST_OverpassDownloader function
+- Add ST_SimplifyVW function
 - Fix bug when read GeometryCollection with the ST_GeomFromGeoJSON function
 - Fix write empty table to FGB file
 - Fix github actions
