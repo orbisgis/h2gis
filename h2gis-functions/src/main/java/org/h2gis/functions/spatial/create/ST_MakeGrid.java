@@ -65,15 +65,30 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
      * @return a resultset that contains all cells as a set of polygons
      */
     public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY) throws SQLException {
+            return createGrid( connection,  value,  deltaX,  deltaY, false) ;
+        }
+        /**
+         * Create a regular grid using the first input argument to compute the full
+         * extent.
+         *
+         * @param connection database     * @param value could be the name of a table or a geometry.
+         * @param deltaX the X cell size
+         * @param deltaY the Y cell size
+         * @param upperOrder start the cell from the upper left corner
+         * @return a resultset that contains all cells as a set of polygons
+         */
+    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean upperOrder) throws SQLException {
         if(value == null){
             return null;
         }
         if (value instanceof ValueVarchar) {
             GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
+            gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
             GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
+            gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
         } else {
             throw new SQLException("This function supports only table name or geometry as first argument.");
@@ -84,23 +99,28 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
      * Create a regular grid using the first input argument to compute the full
      * extent.
      *
-     * @param connection database     * @param value could be the name of a table or a geometry.
+     * @param connection database
+     * @param value could be the name of a table or a geometry.
      * @param deltaX the X cell size
      * @param deltaY the Y cell size
+     * @param upperOrder start the cell from the upper left corner
+     * @param isColumnsRowsMeasure deltaX and deltaY refer to the number of columns and rows
      * @return a resultset that contains all cells as a set of polygons
      */
-    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean isColumnsRowsMeasure) throws SQLException {
+    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean upperOrder, boolean isColumnsRowsMeasure) throws SQLException {
         if(value == null){
             return null;
         }
         if (value instanceof ValueVarchar) {
             GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
             gridRowSet.setIsRowColumnNumber(isColumnsRowsMeasure);
+            gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
             GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
             gridRowSet.setIsRowColumnNumber(isColumnsRowsMeasure);
+            gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
         } else {
             throw new SQLException("This function supports only table name or geometry as first argument.");
