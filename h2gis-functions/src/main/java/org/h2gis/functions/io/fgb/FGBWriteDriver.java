@@ -180,7 +180,6 @@ public class FGBWriteDriver {
             final TableLocation parse = TableLocation.parse(tableName, dbTypes);
             String outputTable = parse.toString();
             int recordCount = JDBCUtilities.getRowCount(connection, outputTable);
-            if (recordCount > 0) {
                 try ( // Read table content
                       Statement st = connection.createStatement()) {
                     Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, parse);
@@ -189,7 +188,7 @@ public class FGBWriteDriver {
                     ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
                     doExport(progress, rs, geomCol, geomMetadata.second().sfs_geometryType, geomMetadata.second().SRID, recordCount, outputStream, fileNameWithoutExt);
                 }
-            }
+
         } finally {
             try {
                 if (outputStream != null) {
@@ -212,7 +211,7 @@ public class FGBWriteDriver {
         //Columns numbers
         int columnCount = header.columns.size();
         List<PackedRTree.Item> envelopes = null;
-        if(createIndex && header.featuresCount < Integer.MAX_VALUE) {
+        if(header.featuresCount>0 && createIndex && header.featuresCount < Integer.MAX_VALUE) {
             envelopes = new ArrayList<>((int) header.featuresCount);
             long indexSize = PackedRTree.calcSize((int) header.featuresCount, packedRTreeNodeSize);
             byte[] buffer = new byte[512];

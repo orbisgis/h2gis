@@ -317,7 +317,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * 'input_nodes' and 'input_edges'.
      *
      * @param connection       Connection
-     * @param inputTable        Input table
+     * @param inputTable       Input table
      * @param spatialFieldName Name of column containing LINESTRINGs
      * @param tolerance        Tolerance
      * @param orientBySlope    True if edges should be oriented by the z-value of
@@ -328,7 +328,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     public static boolean createGraph(Connection connection,
                                       String inputTable,
-                                      final String spatialFieldName,
+                                      String spatialFieldName,
                                       double tolerance,
                                       boolean orientBySlope,
                                       boolean deleteTables, ArrayList<String> columns) throws SQLException {
@@ -354,11 +354,21 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         //Tables used to store intermediate data
         PTS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_PTS", dbType).toString();
         COORDS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_COORDS", dbType).toString();
+
         // Check for a primary key
         final Tuple<String, Integer> pkIndex = JDBCUtilities.getIntegerPrimaryKeyNameAndIndex(connection, tableName);
+        String idRowColumn =null;
         if (pkIndex==null) {
-            throw new IllegalStateException("Table " + tableName.getTable()
-                    + " must contain a single integer primary key.");
+            //Check if there is an autoincrement table and use it
+            String autoColumn = JDBCUtilities.getFirstAutoIncrementColumn(connection, tableName);
+            if(autoColumn==null) {
+                throw new IllegalStateException("Table " + tableName.getTable()
+                        + " must contain a single integer primary key or an autoincremented column.");
+            }else {
+                idRowColumn=autoColumn;
+            }
+        }else {
+            idRowColumn = pkIndex.first();
         }
         // Check the geometry column type;
         LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, tableName);
@@ -380,7 +390,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 selectedColumns = ","+String.join(",", columns);
 
             }
-            firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.getKey(), tolerance,selectedColumns);
+            firstFirstLastLast(st, tableName, idRowColumn, geometryMetada.getKey(), tolerance,selectedColumns);
             int srid = geometryMetada.getValue().SRID;
             boolean hasZ = geometryMetada.getValue().hasZ;
             makeEnvelopes(st, tolerance, dbType, srid,hasZ);
@@ -437,7 +447,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + lastPointLastGeom + " END_POINT, "
                     + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
                     + columns
-                    + " FROM " + tableName);
+                    + " FROM " + tableName + " WHERE ST_ISEMPTY("+ geomCol+") = FALSE");
         } else {
             // If the tolerance is zero, there is no need to call ST_Expand.
             st.execute("CREATE  TABLE "+ COORDS_TABLE+" AS "
@@ -445,7 +455,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + firstPointFirstGeom + " START_POINT, "
                     + lastPointLastGeom + " END_POINT "
                     + columns
-                    + " FROM " + tableName);
+                    + " FROM " + tableName + " WHERE ST_ISEMPTY("+geomCol+") = FALSE");
         }
     }
 
