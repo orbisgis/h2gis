@@ -205,6 +205,19 @@ public class OGCSpatialFunctionTest {
         rs.close();
     }
 
+    @Test
+    public void test_ST_Collect5() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("WITH coverage(id, geom_a, geom_b) AS (VALUES\n" +
+                "  (1, 'POINT (1 1)'::geometry, 'POINT(1 10)'::GEOMETRY),\n" +
+                "  (2, 'POINT (2 2)'::geometry,'POINT(2 10)'::GEOMETRY)\n" +
+                ")\n" +
+                "SELECT ST_ACCUM(ST_COLLECT(ARRAY[geom_a, geom_b])) FROM coverage");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTIPOINT ((1 1), (1 10), (2 2), (2 10))", rs.getString(1));
+        rs.close();
+    }
+
 
     @Test
     public void testFunctionRemarks() throws SQLException {
