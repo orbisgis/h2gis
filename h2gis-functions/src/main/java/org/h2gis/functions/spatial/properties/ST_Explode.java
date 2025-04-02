@@ -59,7 +59,8 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
     /**
      * Explode Geometry Collection into multiple geometries
-     * @param connection database     * @param tableName the name of the input table or select query
+     * @param connection database
+     * @param tableName the name of the input table or select query
      * @return A result set with the same content of specified table but with atomic geometries and duplicate values.
      */
     public static ResultSet explode(Connection connection, String tableName) throws SQLException {
@@ -168,7 +169,6 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
         /**
          * Read the geometry value and explode it.
-         * @throws SQLException 
          */
         private void parseRow() throws SQLException {
             sourceRowGeometries.clear();
@@ -263,9 +263,8 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
         /**
          * Perform a fast copy of columns using a limit clause.
-         * @param rs
-         * @param selectQuery
-         * @throws SQLException 
+         * @param rs {@link SimpleResultSet}
+         * @param selectQuery select query
          */
         private void copyfields(SimpleResultSet rs, String selectQuery) throws SQLException { 
             Statement st = null;

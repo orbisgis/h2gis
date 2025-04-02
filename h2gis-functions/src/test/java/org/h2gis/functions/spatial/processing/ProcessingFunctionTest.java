@@ -499,6 +499,60 @@ public class ProcessingFunctionTest {
     }
 
     @Test
+    public void test_ST_SimplifyVW1() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_SimplifyVW(geom,30) simplified\n" + //
+                        "  FROM (SELECT 'LINESTRING(5 2, 3 8, 6 20, 7 25, 10 10)'::geometry AS geom) AS t;");
+        rs.next();
+        assertGeometryEquals("LINESTRING(5 2,7 25,10 10)", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SimplifyVW2() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_SimplifyVW(geom,40) simplified\n" + //
+                        "  FROM (SELECT 'MULTIPOLYGON (((90 110, 80 180, 50 160, 10 170, 10 140, 20 110, 90 110)), ((40 80, 100 100, 120 160, 170 180, 190 70, 140 10, 110 40, 60 40, 40 80), (180 70, 170 110, 142.5 128.5, 128.5 77.5, 90 60, 180 70)))'::geometry AS geom) AS t;");
+        rs.next();
+        assertGeometryEquals(
+                "MULTIPOLYGON (((90 110, 80 180, 50 160, 10 170, 10 140, 20 110, 90 110)), \n" + //
+                        "  ((40 80, 100 100, 120 160, 170 180, 190 70, 140 10, 110 40, 60 40, 40 80), \n" + //
+                        "    (180 70, 170 110, 142.5 128.5, 128.5 77.5, 90 60, 180 70)))",
+                rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SimplifyVW3() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_SimplifyVW(geom,1600) simplified\n" + //
+                        "  FROM (SELECT 'LINESTRING (10 10, 50 40, 30 70, 50 60, 70 80, 50 110, 100 100, 90 140, 100 180, 150 170, 170 140, 190 90, 180 40, 110 40, 150 20)'::geometry AS geom) AS t;");
+        rs.next();
+        assertGeometryEquals("LINESTRING (10 10, 100 100, 100 180, 150 170, 190 90, 150 20)", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SimplifyVW4() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_SimplifyVW(NULL,1600) simplified;");
+
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SimplifyVW5() throws Exception {
+
+        assertThrows(SQLException.class, () -> {
+            st.executeQuery(
+                    "SELECT ST_SimplifyVW('LINESTRING (10 10, 50 40, 30 70, 50 60, 70 80, 50 110, 100 100, 90 140, 100 180, 150 170, 170 140, 190 90, 180 40, 110 40, 150 20)'::geometry ,-1600) simplified");
+        });
+
+    }
+
+    @Test
     public void test_ST_SimplifyPreserveTopology1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('MULTIPOINT( (190 300), (10 11))'::GEOMETRY, 4);");
         rs.next();
