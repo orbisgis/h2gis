@@ -205,6 +205,7 @@ public class OGCSpatialFunctionTest {
         rs.close();
     }
 
+
     @Test
     public void testFunctionRemarks() throws SQLException {
         H2GISFunctions.registerFunction(connection.createStatement(), new DummyFunction(), "");
