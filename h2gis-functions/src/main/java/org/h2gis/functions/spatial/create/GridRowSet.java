@@ -242,7 +242,7 @@ public class GridRowSet implements SimpleRowSource {
     /**
      * Set if the cell must be represented as a point or a polygon
      *
-     * @param isCenterCell
+     * @param isCenterCell true to compute on the center cell
      */
     public void setCenterCell(boolean isCenterCell) {
         this.isCenterCell = isCenterCell;
@@ -251,7 +251,7 @@ public class GridRowSet implements SimpleRowSource {
 
     /**
      * Set true to define the delta x and y as number of columns and rows
-     * @param isRowColumnNumber
+     * @param isRowColumnNumber true if row/col number
      */
     public void setIsRowColumnNumber(boolean isRowColumnNumber){
         this.isRowColumnNumber =isRowColumnNumber;

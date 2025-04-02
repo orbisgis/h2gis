@@ -62,7 +62,7 @@ public class ST_Collect extends DeterministicScalarFunction {
     /**
      * Create a geometry from an array of geometries
      * @param geomA input geometry
-     * @^param geomB input geometry
+     * @param geomB input geometry
      * @return org.locationtech.jts.geom.Geometry
      */
     public static Geometry collect(Geometry geomA, Geometry geomB){

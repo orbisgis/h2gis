@@ -143,9 +143,9 @@ public class GeoJsonWriteDriver {
      * Method to write a resulset to a geojson file
      *
      * @param progress Progress visitor following the execution.
-     * @param rs
-     * @param fos
-     * @param encoding
+     * @param rs {@link ResultSet}
+     * @param fos {@link OutputStream}
+     * @param encoding chartset
      */
     private void geojsonWriter(ProgressVisitor progress, ResultSet rs, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding = JsonEncoding.UTF8;
@@ -527,8 +527,8 @@ public class GeoJsonWriteDriver {
      *
      * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}
      *
-     * @param geom
-     * @param gen
+     * @param geom geometry to write
+     * @param gen json writer
      */
     private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {
         if (geom != null) {

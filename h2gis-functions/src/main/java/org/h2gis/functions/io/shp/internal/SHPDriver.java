@@ -272,7 +272,7 @@ public class SHPDriver implements FileDriver {
 
     /**
      * Set a SRID code that will be used for geometries.
-     * @param srid 
+     * @param srid int value
      */
     public void setSRID(int srid) {
         this.srid=srid;

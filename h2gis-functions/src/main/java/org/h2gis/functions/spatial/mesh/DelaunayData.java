@@ -112,7 +112,6 @@ public class DelaunayData {
      *
      * @param geom Geometry
      * @param mode Delaunay mode
-     * @throws IllegalArgumentException
      */
     public void put(Geometry geom, MODE mode) throws IllegalArgumentException {
         gf = geom.getFactory();
@@ -283,7 +282,6 @@ public class DelaunayData {
     /**
      * Add a geometry to the list of points and edges used by the triangulation.
      * @param geom Any geometry
-     * @throws IllegalArgumentException
      */
     private void addGeometry(Geometry geom) throws IllegalArgumentException {
         if(!geom.isValid()) {

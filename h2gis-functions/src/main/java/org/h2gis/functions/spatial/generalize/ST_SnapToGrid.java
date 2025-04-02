@@ -71,7 +71,7 @@ public class ST_SnapToGrid extends DeterministicScalarFunction {
     /**
      * Computes the scale factor for a given number of decimal places.
      *
-     * @param decimalPlaces
+     * @param decimalPlaces number of decimals
      * @return the scale factor
      */
     public static double scaleFactorForDecimalPlaces(int decimalPlaces) {
