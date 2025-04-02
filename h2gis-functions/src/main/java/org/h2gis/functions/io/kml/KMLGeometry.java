@@ -91,9 +91,9 @@ public class KMLGeometry {
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </Point>
      * }
-     * @param point
-     * @param extrude
-     * @param altitudeModeEnum
+     * @param point point
+     * @param extrude extrude mode
+     * @param altitudeModeEnum altitude mode
      */
     public static void toKMLPoint(Point point, ExtrudeMode extrude, int altitudeModeEnum, StringBuilder sb) {
         sb.append("<Point>");
@@ -135,7 +135,6 @@ public class KMLGeometry {
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </LineString>
      * }
-     * @param lineString
      */
     public static void toKMLLineString(LineString lineString, ExtrudeMode extrude, int altitudeModeEnum, StringBuilder sb) {
         sb.append("<LineString>");
@@ -172,7 +171,6 @@ public class KMLGeometry {
      * </LinearRing>
      * }
      *
-     * @param lineString
      */
     public static void toKMLLinearRing(LineString lineString, ExtrudeMode extrude, int altitudeModeEnum, StringBuilder sb) {
         sb.append("<LinearRing>");
@@ -227,7 +225,6 @@ public class KMLGeometry {
      * </Polygon>
      * }
      *
-     * @param polygon
      */
     public static void toKMLPolygon(Polygon polygon, ExtrudeMode extrude, int altitudeModeEnum, StringBuilder sb) {
         sb.append("<Polygon>");
@@ -256,7 +253,6 @@ public class KMLGeometry {
      * </MultiGeometry>
      * }
      *
-     * @param gc
      */
     public static void toKMLMultiGeometry(GeometryCollection gc, ExtrudeMode extrude, int altitudeModeEnum, StringBuilder sb) {
         sb.append("<MultiGeometry>");

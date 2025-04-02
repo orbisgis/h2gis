@@ -113,8 +113,8 @@ public class GeometryExtrude {
     
     /**
      * Extract the walls from a polygon
-     * @param polygon
-     * @param height
+     * @param polygon input footprint
+     * @param height height
      * @return 
      */
     public static MultiPolygon extractWalls(Polygon polygon, double height){

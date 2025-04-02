@@ -564,8 +564,8 @@ public class GeoJsonWriteDriver {
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
      *
-     * @param point
-     * @param gen
+     * @param point point
+     * @param gen json writer
      */
     private void write(Point point, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Point");

@@ -144,8 +144,8 @@ public class OverpassTool {
 
     /**
      * Check if the file extension is supported and the same as specified in the query
-     * @param overpassQuery
-     * @param outputFile
+     * @param overpassQuery query
+     * @param outputFile output file
      */
     public void checkOutputFile(String overpassQuery, File outputFile) {
         if (outputFile.getName().toLowerCase().endsWith(".csv") && !StringUtils.containsIgnoreCase(overpassQuery, "out:csv")) {
