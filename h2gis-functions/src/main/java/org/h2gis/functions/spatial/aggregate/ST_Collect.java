@@ -20,19 +20,62 @@
 
 package org.h2gis.functions.spatial.aggregate;
 
+import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Construct an array of Geometries.
  *
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
-public class ST_Collect extends ST_Accum {
+public class ST_Collect extends DeterministicScalarFunction {
    
-
+    static GeometryFactory GF = new GeometryFactory();
     public ST_Collect() {
-        addProperty(PROP_REMARKS, "This aggregate function returns a GeometryCollection "
-                + "from a column of mixed dimension Geometries.\n"
-                + "If there is only POINTs in the column of Geometries, a MULTIPOINT is returned. \n"
-                + "Same process with LINESTRINGs and POLYGONs.");
+        addProperty(PROP_REMARKS, "Collects geometries into a geometry collection. " +
+                "\nThe result is either a Multi* or a GeometryCollection, depending on whether the input geometries have the same or different types (homogeneous or heterogeneous). \n" +
+                "The input geometries are left unchanged within the collection.");
     }
-   
+
+    @Override
+    public String getJavaStaticMethod() {
+        return "collect";
+    }
+
+    /**
+     * Create a geometry from an array of geometries
+     * @param geometries array of geometries
+     * @return org.locationtech.jts.geom.Geometry
+     */
+    public static Geometry collect(Geometry[] geometries){
+        if(geometries==null){
+            return null;
+        }
+        return GF.buildGeometry(Arrays.asList(geometries));
+    }
+
+    /**
+     * Create a geometry from an array of geometries
+     * @param geomA input geometry
+     * @^param geomB input geometry
+     * @return org.locationtech.jts.geom.Geometry
+     */
+    public static Geometry collect(Geometry geomA, Geometry geomB){
+        if(geomA==null && geomB==null){
+           return null;
+        }
+        ArrayList geoms = new ArrayList<>();
+        if(geomA!=null){
+            geoms.add(geomA);
+        }
+        if(geomB!=null){
+            geoms.add(geomB);
+        }
+        return GF.buildGeometry(geoms);
+    }
 }

@@ -172,9 +172,36 @@ public class OGCSpatialFunctionTest {
     @Test
     public void test_ST_Collect() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Collect(footprint) FROM buildings GROUP BY SUBSTRING(address,4)");
+        ResultSet rs = st.executeQuery("SELECT ST_Collect(ARRAY(select st_makepoint(x,-x)  FROM generate_series(0,10) as x))");
         assertTrue(rs.next());
-        assertGeometryEquals("SRID=101;MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31)), ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
+        assertGeometryEquals("MULTIPOINT ((0 0), (1 -1), (2 -2), (3 -3), (4 -4), (5 -5), (6 -6), (7 -7), (8 -8), (9 -9), (10 -10))", rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Collect2() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Collect(st_makepoint(0,0), st_makepoint(1,1))");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTIPOINT ((0 0), (1 1))", rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Collect3() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Collect(null, st_makepoint(1,1))");
+        assertTrue(rs.next());
+        assertGeometryEquals("POINT (1 1)", rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Collect4() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Collect(null, null)");
+        assertTrue(rs.next());
+        assertNull(rs.getObject(1));
         rs.close();
     }
 
