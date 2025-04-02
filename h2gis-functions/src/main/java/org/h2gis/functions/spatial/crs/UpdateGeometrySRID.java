@@ -51,7 +51,6 @@ public class UpdateGeometrySRID  extends AbstractFunction implements ScalarFunct
      * @param column_name name of the geomtry column
      * @param srid value of the new srid
      * @return true if the SRID is changed
-     * @throws SQLException 
      */
     public static boolean changeSRID(Connection connection, String table_name, String column_name, int srid) throws SQLException {
         return changeSRID(connection, null, null, table_name, column_name, srid);
@@ -66,7 +65,6 @@ public class UpdateGeometrySRID  extends AbstractFunction implements ScalarFunct
      * @param column_name name of the geomtry column
      * @param srid value of the new srid
      * @return true if the SRID is changed
-     * @throws SQLException 
      */
     public static boolean changeSRID(Connection connection, String schema_name, String table_name, String column_name, int srid) throws SQLException {
         return changeSRID(connection, null, schema_name, table_name, column_name, srid);
@@ -82,7 +80,6 @@ public class UpdateGeometrySRID  extends AbstractFunction implements ScalarFunct
      * @param column_name name of the geomtry column
      * @param srid value of the new srid
      * @return true if the SRID is changed
-     * @throws SQLException 
      */
     public static boolean changeSRID(Connection connection, String catalog_name, String schema_name, String table_name, String column_name, int srid) throws SQLException {
         TableLocation tableLocation = new TableLocation(catalog_name, schema_name, table_name, DBTypes.H2GIS);

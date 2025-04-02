@@ -231,9 +231,9 @@ public class GeoJsonWriteDriver {
      * Method to write a table to a geojson file
      *
      * @param progress Progress visitor following the execution.
-     * @param tableName
-     * @param fos
-     * @param encoding
+     * @param tableName table name
+     * @param fos {@link OutputStream}
+     * @param encoding file encoding
      */
     private void geojsonWriter(ProgressVisitor progress, String tableName, OutputStream fos, String encoding) throws SQLException, IOException {
         DBTypes dbTypes = DBUtils.getDBType(connection);
@@ -300,7 +300,7 @@ public class GeoJsonWriteDriver {
      * Write the spatial table to GeoJSON format.
      *
      * @param progress Progress visitor following the execution.
-     * @param tableName
+     * @param tableName table name
      * @param fileName input file
      * @param encoding file encoding
      * @param deleteFile true to delete the file if exist
