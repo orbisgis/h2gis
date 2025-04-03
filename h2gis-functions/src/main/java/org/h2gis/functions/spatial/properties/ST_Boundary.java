@@ -43,7 +43,7 @@ public class ST_Boundary extends DeterministicScalarFunction {
 
     /**
      * @param geometry Geometry instance
-     * @param srid 
+     * @param srid int value
      * @return Geometry envelope
      */
     public static Geometry getBoundary(Geometry geometry, int srid) {

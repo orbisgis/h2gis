@@ -13,3 +13,4 @@
 - Allow ST_GRAPH to be executed when the input table contains an autoincrement column and not only a PK
 - Fix bug when read GeometryCollection with the ST_GeomFromGeoJSON function 
 - ST_MAKEGRID and ST_MAKEGRIDPOINTS : add an option to order the cells starting from the upper left corner 
+- Change ST_Collect to scalar function

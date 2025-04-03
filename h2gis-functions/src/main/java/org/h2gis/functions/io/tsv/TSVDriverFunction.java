@@ -228,7 +228,7 @@ public class TSVDriverFunction implements DriverFunction {
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
      * @param progress Progress visitor following the execution.
-     * @param encoding
+     * @param encoding chartset encoding
      */
     @Override
     public String[] exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
@@ -238,10 +238,11 @@ public class TSVDriverFunction implements DriverFunction {
     /**
      * Export a resultset to a TSV file
      *
-     * @param connection database     * @param res
-     * @param writer
+     * @param connection database
+     * @param res {@link ResultSet}
+     * @param writer {@link Writer}
      * @param progress Progress visitor following the execution.
-     * @param encoding
+     * @param encoding chartset encoding
      */
     public void exportFromResultSet(Connection connection, ResultSet res, Writer writer, String encoding, ProgressVisitor progress) throws SQLException {
         Csv csv = new Csv();

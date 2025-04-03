@@ -111,7 +111,7 @@ public class MaxDistanceOp {
         /**
          * Compute the max distance between two geometries
          *
-         * @param coordsToExclude
+         * @param coordsToExclude list of coordinates to exclude
          */
         public MaxDistanceFilter(HashSet<Coordinate> coordsToExclude) {
             this.coordsToExclude = coordsToExclude;

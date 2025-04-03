@@ -143,9 +143,9 @@ public class GeoJsonWriteDriver {
      * Method to write a resulset to a geojson file
      *
      * @param progress Progress visitor following the execution.
-     * @param rs
-     * @param fos
-     * @param encoding
+     * @param rs {@link ResultSet}
+     * @param fos {@link OutputStream}
+     * @param encoding chartset
      */
     private void geojsonWriter(ProgressVisitor progress, ResultSet rs, OutputStream fos, String encoding) throws SQLException, IOException {
         JsonEncoding jsonEncoding = JsonEncoding.UTF8;
@@ -527,8 +527,8 @@ public class GeoJsonWriteDriver {
      *
      * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}
      *
-     * @param geom
-     * @param gen
+     * @param geom geometry to write
+     * @param gen json writer
      */
     private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {
         if (geom != null) {
@@ -564,8 +564,8 @@ public class GeoJsonWriteDriver {
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
      *
-     * @param point
-     * @param gen
+     * @param point point
+     * @param gen json writer
      */
     private void write(Point point, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Point");
@@ -579,9 +579,8 @@ public class GeoJsonWriteDriver {
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
      *
-     * @param points
-     * @param gen
-     * @throws IOException
+     * @param points points
+     * @param gen json writer
      */
     private void write(MultiPoint points, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiPoint");
@@ -594,9 +593,8 @@ public class GeoJsonWriteDriver {
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param geom
-     * @param gen
-     * @throws IOException
+     * @param geom linestring
+     * @param gen json writer
      */
     private void write(LineString geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "LineString");
@@ -611,9 +609,8 @@ public class GeoJsonWriteDriver {
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
-     * @param geom
-     * @param gen
-     * @throws IOException
+     * @param geom multi lines
+     * @param gen json writer
      */
     private void write(MultiLineString geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiLineString");
@@ -634,9 +631,8 @@ public class GeoJsonWriteDriver {
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
      * [101.0, 0.0], [102.0, 1.0] ] } ] }
      *
-     * @param coll
-     * @param gen
-     * @throws IOException
+     * @param coll geometry collection
+     * @param gen json writer
      */
     private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "GeometryCollection");
@@ -683,9 +679,8 @@ public class GeoJsonWriteDriver {
      * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ], [ [100.2, 0.2], [100.8, 0.2],
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ] ] }
      *
-     * @param geom
-     * @param gen
-     * @throws IOException
+     * @param geom polygon
+     * @param gen json writer
      */
     private void write(Polygon geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Polygon");
@@ -708,9 +703,8 @@ public class GeoJsonWriteDriver {
      * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
-     * @param geom
-     * @param gen
-     * @throws IOException
+     * @param geom multi polygons
+     * @param gen json writer
      */
     private void write(MultiPolygon geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiPolygon");
@@ -732,9 +726,8 @@ public class GeoJsonWriteDriver {
     /**
      * Write coordinate positions.
      *
-     * @param coordinate
-     * @param gen
-     * @throws IOException
+     * @param coordinate coordinate
+     * @param gen json writer
      */
     private void writeCoordinate(Coordinate coordinate, JsonGenerator gen) throws IOException {
         gen.writeStartArray();
@@ -752,9 +745,8 @@ public class GeoJsonWriteDriver {
     /**
      * Write coordinate array.
      *
-     * @param coordinates
-     * @param gen
-     * @throws IOException
+     * @param coordinates coordinate array
+     * @param gen json writer
      */
     private void writeCoordinates(Coordinate[] coordinates, JsonGenerator gen) throws IOException {
         gen.writeStartArray();
@@ -767,9 +759,8 @@ public class GeoJsonWriteDriver {
     /**
      * Write the GeoJSON properties.
      *
-     * @param jsonGenerator
-     * @param rs
-     * @throws IOException
+     * @param jsonGenerator json writer
+     * @param rs resulset
      */
     private void writeProperties(JsonGenerator jsonGenerator, ResultSet rs) throws IOException, SQLException {
         if (columnCountProperties != -1) {
@@ -851,9 +842,8 @@ public class GeoJsonWriteDriver {
     /**
      * Write the CRS in the geojson
      *
-     * @param jsonGenerator
-     * @param authorityAndSRID
-     * @throws IOException
+     * @param jsonGenerator json writer
+     * @param authorityAndSRID srid list
      */
     private void writeCRS(JsonGenerator jsonGenerator, String[] authorityAndSRID) throws IOException {
         if (authorityAndSRID[1] != null) {

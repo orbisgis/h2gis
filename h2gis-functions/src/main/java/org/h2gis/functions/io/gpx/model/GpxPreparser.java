@@ -69,7 +69,6 @@ public final class GpxPreparser extends DefaultHandler {
      *
      * @param inputFile the file to read
      * @return a boolean if the parser ends successfully or not
-     * @throws IOException
      */
     public boolean read(File inputFile, String encoding) throws SAXException, IOException {
         boolean success = false;

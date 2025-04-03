@@ -66,7 +66,7 @@ public class ST_GeomFromWKB extends DeterministicScalarFunction{
     
     /**
      * Convert a WKB representation to a geometry without specify a SRID.
-     * @param bytes
+     * @param bytes {@link Byte}
      * @return Geometry
      */
     public static Geometry toGeometry(byte[] bytes) throws SQLException{

@@ -39,7 +39,7 @@ public class WayOSMElement extends OSMElement {
     /**
      * Add in a list the ref of the node used to describe the way.
      *
-     * @param ref
+     * @param ref ref of the node
      */
     public void addRef(String ref) {
         if(ref!=null) {

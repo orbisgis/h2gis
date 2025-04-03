@@ -101,8 +101,8 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
     /**
      * Download OSM file from the official server
      *
-     * @param file
-     * @param geometryEnvelope
+     * @param file file to save the data
+     * @param geometryEnvelope bbox of the area
      */
     public static void downloadOSMFile(File file, Envelope geometryEnvelope) throws IOException {
         HttpURLConnection urlCon = (HttpURLConnection) createOsmUrl(geometryEnvelope).openConnection();

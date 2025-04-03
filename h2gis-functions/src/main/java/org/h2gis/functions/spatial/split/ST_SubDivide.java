@@ -168,10 +168,10 @@ public class ST_SubDivide extends DeterministicScalarFunction {
     /**
      * Extract unique geometry and check if the geometry must be divided
      *
-     * @param geom
-     * @param maxvertices
-     * @param stack
-     * @param ret
+     * @param geom {@link Geometry}
+     * @param maxvertices max vertices
+     * @param stack queue
+     * @param ret list of sub geometries
      */
     public static void filterGeom(Geometry geom, int maxvertices, Stack stack, List ret) {
         int size = geom.getNumGeometries();

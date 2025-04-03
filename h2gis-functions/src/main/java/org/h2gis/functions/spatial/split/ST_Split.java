@@ -309,8 +309,8 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Splits the specified lineString with another lineString.
      *
-     * @param lineString
-     * @param lineString
+     * @param input input line
+     * @param cut line
      *
      */
     private static Geometry splitLineStringWithLine(LineString input, LineString cut) {
@@ -320,8 +320,8 @@ public class ST_Split extends DeterministicScalarFunction {
     /**
      * Splits the specified MultiLineString with another lineString.
      * 
-     * @param MultiLineString
-     * @param lineString
+     * @param input input geometry
+     * @param cut line
      *
      */
     private static Geometry splitMultiLineStringWithLine(MultiLineString input, LineString cut) {

@@ -57,8 +57,8 @@ public class ST_FurthestCoordinate extends DeterministicScalarFunction {
      * Computes the furthest coordinate(s) contained in the given geometry starting
      * from the given point, using the 2D distance.
      *
-     * @param point Point
-     * @param geom  Geometry
+     * @param point Point point
+     * @param geom  Geometry distance to
      * @return The furthest coordinate(s) contained in the given geometry starting from
      *         the given point, using the 2D distance
      */

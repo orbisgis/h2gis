@@ -112,7 +112,7 @@ public class FullConvexHull
     /**
      * An alternative to Stack.toArray, which is not present in earlier versions
      * of Java.
-     * @param stack
+     * @param stack coordinate stack
      */
     protected Coordinate[] toCoordinateArray(Stack stack) {
         Coordinate[] coordinates = new Coordinate[stack.size()];
