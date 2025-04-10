@@ -59,14 +59,7 @@
         <dependency>
             <groupId>org.wololo</groupId>
             <artifactId>flatgeobuf</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.locationtech.jts</groupId>
-                    <artifactId>jts-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-api</artifactId>
