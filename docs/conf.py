@@ -73,3 +73,6 @@ language = 'en'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'H2GIS doc'
+
+
+myst_enable_extensions = [attrs_inline, html_image]

@@ -22,7 +22,7 @@ SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)', pi());
 -- Answer:    LINESTRING(2 1, 2 3, 1 3)
 ```
 
-![](./ST_Rotate.png)
+![](./ST_Rotate.png){w=80% align=center}
 
 
 ```sql
