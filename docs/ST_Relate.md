@@ -14,7 +14,9 @@ Returns
 * the [DE-9IM][] intersection matrix for `geomA` and `geomB`, or
 * `TRUE` if `geomA` and `geomB` are related by the intersection matrix specified by `iMatrix`.
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 
 ```{include} sfs-1-2-1.md
 ```

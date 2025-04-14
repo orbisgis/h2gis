@@ -18,7 +18,9 @@ As a consequence, the following are equivalent:
 * `ST_Within(geomA, geomB)` and `ST_Within(geomB, geomA)` are true.
 * `ST_Equals(geomA, geomB)` is true.
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 ```{include} sfs-1-2-1.md
 ```
 {% include spatial_indice_warning.html %}

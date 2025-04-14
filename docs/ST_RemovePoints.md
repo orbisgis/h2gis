@@ -15,7 +15,9 @@ Returns `NULL` if all coordinates are removed.
     <h5>May produce invalid Geometries. Use with caution.</h5>
 </div>
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 
 ## Examples
 

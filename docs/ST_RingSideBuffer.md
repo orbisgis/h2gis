@@ -34,7 +34,9 @@ The end cap style for single-sided buffers is always ignored, and forced to the 
 
 The `doDifference` parameter is used to define if the user want to keep only difference between buffers. Default is true (`doDifference`=1).
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 
 ## Examples
 

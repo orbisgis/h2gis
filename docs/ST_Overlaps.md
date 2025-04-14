@@ -17,7 +17,9 @@ Overlaps means that the two geometries:
 * the intersection of their interiors has the same dimension as the
   geometries themselves.
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 ```{include} sfs-1-2-1.md
 ```
 {% include spatial_indice_warning.html %}

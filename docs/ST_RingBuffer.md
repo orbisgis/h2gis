@@ -20,7 +20,9 @@ Supported `endCapStyle`s are `round` (default) and `square`.
 By default, creates rings. To obtain superimposed `POLYGON`s, set
 `doDifference=FALSE`.
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 
 ## Examples
 

@@ -11,7 +11,9 @@ LINEARRING ST_ExteriorRing(GEOMETRY geom);
 Returns the exterior ring of `geom` as a `LINEARRING`, or `NULL` if `geom` is
 not a `POLYGON`.
 
-{% include type-warning.html type='MULTIPOLYGON' %}
+```{include} type-warning_multipolygon.md
+```
+
 ```{include} sfs-1-2-1.md
 ```
 

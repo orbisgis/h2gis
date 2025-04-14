@@ -12,7 +12,9 @@ Returns true if `geomA` intersects `geomB`.
 
 Intersects means that `geomA` and `geomB` have at least one point in common.
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 ```{include} sfs-1-2-1.md
 ```
 {% include spatial_indice_warning.html %}

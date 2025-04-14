@@ -12,7 +12,9 @@ Returns true if `geomA` and `geomB` are disjoint.
 
 Disjoint means that the two geometries have no point in common.
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 ```{include} sfs-1-2-1.md
 ```
 {% include spatial_indice_warning.html %}

@@ -13,7 +13,9 @@ Returns the boundary of `geom`, optionally setting its SRID to `srid`.
 The boundary of a Geometry is a set of Geometries of the next lower
 dimension.
 
-{% include type-warning.html type='GEOMETRYCOLLECTION' %}
+```{include} type-warning_geometrycollection.md
+```
+
 ```{include} sfs-1-2-1.md
 ```
 
