@@ -75,4 +75,7 @@ language = 'en'
 htmlhelp_basename = 'H2GIS doc'
 
 
-myst_enable_extensions = [attrs_inline, html_image]
+myst_enable_extensions = [
+    "attrs_inline", 
+    "html_image"
+    ]
