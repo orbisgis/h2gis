@@ -31,7 +31,7 @@ SELECT * FROM grid;
 -- | POLYGON((1 1, 2 1, 2 2, 1 2, 1 1)) |   3 |      2 |      2 |
 ```
 
-![](./ST_MakeGrid_1.png)
+![](./ST_MakeGrid_1.png){align=center}
 
 ```sql
 -- Using a table:
@@ -66,7 +66,7 @@ SELECT * FROM grid;
 -- | POLYGON((1 1, 2 1, 2 2, 1 2, 1 1)) |   3 |      2 |      2 |
 ```
 
-![](./ST_MakeGrid_2.png)
+![](./ST_MakeGrid_2.png){align=center}
 
 ## See also
 

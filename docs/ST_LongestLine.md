@@ -22,7 +22,7 @@ SELECT ST_Longestline('POLYGON ((0 1, 1 1, 1 0, 0 0, 0 1))',
 -- Answer: LINESTRING (0 0, 4 3)
 ```
 
-![](./ST_LongestLine_1.png)
+![](./ST_LongestLine_1.png){align=center}
 
 ```sql
 SELECT ST_Longestline('POLYGON ((0 1, 1 1, 1 0, 0 0, 0 1))', 
@@ -30,7 +30,7 @@ SELECT ST_Longestline('POLYGON ((0 1, 1 1, 1 0, 0 0, 0 1))',
 -- Answer: LINESTRING (0 0, 4 3)
 ```
 
-![](./ST_LongestLine_2.png)
+![](./ST_LongestLine_2.png){align=center}
 
 ```sql
 SELECT ST_Longestline('POLYGON ((0 1, 1 1, 1 0, 0 0, 0 1))', 
@@ -38,7 +38,7 @@ SELECT ST_Longestline('POLYGON ((0 1, 1 1, 1 0, 0 0, 0 1))',
 -- Answer: LINESTRING (0 0, 3 2)
 ```
 
-![](./ST_LongestLine_3.png)
+![](./ST_LongestLine_3.png){align=center}
 
 ```sql
 SELECT ST_Longestline('MULTIPOLYGON (((0 1, 1 1, 1 0, 0 0, 0 1)), 
@@ -47,7 +47,7 @@ SELECT ST_Longestline('MULTIPOLYGON (((0 1, 1 1, 1 0, 0 0, 0 1)),
 -- Answer: LINESTRING (0 0, 3 2)
 ```
 
-![](./ST_LongestLine_4.png)
+![](./ST_LongestLine_4.png){align=center}
 
 ### Case where `geomA` is equal to `geomB`
 
@@ -57,7 +57,7 @@ SELECT ST_Longestline('POLYGON ((1 3, 0 0, 3 2, 1 3))',
 -- Answer: LINESTRING (0 0, 3 2)
 ```
 
-![](./ST_LongestLine_5.png)
+![](./ST_LongestLine_5.png){align=center}
 
 
 ## See also

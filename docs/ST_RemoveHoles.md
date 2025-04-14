@@ -22,7 +22,7 @@ SELECT ST_RemoveHoles(
 -- Answer:   POLYGON((1 5, 0 4, 0 1, 1 0, 4 0, 4 2, 5 4, 5 4, 1 5))
 ```
 
-![](./ST_RemoveHoles.png)
+![](./ST_RemoveHoles.png){align=center}
 
 ### Non-examples
 

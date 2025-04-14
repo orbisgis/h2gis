@@ -21,7 +21,7 @@ SELECT ST_FurthestCoordinate('POINT(0 0)',
 -- Answer: POINT(10 5)
 ```
 
-![](./ST_FurthestCoordinate_1.png)
+![](./ST_FurthestCoordinate_1.png){align=center}
 
 ```sql
 SELECT ST_FurthestCoordinate('POINT(5 2.5)',
@@ -29,7 +29,7 @@ SELECT ST_FurthestCoordinate('POINT(5 2.5)',
 -- Answer: POINT(2 4)
 ```
 
-![](./ST_FurthestCoordinate_2.png)
+![](./ST_FurthestCoordinate_2.png){align=center}
 
 ```sql
 SELECT ST_FurthestCoordinate('POINT(5 2.5)',
@@ -37,7 +37,7 @@ SELECT ST_FurthestCoordinate('POINT(5 2.5)',
 -- Answer: MULTIPOINT((10 5), (0 0), (0 5), (10 0))
 ```
 
-![](./ST_FurthestCoordinate_3.png)
+![](./ST_FurthestCoordinate_3.png){align=center}
 
 ## See also
 

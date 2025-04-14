@@ -116,7 +116,7 @@ SELECT ST_MakeValid('
 --                      ((5 3, 7 5, 7 1, 5 3))) 
 ```
 
-![](./ST_MakeValid_1.png)
+![](./ST_MakeValid_1.png){align=center}
 
 ```sql
 SELECT ST_MakeValid('
@@ -125,7 +125,7 @@ SELECT ST_MakeValid('
 -- Answer: MULTIPOLYGON(((3 0, 0 0, 0 3, 3 3, 6 3, 6 0, 3 0))) 
 ```
 
-![](./ST_MakeValid_2.png)
+![](./ST_MakeValid_2.png){align=center}
 
 ```sql
 SELECT ST_MakeValid('
@@ -133,7 +133,7 @@ SELECT ST_MakeValid('
 -- Answer: POLYGON((3 2, 3 1, 1 1, 1 3, 3 3, 3 2)) 
 ```
 
-![](./ST_MakeValid_3.png)
+![](./ST_MakeValid_3.png){align=center}
 
 
 ```sql
@@ -154,7 +154,7 @@ SELECT ST_MakeValid('
 --         ((1 2.33, 1 3 1, 3 3 0, 1 2.33))) 
 ```
 
-![](./ST_MakeValid_4.png)
+![](./ST_MakeValid_4.png){align=center}
 
 ```sql
 SELECT ST_MakeValid('
@@ -162,7 +162,7 @@ SELECT ST_MakeValid('
 -- Answer: POLYGON((4 4, 1 1, 1 4, 4 4))
 ```
 
-![](./ST_MakeValid_5.png)
+![](./ST_MakeValid_5.png){align=center}
 
 
 ```sql
@@ -174,7 +174,7 @@ SELECT ST_MakeValid('
 --                      ((5 3, 4 1, 3 1, 3 3, 4 3, 5 3)))
 ```
 
-![](./ST_MakeValid_6.png)
+![](./ST_MakeValid_6.png){align=center}
 
 
 ### With GeometryCollection
@@ -204,7 +204,7 @@ SELECT ST_MakeValid('
 --         POINT (5 2)) 
 ```
 
-![](./ST_MakeValid_7.png)
+![](./ST_MakeValid_7.png){align=center}
 
 
 ## See also

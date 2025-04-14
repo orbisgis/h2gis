@@ -24,7 +24,7 @@ SELECT ST_ToMultiPoint('LINESTRING(5 5, 1 2, 3 4, 1 5)');
 -- Answer: MULTIPOINT((5 5), (1 2), (3 4), (1 5))
 ```
 
-![](./ST_ToMultiPoint1.png)
+![](./ST_ToMultiPoint1.png){align=center}
 
 ```sql
 SELECT ST_ToMultiPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
@@ -46,7 +46,7 @@ SELECT ST_ToMultiPoint(
 --                     (5 5), (1 2), (3 4), (99 3))
 ```
 
-![](./ST_ToMultiPoint2.png)
+![](./ST_ToMultiPoint2.png){align=center}
 
 ### Aggregate form
 

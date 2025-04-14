@@ -29,7 +29,7 @@ SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
 -- Answer: POLYGON((2 1, 1 2, 3 3, 4 1, 3 0, 2 0, 2 1))
 ```
 
-![](./ST_Simplify.png)
+![](./ST_Simplify.png){align=center}
 
 ```sql
 SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
@@ -38,7 +38,7 @@ SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
 -- Answer:POLYGON((2 1, 1 2, 3 3, 4 1, 2 1))
 ```
 
-![](./ST_Simplify_1.png)
+![](./ST_Simplify_1.png){align=center}
 
 ```sql
 -- If the distance tolerance is too large, the Geometry may be

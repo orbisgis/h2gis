@@ -26,7 +26,7 @@ SELECT ST_MakePolygon(
 --                     (1 1, 1 2, 2 2, 2 1, 1 1))
 ```
 
-![](./ST_MakePolygon_1.png)
+![](./ST_MakePolygon_1.png){align=center}
 
 ### Non-examples
 

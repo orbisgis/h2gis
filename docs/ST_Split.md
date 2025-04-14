@@ -52,7 +52,7 @@ SELECT ST_Split('LINESTRING(1 2, 3 5, 2 3)',
 --                           3 5, 2 3))
 ```
 
-![](./ST_Split_1.png)
+![](./ST_Split_1.png){align=center}
 
 ### LINESTRING by a LINESTRING
 
@@ -69,7 +69,7 @@ SELECT ST_Split('LINESTRING(5 1, 5 4)',
 -- Answer: MULTILINESTRING((5 1, 5 3), (5 3, 5 4))
 ```
 
-![](./ST_Split_2.png)
+![](./ST_Split_2.png){align=center}
 
 ### POLYGON by a LINESTRING
 
@@ -80,7 +80,7 @@ SELECT ST_Split('POLYGON((0 0, 5 0, 5 5, 0 5, 0 0))',
 --                      ((5 5, 5 0, 2 0, 2 5, 5 5)))
 ```
 
-![](./ST_Split_3.png)
+![](./ST_Split_3.png){align=center}
 
 ```sql
 -- If we split the same POLYGON with a hole, we get the expected

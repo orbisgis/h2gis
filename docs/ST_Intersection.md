@@ -26,7 +26,7 @@ SELECT ST_Intersection(geomA, geomB) FROM input_table;
 -- Answer:    POLYGON((3 6, 7 6, 7 2, 3 2, 3 6))
 ```
 
-![](./ST_Intersection_1.png)
+![](./ST_Intersection_1.png){align=center}
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
@@ -37,7 +37,7 @@ SELECT ST_Intersection(geomA, geomB) FROM input_table;
 -- Answer:    LINESTRING(4 2, 4 6)
 ```
 
-![](./ST_Intersection_2.png)
+![](./ST_Intersection_2.png){align=center}
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
@@ -48,7 +48,7 @@ SELECT ST_Intersection(geomA, geomB) FROM input_table;
 -- Answer:    POINT(4 6)
 ```
 
-![](./ST_Intersection_6.png)
+![](./ST_Intersection_6.png){align=center}
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
@@ -59,7 +59,7 @@ SELECT ST_Intersection(geomA, geomB) FROM input_table;
 -- Answer:    LINESTRING(4 6, 7 3)
 ```
 
-![](./ST_Intersection_3.png)
+![](./ST_Intersection_3.png){align=center}
 
 | geomA LINESTRING      | geomB LINESTRING      |
 |-----------------------|-----------------------|
@@ -70,7 +70,7 @@ SELECT ST_Intersection(geomA, geomB) FROM input_table;
 -- Answer:    POINT(5 5)
 ```
 
-![](./ST_Intersection_4.png)
+![](./ST_Intersection_4.png){align=center}
 
 | geomA POLYGON                       | geomB POINT |
 |-------------------------------------|-------------|
@@ -81,7 +81,7 @@ SELECT ST_Intersection(geomA, geomB) FROM input_table;
 -- Answer:    POINT(3 5)
 ```
 
-![](./ST_Intersection_5.png)
+![](./ST_Intersection_5.png){align=center}
 
 ## See also
 

@@ -11,4 +11,4 @@ Answer:
 *Note*: This example shows that the only difference between a circle constructed using `ST_MakeEllipse` and a circle constructed using `ST_Buffer`
 is the number of line segments in the approximation. `ST_MakeEllipse` is more fine-grained (100 segments rather than 32).
 
-![](./ST_MakeEllipse_2.png)
+![](./ST_MakeEllipse_2.png){align=center}

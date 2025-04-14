@@ -32,7 +32,7 @@ SELECT ST_CompactnessRatio(geom) ratio FROM input_table;
 
 *Note*: In this example, both geometries have a perimeter equal to 24.
 
-![](./ST_CompactnessRatio.png)
+![](./ST_CompactnessRatio.png){align=center}
 
 ```sql
 SELECT ST_CompactnessRatio(ST_Buffer(('POINT(1 2)'), 10));

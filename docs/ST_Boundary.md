@@ -26,14 +26,14 @@ SELECT ST_Boundary('LINESTRING(4 6, 1 1, 5 5)');
 -- Answer: MULTIPOINT((4 6), (5 5))
 ```
 
-![](./ST_Boundary_1.png)
+![](./ST_Boundary_1.png){align=center}
 
 ```sql
 SELECT ST_Boundary('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))', 2154);
 -- Answer: LINEARRING(0 0, 10 0, 10 10, 0 10, 0 0)
 ```
 
-![](./ST_Boundary_2.png)
+![](./ST_Boundary_2.png){align=center}
 
 ```sql
 -- This polygon has a hole.

@@ -14,7 +14,7 @@ Returns the aspect value of `geom` in degrees. Throws an error if
 Aspect represents the main slope direction angle compared to the
 north direction. It can be thought of as the slope direction.
 
-![](./ST_TriangleAspect_1.png)
+![](./ST_TriangleAspect_1.png){align=center}
 
 ## Examples
 

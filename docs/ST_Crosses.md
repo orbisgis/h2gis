@@ -41,43 +41,43 @@ SELECT ST_Crosses(geomA, geomB) FROM input_table;
 |----------------------------------|----------------------------|
 | MULTIPOINT((1 3), (4 1), (4 3))  | LINESTRING(1 1, 5 2, 2 5)  |
 
-![](./ST_Crosses_1.png)
+![](./ST_Crosses_1.png){align=center}
 
 | geomA MULTIPOINT                 | geomB POLYGON                       |
 |----------------------------------|-------------------------------------|
 | MULTIPOINT((1 3), (4 1), (4 3))  | POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))  |
 
-![](./ST_Crosses_2.png)
+![](./ST_Crosses_2.png){align=center}
 
 | geomA LINESTRING      | geomB LINESTRING           |
 |-----------------------|----------------------------|
 | LINESTRING(1 3, 5 3)  | LINESTRING(1 1, 5 2, 2 5)  |
 
-![](./ST_Crosses_3.png)
+![](./ST_Crosses_3.png){align=center}
 
 | geomA LINESTRING      | geomB POLYGON                       |
 |-----------------------|-------------------------------------|
 | LINESTRING(1 3, 5 3)  | POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))  |
 
-![](./ST_Crosses_4.png)
+![](./ST_Crosses_4.png){align=center}
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
 | POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))  | LINESTRING(1 5, 5 1)  |
 
-![](./ST_Crosses_5.png)
+![](./ST_Crosses_5.png){align=center}
 
 | geomA POLYGON                       | geomB MULTIPOINT                 |
 |-------------------------------------|----------------------------------|
 | POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))  | MULTIPOINT((2 3), (4 5), (5 1))  |
 
-![](./ST_Crosses_6.png)
+![](./ST_Crosses_6.png){align=center}
 
 | geomA LINESTRING           | geomB MULTIPOINT                 |
 |----------------------------|----------------------------------|
 | LINESTRING(2 1, 1 3, 3 4)  | MULTIPOINT((1 3), (4 1), (4 3))  |
 
-![](./ST_Crosses_7.png)
+![](./ST_Crosses_7.png){align=center}
 
 ### Cases where `ST_Crosses` is false
 
@@ -90,13 +90,13 @@ SELECT ST_Crosses(geomA, geomB) FROM input_table;
 |-------------------------------------|-------------------------------------|
 | POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))  | POLYGON((2 2, 5 2, 5 5, 2 5, 2 2))  |
 
-![](./ST_Crosses_9.png)
+![](./ST_Crosses_9.png){align=center}
 
 | geomA POLYGON              | geomB POLYGON         |
 |----------------------------|-----------------------|
 | LINESTRING(1 1, 5 2, 2 5)  | LINESTRING(3 4, 5 2)  |
 
-![](./ST_Crosses_8.png)
+![](./ST_Crosses_8.png){align=center}
 
 ## See also
 

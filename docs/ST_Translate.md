@@ -25,7 +25,7 @@ SELECT ST_Translate('POLYGON((0 0, 3 0, 3 5, 0 5, 0 0))', 2, 1);
 -- Answer: POLYGON((2 1, 5 1, 5 6, 2 6, 2 1))
 ```
 
-![](./ST_Translate.png)
+![](./ST_Translate.png){align=center}
 
 ```sql
 SELECT ST_Translate('POINT(1 2 3)', 10, 20, 30);

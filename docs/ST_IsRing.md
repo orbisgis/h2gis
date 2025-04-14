@@ -30,7 +30,7 @@ SELECT ST_IsRing('LINESTRING(2 1, 1 3, 6 6, 5 7, 5 2)');
 -- Answer: FALSE
 ```
 
-![](./ST_IsRing.png)
+![](./ST_IsRing.png){align=center}
 
 ```sql
 SELECT ST_IsRing('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 2),

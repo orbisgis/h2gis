@@ -54,7 +54,7 @@ drop table if exists voroexpl;
 create table voroexpl as select * from st_explode('voro');
 ```
 
-![](./voronoi_vitr.png)
+![](./voronoi_vitr.png){align=center}
 
 ### Use case
 A specific use case, using `ST_Voronoi` function is avalaible [HERE](https://github.com/orbisgis/h2gis/wiki/3.1-Extract-central-skeleton).

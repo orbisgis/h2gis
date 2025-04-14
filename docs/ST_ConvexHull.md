@@ -26,7 +26,7 @@ SELECT ST_ConvexHull('GEOMETRYCOLLECTION(
 -- Answer: POLYGON((3 1, 7 1, 7 6, 4 7, 1 4, 1 2, 3 1))
 ```
 
-![](./ST_ConvexHull.png)
+![](./ST_ConvexHull.png){align=center}
 
 ## See also
 

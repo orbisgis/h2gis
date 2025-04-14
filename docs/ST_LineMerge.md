@@ -31,7 +31,7 @@ SELECT ST_LineMerge('MULTILINESTRING ((1 1, 1 4),
 -- Answer: MULTILINESTRING ((1 1, 1 4, 5 4, 5 1), 
 --                          (3 3, 3 4)) 
 ```
-![](./ST_LineMerge_1.png)
+![](./ST_LineMerge_1.png){align=center}
 
 ### Case with mixed dimension geometries
 

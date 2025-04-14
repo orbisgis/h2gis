@@ -33,19 +33,19 @@ SELECT ST_Equals(geomA, geomB) FROM input_table;
 |-------------------------------------|-------------------------------------|
 | POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))  | POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))  |
 
-![](./ST_Equals_1.png)
+![](./ST_Equals_1.png){align=center}
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
 | POLYGON((1 1, 4 1, 4 4, 1 4, 1 1))  | POLYGON((4 4, 4 1, 1 1, 1 4, 4 4))  |
 
-![](./ST_Equals_2.png)
+![](./ST_Equals_2.png){align=center}
 
 | geomA LINESTRING      | geomB LINESTRING           |
 |-----------------------|----------------------------|
 | LINESTRING(1 1, 4 4)  | LINESTRING(1 1, 3 3, 4 4)  |
 
-![](./ST_Equals_3.png)
+![](./ST_Equals_3.png){align=center}
 
 ## See also
 

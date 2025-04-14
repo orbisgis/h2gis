@@ -17,7 +17,7 @@ SELECT ST_XMin('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    1.0
 ```
 
-![](./ST_XMin.png)
+![](./ST_XMin.png){align=center}
 
 ## See also
 

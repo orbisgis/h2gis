@@ -28,7 +28,7 @@ SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)',
 -- Answer:     LINESTRING(1 2, 1 2, 2 1, 5 2, 5 2)
 ```
 
-![](./ST_Snap_1.png)
+![](./ST_Snap_1.png){align=center}
 
 ```sql
 -- The following two examples use the same input Geometries in
@@ -48,7 +48,7 @@ SELECT ST_Snap(geomB, geomA, 2) FROM input_table;
 --                  4 8, 7 7, 7 7, 9 6, 7 1, 7 1, 3 3))
 ```
 
-![](./ST_Snap_2.png)
+![](./ST_Snap_2.png){align=center}
 
 ## See also
 

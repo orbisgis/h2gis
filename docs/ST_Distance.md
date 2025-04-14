@@ -22,7 +22,7 @@ SELECT ST_Distance('POINT(11 4)',
 -- Answer: 3.0
 ```
 
-![](./ST_Distance_1.png)
+![](./ST_Distance_1.png){align=center}
 
 ```sql
 SELECT ST_Distance('LINESTRING(11 4, 9 1)',
@@ -30,7 +30,7 @@ SELECT ST_Distance('LINESTRING(11 4, 9 1)',
 -- Answer: 2.496150883013531
 ```
 
-![](./ST_Distance_2.png)
+![](./ST_Distance_2.png){align=center}
 
 ```sql
 SELECT ST_Distance('LINESTRING(10 7, 11 1)',
@@ -38,7 +38,7 @@ SELECT ST_Distance('LINESTRING(10 7, 11 1)',
 -- Answer: 5.42516658107679
 ```
 
-![](./ST_Distance_3.png)
+![](./ST_Distance_3.png){align=center}
 
 ```sql
 SELECT ST_Distance('POLYGON((8 0, 8 4, 10 4, 10 0, 8 0))',
@@ -46,7 +46,7 @@ SELECT ST_Distance('POLYGON((8 0, 8 4, 10 4, 10 0, 8 0))',
 -- Answer: 3.0
 ```
 
-![](./ST_Distance_4.png)
+![](./ST_Distance_4.png){align=center}
 
 ## See also
 

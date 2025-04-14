@@ -95,7 +95,7 @@ SELECT ST_Geometryshadow(the_geom, ST_SunPosition('POINT(-1.54544 47.24961)','20
 -- POLYGON ((356106.5230912742 6693151.240364184 0, 356147.6230912742 6693166.740364184 0, 356185.8 6693132.4 0, 356144.7 6693116.9 0, 356160 6693075.8 0, 356121.8230912742 6693110.140364183 0, 356106.5230912742 6693151.240364184 0)) 
 ```
 
-![](./ST_GeometryShadow_case1.png)
+![](./ST_GeometryShadow_case1.png){align=center}
 
 ### Case with a `LINESTRING`
 
@@ -107,7 +107,7 @@ SELECT ST_Geometryshadow('LINESTRING(356109 6693060, 356140 6693109, 356197 6693
 -- Answer: POLYGON ((356109 6693060 0, 356140 6693109 0, 356144.94628716656 6693111.912910977 0, 356201.94628716656 6693098.912910977 0, 356197 6693096 0, 356142.7120983602 6693108.381451251 0, 356113.94628716656 6693062.912910977 0, 356109 6693060 0))
 ```
 
-![](./ST_GeometryShadow_case2.png)
+![](./ST_GeometryShadow_case2.png){align=center}
 
 
 ### Case with a `POINT`
@@ -120,7 +120,7 @@ SELECT ST_Geometryshadow('POINT(356140 6693109)',
 -- Answer: LINESTRING (356140 6693109 0, 356144.94628716656 6693111.912910977 0) 
 ```
 
-![](./ST_GeometryShadow_case3.png)
+![](./ST_GeometryShadow_case3.png){align=center}
 
 ## Use case
 A specific use case, using `ST_SunPosition` and `ST_GeometryShadow` is avalaible [HERE](https://github.com/orbisgis/h2gis/wiki/3.3-Compute-building's-shadow).

@@ -18,14 +18,14 @@ SELECT ST_MakePoint(1.4, -3.7);
 -- Answer:     POINT(1.4 -3.7)
 ```
 
-![](./ST_MakePoint_1.png)
+![](./ST_MakePoint_1.png){align=center}
 
 ```sql
 SELECT ST_MakePoint(1.4, -3.7, 6.2);
 -- Answer:     POINT(1.4 -3.7 6.2)
 ```
 
-![](./ST_MakePoint_2.png)
+![](./ST_MakePoint_2.png){align=center}
 
 ## See also
 

@@ -71,7 +71,7 @@ SELECT ST_SimplyPreserveTopology(
 -- Answer: POLYGON((8 25, 33 3, 56 30, 47 44, 8 25))
 ```
 
-![](./ST_SimplifyPreserveTopology.png)
+![](./ST_SimplifyPreserveTopology.png){align=center}
 
 ```sql
 -- POINTs and MULTIPOINTs cannot be further simplified:

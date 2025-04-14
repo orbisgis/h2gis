@@ -27,7 +27,7 @@ SELECT ST_Densify('LINESTRING(1 11, 8 1)', 10);
 -- Answer: LINESTRING(1 11, 4.5 6, 8 1)
 ```
 
-![](./ST_Densify.png)
+![](./ST_Densify.png){align=center}
 
 ```sql
 SELECT ST_Densify('POLYGON((2 0, 2 8, 4 8, 4 0, 2 0))', 4.5)

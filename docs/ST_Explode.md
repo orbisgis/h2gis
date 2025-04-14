@@ -38,7 +38,7 @@ SELECT * FROM ST_Explode('(SELECT * FROM test_point
 
 ```
 
-![](./ST_Explode.png)
+![](./ST_Explode.png){align=center}
 
 ```sql
 CREATE TABLE test_point AS SELECT

@@ -11,7 +11,7 @@ DOUBLE ST_TriangleSlope(GEOMETRY geom);
 Computes the slope of the triangle `geom` expressed as a percentage.
 Throws an error if `geom` is not a triangle.
 
-![](./ST_TriangleSlope_0.png)
+![](./ST_TriangleSlope_0.png){align=center}
 
 ## Examples
 
@@ -33,7 +33,7 @@ SELECT ST_TriangleSlope(
 --     The geometry must be a triangle"
 ```
 
-![](./ST_TriangleSlope_1.png)
+![](./ST_TriangleSlope_1.png){align=center}
 
 ## See also
 

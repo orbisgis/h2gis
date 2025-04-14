@@ -17,7 +17,7 @@ SELECT ST_YMin('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    2.0
 ```
 
-![](./ST_YMin.png)
+![](./ST_YMin.png){align=center}
 
 ## See also
 

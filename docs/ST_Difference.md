@@ -27,7 +27,7 @@ SELECT ST_Difference(geomB, geomA) FROM input_table;
 -- Answer:    POLYGON((7 2, 8 2, 8 8, 3 8, 3 6, 7 6, 7 2))
 ```
 
-![](./ST_Difference.png)
+![](./ST_Difference.png){align=center}
 
 ## See also
 

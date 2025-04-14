@@ -35,7 +35,7 @@ SELECT  ST_ClosestPoint(geomB, geomA);
 -- Answer: POINT(4.6 6.8)
 ```
 
-![](./ST_ClosestPoint_1.png)
+![](./ST_ClosestPoint_1.png){align=center}
 
 ```sql
 SELECT  ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
@@ -43,7 +43,7 @@ SELECT  ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
 -- Answer: POINT(4 2)
 ```
 
-![](./ST_ClosestPoint_2.png)
+![](./ST_ClosestPoint_2.png){align=center}
 
 ```sql
 SELECT  ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
@@ -51,7 +51,7 @@ SELECT  ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
 -- Answer: POINT(5 5)
 ```
 
-![](./ST_ClosestPoint_3.png)
+![](./ST_ClosestPoint_3.png){align=center}
 
 ```sql
 -- This example shows that the POINT returned by ST_ClosestPoint
@@ -69,7 +69,7 @@ SELECT ST_ClosestPoint('LINESTRING(1 1, 1 5))',
 -- | POINT(1 1)  | POINT(1 5)  |
 ```
 
-![](./ST_ClosestPoint_5.png)
+![](./ST_ClosestPoint_5.png){align=center}
 
 ```sql
 -- In this example, there are infinitely many closest points, but
@@ -86,7 +86,7 @@ SELECT ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
 -- | POINT(10 2)  | POINT(10 4)  |
 ```
 
-![](./ST_ClosestPoint_4.png)
+![](./ST_ClosestPoint_4.png){align=center}
 
 ## See also
 

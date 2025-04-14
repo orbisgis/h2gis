@@ -29,14 +29,14 @@ SELECT ST_Expand('POINT(4 4)', 5, 2);
 -- Answer: POLYGON((-1 2, -1 6, 9 6, 9 2, -1 2))
 ```
 
-![](./ST_Expand_1.png)
+![](./ST_Expand_1.png){align=center}
 
 ```sql
 SELECT ST_Expand('LINESTRING(3 2, 7 5, 2 7)', 2, 1);
 -- Answer: POLYGON((0 1, 0 8, 9 8, 9 1, 0 1))
 ```
 
-![](./ST_Expand_2.png)
+![](./ST_Expand_2.png){align=center}
 
 ```sql
 SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
@@ -50,7 +50,7 @@ SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
 -- Answer: LINESTRING(-4.5 4, 6.5 4)
 ```
 
-![](./ST_Expand_3.png)
+![](./ST_Expand_3.png){align=center}
 
 ```sql
 SELECT ST_Expand('GEOMETRYCOLLECTION(
@@ -61,7 +61,7 @@ SELECT ST_Expand('GEOMETRYCOLLECTION(
 -- Answer: POLYGON((-1.5 -2, -1.5 12, 12 12, 12 -2, -1.5 -2))
 ```
 
-![](./ST_Expand_4.png)
+![](./ST_Expand_4.png){align=center}
 
 ## See also
 

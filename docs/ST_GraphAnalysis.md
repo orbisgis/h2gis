@@ -83,12 +83,12 @@ number of shortest paths.
 Closeness centrality of Nantes, France. Notice the limited traffic
 zone in the center.
 
-![](./nantes-closeness-cropped.png)>
+![](./nantes-closeness-cropped.png){align=center}>
 
 Edge betweenness centrality of Nantes, France. Notice how the
 beltway and bridges really stand out.
 
-![](./nantes-betweenness-cropped.png)>
+![](./nantes-betweenness-cropped.png){align=center}>
 
 The above screenshots were generated in [OrbisGIS][og].
 

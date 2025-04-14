@@ -22,13 +22,13 @@ Only `POINT`s, `LINE`s and `POLYGON`s are returned.
 SELECT ST_CollectionExtract('POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3))', 3) as THE_GEOM;
 -- Answer: POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3)) 
 ```
-![](./ST_CollectionExtract_1.png)
+![](./ST_CollectionExtract_1.png){align=center}
 
 ```sql
 SELECT ST_CollectionExtract('MULTILINESTRING ((0 0, 4 1), (1 1, 5 5))', 2) as THE_GEOM;
 -- Answer: MULTILINESTRING ((0 0, 4 1), (1 1, 5 5))
 ```
-![](./ST_CollectionExtract_2.png)
+![](./ST_CollectionExtract_2.png){align=center}
 
 ```sql
 SELECT ST_CollectionExtract('GEOMETRYCOLLECTION(
@@ -38,13 +38,13 @@ SELECT ST_CollectionExtract('GEOMETRYCOLLECTION(
                        as THE_GEOM;
 -- Answer: LINESTRING (2 6, 6 2)  
 ```
-![](./ST_CollectionExtract_3.png)
+![](./ST_CollectionExtract_3.png){align=center}
 
 ```sql
 SELECT ST_CollectionExtract('POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3))', 2) as THE_GEOM;
 -- Answer: GEOMETRYCOLLECTION EMPTY
 ```
-![](./ST_CollectionExtract_4.png)
+![](./ST_CollectionExtract_4.png){align=center}
 
 
 ## See also

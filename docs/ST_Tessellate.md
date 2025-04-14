@@ -26,7 +26,7 @@ MULTIPOLYGON (((1 5, 2 4, 3 5, 1 5)), ((2 4, 3 4, 3 5, 2 4)),
 	      ((2 3, 1 1, 4 2, 2 3)), ((2 3, 4 2, 4 3, 2 3)))
 ```
 
-![](./ST_Tessellate_1.png)
+![](./ST_Tessellate_1.png){align=center}
 
 ### Case with `MULTIPOLYGON`
 
@@ -42,7 +42,7 @@ MULTIPOLYGON (((2 4, 1 3, 3 3, 2 4)), ((1 3, 2 2, 3 3, 1 3)),
 	      ((4 3, 4 2, 5 1, 4 3)), ((4 2, 3 1, 5 1, 4 2)))
 ```
 
-![](./ST_Tessellate_2.png)
+![](./ST_Tessellate_2.png){align=center}
 
 ### Application with real data
 
@@ -54,7 +54,7 @@ SELECT ST_Tessellate(THE_GEOM) as THE_GEOM FROM PLOTS;
 
 The resulting triangles are displayed in pink.
 
-![](./ST_Tessellate_3.png)
+![](./ST_Tessellate_3.png){align=center}
 
 ## See also
 

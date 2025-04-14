@@ -43,7 +43,7 @@ SELECT ST_Accum(geom) FROM input_table;
 --    POINT(1 1), POINT(2 2))
 ```
 
-![](./ST_Accum.png)
+![](./ST_Accum.png){align=center}
 
 ## See also
 

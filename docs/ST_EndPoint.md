@@ -21,7 +21,7 @@ SELECT ST_EndPoint('LINESTRING(1 2, 5 3, 2 6)');
 -- Answer: POINT(2 6)
 ```
 
-![](./ST_EndPoint.png)
+![](./ST_EndPoint.png){align=center}
 
 ```sql
 SELECT ST_EndPoint('MULTILINESTRING((1 1, 3 2, 3 1))');

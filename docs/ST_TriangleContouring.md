@@ -28,7 +28,7 @@ The interval from negative infinity to `varArgs1` is assigned an
 `IDISO` of `0`, from `varArgs1` to `varArgs2` gets an `IDISO` of 1,
 etc.
 
-![](./ST_TriangleContouring_0.png)
+![](./ST_TriangleContouring_0.png){align=center}
 
 ## Examples
 
@@ -46,7 +46,7 @@ SELECT * FROM ST_TriangleContouring('TIN', 2, 3, 4);
 -- | POLYGON((3 2.25 3, 3 3 4, 2 2 3, 3 2.25 3))   |     2 |
 ```
 
-![](./ST_TriangleContouring_1.png)
+![](./ST_TriangleContouring_1.png){align=center}
 
 ```sql
 -- In this example, the bottom right corner of the triangle is
@@ -85,7 +85,7 @@ SELECT * FROM ST_TriangleContouring('TIN', 2, 3, 4);
 --         POLYGON ((0 0, 3 0, 3 3, 0 3, 0 0))
 ```
 
-![](./ST_TriangleContouring_2.png)
+![](./ST_TriangleContouring_2.png){align=center}
 
 ## See also
 

@@ -26,7 +26,7 @@ SELECT ST_Azimuth('POINT(0 1)', 'POINT(10 1)');
 -- Answer: 1.5707963267948966
 ```
 
-![](./ST_Azimuth_1.png)
+![](./ST_Azimuth_1.png){align=center}
 
 ## See also
 

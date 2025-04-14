@@ -39,7 +39,7 @@ MULTIPOLYGON (((1 8, 0 4, 3 7, 1 8)), ((1 8, 3 7, 5 8, 1 8)),
 	      ((0 4, 4 5, 3 7, 0 4)), ((4 5, 3 2, 5 2, 4 5)))
 ```
 
-![](./ST_Delaunay_1.png)
+![](./ST_Delaunay_1.png){align=center}
 
 ### 2nd signature with `flag` parameter
 ```sql
@@ -57,7 +57,7 @@ MULTILINESTRING ((7 6, 8 4), (5 8, 7 6), (1 8, 5 8), (0 4, 1 8),
 		 (4 0, 5 2))
 ```
 
-![](./ST_Delaunay_2.png)
+![](./ST_Delaunay_2.png){align=center}
 
 ### 3rd signature with `flag` and `quality` parameters
 ```sql
@@ -75,7 +75,7 @@ MULTILINESTRING ((0 4, 1 1), (0 4, 1 8), (0 4, 3 2), (1 1, 3 2),
 		 (7 6, 8 4), (3 7, 3 8), (1 8, 3 8))
 ```
 
-![](./ST_Delaunay_3.png)
+![](./ST_Delaunay_3.png){align=center}
 
 ## See also
 

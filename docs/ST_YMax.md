@@ -17,7 +17,7 @@ SELECT ST_YMax('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    5.0
 ```
 
-![](./ST_YMax.png)
+![](./ST_YMax.png){align=center}
 
 ## See also
 

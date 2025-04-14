@@ -27,43 +27,43 @@ SELECT ST_Contains(geomA, geomB) FROM input_table;
 |-------------------------------------|-------------------------------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POLYGON((2 2, 7 2, 7 5, 2 5, 2 2))  |
 
-![](./ST_Contains_1.png)
+![](./ST_Contains_1.png){align=center}
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POLYGON((1 2, 6 2, 6 5, 1 5, 1 2))  |
 
-![](./ST_Contains_4.png)
+![](./ST_Contains_4.png){align=center}
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | LINESTRING(2 6, 6 2)  |
 
-![](./ST_Contains_2.png)
+![](./ST_Contains_2.png){align=center}
 
 | geomA POLYGON                       | geomB LINESTRING           |
 |-------------------------------------|----------------------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | LINESTRING(1 2, 1 6, 5 2)  |
 
-![](./ST_Contains_5.png)
+![](./ST_Contains_5.png){align=center}
 
 | geomA POLYGON                       | geomB POINT |
 |-------------------------------------|-------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POINT(4 4)  |
 
-![](./ST_Contains_3.png)
+![](./ST_Contains_3.png){align=center}
 
 | geomA LINESTRING           | geomB LINESTRING      |
 |----------------------------|-----------------------|
 | LINESTRING(2 1, 5 3, 2 6)  | LINESTRING(3 5, 5 3)  |
 
-![](./ST_Contains_10.png)
+![](./ST_Contains_10.png){align=center}
 
 | geomA LINESTRING           | geomB POINT |
 |----------------------------|-------------|
 | LINESTRING(2 1, 5 3, 2 6)  | POINT(4 4)  |
 
-![](./ST_Contains_11.png)
+![](./ST_Contains_11.png){align=center}
 
 ### Cases where `ST_Contains` is false
 
@@ -76,31 +76,31 @@ SELECT ST_Contains(geomA, geomB) FROM input_table;
 |-------------------------------------|-------------------------------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POLYGON((0 2, 5 2, 5 5, 0 5, 0 2))  |
 
-![](./ST_Contains_7.png)
+![](./ST_Contains_7.png){align=center}
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | LINESTRING(2 6, 0 8)  |
 
-![](./ST_Contains_8.png)
+![](./ST_Contains_8.png){align=center}
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | LINESTRING(1 2, 1 6)  |
 
-![](./ST_Contains_12.png)
+![](./ST_Contains_12.png){align=center}
 
 | geomA POLYGON                       | geomB POINT |
 |-------------------------------------|-------------|
 | POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POINT(8 4)  |
 
-![](./ST_Contains_6.png)
+![](./ST_Contains_6.png){align=center}
 
 | geomA POLYGON                       | geomB POINT |
 |-------------------------------------|-------------|
 | POLYGON((1 1, 7 1, 7 7, 1 7, 1 1))  | POINT(8 4)  |
 
-![](./ST_Contains_9.png)
+![](./ST_Contains_9.png){align=center}
 
 ## See also
 

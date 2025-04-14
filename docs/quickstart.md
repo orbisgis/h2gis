@@ -31,14 +31,14 @@ SELECT * FROM TABLENAME;
 
 This is the built-in web interface of the H2 Database:
 
-![](./getting-started/screenshot_h2gui.png)
+![](./getting-started/screenshot_h2gui.png){align=center}
 
 ## Graphical user interface
 
 Software GUI that use H2GIS:
 
 <a href="http://www.orbisgis.org" target="_blank">OrbisGIS 5.1
-![](./getting-started/screenshot_wms.png)</a>
+![](./getting-started/screenshot_wms.png){align=center}</a>
 
 
 [here]: https://github.com/orbisgis/h2gis/releases

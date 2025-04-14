@@ -21,7 +21,7 @@ SELECT ST_ClosestCoordinate('POINT(0 0)',
 -- Answer: POINT(2 2)
 ```
 
-![](./ST_ClosestCoordinate_1.png)
+![](./ST_ClosestCoordinate_1.png){align=center}
 
 ```sql
 SELECT ST_ClosestCoordinate('POINT(4 2.5)',
@@ -29,7 +29,7 @@ SELECT ST_ClosestCoordinate('POINT(4 2.5)',
 -- Answer: MULTIPOINT((0 0), (0 5))
 ```
 
-![](./ST_ClosestCoordinate_2.png)
+![](./ST_ClosestCoordinate_2.png){align=center}
 
 ```sql
 SELECT ST_ClosestCoordinate('POINT(4 2)',
@@ -37,7 +37,7 @@ SELECT ST_ClosestCoordinate('POINT(4 2)',
 -- Answer: POINT(0 5)
 ```
 
-![](./ST_ClosestCoordinate_3.png)
+![](./ST_ClosestCoordinate_3.png){align=center}
 
 ```sql
 CREATE TABLE input_table(point POINT);

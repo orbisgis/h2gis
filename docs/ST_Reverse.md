@@ -32,7 +32,7 @@ SELECT ST_Reverse('LINESTRING(1 1, 2 2, 1 3, 3 3, 5 2, 5 1)');
 -- Answer:         LINESTRING(5 1, 5 2, 3 3, 1 3, 2 2, 1 1)
 ```
 
-![](./ST_Reverse_1.png)
+![](./ST_Reverse_1.png){align=center}
 
 ```sql
 SELECT ST_Reverse(
@@ -57,7 +57,7 @@ SELECT ST_Reverse(
 --                        ((0 1, 0 0, 1 0, 1 1, 0 1)))
 ```
 
-![](./ST_Reverse_2.png)
+![](./ST_Reverse_2.png){align=center}
 
 ```sql
 SELECT ST_Reverse('GEOMETRYCOLLECTION(

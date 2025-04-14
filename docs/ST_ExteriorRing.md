@@ -24,7 +24,7 @@ SELECT ST_ExteriorRing('POLYGON((0 -1, 0 2, 3 2, 3 -1, 0 -1))');
 -- Answer: LINEARRING(0 -1, 0 2, 3 2, 3 -1, 0 -1)
 ```
 
-![](./ST_ExteriorRing_1.png)
+![](./ST_ExteriorRing_1.png){align=center}
 
 ```sql
 SELECT ST_ExteriorRing('MULTIPOLYGON(((0 0, 10 0, 5 5, 0 0)),

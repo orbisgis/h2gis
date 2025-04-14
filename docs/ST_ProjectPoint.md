@@ -18,28 +18,28 @@ SELECT ST_PROJECTPOINT('POINT(1 2)',
                        'LINESTRING(0 0, 4 2)') as THE_GEOM;
 -- Answer: POINT (1.6 0.8)
 ```
-![](./ST_ProjectPoint_1.png)
+![](./ST_ProjectPoint_1.png){align=center}
 
 ```sql
 SELECT ST_PROJECTPOINT('POINT(1 2)',
                        'MULTILINESTRING ((0 0, 4 2), (1 4, 2 2))') as THE_GEOM;
 -- Answer: POINT (1.8 2.4)
 ```
-![](./ST_ProjectPoint_2.png)
+![](./ST_ProjectPoint_2.png){align=center}
 
 ```sql
 SELECT ST_PROJECTPOINT('POINT(4 3)',
                        'LINESTRING (0 0, 4 2)') as THE_GEOM;
 -- Answer: POINT (4 2)
 ```
-![](./ST_ProjectPoint_3.png)
+![](./ST_ProjectPoint_3.png){align=center}
 
 ```sql
 SELECT ST_PROJECTPOINT('POINT(4 3)',
                        'POLYGON ((2 4, 0 2, 3 0, 2 4))') as THE_GEOM;
 -- Answer: NULL
 ```
-![](./ST_ProjectPoint_4.png)
+![](./ST_ProjectPoint_4.png){align=center}
 
 
 ## See also

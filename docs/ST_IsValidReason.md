@@ -31,7 +31,7 @@ SELECT ST_IsValidReason('POLYGON((1 1, 1 6, 5 1, 1 1),
 -- Answer: Hole lies outside shell at or near POINT(3.0, 4.0, NaN)
 ```
 
-![](./ST_IsValidReason_1.png)
+![](./ST_IsValidReason_1.png){align=center}
 
 ```sql
 -- The next two examples show that the validation model we choose
@@ -45,7 +45,7 @@ SELECT ST_IsValidReason(
 -- Answer: Valid Geometry
 ```
 
-![](./ST_IsValidReason_2.png)
+![](./ST_IsValidReason_2.png){align=center}
 
 ## See also
 

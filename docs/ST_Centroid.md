@@ -27,7 +27,7 @@ SELECT ST_Centroid('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: POINT(1.25 2.25)
 ```
 
-![](./ST_Centroid_1.png)
+![](./ST_Centroid_1.png){align=center}
 
 ```sql
 SELECT ST_Centroid('LINESTRING(2 1, 1 3, 5 2)');
@@ -37,7 +37,7 @@ SELECT ST_Centroid('MULTILINESTRING((1 5, 6 5), (5 1, 5 4))');
 -- Answer: POINT(4.0625 4.0625)
 ```
 
-![](./ST_Centroid_2.png)
+![](./ST_Centroid_2.png){align=center}
 
 ```sql
 SELECT ST_Centroid('POLYGON((1 5, 1 2, 6 2, 3 3, 3 4, 5 6, 1 5))');
@@ -48,7 +48,7 @@ SELECT ST_Centroid('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
 -- Answer: POINT(2.142857142857143 3.5)
 ```
 
-![](./ST_Centroid_3.png)
+![](./ST_Centroid_3.png){align=center}
 
 ```sql
 SELECT ST_Centroid('GEOMETRYCOLLECTION(
@@ -58,7 +58,7 @@ SELECT ST_Centroid('GEOMETRYCOLLECTION(
 -- Answer: POINT(2.5 4)
 ```
 
-![](./ST_Centroid_4.png)
+![](./ST_Centroid_4.png){align=center}
 
 ### Comparison with [`ST_PointOnSurface`](../ST_PointOnSurface)
 

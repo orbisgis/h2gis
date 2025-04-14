@@ -79,7 +79,7 @@ CREATE TABLE isovist AS
 
 Legend : ```polygon``` in grey /  ```point``` in red / ```resulting ISOVist layer``` in orange
 
-![](./st_isovist_p1_20m.png)
+![](./st_isovist_p1_20m.png){align=center}
 
 Same but with a distance of 50m.
 
@@ -94,7 +94,7 @@ CREATE TABLE isovist AS
 
 Legend : ```polygon``` in grey /  ```point``` in red / ```resulting ISOVist layer``` in orange
 
-![](./st_isovist_p1_50m.png)
+![](./st_isovist_p1_50m.png){align=center}
 
 
 #### Using ```linestring```
@@ -111,7 +111,7 @@ CREATE TABLE isovist AS
 **Result**
 
 Legend : ```walls``` in black /  ```point``` in red / ```resulting ISOVist layer``` in orange
-![](./st_isovist_p1_50m_line.png)
+![](./st_isovist_p1_50m_line.png){align=center}
 
 #### Using ```geomCollection```
 
@@ -125,7 +125,7 @@ CREATE TABLE isovist AS
 **Result**
 
 Legend : ```polygon``` in grey /  ```walls``` in black /  ```point``` in red / ```resulting ISOVist layer``` in orange
-![](./st_isovist_p1_50m_geomcollection.png)
+![](./st_isovist_p1_50m_geomcollection.png){align=center}
 
 ### Example with starting and ending angles
 
@@ -138,7 +138,7 @@ CREATE TABLE isovist AS
   FROM point a, polygon b;
 ```
 
-![](./st_isovist_p1_50m_0_to_3.png)
+![](./st_isovist_p1_50m_0_to_3.png){align=center}
 
 Same, but ending at 5 rad. 
 
@@ -149,7 +149,7 @@ CREATE TABLE isovist AS
   FROM point a, polygon b;
 ```
 
-![](./st_isovist_p1_50m_0_to_5.png)
+![](./st_isovist_p1_50m_0_to_5.png){align=center}
 
 -----
 
@@ -181,7 +181,7 @@ In this example, only two tables are needed:
 
 [Load your data](http://doc.orbisgis.org/en/latest/users/quickstart.html#load-data) into OrbisGIS
 
-![](./st_isovist_orbisgis_1.png)
+![](./st_isovist_orbisgis_1.png){align=center}
 
 In the [SQL Console](http://doc.orbisgis.org/en/latest/users/script_sql.html), execute the following script.
 ```sql
@@ -205,7 +205,7 @@ This script will creates:
 
 Once executed, load `src` and `iso` layers into the `TOC` and adapt their styles to fit to your needs *(here red point and orange polygon)*.
 
-![](./st_isovist_orbisgis_2.png)
+![](./st_isovist_orbisgis_2.png){align=center}
 
 
 ### 2- Run the Groovy script
@@ -236,7 +236,7 @@ for(int i=1;i<=256;i+=1) {
   DROP TABLE IF EXISTS iso;
   CREATE TABLE iso AS SELECT ST_IsoVist((SELECT ST_PointN(ST_Densify(the_geom, 10), '''+i+''') the_geom FROM path), ST_Accum(the_geom), 100) the_geom FROM buildings;'''
 
- FileOutputStream fileOutputStream = new FileOutputStream("/myUrl/"+"test"+i+".png));
+ FileOutputStream fileOutputStream = new FileOutputStream("/myUrl/"+"test"+i+".png){align=center});
  mapImageWriter.write(fileOutputStream, null);
  fileOutputStream.close();
 }
@@ -250,14 +250,14 @@ Where:
 * `path` is the layer name of the linestring used to computes visibilities,
 * `ST_Accum(the_geom), 100)` &rarr; `100` is the maximum distance used to compute the visibilty *(see `maxDistance` parameter)*,
 * `buildings` is the layer name in which obstacles are stored,
-* `/myUrl/+"test"+i+".png)` &rarr; .png files, prefixed by `test`; will be saved into a folder defined by `/myUrl/`.
+* `/myUrl/+"test"+i+".png){align=center}` &rarr; .png files, prefixed by `test`; will be saved into a folder defined by `/myUrl/`.
 * `src` and `iso` are respectively the output table names for the point where the visibility is calculated and the resulting visibility polygon. 
 
 
 ### 3- Convert all the images into an animated gif
 
 Once the script ran, you obtain many .png files *(in this example we have 200 files)*.
-![](./st_isovist_png_files.png)
+![](./st_isovist_png_files.png){align=center}
 
 To convert them into an animated .gif file, follow these steps:
 
@@ -265,7 +265,7 @@ To convert them into an animated .gif file, follow these steps:
 * In the `File` menu, ["Open"](https://docs.gimp.org/en/gimp-file-open.html) the first image (here `test1.png`),
 * In the `File` menu, choose ["Open as layers"](https://docs.gimp.org/en/gimp-file-open-as-layer.html) and load the rest of images (here from `test2.png` to `test200.png`),
 
-![](./st_isovist_gimp.png)
+![](./st_isovist_gimp.png){align=center}
 
 * Optionnaly, optimized the rendering for animation &rarr; `Filters` &rarr; `Animation` &rarr; `Optimize (for GIF)`,
 * Export the result : `File` &rarr; `Èxport as` &rarr; choose the `.gif` file format and specify the file name and output folder &rarr; `Export`,

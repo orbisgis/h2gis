@@ -32,7 +32,7 @@ Note that the OSMRead function is described [HERE](../OSMRead).
 
 Result:
 
-![](./ST_OSMDownloader.png)
+![](./ST_OSMDownloader.png){align=center}
 
 On the left a screenshot from the [OpenStreetMap](http://www.openstreetmap.org) website and on the right the result, with the building reconstruction (see [OSMRead](../OSMRead)).
 

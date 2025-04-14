@@ -17,7 +17,7 @@ SELECT ST_XMax('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    4.0
 ```
 
-![](./ST_XMax.png)
+![](./ST_XMax.png){align=center}
 
 ## See also
 

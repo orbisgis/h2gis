@@ -41,7 +41,7 @@ SELECT ST_Union(geomA, geomB) FROM input_table;
 -- Answer: POLYGON((7 2, 7 1, 1 1, 1 6, 3 6, 3 8, 8 8, 8 2, 7 2))
 ```
 
-![](./ST_Union_1.png)
+![](./ST_Union_1.png){align=center}
 
 ### Aggregate function
 
@@ -56,7 +56,7 @@ SELECT ST_Union(ST_Accum(geom)) FROM input_table;
 --                       ((1 7, 2 7, 2 8, 1 8, 1 7)))
 ```
 
-![](./ST_Union_2.png)
+![](./ST_Union_2.png){align=center}
 
 ## See also
 

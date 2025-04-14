@@ -19,7 +19,7 @@ SELECT ST_CoordDim('LINESTRING(0 0 0, 1 1 2)');
 -- Answer: 3
 ```
 
-![](./ST_CoordDim.png)
+![](./ST_CoordDim.png){align=center}
 
 ```sql
 SELECT ST_CoordDim('LINESTRING(1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)');

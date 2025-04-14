@@ -53,7 +53,7 @@ SELECT ST_IsSimple('LINESTRING(2 1, 1 3, 6 6, 5 7, 5 2)');
 -- Answer: FALSE
 ```
 
-![](./ST_IsSimple.png)
+![](./ST_IsSimple.png){align=center}
 
 ## See also
 

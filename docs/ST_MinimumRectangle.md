@@ -24,7 +24,7 @@ SELECT ST_MinimumRectangle('POLYGON((1 2, 3 0, 5 2, 3 2, 2 3, 1 2))');
 --                  1.3999999999999997 3.1999999999999997))
 ```
 
-![](./ST_MinimumRectangle_1.png)
+![](./ST_MinimumRectangle_1.png){align=center}
 
 ```sql
 SELECT ST_MinimumRectangle('LINESTRING(1 2, 2 4, 5 5, 2 1, 6 1)');
