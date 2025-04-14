@@ -13,7 +13,7 @@ Return an array of integers within the range [`start`-`end`[.
 
 The default increment value is 1 but the user can set another one specifying the `step` parameter.
 
-##### Remarks
+### Remarks
 
 * `end` is excluded from the array,
 * `end` has to be greater than `begin` otherwise `IntegerRange` will throw an exception.

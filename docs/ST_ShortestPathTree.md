@@ -37,7 +37,7 @@ of a graph using Dijkstra's algorithm.
   href="../ST_ConnectedComponents"><code>ST_ConnectedComponents</code></a>.</p>
 </div>
 
-##### Input parameters
+### Input parameters
 
 | Variable      | Meaning                                                                                                                                                                                                                                                                                                                 |
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -52,7 +52,7 @@ of a graph using Dijkstra's algorithm.
 
 {% include data-prep-u.html %}
 
-##### Undirected unweighted
+### Undirected unweighted
 
 ```sql
 -- We have just enough information to consider an unweighted
@@ -74,7 +74,7 @@ SELECT * FROM ST_ShortestPathTree('INPUT_EDGES',
 
 <img class="displayed" src="../u-spt-1.svg">
 
-##### Directed Weighted
+### Directed Weighted
 
 {% include data-prep-wdo.html %}
 
@@ -95,7 +95,7 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 
 <img class="displayed" src="../wdo-spt-1.svg">
 
-##### Including Geometries
+### Including Geometries
 
 {% include data-prep-geom.html %}
 
@@ -133,7 +133,7 @@ WHERE A.ID=ABS(B.EDGE_ID);
 -- | LINESTRING (1 0, 2 0)         |       7 |      3 |           5 |    2.0 |
 ```
 
-##### Limiting by search radius
+### Limiting by search radius
 
 ```sql
 -- Notice that now edge 9 is no longer a part of the SPT since
@@ -150,7 +150,7 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 
 <img class="displayed" src="../wdo-spt-1-limit-8.5.svg">
 
-##### Exercises
+### Exercises
 
 1. Try doing similar calculations for
     * an unweighted directed graph

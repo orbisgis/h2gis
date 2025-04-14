@@ -30,7 +30,7 @@ SELECT ST_Length('MULTILINESTRING ((1 1, 1 2, 2 2),
 -- Answer: 5
 ```
 
-##### Cases where `ST_Length` returns `0`
+### Cases where `ST_Length` returns `0`
 
 ```sql
 SELECT ST_Length('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');

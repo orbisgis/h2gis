@@ -37,7 +37,7 @@ destination vertex `d`.
 </div>
 
 
-##### Input parameters
+### Input parameters
 
 | Variable      | Meaning                                                                                                                                                                                                                                                                                                                 |
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -52,7 +52,7 @@ destination vertex `d`.
 
 {% include data-prep-u.html %}
 
-##### Undirected unweighted
+### Undirected unweighted
 
 ```sql
 -- We have just enough information to consider an unweighted
@@ -75,7 +75,7 @@ SELECT * FROM ST_ShortestPath('INPUT_EDGES',
 
 <img class="displayed" src="../u-sp-1-4.svg">
 
-##### Directed Weighted
+### Directed Weighted
 
 {% include data-prep-wdo.html %}
 
@@ -109,7 +109,7 @@ SELECT * FROM ST_ShortestPath('EDGES_EO_W',
 
 <img class="displayed" src="../wdo-sp-1-4-numbering2.svg">
 
-##### Unreachable vertices
+### Unreachable vertices
 
 ```sql
 -- If the destination vertex is unreachable from the source vertex,
@@ -121,7 +121,7 @@ SELECT * FROM ST_ShortestPath('INPUT_EDGES',
 -- |     -1 |     -1 |          -1 |     1 |          6 | Infinity |
 ```
 
-##### Including Geometries
+### Including Geometries
 
 {% include data-prep-geom.html %}
 
@@ -159,7 +159,7 @@ WHERE A.ID=ABS(B.EDGE_ID);
 -- | LINESTRING (2 0, 0 1)         |     -10 |       2 |            2 |      1 |           5 |    7.0 |
 ```
 
-##### Exercises
+### Exercises
 
 1. Check that the sum of the weights of the edges in the path
    returned by `ST_ShortestPath` is equal to the path length

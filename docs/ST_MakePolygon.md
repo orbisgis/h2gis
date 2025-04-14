@@ -28,7 +28,7 @@ SELECT ST_MakePolygon(
 
 <img class="displayed" src="../ST_MakePolygon_1.png"/>
 
-##### Non-examples
+### Non-examples
 
 ```sql
 SELECT ST_MakePolygon('POINT(100 250)');

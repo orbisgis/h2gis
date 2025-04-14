@@ -17,7 +17,7 @@ As a consequence, if `ST_Intersects(geomA, geomB)` is true, then
 
 ## Examples
 
-##### Cases where `ST_EnvelopesIntersect` is true
+### Cases where `ST_EnvelopesIntersect` is true
 
 ```sql
 SELECT ST_EnvelopesIntersect(geomA, geomB) FROM input_table;
@@ -48,7 +48,7 @@ SELECT ST_EnvelopesIntersect(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_EnvelopesIntersect_4.png"/>
 
-##### Cases where `ST_EnvelopesIntersect` is false
+### Cases where `ST_EnvelopesIntersect` is false
 
 ```sql
 SELECT ST_EnvelopesIntersect(geomA, geomB) FROM input_table;

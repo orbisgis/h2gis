@@ -54,7 +54,7 @@ SELECT ST_ZUpdateLineExtremities(
 -- Answer:   LINESTRING(0 0 0, 5 0 1, 10 0 20)
 ```
 
-##### Non-examples
+### Non-examples
 
 ```sql
 -- Returns NULL for Geometries other than LINESTRINGs and

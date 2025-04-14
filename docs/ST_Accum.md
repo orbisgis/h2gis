@@ -17,7 +17,7 @@ If there is only `POINT`s in the column of Geometries, a `MULTIPOINT` is returne
 
 ## Examples
 
-#### Case with same dimension geometries
+### Case with same dimension geometries
 ```sql
 CREATE TABLE input_table(geom GEOMETRY);
 INSERT INTO input_table VALUES
@@ -28,7 +28,7 @@ SELECT ST_Accum(geom) FROM input_table;
 -- Answer: MULTIPOINT ((0 0), (1 1), (2 2))
 ```
 
-#### Case with mixed dimension geometries
+### Case with mixed dimension geometries
 ```sql
 CREATE TABLE input_table(geom GEOMETRY);
 INSERT INTO input_table VALUES

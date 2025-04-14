@@ -24,7 +24,7 @@ Overlaps means that the two geometries:
 
 ## Examples
 
-##### Cases where `ST_Overlaps` is true
+### Cases where `ST_Overlaps` is true
 
 ```sql
 SELECT ST_Overlaps(geomA, geomB) FROM input_table;
@@ -55,7 +55,7 @@ SELECT ST_Overlaps(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Overlaps_4.png"/>
 
-##### Cases where `ST_Overlaps` is false
+### Cases where `ST_Overlaps` is false
 
 ```sql
 SELECT ST_Overlaps(geomA, geomB) FROM input_table;

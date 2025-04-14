@@ -25,7 +25,7 @@ As a consequence, the following are equivalent:
 
 ## Examples
 
-##### Cases where `ST_Within` is true
+### Cases where `ST_Within` is true
 
 ```sql
 SELECT ST_Within(geomA, geomB) FROM input_table;
@@ -74,7 +74,7 @@ SELECT ST_Within(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Within_7.png"/>
 
-##### Cases where `ST_Within` is false
+### Cases where `ST_Within` is false
 
 ```sql
 SELECT ST_Within(geomA, geomB) FROM input_table;

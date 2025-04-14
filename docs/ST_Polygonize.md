@@ -69,7 +69,7 @@ Answer: MULTIPOLYGON(((4 2.6666666666666665, 4 1,
                         4 2.6666666666666665)))
 ```
 
-##### Non-examples
+### Non-examples
 
 ```sql
 -- Returns NULL for Geometries which cannot be "polygonized":

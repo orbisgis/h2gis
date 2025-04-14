@@ -56,7 +56,7 @@ SELECT ST_ToMultiSegments('POINT(5 5)');
 -- Answer: MULTILINESTRING EMPTY
 ```
 
-##### Comparison with [`ST_ToMultiLine`](../ST_ToMultiLine)
+### Comparison with [`ST_ToMultiLine`](../ST_ToMultiLine)
 
 {% include multiline-multiseg-cf.html %}
 

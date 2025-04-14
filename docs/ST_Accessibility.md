@@ -26,7 +26,7 @@ destination.
   taking the minimum distance.</p>
 </div>
 
-##### Input parameters
+### Input parameters
 
 | Variable      | Meaning                                                                                                                                                                                                                             |
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -61,7 +61,7 @@ SELECT * FROM EDGES_EO_W;
 
 <img class="displayed" src="../wdo.svg">
 
-##### Destination string
+### Destination string
 
 ```sql
 SELECT * FROM ST_Accessibility('EDGES_EO_W',
@@ -97,7 +97,7 @@ SELECT * FROM ST_Accessibility('EDGES_EO_W',
 
 <img class="displayed" src="../wdo-acc-2-5-7.svg">
 
-##### Destination table
+### Destination table
 
 ```sql
 -- Here we get the same results as before, but we do it using a
@@ -118,7 +118,7 @@ SELECT * FROM ST_ACCESSIBILITY('EDGES_EO_W',
 -- |      8 |           -1 | Infinity |
 ```
 
-##### Exercises
+### Exercises
 
 1. Use [`ST_ShortestPathLength`](../ST_ShortestPathLength) to verify
    the results of `ST_Accessibility`.

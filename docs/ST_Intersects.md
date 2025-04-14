@@ -19,7 +19,7 @@ Intersects means that `geomA` and `geomB` have at least one point in common.
 
 ## Examples
 
-##### Cases where `ST_Intersects` is true
+### Cases where `ST_Intersects` is true
 
 ```sql
 SELECT ST_Intersects(geomA, geomB) FROM input_table;
@@ -74,7 +74,7 @@ SELECT ST_Intersects(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Intersects_8.png"/>
 
-##### Cases where `ST_Intersects` is false
+### Cases where `ST_Intersects` is false
 
 ```sql
 SELECT ST_Intersects(geomA, geomB) FROM input_table;

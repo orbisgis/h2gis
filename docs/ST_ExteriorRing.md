@@ -33,11 +33,11 @@ SELECT ST_ExteriorRing('POINT(1 2)');
 -- Answer: NULL
 ```
 
-##### Comparison with [`ST_InteriorRingN`](../ST_InteriorRingN)
+### Comparison with [`ST_InteriorRingN`](../ST_InteriorRingN)
 
 {% include exteriorring-interiorringn-cf.html %}
 
-##### Comparison with [`ST_Boundary`](../ST_Boundary)
+### Comparison with [`ST_Boundary`](../ST_Boundary)
 
 {% include exteriorring-boundary-cf.html %}
 

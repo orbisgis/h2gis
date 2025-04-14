@@ -24,7 +24,7 @@ The last argument can be set to improve the `quality` of the triangulation. The 
 
 ## Examples
 
-##### 1rst signature
+### 1rst signature
 ```sql
 SELECT ST_Delaunay('MULTIPOINT((1 1), (0 4), (3 2), (3 7), (4 5),
                                (5 2), (7 1), (7 6), (8 4), (5 8),
@@ -41,7 +41,7 @@ MULTIPOLYGON (((1 8, 0 4, 3 7, 1 8)), ((1 8, 3 7, 5 8, 1 8)),
 
 <img class="displayed" src="../ST_Delaunay_1.png"/>
 
-##### 2nd signature with `flag` parameter
+### 2nd signature with `flag` parameter
 ```sql
 SELECT ST_Delaunay('MULTIPOINT((1 1), (0 4), (3 2), (3 7), (4 5),
                                (5 2), (7 1), (7 6), (8 4), (5 8),
@@ -59,7 +59,7 @@ MULTILINESTRING ((7 6, 8 4), (5 8, 7 6), (1 8, 5 8), (0 4, 1 8),
 
 <img class="displayed" src="../ST_Delaunay_2.png"/>
 
-##### 3rd signature with `flag` and `quality` parameters
+### 3rd signature with `flag` and `quality` parameters
 ```sql
 SELECT ST_Delaunay('MULTIPOINT((1 1), (0 4), (3 2), (3 7), (4 5),
                                (5 2), (7 1), (7 6), (8 4), (5 8),

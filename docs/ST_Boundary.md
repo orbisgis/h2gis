@@ -45,7 +45,7 @@ SELECT ST_Boundary('POINT(2 2)');
 -- Answer: GEOMETRYCOLLECTION EMPTY
 ```
 
-##### Comparison with [`ST_ExteriorRing`](../ST_ExteriorRing)
+### Comparison with [`ST_ExteriorRing`](../ST_ExteriorRing)
 
 {% include exteriorring-boundary-cf.html %}
 

@@ -56,7 +56,7 @@ SELECT ST_Reverse3DLine(
 --                           (4 6 2, 4 2, 1 2 0))
 ```
 
-##### Non-examples
+### Non-examples
 
 ```sql
 -- Returns the Geometry untouched since its first coordinate

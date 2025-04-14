@@ -36,7 +36,7 @@ Use case with the Castle of Nantes, which coordinates are exprimed in the French
 
 <img class="displayed" src="../ST_GoogleMapLink_castle_topo.png"/>
 
-##### 1rst signature
+### 1rst signature
 
 ```sql
 SELECT ST_GoogleMapLink(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326)) as URL FROM NANTES_CASTLE;
@@ -45,7 +45,7 @@ SELECT ST_GoogleMapLink(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326)) as URL F
 ```
 <img class="displayed" src="../ST_GoogleMapLink.png"/>
 
-##### 2nd signature, with `layerType` parameter 
+### 2nd signature, with `layerType` parameter 
 
 ```sql
 SELECT ST_GoogleMapLink(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326), 'k') as URL FROM NANTES_CASTLE;
@@ -54,7 +54,7 @@ SELECT ST_GoogleMapLink(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326), 'k') as 
 ```
 <img class="displayed" src="../ST_GoogleMapLink_k.png"/>
 
-##### 3rd signature, with `zoom` parameter 
+### 3rd signature, with `zoom` parameter 
 
 ```sql
 SELECT ST_GoogleMapLink(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326), 'm', 10) as URL FROM NANTES_CASTLE;

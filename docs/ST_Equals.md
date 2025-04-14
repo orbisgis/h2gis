@@ -22,7 +22,7 @@ Equal means:
 
 ## Examples
 
-##### Cases where `ST_Equals` is true
+### Cases where `ST_Equals` is true
 
 ```sql
 SELECT ST_Equals(geomA, geomB) FROM input_table;

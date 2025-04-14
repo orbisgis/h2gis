@@ -40,7 +40,7 @@ ST_GeometryShadow(INPUT_GEOM,ST_SunPosition(), HEIGHT).
 
 ## Examples
 
-#### Cases with a `POLYGON`
+### Cases with a `POLYGON`
 
 Where we specify the `point` *(1st signature)*
 ```sql
@@ -97,7 +97,7 @@ SELECT ST_Geometryshadow(the_geom, ST_SunPosition('POINT(-1.54544 47.24961)','20
 
 <img class="displayed" src="../ST_GeometryShadow_case1.png"/>
 
-#### Case with a `LINESTRING`
+### Case with a `LINESTRING`
 
 ```sql
 -- Using the 2nd signature
@@ -110,7 +110,7 @@ SELECT ST_Geometryshadow('LINESTRING(356109 6693060, 356140 6693109, 356197 6693
 <img class="displayed" src="../ST_GeometryShadow_case2.png"/>
 
 
-#### Case with a `POINT`
+### Case with a `POINT`
 
 ```sql
 -- Using the 2nd signature
@@ -122,7 +122,7 @@ SELECT ST_Geometryshadow('POINT(356140 6693109)',
 
 <img class="displayed" src="../ST_GeometryShadow_case3.png"/>
 
-### Use case
+## Use case
 A specific use case, using `ST_SunPosition` and `ST_GeometryShadow` is avalaible [HERE](https://github.com/orbisgis/h2gis/wiki/3.3-Compute-building's-shadow).
 
 ## See also

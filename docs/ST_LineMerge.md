@@ -14,14 +14,14 @@ If the user provide something else than `(MULTI)LINESTRING` it returns an `EMPTY
 
 ## Examples
 
-##### Case with a `LINESTRING`
+### Case with a `LINESTRING`
 
 ```sql
 SELECT ST_LineMerge('LINESTRING (1 1, 1 4)') as THE_GEOM;
 -- Answer: MULTILINESTRING ((1 1, 1 4)) 
 ```
 
-##### Case with a `MULTILINESTRING`
+### Case with a `MULTILINESTRING`
 
 ```sql
 SELECT ST_LineMerge('MULTILINESTRING ((1 1, 1 4), 
@@ -33,7 +33,7 @@ SELECT ST_LineMerge('MULTILINESTRING ((1 1, 1 4),
 ```
 <img class="displayed" src="../ST_LineMerge_1.png"/>
 
-##### Case with mixed dimension geometries
+### Case with mixed dimension geometries
 
 ```sql
 SELECT ST_LineMerge('GEOMETRYCOLLECTION (

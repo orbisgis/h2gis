@@ -29,7 +29,7 @@ Use case with the Castle of Nantes, which coordinates are exprimed in the French
 
 <img class="displayed" src="../ST_OSMMapLink_castle_topo.png"/>
 
-##### Case without `marker`
+### Case without `marker`
 
 ```sql
 SELECT ST_OSMMAPLINK(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326)) as URL FROM NANTES_CASTLE;
@@ -38,7 +38,7 @@ SELECT ST_OSMMAPLINK(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326)) as URL FROM
 ```
 <img class="displayed" src="../ST_OSMMapLink_castle_osm.png"/>
 
-##### Case with `marker`
+### Case with `marker`
 
 ```sql
 SELECT ST_OSMMAPLINK(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326), true) as URL FROM NANTES_CASTLE;

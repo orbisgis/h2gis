@@ -24,7 +24,7 @@ SELECT ST_RemoveHoles(
 
 <img class="displayed" src="../ST_RemoveHoles.png"/>
 
-##### Non-examples
+### Non-examples
 
 ```sql
 -- Here are no holes to remove:

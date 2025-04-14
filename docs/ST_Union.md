@@ -12,16 +12,16 @@ GEOMETRY ST_Union(GEOMETRYCOLLECTION geom);
 
 `ST_Union` can be used as a scalar or an aggregate function.
 
-##### Scalar function
+### Scalar function
 
 Computes the union of one or more Geometries.
 Input Geometries can be `(MULTI)POINT`s, `(MULTI)LINESTRING`s, `(MULTI)POLYGON`s or `GEOMETRYCOLLECTION`s.
 
-##### Aggregate function
+### Aggregate function
 Computes the union of a set of Geometries.
 `geom` is a `GEOMETRYCOLLECTION` resulting from an `ST_Accum` operation on a table.
 
-##### In both cases:
+### In both cases:
   * If no input Geometriy is given, the result is `NULL`.
   * Output Geometries can be single or multiple.
 
@@ -30,7 +30,7 @@ Computes the union of a set of Geometries.
 
 ## Examples
 
-##### Scalar function
+### Scalar function
 
 | geomA Polygon                      | geomB Polygon                      |
 |------------------------------------|------------------------------------|
@@ -43,7 +43,7 @@ SELECT ST_Union(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Union_1.png"/>
 
-##### Aggregate function
+### Aggregate function
 
 ```sql
 CREATE TABLE input_table(geom POLYGON);

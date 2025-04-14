@@ -22,7 +22,7 @@ ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]'[, 'w'],
 Calculates the length(s) of shortest path(s) among vertices in a
 graph. Can be used to calculate distance matrices.
 
-##### Input parameters
+### Input parameters
 
 | Variable      | Meaning                                                                                                                                                                               |
 |---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -64,7 +64,7 @@ INSERT INTO EDGES VALUES
 
 <img class="displayed" src="../wdo.svg">
 
-##### One-to-One
+### One-to-One
 
 ```sql
 SELECT * FROM
@@ -131,7 +131,7 @@ SELECT * FROM
 -- |      1 |           6 | Infinity |
 ```
 
-##### One-to-Several
+### One-to-Several
 
 ```sql
 -- Here we calculate d(1, 3), d(1, 5) and d(1, 6) in a single
@@ -147,7 +147,7 @@ SELECT * FROM
 -- |      1 |           5 |      7.0 |
 ```
 
-##### One-to-All
+### One-to-All
 
 ```sql
 -- Here we calculate d(1, *), i.e., the distance from vertex 1 to
@@ -178,7 +178,7 @@ SELECT * FROM
 -- |      6 |           6 |      0.0 |
 ```
 
-##### Many-to-Many (distance matrices)
+### Many-to-Many (distance matrices)
 
 ```sql
 -- Create a source-destination table:

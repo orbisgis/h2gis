@@ -14,7 +14,7 @@ Useful to flip `latitude/longitude` coordinates.
 
 ## Examples
 
-##### Cases with a simple `GEOMETRY`
+### Cases with a simple `GEOMETRY`
 
 ```sql
 SELECT ST_FlipCoordinates('POINT(1 2)');
@@ -27,13 +27,13 @@ SELECT ST_FlipCoordinates('POLYGON ((0 1, 2 3, 3 2, 2 1, 0 1))');
 -- Answer: POLYGON ((1 0, 3 2, 2 3, 1 2, 1 0))
 ```
 
-#### Case with a `Z` coordinate
+## Case with a `Z` coordinate
 ```sql
 SELECT ST_FlipCoordinates('POINT(1 2 5)');
 -- Answer: POINT (2 1 5)
 ```
 
-##### Case with a `MULTIGEOMETRY`
+### Case with a `MULTIGEOMETRY`
 
 ```sql
 SELECT ST_FlipCoordinates('MULTIPOLYGON(((1 0, 1 3, 2 1, 1 0)), 
@@ -42,7 +42,7 @@ SELECT ST_FlipCoordinates('MULTIPOLYGON(((1 0, 1 3, 2 1, 1 0)),
 --			((4 1, 1 3, 4 3, 4 1)))
 ```
 
-##### Case with a `GEOMETRYCOLLECTION`
+### Case with a `GEOMETRYCOLLECTION`
 
 ```sql
 SELECT ST_FlipCoordinates('GEOMETRYCOLLECTION (

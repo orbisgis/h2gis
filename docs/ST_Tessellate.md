@@ -14,7 +14,7 @@ Input geometry (`geom`) can only be a `POLYGON` or a `MULTIPOLYGON`.
 
 ## Examples
 
-##### Case with `POLYGON`
+### Case with `POLYGON`
 
 ```sql
 SELECT ST_Tessellate('POLYGON ((1 1, 1 5, 3 5, 3 4, 2 4, 
@@ -28,7 +28,7 @@ MULTIPOLYGON (((1 5, 2 4, 3 5, 1 5)), ((2 4, 3 4, 3 5, 2 4)),
 
 <img class="displayed" src="../ST_Tessellate_1.png"/>
 
-##### Case with `MULTIPOLYGON`
+### Case with `MULTIPOLYGON`
 
 ```sql
 SELECT ST_Tessellate('MULTIPOLYGON (
@@ -44,7 +44,7 @@ MULTIPOLYGON (((2 4, 1 3, 3 3, 2 4)), ((1 3, 2 2, 3 3, 1 3)),
 
 <img class="displayed" src="../ST_Tessellate_2.png"/>
 
-##### Application with real data
+### Application with real data
 
 The tessellation is made on a set of urban plots (in grey) (stored in a layer called "PLOTS")
 

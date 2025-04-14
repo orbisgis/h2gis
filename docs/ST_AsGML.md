@@ -18,10 +18,13 @@ This function supports:
 
 ## Examples
 
-##### For a Point
+### For a Point
 ```sql
 SELECT ST_AsGML('POINT(-2.070365 47.643713)');
--- Answer: 
+```
+
+Answer: 
+```
 --	<gml:Point srsName='EPSG:0'>
 --	  <gml:coordinates>
 --	    -2.070365,47.643713 
@@ -29,10 +32,13 @@ SELECT ST_AsGML('POINT(-2.070365 47.643713)');
 --	</gml:Point>
 ```
 
-##### For a (3D) Linestring
+### For a (3D) Linestring
 ```sql
 SELECT ST_AsGML('LINESTRING (12 25 10, 100 20 5, 56 65 8)');
--- Answer: 
+```
+
+Answer: 
+```
 --	<gml:LineString srsName='EPSG:0'>
 --	  <gml:coordinates>
 --	    12.0,25.0,10.0 100.0,20.0,5.0 56.0,65.0,8.0 
@@ -40,10 +46,13 @@ SELECT ST_AsGML('LINESTRING (12 25 10, 100 20 5, 56 65 8)');
 --	</gml:LineString>
 ```
 
-##### For a Linestring with a srid (here in WGS84)
+### For a Linestring with a srid (here in WGS84)
 ```sql
 SELECT ST_AsGML(ST_SetSRID('LINESTRING (-47.8 56.3, -44.2 57.3)', 4326));
--- Answer: 
+```
+
+Answer: 
+```
 --	<gml:LineString srsName='EPSG:4326'>
 --	  <gml:coordinates>
 --	    -47.8,56.3 -44.2,57.3 
@@ -51,10 +60,13 @@ SELECT ST_AsGML(ST_SetSRID('LINESTRING (-47.8 56.3, -44.2 57.3)', 4326));
 --	</gml:LineString>
 ```
 
-##### For a Polygon
+### For a Polygon
 ```sql
 SELECT ST_AsGML('POLYGON ((20 20, 40 20, 40 10, 20 10, 20 20))');
--- Answer: 
+```
+
+Answer: 
+```
 --	<gml:Polygon srsName='EPSG:0'>
 --	  <gml:outerBoundaryIs>
 --	    <gml:LinearRing>
@@ -66,11 +78,14 @@ SELECT ST_AsGML('POLYGON ((20 20, 40 20, 40 10, 20 10, 20 20))');
 --	</gml:Polygon>
 ```
 
-##### For a MultiPolygon
+### For a MultiPolygon
 ```sql
 SELECT ST_AsGML('MULTIPOLYGON (((1 1, 1 3, 3 3, 3 1, 1 1)), 
   			       ((4 2, 4 4, 6 4, 6 2, 4 2)))');
--- Answer: 
+```
+
+Answer: 
+```
 --	<gml:MultiPolygon srsName='EPSG:0'>
 --	  <gml:polygonMember>
 --	    <gml:Polygon>

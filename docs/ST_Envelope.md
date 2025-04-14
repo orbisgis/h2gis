@@ -51,7 +51,7 @@ SELECT ST_Envelope('LINESTRING(1 2, 5 3, 2 6)');
 
 <img class="displayed" src="../ST_Envelope_2.png"/>
 
-##### Setting or preserving the SRID
+### Setting or preserving the SRID
 
 ```sql
 -- This shows that ST_Envelope preserves the SRID of the input
@@ -66,11 +66,11 @@ SELECT ST_SRID(ST_Envelope(
 -- Answer: 2154
 ```
 
-##### Comparison with [`ST_Extent`](../ST_Extent)
+### Comparison with [`ST_Extent`](../ST_Extent)
 
 {% include extent-envelope-cf.html %}
 
-##### Comparison with [`ST_MinimumRectangle`](../ST_MinimumRectangle)
+### Comparison with [`ST_MinimumRectangle`](../ST_MinimumRectangle)
 
 {% include minimumrectangle-envelope-cf.html %}
 

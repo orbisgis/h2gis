@@ -20,7 +20,7 @@ To return the geometry (`LINESTRING`) that correspond to the longest distance, t
 
 ## Examples
 
-##### Cases where `geomA` and `geomB` are different
+### Cases where `geomA` and `geomB` are different
 
 ```sql
 SELECT ST_MaxDistance('POLYGON ((0 1, 1 1, 1 0, 0 0, 0 1))', 
@@ -55,7 +55,7 @@ SELECT ST_MaxDistance('MULTIPOLYGON (((0 1, 1 1, 1 0, 0 0, 0 1)),
 
 <img class="displayed" src="../ST_LongestLine_4.png"/>
 
-##### Case where `geomA` is equal to `geomB`
+### Case where `geomA` is equal to `geomB`
 
 ```sql
 SELECT ST_MaxDistance('POLYGON ((1 3, 0 0, 3 2, 1 3))', 

@@ -18,7 +18,7 @@ Notes :
 
 ## Examples
 
-#### Case between a `LINESTRING` and a `POLYGON`
+### Case between a `LINESTRING` and a `POLYGON`
 
 ```sql
 SELECT ST_Drape('LINESTRING(1 2, 5 2)',
@@ -28,7 +28,7 @@ SELECT ST_Drape('LINESTRING(1 2, 5 2)',
 
 <img class="displayed" src="../ST_Drape_1.png"/>
 
-#### Case between a `LINESTRING` and a `MULTIPOLYGON`
+### Case between a `LINESTRING` and a `MULTIPOLYGON`
 
 ```sql
 SELECT ST_Drape('LINESTRING(1 2, 5 2)',
@@ -39,7 +39,7 @@ SELECT ST_Drape('LINESTRING(1 2, 5 2)',
 
 <img class="displayed" src="../ST_Drape_2.png"/>
 
-#### Case between two `POLYGONS`
+### Case between two `POLYGONS`
 
 ```sql
 SELECT ST_Drape('POLYGON((1 2, 5 2, 2 5, 1 2))',
@@ -50,7 +50,7 @@ SELECT ST_Drape('POLYGON((1 2, 5 2, 2 5, 1 2))',
 
 <img class="displayed" src="../ST_Drape_3.png"/>
 
-#### Case between two `POLYGONS` *(input one with hole)*
+### Case between two `POLYGONS` *(input one with hole)*
 
 ```sql
 SELECT ST_Drape('POLYGON ((1 2, 5 2, 2 5, 1 2),(2 2.5, 2 3.5, 3.5 2.5, 2 2.5))',
@@ -61,7 +61,7 @@ SELECT ST_Drape('POLYGON ((1 2, 5 2, 2 5, 1 2),(2 2.5, 2 3.5, 3.5 2.5, 2 2.5))',
 
 <img class="displayed" src="../ST_Drape_4.png"/>
 
-#### Case between a `MULTIPOINT` and a `POLYGON`
+### Case between a `MULTIPOINT` and a `POLYGON`
 
 ```sql
 SELECT ST_Drape('MULTIPOINT((1 2), (2 2), (3 2), (4 3))',
@@ -71,7 +71,7 @@ SELECT ST_Drape('MULTIPOINT((1 2), (2 2), (3 2), (4 3))',
 
 <img class="displayed" src="../ST_Drape_5.png"/>
 
-#### Case between a `MULTILINESTRING` and a `POLYGON`
+### Case between a `MULTILINESTRING` and a `POLYGON`
 
 ```sql
 SELECT ST_Drape('MULTILINESTRING((1 2, 3 2),(2 4, 5 2))',
@@ -82,7 +82,7 @@ SELECT ST_Drape('MULTILINESTRING((1 2, 3 2),(2 4, 5 2))',
 
 <img class="displayed" src="../ST_Drape_6.png"/>
 
-#### Case between a `MULTIPOLYGON` and a `POLYGON`
+### Case between a `MULTIPOLYGON` and a `POLYGON`
 
 ```sql
 SELECT ST_Drape('MULTIPOLYGON(((1 2, 3 2, 2 3, 1 2)),

@@ -19,7 +19,7 @@ Disjoint means that the two geometries have no point in common.
 
 ## Examples
 
-##### Cases where `ST_Disjoint` is true
+### Cases where `ST_Disjoint` is true
 
 ```sql
 SELECT ST_Disjoint(geomA, geomB) FROM input_table;
@@ -44,7 +44,7 @@ SELECT ST_Disjoint(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Disjoint_3.png"/>
 
-##### Cases where `ST_Disjoint` is false
+### Cases where `ST_Disjoint` is false
 
 ```sql
 SELECT ST_Disjoint(geomA, geomB) FROM input_table;

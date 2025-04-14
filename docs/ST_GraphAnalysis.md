@@ -69,7 +69,7 @@ number of shortest paths.
   </p>
 </div>
 
-##### Input parameters
+### Input parameters
 
 | Variable      | Meaning                                                                                                                                                                                                                             |
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -78,7 +78,7 @@ number of shortest paths.
 | `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed`                                               |
 | `w`           | Edge weights column name                                                                                                                                                                                                            |
 
-##### Screenshots
+### Screenshots
 
 Closeness centrality of Nantes, France. Notice the limited traffic
 zone in the center.
@@ -220,7 +220,7 @@ SELECT EDGE_ID,
 
 <img class="displayed" src="../wdo-largest-scc-edge-betw.svg">
 
-##### Exercises
+## Exercises
 
 1. Use [`ST_ShortestPathTree`](../ST_ShortestPathTree) to calculate
    the shortest path trees for nodes 1 through 5. Then use the

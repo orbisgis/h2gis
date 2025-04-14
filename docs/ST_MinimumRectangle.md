@@ -42,7 +42,7 @@ SELECT ST_MinimumRectangle('GEOMETRYCOLLECTION(
 --                  5 6))
 ```
 
-##### Comparison with [`ST_Envelope`](../ST_Envelope)
+### Comparison with [`ST_Envelope`](../ST_Envelope)
 
 {% include minimumrectangle-envelope-cf.html %}
 

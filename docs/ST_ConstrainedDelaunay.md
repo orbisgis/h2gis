@@ -22,7 +22,7 @@ If the input geometry does not contain any lines, a [Delaunay triangulation](../
 
 ## Examples
 
-##### 1rst signature, with `POLYGON`
+### 1rst signature, with `POLYGON`
 ```sql
 SELECT ST_ConstrainedDelaunay('POLYGON ((4 8, 5 6, 9 6, 7 5, 2 6, 2 5, 
 					 1 3, 3 2, 5 1, 3 0, 0 2, 0 4, 
@@ -39,7 +39,7 @@ MULTIPOLYGON (((0 4, 0 2, 1 3, 0 4)), ((0 4, 2 5, 1 3, 0 4)), ((0 4, 2 5, 1 7, 0
 
 <img class="displayed" src="../ST_ConstraintDelaunay_1.png"/>
 
-##### 1rst signature, with `LINESTRING`
+### 1rst signature, with `LINESTRING`
 ```sql
 SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((1 1, 0 4, 1 6, 2 8, 4 8, 7 8, 9 7, 9 6), 
   						(3 6, 2 5, 2 3, 2 1), 
@@ -56,7 +56,7 @@ MULTIPOLYGON (((2 3, 1 1, 2 1, 2 3)), ((2 3, 1 1, 0 4, 2 3)), ((0 4, 2 5, 2 3, 0
 <img class="displayed" src="../ST_ConstraintDelaunay_2.png"/>
 
 
-##### 2nd signature, with `flag` parameter
+### 2nd signature, with `flag` parameter
 ```sql
 SELECT ST_ConstrainedDelaunay('POLYGON ((4 8, 5 6, 9 6, 7 5, 2 6, 2 5, 
 					 1 3, 3 2, 5 1, 3 0, 0 2, 0 4, 

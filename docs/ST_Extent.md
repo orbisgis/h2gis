@@ -25,7 +25,7 @@ SELECT ST_Extent('POINT(5 6)'::Geometry);
 -- Answer: POINT(5 6)
 ```
 
-##### Comparison with [`ST_Envelope`](../ST_Envelope)
+### Comparison with [`ST_Envelope`](../ST_Envelope)
 
 {% include extent-envelope-cf.html %}
 

@@ -19,7 +19,7 @@ This function supports:
 
 ## Examples
 
-##### For a Point, with a srid
+### For a Point, with a srid
 ```sql
 SELECT ST_GeomFromGML('
 	<gml:Point>
@@ -30,7 +30,7 @@ SELECT ST_GeomFromGML('
 -- Answer: POINT (50.2 38.7)
 ```
 
-##### For a 3D Point
+### For a 3D Point
 ```sql
 SELECT ST_GeomFromGML('
 	<gml:Point>
@@ -41,7 +41,7 @@ SELECT ST_GeomFromGML('
 -- Answer: POINT (50.2 38.7 20)
 ```
 
-##### For a Linestring
+### For a Linestring
 ```sql
 SELECT ST_GeomFromGML('
 	<gml:LineString srsName="EPSG:4326">
@@ -52,7 +52,7 @@ SELECT ST_GeomFromGML('
 -- Answer: LINESTRING (-60.5 35.2, -62.3 47.4, -65.6 48.4) 
 ```
 
-##### For a MultiLinestring
+### For a MultiLinestring
 ```sql
 SELECT ST_GeomFromGML('
 	<MultiLineString srsName="EPSG:4326">
@@ -77,7 +77,7 @@ SELECT ST_GeomFromGML('
 --			    (324.1 219.7, 0.45 0.56))
 ```
 
-##### For a Polygon
+### For a Polygon
 ```sql
 SELECT ST_GeomFromGML('
 	<gml:Polygon>

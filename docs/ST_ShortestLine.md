@@ -15,7 +15,7 @@ The function will only return the first shortest `LINESTRING` if more than one, 
 
 ## Examples
 
-#### Cases with one solution
+### Cases with one solution
 
 ```sql
 SELECT ST_ShortestLine('POINT(1 2)',
@@ -45,7 +45,7 @@ SELECT ST_ShortestLine('POINT(4 3)',
 ```
 <img class="displayed" src="../ST_ShortestLine_4.png"/>
 
-#### Case with two possible solutions
+### Case with two possible solutions
 
 ```sql
 SELECT ST_ShortestLine('POINT(2 2)',

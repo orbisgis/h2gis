@@ -15,14 +15,14 @@ In case of `distance`, the same value is applied in `delta X` and `delta Y`.
 
 ## Examples
 
-##### With `distance`
+### With `distance`
 
 ```sql
 SELECT ST_Expand('POINT(4 4)', 2);
 -- Answer: POLYGON ((2 2, 2 6, 6 6, 6 2, 2 2)) 
 ```
 
-##### With `deltaX` and `deltaY`
+### With `deltaX` and `deltaY`
 
 ```sql
 SELECT ST_Expand('POINT(4 4)', 5, 2);

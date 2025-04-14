@@ -22,7 +22,7 @@ Compute the Sky View Factor for a given point based on geometries where:
 
 ## Examples
 
-#### Case with one entry point
+### Case with one entry point
 
 Creation of the table with one point (here exprimed in Lambert 93, French system - EPSG:2154)
 
@@ -49,7 +49,7 @@ CREATE TABLE SVF AS
 | 0.5658633540674807 |
 ```
 
-#### Case with two entry points
+### Case with two entry points
 
 ```sql
 -- Add a second point to compute the SVF
@@ -71,7 +71,7 @@ CREATE TABLE SVF AS
 <img class="displayed" src="../ST_SVF.png"/>
 
 
-#### Case with a grid of entry points
+### Case with a grid of entry points
 
 In the example below, we are using a grid of points to compute SVFs. The grid is built using a table of buildings.
 

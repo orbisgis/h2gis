@@ -41,7 +41,7 @@ SELECT ST_Extrude('POLYGON((0 0, 3 0, 3 3, 0 3, 0 0))', 5);
 
 <img class="displayed" src="../ST_Extrude_2.png"/>
 
-###### POLYGON with hole:
+### POLYGON with hole:
 
 ```sql
 SELECT ST_Extrude('POLYGON((0 10, 10 10, 10 0, 0 0, 0 10),
@@ -70,7 +70,7 @@ SELECT ST_Extrude('POLYGON((0 10, 10 10, 10 0, 0 0, 0 10),
 --                (1 3 10, 3 3 10, 3 1 10, 1 1 10, 1 3 10))))
 ```
 
-###### ST_Extrude with flag parameter:
+### ST_Extrude with flag parameter:
 
 ```sql
 SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))', 10, 1);

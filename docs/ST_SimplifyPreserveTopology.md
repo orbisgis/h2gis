@@ -87,7 +87,7 @@ SELECT ST_SimplifyPreserveTopology(
 -- Answer:   LINESTRING(250 250, 280 290, 300 230, 470 360, 604 286)
 ```
 
-##### Comparison with [`ST_Simplify`](../ST_Simplify)
+### Comparison with [`ST_Simplify`](../ST_Simplify)
 
 {% include simplify-simplifypreserve-cf.html %}
 

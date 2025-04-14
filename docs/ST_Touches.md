@@ -15,7 +15,7 @@ Touches means that:
 * `geomA` and `geomB` have at least one point in common.
 * The interiors of `geomA` and `geomB` do not intersect.
 
-##### Remarks
+### Remarks
 
 * `ST_Touches` can only be used to determine the relation between
   pairs listed here: `(POLYGON, POLYGON)`, `(POLYGON, LINESTRING)`,
@@ -29,7 +29,7 @@ The relation `(POINT, POINT)` is excluded.
 
 ## Examples
 
-##### Cases where `ST_Touches` is true
+### Cases where `ST_Touches` is true
 
 ```sql
 SELECT ST_Touches(geomA, geomB) FROM input_table;
@@ -90,7 +90,7 @@ SELECT ST_Touches(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Touches_9.png"/>
 
-##### Cases where `ST_Touches` is false
+### Cases where `ST_Touches` is false
 
 ```sql
 SELECT ST_Touches(geomA, geomB) FROM input_table;

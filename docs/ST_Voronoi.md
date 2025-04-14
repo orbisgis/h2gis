@@ -23,11 +23,11 @@ Create Voronoi diagram from a set of points or a Delaunay mesh.
  - `1` for Voronoi edges
  - `2` (default) for Voronoi polygons
 
-#### MULTIPOINT input
+### MULTIPOINT input
 
 If the input is a `MULTIPOINT` then a [QuadEdge delaunay graph](http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/triangulate/VoronoiDiagramBuilder.html) is produced internally with a minimal envelope. At the final step the voronoi polygons/lines/vertex are produced. Z values are ignored.
 
-#### MULTIPOLYGON input
+### MULTIPOLYGON input
 
 If the input is  a `MULTIPOLYGON` made of triangles mesh. Using geometry coordinates this function compute the triangle neighbors of the provided mesh.
 

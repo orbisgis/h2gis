@@ -52,7 +52,7 @@ SELECT * FROM AREA2;
 -- | MULTIPOLYGON(((90 109, 190 109, 90 9, 90 109)))  |  2 |
 ```
 
-#### Case where `tablename` is the result of a selection.
+### Case where `tablename` is the result of a selection.
 
 ```sql
 CALL SHPWRITE('/home/user/area.shp', 
@@ -67,7 +67,7 @@ SELECT * FROM AREA2;
 -- | MULTIPOLYGON(((-10 109,, 90 9, -10 9, -10 109))) |  1 |
 ```
 
-### Export the .prj file
+## Export the .prj file
 
 If you want to export your shapefile with it's projection, stored in a .prj file, you must assume that the table contains a SRID constraint value  greater than 0. 
 

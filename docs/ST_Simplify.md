@@ -59,7 +59,7 @@ SELECT ST_Simplify('LINESTRING(250 250, 280 290, 300 230, 340 300,
 -- Answer: LINESTRING(250 250, 280 290, 300 230, 470 360, 604 286)
 ```
 
-##### Comparison with [`ST_SimplifyPreserveTopology`](../ST_SimplifyPreserveTopology)
+### Comparison with [`ST_SimplifyPreserveTopology`](../ST_SimplifyPreserveTopology)
 
 {% include simplify-simplifypreserve-cf.html %}
 

@@ -17,7 +17,7 @@ graphs) of the graph represented by `INPUT_EDGES`.
 Produces two tables (nodes and edges) containing a node or edge ID
 and a connected component ID.
 
-##### Input parameters
+### Input parameters
 
 | Variable      | Meaning                                                                                                                                                                               |
 |---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -44,7 +44,7 @@ and a connected component ID.
 
 ## Examples
 
-##### SCCs (directed graph)
+### SCCs (directed graph)
 
 ```sql
 -- Prepare example data:
@@ -145,7 +145,7 @@ SELECT * FROM EDGES_EDGE_CC
 
 <img class="displayed" src="../scc.svg">
 
-##### Counting the number of edges in each SCC
+### Counting the number of edges in each SCC
 
 ```sql
 -- Count the number of edges in each SCC:
@@ -169,7 +169,7 @@ SELECT * FROM EDGE_CC_TOTALS;
 -- |  1 |        1 |
 ```
 
-##### Selecting the largest SCC
+### Selecting the largest SCC
 
 ```sql
 -- Creating these indices will greatly speed up the following
@@ -212,7 +212,7 @@ SELECT * FROM EDGES_NO_SCC;
 -- |      17 |         10 |       11 |                1 | -1 |
 ```
 
-##### CCs (undirected graph)
+### CCs (undirected graph)
 
 ```sql
 -- Now we will do the same calculation, this time considering the
@@ -265,7 +265,7 @@ SELECT * FROM EDGES_EDGE_CC
 
 <img class="displayed" src="../cc.svg">
 
-##### Exercise
+### Exercise
 
 Will
 

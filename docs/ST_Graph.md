@@ -87,7 +87,7 @@ If `deleteTables` is equal to `1`, existing tables (with the same prefix `inputT
 
 ## Examples
 
-##### First Geometry column detection
+### First Geometry column detection
 
 ```sql
 CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING, 
@@ -146,7 +146,7 @@ SELECT * FROM test_edges;
 -- |    4    |     3      |    2     |
 ```
 
-##### Using a tolerance
+### Using a tolerance
 
 ```sql
 CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING, 
@@ -185,7 +185,7 @@ SELECT * FROM test_edges;
 -- |    5    |     3      |    6     |
 ```
 
-##### Orienting by z-values
+### Orienting by z-values
 
 ```sql
 -- This test proves that orientation by slope works. Three cases:

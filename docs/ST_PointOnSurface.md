@@ -44,7 +44,7 @@ SELECT ST_PointOnSurface('GEOMETRYCOLLECTION(
 
 <img class="displayed" src="../ST_PointOnSurface_2.png"/>
 
-##### Comparison with [`ST_Centroid`](../ST_Centroid)
+### Comparison with [`ST_Centroid`](../ST_Centroid)
 
 {% include centroid-pointonsurface-cf.html %}
 

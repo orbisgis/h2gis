@@ -23,14 +23,14 @@ Crosses means that:
 ```
 {% include spatial_indice_warning.html %}
 
-##### Note
+### Note
 In the OpenGIS Simple Features Specification this predicate is only defined for `(POINT, LINESTRING)`, `(POINT, POLYGON)`, `(LINESTRING, LINESTRING)`, and `(LINESTRING, POLYGON)` situations.
 
 JTS and Geos extend this definition to `(POLYGON, LINESTRING)`, `(POLYGON, POINT)` and `(LINESTRING, POINT)` situations.
 
 ## Examples
 
-##### Cases where `ST_Crosses` is true
+### Cases where `ST_Crosses` is true
 
 ```sql
 SELECT ST_Crosses(geomA, geomB) FROM input_table;
@@ -79,7 +79,7 @@ SELECT ST_Crosses(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Crosses_7.png"/>
 
-##### Cases where `ST_Crosses` is false
+### Cases where `ST_Crosses` is false
 
 ```sql
 SELECT ST_Crosses(geomA, geomB) FROM input_table;

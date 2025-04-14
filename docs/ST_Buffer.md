@@ -136,7 +136,7 @@ MULTIPOLYGON(((0.5 2, 0.5 3, 0.5 6, 0.5096073597983848 6.097545161008064, 0.5380
 
 <img class="displayed" src="../ST_Buffer_5.png"/>
 
-##### Comparison with [`ST_MakeEllipse`](../ST_MakeEllipse)
+### Comparison with [`ST_MakeEllipse`](../ST_MakeEllipse)
 
 ```{include} makeellipse-buffer-cf.md
 ```

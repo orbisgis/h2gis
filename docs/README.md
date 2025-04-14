@@ -17,7 +17,7 @@ management library. It contains tools to run geometry analysis and read/write ge
 
 H2GIS is licensed under the LGPL 3 license terms.
 
-####  GEOMETRY data type
+##  GEOMETRY data type
 
 Since H2 2.2.X version, the [geometry](https://h2database.com/html/datatypes.html?highlight=geometry&search=geometry#geometry_type) encoding to store the value in H2 is the EWKB (extended well-known binary) format. The [EWKB](https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT) format is not an OGC standard, but a PostGIS specific format that includes the spatial reference system (SRID) identifier.
 Its textual representation using the WKT (well-known text) uses the pattern :
@@ -28,8 +28,8 @@ H2 supports POINT, LINESTRING, POLYGON, MULTIPOINT, MULTILINESTRING, MULTIPOLYGO
 
 H2 provides the same syntax as PostGIS to build a table with a geometry data type.
 
-```
 e.g
+```sql
 CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY);
 CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINT));
 CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINT, 4326));
@@ -38,7 +38,7 @@ CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINTZM, 4326));
 CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINTM, 4326));
 ```
 
-#### Spatial functions
+## Spatial functions
 h2gis-functions is the main module of the H2GIS distribution. 
 It extends H2 by adding analysis capabilities,including
 - spatial operators (`ST_Intersection`, `ST_Difference`, etc.)
@@ -59,8 +59,7 @@ It include also file copy functions (import):
 * GPXRead() to read GPX files.
 
 
-
-### Usage
+## Usage
 
 H2GIS requires Java 11. Run `maven clean install -P standalone` in the H2GIS's root directory.
 
@@ -77,7 +76,7 @@ Click Connect in the web interface
 
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
-#### Initialize the H2GIS extension
+### Initialize the H2GIS extension
 
 To initialize the H2GIS extension apply the SQL syntax:
 
@@ -105,7 +104,7 @@ Or copy the content of a spatial table in a new shape file:
 CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
 ```
 
-#### Contributing
+## Contributing
 
 For legal reasons, contributors are asked to provide a contributor license agreement (CLA). 
 
@@ -116,7 +115,7 @@ The message need to include the following statement:
 If you want to contribute send a PR on GitHub and refer the CLA in your message.
 
 
-#### Download
+## Download
 
 To download the last H2GIS stable release and find documentation please go to [http://www.h2gis.org](http://www.h2gis.org)
 
@@ -133,7 +132,7 @@ To use the current snapshot add in the pom
 </repository>
 ```
 
-#### Acknowledgements
+## Acknowledgements
 
 The H2GIS team uses open source software. Specifically, we would like to thank  :
 
@@ -141,14 +140,12 @@ The H2GIS team uses open source software. Specifically, we would like to thank  
 * Martin Davis from the [JTS Topology Suite community](https://github.com/locationtech/jts).
 * Michaël Michaud from [OpenJump community](https://github.com/openjump-gis)
 
-#### Supporters
+## Supporters
 
 Many thanks for those who reported bugs or provide patches...  
 
 
-#### Team
+## Team
 
 H2GIS is leaded by scientists and engineers in GIS and informatic sciences from CNRS within the French Lab-STICC laboratory (DECIDE team of Vannes). 
 H2GIS is funded by research programs.
-
-

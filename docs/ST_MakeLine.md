@@ -20,7 +20,7 @@ It also can be used as an aggregative function in order to draw lines between va
 
 ## Examples
 
-#### Scalar function
+### Scalar function
 ```sql
 SELECT ST_MakeLine('POINT(1 2)', 'POINT(4 5)');
 -- Answer:     LINESTRING(1 2, 4 5)
@@ -61,7 +61,7 @@ SELECT ST_MakeLine('MULTIPOINT(1 2, 3 4)');
 -- Answer:     LINESTRING(1 2, 3 4)
 ```
 
-#### Aggregate function
+### Aggregate function
 ```sql
 CREATE TABLE input_table(point POINT);
 INSERT INTO input_table VALUES

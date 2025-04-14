@@ -31,7 +31,7 @@ SELECT ST_Interpolate3DLine(
 --                         (0 0 0, 50 0 50, 100 0 100))
 ```
 
-###### Nonexamples
+### Nonexamples
 
 ```sql
 -- Returns the Geometry untouched:

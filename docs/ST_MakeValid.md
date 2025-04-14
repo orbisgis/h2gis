@@ -21,7 +21,7 @@ Repair an invalid `geometry`.
 
 Here, `geometry` can be (multi)`point`, (multi)`linestring`, (multi)`polygon` or `geometryCollection`.
 
-##### Parameter: preserveGeomDim
+### Parameter: preserveGeomDim
 
 | Value | Description | Default value |
 |:-:|:-:|:-:|
@@ -39,7 +39,7 @@ Note that:
 </div>
 
 
-##### Parameter: preserveDuplicateCoord
+### Parameter: preserveDuplicateCoord
 
 | Value | Description | Default value |
 |:-:|:-:|:-:|
@@ -47,7 +47,7 @@ Note that:
 | `false` | All duplicated coordinates are removed |  |
 
 
-##### Parameter: preserveCoordDim
+### Parameter: preserveCoordDim
 
 | Value | Description | Default value |
 |:-:|:-:|:-:|
@@ -64,7 +64,7 @@ Note that:
 
 ## Examples
 
-##### With Point
+### With Point
 
 ```sql
 SELECT ST_MakeValid('POINT(0 0)');
@@ -75,7 +75,7 @@ SELECT ST_MakeValid('POINT(1 2 3)');
 -- Answer: POINT(1 2 3) 
 ```
 
-##### With Linestring
+### With Linestring
 
 ```sql
 SELECT ST_MakeValid('
@@ -107,7 +107,7 @@ SELECT ST_MakeValid('
 -- Answer: POINT (1 1)
 ```
 
-##### With Polygon
+### With Polygon
 
 ```sql
 SELECT ST_MakeValid('
@@ -177,7 +177,7 @@ SELECT ST_MakeValid('
 <img class="displayed" src="../ST_MakeValid_6.png"/>
 
 
-##### With GeometryCollection
+### With GeometryCollection
 
 ```sql
 SELECT ST_MakeValid('

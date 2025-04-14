@@ -38,7 +38,7 @@ SELECT ST_ToMultiLine('POINT(2 4)');
 -- Answer: MULTILINESTRING EMPTY
 ```
 
-##### Comparison with [`ST_ToMultiSegments`](../ST_ToMultiSegments)
+### Comparison with [`ST_ToMultiSegments`](../ST_ToMultiSegments)
 
 {% include multiline-multiseg-cf.html %}
 

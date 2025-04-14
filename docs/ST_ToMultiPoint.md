@@ -48,7 +48,7 @@ SELECT ST_ToMultiPoint(
 
 <img class="displayed" src="../ST_ToMultiPoint2.png"/>
 
-##### Aggregate form
+### Aggregate form
 
 ```sql
 CREATE TABLE input_table(line LINESTRING);

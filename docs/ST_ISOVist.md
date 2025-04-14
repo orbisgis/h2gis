@@ -17,7 +17,7 @@ This function compute the visibility polygon obstructed by provided `obstacles`.
 
 Resulting polygon will be enclosed by a circle defined by the maximum distance (`maxDistance`) parameter.
 
-##### Parameters
+### Parameters
 
 * `point` : Point coordinates (x, y, (z)) from which the visibility will be calculated,
 * `obstacles` : Geometry or set of geometries grouped into a simple or complex geometry, used as obstacles,
@@ -28,7 +28,7 @@ Resulting polygon will be enclosed by a circle defined by the maximum distance (
 
 ## Examples
 
-#### Initialize input geometries
+### Initialize input geometries
 
 * point where the visibility will be computed : ```point``` layer
 * buildings : ```polygon``` layer
@@ -64,7 +64,7 @@ CREATE TABLE geomcollection AS SELECT ST_GEOMFROMTEXT('GEOMETRYCOLLECTION(
 
 ### Example with a distance
 
-##### Using ```polygon```
+#### Using ```polygon```
 
 Use buildings (```polygon```) to compute the visibility from the ```point``` with a distance of 20m.
 
@@ -97,7 +97,7 @@ Legend : ```polygon``` in grey /  ```point``` in red / ```resulting ISOVist laye
 <img class="displayed" src="../st_isovist_p1_50m.png"/>
 
 
-##### Using ```linestring```
+#### Using ```linestring```
 
 Use walls (```linestring```) to compute the visibility from the ```point``` with a distance of 50m.
 
@@ -113,7 +113,7 @@ CREATE TABLE isovist AS
 Legend : ```walls``` in black /  ```point``` in red / ```resulting ISOVist layer``` in orange
 <img class="displayed" src="../st_isovist_p1_50m_line.png"/>
 
-##### Using ```geomCollection```
+#### Using ```geomCollection```
 
 ```sql
 DROP TABLE IF EXISTS isovist;
@@ -153,9 +153,9 @@ CREATE TABLE isovist AS
 
 -----
 
-#### Application : Compute visibility along a path 
+## Application : Compute visibility along a path 
 
-##### Aim 
+### Aim 
 Compute visibilities in the city center of [Vannes](https://www.openstreetmap.org/#map=17/47.65908/-2.75922) (France), every 10m, with a 100m maximum distance of visibility and export results into an animated .gif file.
 
 <img class="displayed" src="../st_isovist_vannes.gif"/>
@@ -163,7 +163,7 @@ Compute visibilities in the city center of [Vannes](https://www.openstreetmap.or
 Cool isn't it? Thanks to H2GIS, [OrbisGIS](http://orbisgis.org/), [Groovy](http://www.groovy-lang.org/) and [The Gimp](https://www.gimp.org/) *(all free and open-source)* you will see that it's quite easy to reproduce.
 
 
-##### How to produce this animation?
+### How to produce this animation?
 
 To do so, just follow these steps:
 
@@ -171,7 +171,7 @@ To do so, just follow these steps:
 * 2- Run the Groovy script
 * 3- Convert all the images into an animated .gif
 
-##### 1- Prepare input data
+### 1- Prepare input data
 
 In this example, only two tables are needed:
 
@@ -208,8 +208,7 @@ Once executed, load `src` and `iso` layers into the `TOC` and adapt their styles
 <img class="displayed" src="../st_isovist_orbisgis_2.png"/>
 
 
-
-##### 2- Run the Groovy script
+### 2- Run the Groovy script
 
 In the OrbisGIS's [Groovy Console](http://doc.orbisgis.org/en/latest/users/script_groovy.html), execute the script presented below.
 
@@ -218,7 +217,7 @@ In a nutshell, this script will:
 * densify the path in order to obtain a set of points that will be used to compute visibilities,
 * for each point, compute the visibility and export the map into a .png file.
 
-{% highlight java %}
+```java
 import org.orbisgis.core_export.MapImageWriter;
 import java.awt.Color;
 
@@ -243,7 +242,7 @@ for(int i=1;i<=256;i+=1) {
 }
 ```
 
-Where
+Where:
 
 * `mapImageWriter.setWidth(729)` and `setHeight(513)` defines the size *(in pixels)* of the output .png files,
 * `for(int i=1;i<=256;i+=1)` &rarr; `256` correspond to the maximum number of image produced *(so here the maximum number of point used to compute the visibility along the `path`)*,
@@ -255,7 +254,7 @@ Where
 * `src` and `iso` are respectively the output table names for the point where the visibility is calculated and the resulting visibility polygon. 
 
 
-##### 3- Convert all the images into an animated gif
+### 3- Convert all the images into an animated gif
 
 Once the script ran, you obtain many .png files *(in this example we have 200 files)*.
 <img class="displayed" src="../st_isovist_png_files.png"/>
@@ -273,8 +272,6 @@ To convert them into an animated .gif file, follow these steps:
 * In the configuration panel, choose `Save as animation` and you can specify the time between images *(by default 100ms)* &rarr; `Export`
 
 Your animated .gif file is produced !
-
-
 
 
 ## See also

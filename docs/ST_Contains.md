@@ -16,7 +16,7 @@ Returns true if `geomA` contains `geomB`.
 
 ## Examples
 
-##### Cases where `ST_Contains` is true
+### Cases where `ST_Contains` is true
 
 ```sql
 SELECT ST_Contains(geomA, geomB) FROM input_table;
@@ -65,7 +65,7 @@ SELECT ST_Contains(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Contains_11.png"/>
 
-##### Cases where `ST_Contains` is false
+### Cases where `ST_Contains` is false
 
 ```sql
 SELECT ST_Contains(geomA, geomB) FROM input_table;

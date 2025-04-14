@@ -28,7 +28,7 @@ file is interpreted as the column names.
 
 ## Examples
 
-##### Separated file
+### Separated file
 ```sql
 CREATE TABLE AREA AS
     SELECT * FROM CSVRead('/home/user/area.csv') LIMIT 2;
@@ -39,7 +39,7 @@ CREATE TABLE AREA AS
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 ```
 
-##### Separated file containing the column names on the first line
+### Separated file containing the column names on the first line
 ```sql
 
 CREATE TABLE AREA AS
@@ -53,7 +53,7 @@ CREATE TABLE AREA AS
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 ```
 
-##### Separated file with no column names on the first line
+### Separated file with no column names on the first line
 
 ```sql
 CREATE TABLE AREA AS
@@ -68,7 +68,7 @@ CREATE TABLE AREA AS
 ```
 
 
-##### Import a csv file (here `centroid.csv`) and create a geometric table using coordinates columns (here `coord_x` and `coord_y`)
+### Import a csv file (here `centroid.csv`) and create a geometric table using coordinates columns (here `coord_x` and `coord_y`)
 
 ```sql
 -- centroid.csv
@@ -91,8 +91,6 @@ SELECT * FROM POINTS;
 | 2  | POINT(4 5) |
 | 3  | POINT(6 7) |
 ```
-
-
 
 ## See also
 

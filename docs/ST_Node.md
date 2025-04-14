@@ -16,7 +16,7 @@ This function supports 3d coordinates and preserve `z` values **only** for input
 
 ## Examples
 
-#### With 2D `Linestring`
+### With 2D `Linestring`
 ```sql
 -- Initialize the input 2D Linestring layer
 CREATE TABLE line AS SELECT 
@@ -32,7 +32,7 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
 <img class="displayed" src="../ST_Node_4.png"/>
 
 
-#### With 3D `Linestring`
+### With 3D `Linestring`
 ```sql
 -- Initialize the input 3D Linestring layer
 CREATE TABLE line AS SELECT 
@@ -45,7 +45,7 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
 			    (2.5 2.5, 4 1 0))
 ```
 
-#### With `MultiLinestring`
+### With `MultiLinestring`
 ```sql
 -- Initialize the input MultiLinestring layer
 CREATE TABLE lines AS SELECT 
@@ -59,7 +59,7 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM lines;
 
 <img class="displayed" src="../ST_Node_1.png"/>
 
-#### With `MultiPolygon`
+### With `MultiPolygon`
 ```sql
 -- Initialize the input MultiPolygon layer
 CREATE TABLE polygon AS SELECT 
@@ -75,7 +75,7 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM polygon;
 
 <img class="displayed" src="../ST_Node_2.png"/>
 
-#### With `GeometryCollection`
+### With `GeometryCollection`
 ```sql
 -- Initialize the input GeometryColletion layer
 CREATE TABLE geomColl AS SELECT 

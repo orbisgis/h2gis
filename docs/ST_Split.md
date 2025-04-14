@@ -27,7 +27,7 @@ defined, a default tolerance of 10E-6 is assumed.
 
 ## Examples
 
-##### <code>LINESTRING</code> by a <code>POINT</code>
+### LINESTRING by a POINT
 
 ```sql
 -- The point (3 4) lines on the line, so it is split at exactly this
@@ -54,7 +54,7 @@ SELECT ST_Split('LINESTRING(1 2, 3 5, 2 3)',
 
 <img class="displayed" src="../ST_Split_1.png"/>
 
-##### LINESTRING by a LINESTRING
+### LINESTRING by a LINESTRING
 
 ```sql
 -- The following two examples use the same input Geometries in
@@ -71,7 +71,7 @@ SELECT ST_Split('LINESTRING(5 1, 5 4)',
 
 <img class="displayed" src="../ST_Split_2.png"/>
 
-##### POLYGON by a LINESTRING
+### POLYGON by a LINESTRING
 
 ```sql
 SELECT ST_Split('POLYGON((0 0, 5 0, 5 5, 0 5, 0 0))',
