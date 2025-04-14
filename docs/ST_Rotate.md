@@ -29,8 +29,9 @@ SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)', pi());
 
 
 <p align="center">
-  <img src="./ST_Rotate.png" />
+  <img src="./_images/ST_Rotate.png" />
 </p>
+
 <img class="displayed" src="../ST_Rotate.png"/>
 
 
