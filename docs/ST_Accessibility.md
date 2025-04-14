@@ -59,7 +59,7 @@ SELECT * FROM EDGES_EO_W;
 -- |      12 |          7 |        8 |    2.0 |                1 |
 ```
 
-<img class="displayed" src="../wdo.svg">
+![](./wdo.svg">
 
 ### Destination string
 
@@ -78,7 +78,7 @@ SELECT * FROM ST_Accessibility('EDGES_EO_W',
 -- |      8 |           -1 | Infinity |
 ```
 
-<img class="displayed" src="../wdo-acc-2-5.svg">
+![](./wdo-acc-2-5.svg">
 
 ```sql
 SELECT * FROM ST_Accessibility('EDGES_EO_W',
@@ -95,7 +95,7 @@ SELECT * FROM ST_Accessibility('EDGES_EO_W',
 -- |      8 |           -1 | Infinity |
 ```
 
-<img class="displayed" src="../wdo-acc-2-5-7.svg">
+![](./wdo-acc-2-5-7.svg">
 
 ### Destination table
 

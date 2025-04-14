@@ -29,7 +29,7 @@ SELECT ST_Relate('LINESTRING(1 2, 3 4)',
 -- Answer: FF1FF0102
 ```
 
-<img class="displayed" src="../ST_Relate_1.png"/>
+![](./ST_Relate_1.png)
 
 ```sql
 SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
@@ -37,7 +37,7 @@ SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
 -- Answer: 212101212
 ```
 
-<img class="displayed" src="../ST_Relate_2.png"/>
+![](./ST_Relate_2.png)
 
 ```sql
 SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',

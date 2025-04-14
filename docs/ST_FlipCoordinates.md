@@ -54,7 +54,7 @@ SELECT ST_FlipCoordinates('GEOMETRYCOLLECTION (
 --			      POLYGON ((1 0, 3 2, 2 3, 1 2, 1 0)))
 ```
 
-<img class="displayed" src="../ST_FlipCoordinates.png"/>
+![](./ST_FlipCoordinates.png)
 
 
 ## See also

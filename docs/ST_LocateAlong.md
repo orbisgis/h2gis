@@ -32,21 +32,21 @@ SELECT ST_LocateAlong('LINESTRING(1 1, 5 4)', 0.5, 2);
 -- Answer: MULTIPOINT((1.8 4.1))
 ```
 
-<img class="displayed" src="../ST_LocateAlong_0.png"/>
+![](./ST_LocateAlong_0.png)
 
 ```sql
 SELECT ST_LocateAlong('LINESTRING(1 1, 5 1, 5 3)', 0.5, 1);
 -- Answer: MULTIPOINT((3 2), (4 2))
 ```
 
-<img class="displayed" src="../ST_LocateAlong_1.png"/>
+![](./ST_LocateAlong_1.png)
 
 ```sql
 SELECT ST_LocateAlong('POLYGON((1 1, 4 1, 4 3, 1 3, 1 1))', 0.5, -1);
 -- Answer: MULTIPOINT((2.5 0), (5 2), (2.5 4), (0 2))
 ```
 
-<img class="displayed" src="../ST_LocateAlong_2.png"/>
+![](./ST_LocateAlong_2.png)
 
 ```sql
 SELECT ST_LocateAlong('GEOMETRYCOLLECTION(
@@ -56,7 +56,7 @@ SELECT ST_LocateAlong('GEOMETRYCOLLECTION(
 -- Answer: MULTIPOINT((2 -1), (-2 2), (6 0), (9 5), (7 2), (3 5))
 ```
 
-<img class="displayed" src="../ST_LocateAlong_3.png"/>
+![](./ST_LocateAlong_3.png)
 
 ## See also
 

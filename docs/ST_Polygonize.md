@@ -24,7 +24,7 @@ SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2, 1 2)');
 -- Answer: MULTIPOLYGON(((1 2, 2 4, 4 4, 5 2, 1 2)))
 ```
 
-<img class="displayed" src="../ST_Polygonize_2.png"/>
+![](./ST_Polygonize_2.png)
 
 ```sql
 SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 5 2),
@@ -32,7 +32,7 @@ SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 5 2),
 -- Answer: MULTIPOLYGON(((1 2, 2 4, 5 2, 2 1, 1 2)))
 ```
 
-<img class="displayed" src="../ST_Polygonize_3.png"/>
+![](./ST_Polygonize_3.png)
 
 ```sql
 -- ST_Polygonize of a POLYGON is the same POLYGON converted to a
@@ -50,7 +50,7 @@ SELECT ST_Polygonize(ST_Union('MULTILINESTRING((1 2, 2 4, 5 2),
 --                        1.6666666666666667 3.3333333333333335)))
 ```
 
-<img class="displayed" src="../ST_Polygonize_4.png"/>
+![](./ST_Polygonize_4.png)
 
 ```sql
 -- Here we do the same example as before but close the LINESTRINGs,
@@ -90,7 +90,7 @@ SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2, 2 2)');
 -- Answer: NULL
 ```
 
-<img class="displayed" src="../ST_Polygonize_1.png"/>
+![](./ST_Polygonize_1.png)
 
 ## See also
 

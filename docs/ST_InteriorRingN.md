@@ -28,7 +28,7 @@ SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
 -- Answer: LINEARRING(8 5, 8 4, 9 4, 9 5, 8 5)
 ```
 
-<img class="displayed" src="../ST_InteriorRingN.png"/>
+![](./ST_InteriorRingN.png)
 
 ```sql
 SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),

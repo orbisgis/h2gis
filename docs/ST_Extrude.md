@@ -26,7 +26,7 @@ SELECT ST_Extrude('LINESTRING(1 1, 4 4)', 5);
 --    (roof)       LINESTRING(1 1 5, 4 4 5))
 ```
 
-<img class="displayed" src="../ST_Extrude_1.png"/>
+![](./ST_Extrude_1.png)
 
 ```sql
 SELECT ST_Extrude('POLYGON((0 0, 3 0, 3 3, 0 3, 0 0))', 5);
@@ -39,7 +39,7 @@ SELECT ST_Extrude('POLYGON((0 0, 3 0, 3 3, 0 3, 0 0))', 5);
 --             POLYGON((0 0 5, 3 0 5, 3 3 5, 0 3 5, 0 0 5)))
 ```
 
-<img class="displayed" src="../ST_Extrude_2.png"/>
+![](./ST_Extrude_2.png)
 
 ### POLYGON with hole:
 

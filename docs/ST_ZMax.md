@@ -17,7 +17,7 @@ SELECT ST_ZMax('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    6.0
 ```
 
-<img class="displayed" src="../ST_ZMax.png"/>
+![](./ST_ZMax.png)
 
 ## See also
 

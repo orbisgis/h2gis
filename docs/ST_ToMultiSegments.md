@@ -19,7 +19,7 @@ SELECT ST_ToMultiSegments('LINESTRING(5 4, 1 1, 3 4, 4 5)');
 -- Answer: MULTILINESTRING((5 4, 1 1), (1 1, 3 4), (3 4, 4 5))
 ```
 
-<img class="displayed" src="../ST_ToMultiSegments1.png"/>
+![](./ST_ToMultiSegments1.png)
 
 ```sql
 SELECT ST_ToMultiSegments(
@@ -36,7 +36,7 @@ SELECT ST_ToMultiSegments(
 --                          (2 5, 1 5), (1 5, 1 1))
 ```
 
-<img class="displayed" src="../ST_ToMultiSegments2.png"/>
+![](./ST_ToMultiSegments2.png)
 
 ```sql
 SELECT ST_ToMultiSegments(

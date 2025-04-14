@@ -19,21 +19,21 @@ SELECT ST_LineIntersector('LINESTRING(1 3, 3 1)',
                           'LINESTRING(0 0, 4 2)') as THE_GEOM;
 -- Answer: MULTILINESTRING ((1 3, 2.66 1.33), (2.66 1.33, 3 1)) 
 ```
-<img class="displayed" src="../ST_LineIntersector_1.png"/>
+![](./ST_LineIntersector_1.png)
 
 ```sql
 SELECT ST_LineIntersector('LINESTRING(1 3, 3 1, 3 3)',
                           'LINESTRING(0 0, 4 2)') as THE_GEOM;
 -- Answer: MULTILINESTRING ((1 3, 2.66 1.33), (2.66 1.33, 3 1, 3 1.5), (3 1.5, 3 3)) 
 ```
-<img class="displayed" src="../ST_LineIntersector_2.png"/>
+![](./ST_LineIntersector_2.png)
 
 ```sql
 SELECT ST_LineIntersector('LINESTRING(0 0, 4 2)', 
                           'POLYGON ((2 4, 0 2, 3 0, 2 4))') as THE_GEOM;
 -- Answer: MULTILINESTRING ((0 0, 1.71 0.85), (1.71 0.85, 2.66 1.33), (2.66 1.33, 4 2)) 
 ```
-<img class="displayed" src="../ST_LineIntersector_3.png"/>
+![](./ST_LineIntersector_3.png)
 
 
 ## See also

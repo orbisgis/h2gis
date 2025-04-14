@@ -34,7 +34,7 @@ SELECT ST_TriangleDirection(
 --     The geometry must be a triangle"
 ```
 
-<img class="displayed" src="../ST_TriangleDirection_1.png"/>
+![](./ST_TriangleDirection_1.png)
 
 ## See also
 

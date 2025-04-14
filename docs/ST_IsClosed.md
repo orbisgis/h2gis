@@ -24,7 +24,7 @@ SELECT ST_IsClosed('LINESTRING(2 1, 1 3, 5 2, 2 1)');
 -- Answer: TRUE
 ```
 
-<img class="displayed" src="../ST_IsClosed.png"/>
+![](./ST_IsClosed.png)
 
 ```sql
 SELECT ST_IsClosed('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 1),

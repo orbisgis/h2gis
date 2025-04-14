@@ -20,7 +20,7 @@ SELECT ST_Scale('LINESTRING(1 2, 4 5)'::Geometry, 0.5, 0.75);
 -- Answer:    LINESTRING(0.5 1.5, 2 3.75)
 ```
 
-<img class="displayed" src="../ST_Scale.png"/>
+![](./ST_Scale.png)
 
 ```sql
 SELECT ST_Scale('LINESTRING(1 2, 4 5)'::Geometry, 0.5, 0.75, 1.2);

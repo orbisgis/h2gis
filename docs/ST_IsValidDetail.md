@@ -33,7 +33,7 @@ SELECT ST_IsValidDetail('POLYGON((1 1, 1 6, 5 1, 1 1),
 -- Answer: (FALSE, Hole lies outside shell, POINT(3 4))
 ```
 
-<img class="displayed" src="../ST_IsValidDetail_1.png"/>
+![](./ST_IsValidDetail_1.png)
 
 ```sql
 -- The next two examples show that the validation model we choose
@@ -47,7 +47,7 @@ SELECT ST_IsValidDetail(
 -- Answer: (TRUE, Valid Geometry, NULL)
 ```
 
-<img class="displayed" src="../ST_IsValidDetail_2.png"/>
+![](./ST_IsValidDetail_2.png)
 
 ## See also
 

@@ -27,7 +27,7 @@ SELECT ST_RemovePoints('MULTIPOINT((5 5), (3 1))',
 -- Answer: MULTIPOINT((5 5))
 ```
 
-<img class="displayed" src="../ST_RemovePoint_1.png"/>
+![](./ST_RemovePoint_1.png)
 
 ```sql
 -- In the following two examples, we get the same result whether we
@@ -41,7 +41,7 @@ SELECT ST_RemovePoints('POLYGON((0 1, 5 4, 5 7, 2 6, 0 1))',
 -- Answer: POLYGON((0 1, 5 4, 2 6, 0 1))
 ```
 
-<img class="displayed" src="../ST_RemovePoint_2.png"/>
+![](./ST_RemovePoint_2.png)
 
 #####POLYGON with holes
 
@@ -53,7 +53,7 @@ SELECT ST_RemovePoints('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 3, 3 3, 3 2, 2 2, 2 3))
 ```
 
-<img class="displayed" src="../ST_RemovePoint_3.png"/>
+![](./ST_RemovePoint_3.png)
 
 ```sql
 -- A hole is converted to a POLYGON:
@@ -63,7 +63,7 @@ SELECT ST_RemovePoints('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (3 4, 3 5, 4 4, 3 4))
 ```
 
-<img class="displayed" src="../ST_RemovePoint_4.png"/>
+![](./ST_RemovePoint_4.png)
 
 ```sql
 -- Here the resulting POLYGON is not valid:
@@ -73,7 +73,7 @@ SELECT ST_RemovePoints('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 2, 2 5, 4 5, 4 2, 2 2))
 ```
 
-<img class="displayed" src="../ST_RemovePoint_5.png"/>
+![](./ST_RemovePoint_5.png)
 
 ```sql
 -- In the following four examples, we use larger and larger
@@ -107,7 +107,7 @@ SELECT ST_RemovePoints(
 -- Answer: NULL
 ```
 
-<img class="displayed" src="../ST_RemovePoint_6.png"/>
+![](./ST_RemovePoint_6.png)
 
 ## See also
 

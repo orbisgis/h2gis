@@ -17,7 +17,7 @@ SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    3.0
 ```
 
-<img class="displayed" src="../ST_ZMin.png"/>
+![](./ST_ZMin.png)
 
 ## See also
 

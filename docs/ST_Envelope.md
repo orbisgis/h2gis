@@ -41,7 +41,7 @@ SELECT ST_Envelope('MULTIPOINT(1 2, 3 1, 2 2, 5 1, 1 -1)');
 -- Answer: POLYGON((1 -1, 1 2, 5 2, 5 -1, 1 -1))
 ```
 
-<img class="displayed" src="../ST_Envelope_1.png"/>
+![](./ST_Envelope_1.png)
 
 ```sql
 -- (minx miny, maxx miny, maxx maxy, minx maxy, minx miny)
@@ -49,7 +49,7 @@ SELECT ST_Envelope('LINESTRING(1 2, 5 3, 2 6)');
 -- Answer: POLYGON((1 2, 1 6, 5 6, 5 2, 1 2))
 ```
 
-<img class="displayed" src="../ST_Envelope_2.png"/>
+![](./ST_Envelope_2.png)
 
 ### Setting or preserving the SRID
 

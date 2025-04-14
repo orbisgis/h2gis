@@ -20,7 +20,7 @@ SELECT ST_ToMultiLine('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
 --                          (1 1, 2 1, 2 4, 1 4, 1 1))
 ```
 
-<img class="displayed" src="../ST_ToMultiLine1.png"/>
+![](./ST_ToMultiLine1.png)
 
 ```sql
 SELECT ST_ToMultiLine(
@@ -31,7 +31,7 @@ SELECT ST_ToMultiLine(
 --                          (1 1, 3 1, 3 2, 1 2, 1 1))
 ```
 
-<img class="displayed" src="../ST_ToMultiLine2.png"/>
+![](./ST_ToMultiLine2.png)
 
 ```sql
 SELECT ST_ToMultiLine('POINT(2 4)');

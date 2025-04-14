@@ -73,7 +73,7 @@ SELECT * FROM ST_ShortestPath('INPUT_EDGES',
 -- |      1 |      4 |           2 |      1 |           2 |    1.0 |
 ```
 
-<img class="displayed" src="../u-sp-1-4.svg">
+![](./u-sp-1-4.svg">
 
 ### Directed Weighted
 
@@ -95,7 +95,7 @@ SELECT * FROM ST_ShortestPath('EDGES_EO_W',
 -- |    -10 |      2 |           2 |      1 |           5 |    7.0 |
 ```
 
-<img class="displayed" src="../wdo-sp-1-4-numbering1.svg">
+![](./wdo-sp-1-4-numbering1.svg">
 
 ```sql
 -- Numbering 2:
@@ -107,7 +107,7 @@ SELECT * FROM ST_ShortestPath('EDGES_EO_W',
 -- |      5 |      2 |           3 |      1 |           3 |    5.0 |
 ```
 
-<img class="displayed" src="../wdo-sp-1-4-numbering2.svg">
+![](./wdo-sp-1-4-numbering2.svg">
 
 ### Unreachable vertices
 

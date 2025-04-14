@@ -83,12 +83,12 @@ number of shortest paths.
 Closeness centrality of Nantes, France. Notice the limited traffic
 zone in the center.
 
-<img class="displayed" src="../nantes-closeness-cropped.png">
+![](./nantes-closeness-cropped.png)>
 
 Edge betweenness centrality of Nantes, France. Notice how the
 beltway and bridges really stand out.
 
-<img class="displayed" src="../nantes-betweenness-cropped.png">
+![](./nantes-betweenness-cropped.png)>
 
 The above screenshots were generated in [OrbisGIS][og].
 
@@ -113,7 +113,7 @@ SELECT * FROM EDGES_EO_W_SCC;
 -- |      10 |          5 |        1 |    7.0 |                0 |
 ```
 
-<img class="displayed" src="../wdo-largest-scc.svg">
+![](./wdo-largest-scc.svg">
 
 ```sql
 -- Do the graph analysis.
@@ -146,7 +146,7 @@ SELECT NODE_ID,
 -- |       1 |                0.0 |                 255 |    0 |
 ```
 
-<img class="displayed" src="../wdo-largest-scc-node-betw.svg">
+![](./wdo-largest-scc-node-betw.svg">
 
 ```sql
 -- We use linear interpolation from red (0) to blue (1) to
@@ -176,7 +176,7 @@ SELECT NODE_ID,
 -- |      1 | 0.12121212121212122 |                 0.0 |255 |   0 |
 ```
 
-<img class="displayed" src="../wdo-largest-scc-node-close.svg">
+![](./wdo-largest-scc-node-close.svg">
 
 ```sql
 -- The results for edges:
@@ -218,7 +218,7 @@ SELECT EDGE_ID,
 -- |       6 |                 0.0 | 255 |    0 |
 ```
 
-<img class="displayed" src="../wdo-largest-scc-edge-betw.svg">
+![](./wdo-largest-scc-edge-betw.svg">
 
 ## Exercises
 

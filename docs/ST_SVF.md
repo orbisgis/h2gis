@@ -68,7 +68,7 @@ CREATE TABLE SVF AS
 | 0.4826031275651395 |
 ```
 
-<img class="displayed" src="../ST_SVF.png"/>
+![](./ST_SVF.png)
 
 
 ### Case with a grid of entry points
@@ -108,7 +108,7 @@ CREATE TABLE SVF AS SELECT a.THE_GEOM, a.ID,
 
 ```
 
-<img class="displayed" src="../ST_SVF_grid.png"/>
+![](./ST_SVF_grid.png)
 
 
 ## See also

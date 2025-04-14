@@ -29,7 +29,7 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
 			    (2.5 2.5, 4 1))
 ```
 
-<img class="displayed" src="../ST_Node_4.png"/>
+![](./ST_Node_4.png)
 
 
 ### With 3D `Linestring`
@@ -57,7 +57,7 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM lines;
 			    (1 3, 2.5 2.5), (2.5 2.5, 4 2))
 ```
 
-<img class="displayed" src="../ST_Node_1.png"/>
+![](./ST_Node_1.png)
 
 ### With `MultiPolygon`
 ```sql
@@ -73,7 +73,7 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM polygon;
 			    (3 2, 2 2, 2 3), (2 3, 2 4))
 ```
 
-<img class="displayed" src="../ST_Node_2.png"/>
+![](./ST_Node_2.png)
 
 ### With `GeometryCollection`
 ```sql
@@ -90,7 +90,7 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM geomColl;
 			    (2 3, 3 2), (3 2, 4 1))
 ```
 
-<img class="displayed" src="../ST_Node_3.png"/>
+![](./ST_Node_3.png)
 
 ## See also
 

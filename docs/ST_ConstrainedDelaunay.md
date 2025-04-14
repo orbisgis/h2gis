@@ -37,7 +37,7 @@ MULTIPOLYGON (((0 4, 0 2, 1 3, 0 4)), ((0 4, 2 5, 1 3, 0 4)), ((0 4, 2 5, 1 7, 0
 	      ((5 1, 7 5, 9 6, 5 1)), ((7 5, 5 6, 9 6, 7 5)), ((5 6, 4 8, 9 6, 5 6)))
 ```
 
-<img class="displayed" src="../ST_ConstraintDelaunay_1.png"/>
+![](./ST_ConstraintDelaunay_1.png)
 
 ### 1rst signature, with `LINESTRING`
 ```sql
@@ -53,7 +53,7 @@ MULTIPOLYGON (((2 3, 1 1, 2 1, 2 3)), ((2 3, 1 1, 0 4, 2 3)), ((0 4, 2 5, 2 3, 0
 	      ((7 6, 9 7, 7 8, 7 6)))
 ```
 
-<img class="displayed" src="../ST_ConstraintDelaunay_2.png"/>
+![](./ST_ConstraintDelaunay_2.png)
 
 
 ### 2nd signature, with `flag` parameter
@@ -71,7 +71,7 @@ MULTILINESTRING ((0 2, 0 4), (0 2, 1 3), (0 4, 1 3), (0 4, 2 5), (0 4, 1 7), (1 
 		 (4 6, 7 5), (5 6, 7 5), (5 1, 9 6), (7 5, 9 6), (5 6, 9 6), (4 8, 9 6))
 ```
 
-<img class="displayed" src="../ST_ConstraintDelaunay_3.png"/>
+![](./ST_ConstraintDelaunay_3.png)
 
 
 ## See also

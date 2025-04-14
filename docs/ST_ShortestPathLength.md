@@ -62,7 +62,7 @@ INSERT INTO EDGES VALUES
     (DEFAULT, 7, 8,  2.0,  1);
 ```
 
-<img class="displayed" src="../wdo.svg">
+![](./wdo.svg">
 
 ### One-to-One
 

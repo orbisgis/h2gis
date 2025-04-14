@@ -24,7 +24,7 @@ SELECT ST_MinimumDiameter('LINESTRING(0 0, 1 1, 3 9, 7 1)');
 -- Answer: LINESTRING(1 3, 7 1)
 ```
 
-<img class="displayed" src="../ST_MinimumDiameter_1.png"/>
+![](./ST_MinimumDiameter_1.png)
 
 ```sql
 SELECT ST_MinimumDiameter(
@@ -40,7 +40,7 @@ SELECT ST_MinimumDiameter(
 -- Answer: LINESTRING(5.8 2.4, 1 0)
 ```
 
-<img class="displayed" src="../ST_MinimumDiameter_2.png"/>
+![](./ST_MinimumDiameter_2.png)
 
 ## See also
 

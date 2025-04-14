@@ -18,7 +18,7 @@ SELECT ST_Extent('MULTIPOINT((5 6), (1 2), (3 4), (10 3))'::Geometry);
 -- Answer: POLYGON((1 2, 1 6, 10 6, 10 2, 1 2))
 ```
 
-<img class="displayed" src="../ST_Extent1.png"/>
+![](./ST_Extent1.png)
 
 ```sql
 SELECT ST_Extent('POINT(5 6)'::Geometry);

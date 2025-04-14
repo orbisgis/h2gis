@@ -32,7 +32,7 @@ SELECT ST_PointOnSurface('POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))');
 -- Answer: POINT(2.5 2.5)
 ```
 
-<img class="displayed" src="../ST_PointOnSurface_1.png"/>
+![](./ST_PointOnSurface_1.png)
 
 ```sql
 SELECT ST_PointOnSurface('GEOMETRYCOLLECTION(
@@ -42,7 +42,7 @@ SELECT ST_PointOnSurface('GEOMETRYCOLLECTION(
 -- Answer: POINT(2.5 4)
 ```
 
-<img class="displayed" src="../ST_PointOnSurface_2.png"/>
+![](./ST_PointOnSurface_2.png)
 
 ### Comparison with [`ST_Centroid`](../ST_Centroid)
 

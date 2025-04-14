@@ -23,14 +23,14 @@ SELECT ST_Point(1.4, -3.7);
 -- Answer:     POINT(1.4 -3.7)
 ```
 
-<img class="displayed" src="../ST_MakePoint_1.png"/>
+![](./ST_MakePoint_1.png)
 
 ```sql
 SELECT ST_Point(1.4, -3.7, 6.2);
 -- Answer:     POINT(1.4 -3.7 6.2)
 ```
 
-<img class="displayed" src="../ST_MakePoint_2.png"/>
+![](./ST_MakePoint_2.png)
 
 ## See also
 

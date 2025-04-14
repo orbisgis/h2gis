@@ -26,35 +26,35 @@ SELECT ST_MakeLine('POINT(1 2)', 'POINT(4 5)');
 -- Answer:     LINESTRING(1 2, 4 5)
 ```
 
-<img class="displayed" src="../ST_MakeLine_1.png"/>
+![](./ST_MakeLine_1.png)
 
 ```sql
 SELECT ST_MakeLine('POINT(1 2 3)', 'POINT(4 5 6)');
 -- Answer:     LINESTRING(1 2 3, 4 5 6)
 ```
 
-<img class="displayed" src="../ST_MakeLine_2.png"/>
+![](./ST_MakeLine_2.png)
 
 ```sql
 SELECT ST_MakeLine('POINT(1 2)', 'MULTIPOINT(4 5, 12 9)');
 -- Answer:     LINESTRING(1 2, 4 5, 12 9)
 ```
 
-<img class="displayed" src="../ST_MakeLine_3.png"/>
+![](./ST_MakeLine_3.png)
 
 ```sql
 SELECT ST_MakeLine('MULTIPOINT(1 2, 17 6)', 'MULTIPOINT(4 5, 7 9, 18 -1)');
 -- Answer:     LINESTRING(1 2, 17 6, 4 5, 7 9, 18 -1)
 ```
 
-<img class="displayed" src="../ST_MakeLine_4.png"/>
+![](./ST_MakeLine_4.png)
 
 ```sql
 ST_MakeLine('POINT(1 2)', 'POINT(4 5)', 'POINT(7 8)');
 -- Answer:     LINESTRING(1 2, 4 5, 7 8)
 ```
 
-<img class="displayed" src="../ST_MakeLine_5.png"/>
+![](./ST_MakeLine_5.png)
 
 ```sql
 SELECT ST_MakeLine('MULTIPOINT(1 2, 3 4)');

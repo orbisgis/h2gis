@@ -37,25 +37,25 @@ SELECT ST_Overlaps(geomA, geomB) FROM input_table;
 |-------------------------------------|-------------------------------------|
 | POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))  | POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))  |
 
-<img class="displayed" src="../ST_Overlaps_1.png"/>
+![](./ST_Overlaps_1.png)
 
 | geomA LINESTRING           | geomB LINESTRING           |
 |----------------------------|----------------------------|
 | LINESTRING(2 1, 5 3, 2 6)  | LINESTRING(3 5, 4 4, 6 7)  |
 
-<img class="displayed" src="../ST_Overlaps_2.png"/>
+![](./ST_Overlaps_2.png)
 
 | geomA MULTIPOINT                        | geomB MULTIPOINT                 |
 |-----------------------------------------|----------------------------------|
 | MULTIPOINT((5 1), (3 3), (2 5), (4 5))  | MULTIPOINT((3 3), (5 4), (2 6))  |
 
-<img class="displayed" src="../ST_Overlaps_3.png"/>
+![](./ST_Overlaps_3.png)
 
 | geomA POLYGON                       | geomB MULTIPOLYGON                                                      |
 |-------------------------------------|-------------------------------------------------------------------------|
 | POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))  | MULTIPOLYGON(((3 2, 6 2, 6 6, 3 6, 3 2)), ((0 6, 1 6, 1 7, 0 7, 0 6)))  |
 
-<img class="displayed" src="../ST_Overlaps_4.png"/>
+![](./ST_Overlaps_4.png)
 
 ### Cases where `ST_Overlaps` is false
 
@@ -68,13 +68,13 @@ SELECT ST_Overlaps(geomA, geomB) FROM input_table;
 |-------------------------------------|-------------------------------------|
 | POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))  | POLYGON((4 5, 7 5, 7 6, 4 6, 4 5))  |
 
-<img class="displayed" src="../ST_Overlaps_5.png"/>
+![](./ST_Overlaps_5.png)
 
 | geomA LINESTRING           | geomB LINESTRING      |
 |----------------------------|-----------------------|
 | LINESTRING(2 1, 5 3, 2 6)  | LINESTRING(1 3, 4 6)  |
 
-<img class="displayed" src="../ST_Overlaps_6.png"/>
+![](./ST_Overlaps_6.png)
 
 ## See also
 

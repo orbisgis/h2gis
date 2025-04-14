@@ -66,7 +66,7 @@ SELECT * FROM grid;
 -- | POINT(1.5 1.5)  |   3 |      2 |      2 |
 ```
 
-<img class="displayed" src="../ST_MakeGridPoints_1.png"/>
+![](./ST_MakeGridPoints_1.png)
 
 ## See also
 

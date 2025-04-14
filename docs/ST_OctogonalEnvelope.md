@@ -23,7 +23,7 @@ SELECT ST_OctogonalEnvelope('POLYGON((2 1, 1 2, 2 2, 2 4, 3 5,
 -- Answer: POLYGON((1 2, 1 3, 3 5, 5 5, 7 3, 7 2, 6 1, 2 1, 1 2))
 ```
 
-<img class="displayed" src="../ST_OctogonalEnvelope_0.png"/>
+![](./ST_OctogonalEnvelope_0.png)
 
 ```sql
 SELECT ST_OctogonalEnvelope('POLYGON((2 2, 2 4, 4 4, 4 2, 2 2))');
@@ -34,21 +34,21 @@ SELECT ST_OctogonalEnvelope(
 -- Answer: POLYGON((1 2, 2 3, 4 3, 5 2, 3 0, 1 2))
 ```
 
-<img class="displayed" src="../ST_OctogonalEnvelope_1.png"/>
+![](./ST_OctogonalEnvelope_1.png)
 
 ```sql
 SELECT ST_OctogonalEnvelope('LINESTRING(1 1, 4 5, 3 2, 5 3, 6 4)');
 -- Answer: POLYGON((1 1, 1 2, 4 5, 5 5, 6 4, 3 1, 1 1))
 ```
 
-<img class="displayed" src="../ST_OctogonalEnvelope_2.png"/>
+![](./ST_OctogonalEnvelope_2.png)
 
 ```sql
 SELECT ST_OctogonalEnvelope('MULTIPOINT((1 1), (2 3))');
 -- Answer: POLYGON((1 1, 1 2, 2 3, 2 2, 1 1))
 ```
 
-<img class="displayed" src="../ST_OctogonalEnvelope_3.png"/>
+![](./ST_OctogonalEnvelope_3.png)
 
 ```sql
 SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120,

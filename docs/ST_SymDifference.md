@@ -25,7 +25,7 @@ SELECT ST_SymDifference(geomA, geomB) FROM input_table;
 --                      ((7 2, 8 2, 8 8, 3 8, 3 6, 7 6, 7 2)))
 ```
 
-<img class="displayed" src="../ST_SymDifference.png"/>
+![](./ST_SymDifference.png)
 
 ## See also
 

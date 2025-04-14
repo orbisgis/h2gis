@@ -24,7 +24,7 @@ SELECT ST_Holes('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0),
 -- Answer: GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)))
 ```
 
-<img class="displayed" src="../ST_Holes_1.png"/>
+![](./ST_Holes_1.png)
 
 ```sql
 SELECT ST_Holes(
@@ -38,7 +38,7 @@ SELECT ST_Holes(
 --           POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))
 ```
 
-<img class="displayed" src="../ST_Holes_2.png"/>
+![](./ST_Holes_2.png)
 
 ```sql
 SELECT ST_Holes('LINESTRING(5 5, 1 2, 3 4, 9 3)');

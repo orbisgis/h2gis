@@ -96,7 +96,7 @@ SELECT * FROM EDGES;
 -- |      18 |         12 |       12 |                1 |
 ```
 
-<img class="displayed" src="../scc-input.svg">
+![](./scc-input.svg">
 
 ```sql
 -- Do the SCC calculation and diplay the results:
@@ -143,7 +143,7 @@ SELECT * FROM EDGES_EDGE_CC
 -- |      12 |                   6 |
 ```
 
-<img class="displayed" src="../scc.svg">
+![](./scc.svg">
 
 ### Counting the number of edges in each SCC
 
@@ -263,7 +263,7 @@ SELECT * FROM EDGES_EDGE_CC
 -- |      18 |                   3 |
 ```
 
-<img class="displayed" src="../cc.svg">
+![](./cc.svg">
 
 ### Exercise
 

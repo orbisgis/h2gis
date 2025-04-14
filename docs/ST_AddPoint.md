@@ -28,7 +28,7 @@ SELECT ST_AddPoint('LINESTRING(1 2, 2 4, 3 4, 4 5, 5 2)',
 -- Answer: LINESTRING(1 2, 2 4, 3 4, 4 5, 4.6 3.2, 5 2)
 ```
 
-<img class="displayed" src="../ST_AddPoint_1.png"/>
+![](./ST_AddPoint_1.png)
 
 ```sql
 -- Note: The point added depends on the input geometry's coordinate
@@ -46,7 +46,7 @@ SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 --                  (2 2, 2 3, 2 4, 4 4, 4 2, 2 2))
 ```
 
-<img class="displayed" src="../ST_AddPoint_3.png"/>
+![](./ST_AddPoint_3.png)
 
 ```sql
 CREATE TABLE input(poly POLYGON, p POINT);
@@ -69,7 +69,7 @@ SELECT ST_AddPoint(poly, p, 2) FROM input;
 --                 (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))
 ```
 
-<img class="displayed" src="../ST_AddPoint_2.png"/>
+![](./ST_AddPoint_2.png)
 
 ## See also
 

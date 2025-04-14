@@ -22,7 +22,7 @@ SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 6 -2, 0 0))');
 -- Answer:    FALSE
 ```
 
-<img class="displayed" src="../ST_IsValid.png"/>
+![](./ST_IsValid.png)
 
 ## See also
 

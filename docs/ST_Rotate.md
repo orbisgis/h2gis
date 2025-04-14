@@ -22,21 +22,8 @@ SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)', pi());
 -- Answer:    LINESTRING(2 1, 2 3, 1 3)
 ```
 
-<p align="center">
-  <img src="https://github.com/gpetit/H2GIS/blob/master/docs/ST_Rotate.png?raw=true" alt="Sublime's custom image"/>
-</p>
-
-
-
-<p align="center">
-  <img src="./_images/ST_Rotate.png" />
-</p>
-
-<img class="displayed" src="../ST_Rotate.png"/>
-
-
-
 ![](./ST_Rotate.png)
+
 
 ```sql
 SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)', pi() / 3);

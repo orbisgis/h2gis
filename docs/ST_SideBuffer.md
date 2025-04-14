@@ -36,7 +36,7 @@ SELECT ST_SideBuffer('LINESTRING (1 1, 4 4)', -1) as THE_GEOM;
 -- Answer: POLYGON ((1 1, 4 4, 4.707106781186548 3.2928932188134525, 1.7071067811865475 0.2928932188134524, 1 1))
 ```
 
-<img class="displayed" src="../ST_SideBuffer_1.png"/>
+![](./ST_SideBuffer_1.png)
 
 
 
@@ -45,7 +45,7 @@ SELECT ST_SideBuffer('MULTILINESTRING ((1 1, 4 4), (1 4, 4 2))', 1) as THE_GEOM;
 -- Answer: POLYGON ((1.951471862576143 3.365685424949238, 1 4, 1.5547001962252291 4.832050294337844, 2.6725821176689406 4.0867956800420355, 3.2928932188134525 4.707106781186548, 4 4, 3.5211102550927977 3.5211102550927977, 4.554700196225229 2.8320502943378436, 4 2, 2.8 2.8, 1 1, 0.2928932188134524 1.7071067811865475, 1.951471862576143 3.365685424949238))
 ```
 
-<img class="displayed" src="../ST_SideBuffer_2.png"/>
+![](./ST_SideBuffer_2.png)
 
 
 ```sql
@@ -59,7 +59,7 @@ SELECT ST_SideBuffer('LINESTRING (1 1, 4 4, 4 2)', 1, 'join=bevel') as THE_GEOM;
 -- Answer: POLYGON ((4 2, 4 4, 1 1, 0.2928932188134524 1.7071067811865475, 3.2928932188134525 4.707106781186548, 5 4, 5 2, 4 2))
 ```
 
-<img class="displayed" src="../ST_SideBuffer_3.png"/>
+![](./ST_SideBuffer_3.png)
 
 
 ```sql
@@ -76,7 +76,7 @@ SELECT ST_SideBuffer('LINESTRING (1 1, 4 4, 4 2)', 1,
 -- Answer: POLYGON ((4 2, 4 4, 1 1, 0.2928932188134524 1.7071067811865475, 5 6.414213562373096, 5 2, 4 2)) 
 ```
 
-<img class="displayed" src="../ST_SideBuffer_4.png"/>
+![](./ST_SideBuffer_4.png)
 
 
 

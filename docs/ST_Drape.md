@@ -26,7 +26,7 @@ SELECT ST_Drape('LINESTRING(1 2, 5 2)',
 -- Answer: LINESTRING(1 2, 2 2 2, 4 2 2, 5 2)
 ```
 
-<img class="displayed" src="../ST_Drape_1.png"/>
+![](./ST_Drape_1.png)
 
 ### Case between a `LINESTRING` and a `MULTIPOLYGON`
 
@@ -37,7 +37,7 @@ SELECT ST_Drape('LINESTRING(1 2, 5 2)',
 -- Answer: LINESTRING(1 2, 2 2 1.66, 4 2 1.66, 4.33 2 1.66, 5 2)
 ```
 
-<img class="displayed" src="../ST_Drape_2.png"/>
+![](./ST_Drape_2.png)
 
 ### Case between two `POLYGONS`
 
@@ -48,7 +48,7 @@ SELECT ST_Drape('POLYGON((1 2, 5 2, 2 5, 1 2))',
 --                  4 3 3.33, 3.5 3.5 4.16, 2 5, 1 2))
 ```
 
-<img class="displayed" src="../ST_Drape_3.png"/>
+![](./ST_Drape_3.png)
 
 ### Case between two `POLYGONS` *(input one with hole)*
 
@@ -59,7 +59,7 @@ SELECT ST_Drape('POLYGON ((1 2, 5 2, 2 5, 1 2),(2 2.5, 2 3.5, 3.5 2.5, 2 2.5))',
 --                 (2 2.5, 2 3.5, 2.9 2.9 3.16, 3.5 2.5 2.5, 2.5 2.5 2.5, 2 2.5))
 ```
 
-<img class="displayed" src="../ST_Drape_4.png"/>
+![](./ST_Drape_4.png)
 
 ### Case between a `MULTIPOINT` and a `POLYGON`
 
@@ -69,7 +69,7 @@ SELECT ST_Drape('MULTIPOINT((1 2), (2 2), (3 2), (4 3))',
 -- Answer: MULTIPOINT((1 2), (2 2 1.66), (3 2 1.66), (4 3 3.33))
 ```
 
-<img class="displayed" src="../ST_Drape_5.png"/>
+![](./ST_Drape_5.png)
 
 ### Case between a `MULTILINESTRING` and a `POLYGON`
 
@@ -80,7 +80,7 @@ SELECT ST_Drape('MULTILINESTRING((1 2, 3 2),(2 4, 5 2))',
 --                         (2 4, 3.2 3.2 3.66, 4 2.66 2.77, 5 2))
 ```
 
-<img class="displayed" src="../ST_Drape_6.png"/>
+![](./ST_Drape_6.png)
 
 ### Case between a `MULTIPOLYGON` and a `POLYGON`
 
@@ -92,7 +92,7 @@ SELECT ST_Drape('MULTIPOLYGON(((1 2, 3 2, 2 3, 1 2)),
 --                      ((2 4, 3.2 3.2 3.66, 4 2.66 2.77, 5 2, 5 5, 2 4)))
 ```
 
-<img class="displayed" src="../ST_Drape_7.png"/>
+![](./ST_Drape_7.png)
 
 ## See also
 

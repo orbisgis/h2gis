@@ -72,7 +72,7 @@ SELECT * FROM ST_ShortestPathTree('INPUT_EDGES',
 -- |      10 |      1 |           5 |    1.0 |
 ```
 
-<img class="displayed" src="../u-spt-1.svg">
+![](./u-spt-1.svg">
 
 ### Directed Weighted
 
@@ -93,7 +93,7 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 -- |       7 |      3 |           5 |    2.0 |
 ```
 
-<img class="displayed" src="../wdo-spt-1.svg">
+![](./wdo-spt-1.svg">
 
 ### Including Geometries
 
@@ -148,7 +148,7 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 -- |     -10 |      1 |           5 |    7.0 |
 ```
 
-<img class="displayed" src="../wdo-spt-1-limit-8.5.svg">
+![](./wdo-spt-1-limit-8.5.svg">
 
 ### Exercises
 
