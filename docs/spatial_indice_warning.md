@@ -1,1 +1,3 @@
-![warning](./warning.png){w=40px} <font color=#DC381F>This predicate does not yet support spatial indices, but it will in a future release. Use it in conjunction with <code>&&</code> operator. See [**here**](./spatial-indices) for more details.</font>
+:::{Warning}
+**This predicate does not yet support spatial indices, but it will in a future release. Use it in conjunction with `&&` operator. See [here](./spatial-indices) for more details.**
+:::

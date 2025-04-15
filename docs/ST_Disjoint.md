@@ -17,8 +17,11 @@ Disjoint means that the two geometries have no point in common.
 
 ```{include} sfs-1-2-1.md
 ```
+
 ```{include} spatial_indice_warning.md
 ```
+
+
 
 ## Examples
 
