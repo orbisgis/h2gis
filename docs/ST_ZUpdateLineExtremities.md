@@ -21,7 +21,8 @@ value of `interpolate`:
 | `TRUE` (default) | Interpolate intermediate coordinates      |
 | `FALSE`          | Update only the first and last *z*-values |
 
-{% include other-line-multiline.html %}
+```{include} other-line-multiline.md
+```
 
 ## Examples
 

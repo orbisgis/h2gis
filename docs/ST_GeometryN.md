@@ -12,7 +12,8 @@ Returns the *n*th Geometry of `geom` if `geom` is a `GEOMETRYCOLLECTION`,
 `MULTIPOINT`, `MULTILINESTRING` or `MULTIPOLYGON`. Returns `NULL` if `geom` is
 a single Geometry.
 
-{% include one-to-n.html %}
+```{include} one-to-n.md
+```
 ```{include} sfs-1-2-1.md
 ```
 
@@ -49,8 +50,7 @@ SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 1);
 -- Answer: NULL
 
 SELECT ST_GeometryN('MULTIPOINT((0 0), (1 6), (2 2), (1 2))', 0);
--- Answer: GEOMETRY index out of range. Must be between 1 and
--- ST_NumGeometries.
+-- Answer: GEOMETRY index out of range. Must be between 1 and ST_NumGeometries
 ```
 
 ## See also

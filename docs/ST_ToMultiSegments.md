@@ -58,7 +58,22 @@ SELECT ST_ToMultiSegments('POINT(5 5)');
 
 ### Comparison with [`ST_ToMultiLine`](../ST_ToMultiLine)
 
-{% include multiline-multiseg-cf.html %}
+```sql
+CREATE TABLE input(poly POLYGON);
+INSERT INTO input VALUES (
+    'POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+              (1 1, 2 1, 2 5, 1 5, 1 1),
+              (7 1, 8 1, 8 3, 7 3, 7 1))');
+SELECT ST_ToMultiSegments(poly) SEG,
+       ST_ToMultiLine(poly) LINE FROM input;
+```
+
+Answer:
+|              SEG             |               LINE              |
+|------------------------------|---------------------------------|
+|MULTILINESTRING(<br>(0 0, 10 0), (10 0, 10 6), (10 6, 0 6), (0 6, 0 0),<br> (1 1, 2 1), (2 1, 2 5), (2 5, 1 5), (1 5, 1 1),<br> (7 1, 8 1), (8 1, 8 3), (8 3, 7 3), (7 3, 7 1)) |MULTILINESTRING ((0 0, 10 0, 10 6, 0 6, 0 0),<br> (1 1, 2 1, 2 5, 1 5, 1 1),<br> (7 1, 8 1, 8 3, 7 3, 7 1)) |
+
+![](./ST_ToMultiSegments3.png){align=center}
 
 ## See also
 

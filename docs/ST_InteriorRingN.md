@@ -10,7 +10,8 @@ LINESTRING ST_InteriorRing(GEOMETRY geom, INT n);
 
 Returns the *n*th interior ring of `geom` if `geom` is a `POLYGON`. Returns `NULL` otherwise.
 
-{% include one-to-n.html %}
+```{include} one-to-n.md
+```
 ```{include} sfs-1-2-1.md
 ```
 

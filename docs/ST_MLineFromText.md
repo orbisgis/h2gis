@@ -9,8 +9,12 @@ GEOMETRY ST_MLineFromText(VARCHAR wkt, INT srid);
 
 ## Description
 
-{% include from-wkt-desc.html type='MULTILINESTRING' %}
-{% include z-coord-warning.html %}
+Converts the Well Known Text `wkt` into a Geometry, optionally with spatial reference id `srid`. 
+Verifies that `wkt` does in fact specify a `MULTILINESTRING`.
+
+```{include} z-coord-warning.md
+```
+
 ```{include} sfs-1-2-1.md
 ```
 

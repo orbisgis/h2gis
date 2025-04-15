@@ -11,7 +11,8 @@ POINT ST_PointN(GEOMETRY geometry, INT n);
 Returns the <i>n</i>th point of `geom` if `geom` is a `LINESTRING` or a
 `MULTILINESTRING` containing exactly one `LINESTRING`; `NULL` otherwise.
 
-{% include one-to-n.html %}
+```{include} one-to-n.md
+```
 ```{include} sfs-1-2-1.md
 ```
 

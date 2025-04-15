@@ -68,11 +68,13 @@ SELECT ST_SRID(ST_Envelope(
 
 ### Comparison with [`ST_Extent`](../ST_Extent)
 
-{% include extent-envelope-cf.html %}
+```{include} extent-envelope-cf.md
+```
 
 ### Comparison with [`ST_MinimumRectangle`](../ST_MinimumRectangle)
 
-{% include minimumrectangle-envelope-cf.html %}
+```{include} minimumrectangle-envelope-cf.md
+```
 
 ## See also
 

@@ -16,7 +16,8 @@ a `GEOMETRYCOLLECTION`.
 Returns `geom` untouched if its first or last coordinate has no
 *z*-value.
 
-{% include other-line-multiline.html %}
+```{include} other-line-multiline.md
+```
 
 ## Examples
 

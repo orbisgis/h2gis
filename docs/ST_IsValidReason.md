@@ -11,9 +11,22 @@ VARCHAR ST_IsValidReason(GEOMETRY geom, INT selfTouchValid);
 
 Returns a string stating if a `geom` is valid or a reason why if it is not.
 
-{% include selfTouchValid.html %}
+Optional variable `selfTouchValid` sets whether polygons using
+**self-touching rings** to form holes are reported as valid. If this
+flag is set, the following self-touching conditions are treated as
+being valid:
 
-{% include equivalence.html equiv='ST_IsValidReason(geom) = ARRAY_GET(ST_IsValidDetail(geom), 2)' %}
+* The shell ring self-touches to create a hole touching the shell
+* A hole ring self-touches to create two holes touching at a point
+
+The default of `0` (following the OGC SFS standard) is that this
+condition is not valid. Set it to `1` to consider it valid (c.f.
+ESRI SDE model).
+
+:::{note}
+**We have the following equivalence:**\
+`ST_IsValidReason(geom) = ARRAY_GET(ST_IsValidDetail(geom), 2)`
+:::
 
 ## Examples
 

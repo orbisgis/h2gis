@@ -12,7 +12,6 @@ GEOMETRY ST_GeomFromWKB(binary wkb, INT srid);
 Converts the Well Known Binary `wkb` into a Geometry, optionally with spatial reference
 id `srid`. Here `wkb` can specify a `POINT`, a `LINESTRING` or a `POLYGON`.
 
-
 ```{include} sfs-1-2-1.md
 ```
 

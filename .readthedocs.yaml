@@ -17,7 +17,6 @@ sphinx:
 
 formats:
   - pdf
-  - epub
   - htmlzip
 
 # Optionally, but recommended,

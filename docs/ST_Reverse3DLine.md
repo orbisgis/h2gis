@@ -21,12 +21,13 @@ can take the following values:
 Returns `geom` untouched if the start or end coordinate has no
 *z*-value.
 
-<div class="note info">
-    <h5>Only the first and last coordinates are considered.</h5>
-    <p>Intermediate <i>z</i>-values have no effect on the sorting.</p>
-</div>
+:::{note}
+**Only the first and last coordinates are considered**.
+Intermediate *z*-values have no effect on the sorting.
+:::
 
-{% include other-line-multiline.html %}
+```{include} other-line-multiline.md
+```
 
 ## Examples
 
