@@ -62,7 +62,20 @@ SELECT ST_Centroid('GEOMETRYCOLLECTION(
 
 ### Comparison with [`ST_PointOnSurface`](../ST_PointOnSurface)
 
-{% include centroid-pointonsurface-cf.html %}
+```sql
+CREATE TABLE input(geom GEOMETRY);
+INSERT INTO input VALUES (
+    'POLYGON((0 0, 5 0, 5 1, 1 1, 1 4, 5 4, 5 5, 0 5, 0 0))');
+SELECT ST_PointOnSurface(geom) POINT,
+       ST_Centroid(geom) CENTROID FROM input;
+```
+
+Answer:
+|      POINT      |            CENTROID            |
+|-----------------|--------------------------------|
+| POINT(0.5 2.5)  | POINT(2.0384615384615383 2.5)  |
+
+![](./ST_PointOnSurface.png){align=center}
 
 ## See also
 

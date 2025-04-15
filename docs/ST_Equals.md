@@ -18,7 +18,8 @@ Equal means:
 
 ```{include} sfs-1-2-1.md
 ```
-{% include spatial_indice_warning.html %}
+```{include} spatial_indice_warning.md
+```
 
 ## Examples
 

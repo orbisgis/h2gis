@@ -31,7 +31,7 @@ SELECT * FROM TABLENAME;
 
 This is the built-in web interface of the H2 Database:
 
-![](./getting-started/screenshot_h2gui.png){align=center}
+![](./screenshot_h2gui.png){align=center}
 
 ## Graphical user interface
 

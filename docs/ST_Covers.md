@@ -10,7 +10,8 @@ BOOLEAN ST_Covers(GEOMETRY geomA, GEOMETRY geomB);
 
 Returns true if no point in `geomB` is outside `geomA`.
 
-{% include spatial_indice_warning.html %}
+```{include} spatial_indice_warning.md
+```
 
 ## Examples
 

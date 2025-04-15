@@ -17,7 +17,8 @@ Intersects means that `geomA` and `geomB` have at least one point in common.
 
 ```{include} sfs-1-2-1.md
 ```
-{% include spatial_indice_warning.html %}
+```{include} spatial_indice_warning.md
+```
 
 ## Examples
 

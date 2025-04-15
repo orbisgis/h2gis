@@ -49,7 +49,18 @@ SELECT ST_Boundary('POINT(2 2)');
 
 ### Comparison with [`ST_ExteriorRing`](../ST_ExteriorRing)
 
-{% include exteriorring-boundary-cf.html %}
+```sql
+SELECT ST_ExteriorRing('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                (1 1, 2 1, 2 5, 1 5, 1 1))') ER,
+       ST_Boundary('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                             (1 1, 2 1, 2 5, 1 5, 1 1))') BDRY;
+```
+Answer:
+|              ER             |            BDRY              |
+|-----------------------------|------------------------------|
+| LINEARRING(0 0, 10 0, 10 6, 0 6, 0 0) | MULTILINESTRING(<br>(0 0, 10 0, 10 6, 0 6, 0 0),<br> (1 1, 2 1, 2 5, 1 5, 1 1))   |
+
+![](./ST_ExteriorRing_2.png){align=center}
 
 ## See also
 

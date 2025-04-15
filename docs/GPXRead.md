@@ -34,23 +34,30 @@ the extension.
 
 ## Examples
 
+Takes the table name from the filename, producing
+* ROUTE_TRACK
+* ROUTE_TRACKPOINT
+* ROUTE_TRACKSEGMENT
 ```sql
--- Takes the table name from the filename, producing
--- * ROUTE_TRACK
--- * ROUTE_TRACKPOINT
--- * ROUTE_TRACKSEGMENT
 CALL GPXRead('/home/user/route.gpx');
+```
 
--- Uses the given table name, producing
--- * GPXDATA_TRACK
--- * GPXDATA_TRACKPOINT
--- * GPXDATA_TRACKSEGMENT
+Uses the given table name, producing
+* GPXDATA_TRACK
+* GPXDATA_TRACKPOINT
+* GPXDATA_TRACKSEGMENT
+
+```sql
 CALL GPXRead('/home/user/route.gpx', 'GPXDATA');
+```
 
--- Existing tables starting with 'GPXDATA' will be removed
+Existing tables starting with 'GPXDATA' will be removed
+```sql
 CALL GPXRead('/home/user/route.gpx', 'GPXDATA', true);
+```
 
--- Produces STATION_WAYPOINT.
+Produces STATION_WAYPOINT.
+```sql
 CALL GPXRead('/home/user/station.gpx');
 ```
 

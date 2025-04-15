@@ -22,7 +22,8 @@ Overlaps means that the two geometries:
 
 ```{include} sfs-1-2-1.md
 ```
-{% include spatial_indice_warning.html %}
+```{include} spatial_indice_warning.md
+```
 
 ## Examples
 

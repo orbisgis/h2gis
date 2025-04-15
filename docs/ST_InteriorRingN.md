@@ -43,7 +43,21 @@ SELECT ST_InteriorRingN('POINT(1 2)', 1);
 
 ##### Comparison with [`ST_ExteriorRing`](../ST_ExteriorRing)
 
-{% include exteriorring-interiorringn-cf.html %}
+```sql
+SELECT ST_ExteriorRing('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                (1 1, 2 1, 2 5, 1 5, 1 1),
+                                (8 5, 8 4, 9 4, 9 5, 8 5))') ER,
+       ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                (1 1, 2 1, 2 5, 1 5, 1 1),
+                                (8 5, 8 4, 9 4, 9 5, 8 5))', 2) IRN;
+```
+
+Answer:
+|             ER              |            IRN               |
+|-----------------------------|------------------------------|
+| LINEARRING(0 0, 10 0, 10 6, 0 6, 0 0) | LINEARRING(8 5, 8 4, 9 4, 9 5, 8 5) |
+
+![](./ST_ExteriorRing_3.png){align=center}
 
 ## See also
 

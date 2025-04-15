@@ -37,11 +37,36 @@ SELECT ST_ExteriorRing('POINT(1 2)');
 
 ### Comparison with [`ST_InteriorRingN`](../ST_InteriorRingN)
 
-{% include exteriorring-interiorringn-cf.html %}
+```sql
+SELECT ST_ExteriorRing('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                (1 1, 2 1, 2 5, 1 5, 1 1),
+                                (8 5, 8 4, 9 4, 9 5, 8 5))') ER,
+       ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                (1 1, 2 1, 2 5, 1 5, 1 1),
+                                (8 5, 8 4, 9 4, 9 5, 8 5))', 2) IRN;
+```
+
+Answer:
+|             ER              |            IRN               |
+|-----------------------------|------------------------------|
+| LINEARRING(0 0, 10 0, 10 6, 0 6, 0 0) | LINEARRING(8 5, 8 4, 9 4, 9 5, 8 5) |
+
+![](./ST_ExteriorRing_3.png){align=center}
 
 ### Comparison with [`ST_Boundary`](../ST_Boundary)
 
-{% include exteriorring-boundary-cf.html %}
+```sql
+SELECT ST_ExteriorRing('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                (1 1, 2 1, 2 5, 1 5, 1 1))') ER,
+       ST_Boundary('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                             (1 1, 2 1, 2 5, 1 5, 1 1))') BDRY;
+```
+Answer:
+|              ER             |            BDRY              |
+|-----------------------------|------------------------------|
+| LINEARRING(0 0, 10 0, 10 6, 0 6, 0 0) | MULTILINESTRING(<br>(0 0, 10 0, 10 6, 0 6, 0 0),<br> (1 1, 2 1, 2 5, 1 5, 1 1))   |
+
+![](./ST_ExteriorRing_2.png){align=center}
 
 ## See also
 

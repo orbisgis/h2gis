@@ -4,8 +4,7 @@
 
 ```sql
 CSVWrite(VARCHAR path, VARCHAR sqlSelectTable);
-CSVWrite(VARCHAR path, VARCHAR sqlSelectTable,
-         VARCHAR stringDecode);
+CSVWrite(VARCHAR path, VARCHAR sqlSelectTable, VARCHAR stringDecode);
 ```
 
 ## Description
@@ -20,7 +19,11 @@ CSVWrite(VARCHAR path, VARCHAR sqlSelectTable,
 Writes a CSV file from the SQL select statement `sqlSelectTable` to
 the CSV file specified by `path`.
 
-{% include stringDecode.html %}
+Optional variable `stringDecode` is a space-separated string for setting CSV options. If `NULL`, its default value is used:
+
+```
+charset=UTF-8 fieldDelimiter=" fieldSeparator=, lineSeparator=\n writeColumnHeader=true
+```
 
 ## Examples
 
@@ -30,30 +33,36 @@ CREATE TABLE AREA(THE_GEOM VARCHAR(100), ID INT PRIMARY KEY);
 INSERT INTO AREA VALUES
     ('POLYGON((-10 109, 90 9, -10 9, -10 109))', 1),
     ('POLYGON((90 109, 190 9, 90 9, 90 109))', 2);
+
 -- Write it to a CSV file:
 CALL CSVWrite('/home/user/area.csv', 'SELECT * FROM AREA');
+
 -- Read it back:
 SELECT * FROM CSVRead('/home/user/area.csv');
--- Answer:
--- |                 THE_GEOM                 |   ID   |
--- | ---------------------------------------- | ------ |
--- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
--- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
+```
+Answer:
+|                 THE_GEOM                 |   ID   |
+| ---------------------------------------- | ------ |
+| POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
+| POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 
--- Try writing it with a specific charset and field separator:
+Try writing it with a specific charset and field separator:
+```sql
 CALL CSVWRITE('/home/user/area.csv',
               'SELECT * FROM AREA', 'charset=UTF-8
                                      fieldSeparator=;');
+
 -- Read it back:
 SELECT * FROM CSVRead('/home/user/area.csv',
                       NULL,
                       'charset=UTF-8 fieldSeparator=;');
--- Answer:
--- |                     THE_GEOM             |   ID   |
--- | ---------------------------------------- | ------ |
--- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
--- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 ```
+Answer:
+|                     THE_GEOM             |   ID   |
+| ---------------------------------------- | ------ |
+| POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
+| POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
+
 
 ## See also
 
