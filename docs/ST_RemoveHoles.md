@@ -26,13 +26,15 @@ SELECT ST_RemoveHoles(
 
 ### Non-examples
 
+With no holes to remove:
 ```sql
--- Here are no holes to remove:
 SELECT ST_RemoveHoles(
           'POLYGON((1 5, 0 4, 0 1, 1 0, 4 0, 4 2, 5 4, 5 4, 1 5))');
 -- Answer: POLYGON((1 5, 0 4, 0 1, 1 0, 4 0, 4 2, 5 4, 5 4, 1 5))
+```
 
--- Returns NULL for POINTS:
+Returns NULL for POINTS:
+```sql
 SELECT ST_RemoveHoles('POINT(1 5)');
 -- Answer: NULL
 ```

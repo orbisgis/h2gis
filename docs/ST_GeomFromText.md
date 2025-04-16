@@ -22,19 +22,18 @@ The default value of `srid` is 0.
 
 ```sql
 SELECT ST_GeomFromText('POINT(2 3)', 27572);
+-- Answer: POINT(2 3)
 ```
-Answer: POINT(2 3)
 
 ```sql
 SELECT ST_SRID(ST_GeomFromText('LINESTRING(1 3, 1 1, 2 1)'));
+-- Answer: 0
 ```
-Answer: 0
 
 ```sql
 SELECT ST_GeomFromText('POLYGON((0 0 -1, 2 0 2, 2 1 3, 0 0 -1))');
+-- Answer: POLYGON((0 0, 2 0, 2 1, 0 0))
 ```
-Answer: POLYGON((0 0, 2 0, 2 1, 0 0))
-
 
 ## See also
 

@@ -23,11 +23,11 @@ The optional fourth parameter can either specify the number of segments used to
 approximate a quarter circle or a `VARCHAR` list of
 space-separated `key=value` pairs:
 
-| `key=value` | Description | Default value |
+| `key`=`value` | Description | Default |
 |-|-|-|
-| `quad_segs=#` | number of segments used to approximate a quarter circle | 8 |
-| `join=round|mitre|bevel` | join style | `round` |
-| `mitre_limit=#.#` | mitre ratio limit (only affects mitered join style) | 5 |
+| `quad_segs`=`#` | number of segments to approximate a quarter circle | 8 |
+| `join`=`round` / `mitre` / `bevel` | join style | `round` |
+| `mitre_limit`=`#.#` | mitre ratio limit (only affects mitered join style) | 5 |
 
 
 The end cap style for single-sided buffers is always ignored, and forced to the equivalent of 'flat' (Synonym of 'butt').
@@ -56,13 +56,13 @@ SELECT ST_RINGSIDEBUFFER('LINESTRING (1 1, 4 4, 4 2)', 0.5, 3,
 
 ![](./ST_RingSideBuffer_2.png){align=center}
 
-
-
 ```sql
 SELECT ST_RINGSIDEBUFFER('LINESTRING (1 1, 4 4, 4 2)', 0.5, 3, 
                          'join=mitre',0) as THE_GEOM;
 -- Answer: MULTIPOLYGON (((4 2, 4 4, 1 1, 0.6464466094067263 1.3535533905932737, 4.5 5.207106781186547, 4.5 2, 4 2)), ((4 2, 4 4, 1 1, 0.2928932188134524 1.7071067811865475, 5 6.414213562373096, 5 2, 4 2)), ((4 2, 4 4, 1 1, -0.0606601717798214 2.0606601717798214, 5.5 7.621320343559642, 5.5 2, 4 2)))
+```
 
+```sql
 SELECT ST_RINGSIDEBUFFER('LINESTRING (1 1, 4 4, 4 2)', 0.5, 3, 
                          'join=mitre',1) as THE_GEOM;
 -- Answer: MULTIPOLYGON (((4 2, 4 4, 1 1, 0.6464466094067263 1.3535533905932737, 4.5 5.207106781186547, 4.5 2, 4 2)), ((1 1, 0.2928932188134524 1.7071067811865475, 5 6.414213562373096, 5 2, 4.5 2, 4.5 5.207106781186547, 0.6464466094067263 1.3535533905932737, 1 1)), ((0.2928932188134525 1.7071067811865475, -0.0606601717798214 2.0606601717798214, 5.5 7.621320343559642, 5.5 2, 5 2, 5 6.414213562373096, 0.2928932188134525 1.7071067811865475)))

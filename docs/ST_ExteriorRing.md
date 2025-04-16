@@ -30,7 +30,9 @@ SELECT ST_ExteriorRing('POLYGON((0 -1, 0 2, 3 2, 3 -1, 0 -1))');
 SELECT ST_ExteriorRing('MULTIPOLYGON(((0 0, 10 0, 5 5, 0 0)),
                                       ((10 0, 5 5, 10 10, 10 0)))');
 -- Answer: NULL
+```
 
+```sql
 SELECT ST_ExteriorRing('POINT(1 2)');
 -- Answer: NULL
 ```

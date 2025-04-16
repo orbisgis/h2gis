@@ -22,14 +22,20 @@ Return the dimension of `geom`:
 ```sql
 SELECT ST_Dimension('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: 0
+```
 
+```sql
 SELECT ST_Dimension('LINESTRING(2 1, 1 3, 5 2)');
 -- Answer: 1
+```
 
+```sql
 SELECT ST_Dimension('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
                                   ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: 2
+```
 
+```sql
 SELECT ST_Dimension('GEOMETRYCOLLECTION(
                        MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                        LINESTRING(2 6, 6 2),

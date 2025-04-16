@@ -24,19 +24,18 @@ Avalaible arguments are :
 
 * `unifiy`: optional parameter to unify or not the shadow polygons. True is the default value.
 
-<div class="note warning">
-    <h5>This function does not work on <code>MULTI</code>geometries or <code>GEOMETRYCOLLECTION</code>s</h5>
-</div>
+:::{Warning}
+**This function does not work on `MULTI`geometries or `GEOMETRYCOLLECTION`s**
+:::
 
 ### Remarks
-* The `z` of the output `geometry` is set to 0,
 
+* The `z` of the output `geometry` is set to 0,
 * The `azimuth` is a direction along the horizon, measured from north to east. The `altitude` is expressed above the horizon in radians, e.g. 0 at the horizon and PI/2 at the zenith. The user can set the azimut and the altitude using a point. See [ST_SunPosition](../ST_SunPosition) function. The folowing signature must be used:
 
 ```sql
 ST_GeometryShadow(INPUT_GEOM,ST_SunPosition(), HEIGHT).
 ```
-
 
 ## Examples
 

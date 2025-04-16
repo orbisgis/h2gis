@@ -15,15 +15,15 @@ Returns the minimum bounding box that encloses `geom` as a Geometry.
 
 ```sql
 SELECT ST_Extent('MULTIPOINT((5 6), (1 2), (3 4), (10 3))'::Geometry);
+-- Answer: POLYGON((1 2, 1 6, 10 6, 10 2, 1 2))
 ```
-Answer: POLYGON((1 2, 1 6, 10 6, 10 2, 1 2))
 
 ![](./ST_Extent1.png){align=center}
 
 ```sql
 SELECT ST_Extent('POINT(5 6)'::Geometry);
+-- Answer: POINT(5 6)
 ```
-Answer: POINT(5 6)
 
 ### Comparison with [`ST_Envelope`](./ST_Envelope)
 

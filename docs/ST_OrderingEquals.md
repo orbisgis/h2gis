@@ -14,28 +14,36 @@ The condition is stronger than [`ST_Equals`](../ST_Equals).
 
 ## Examples
 
+The same
 ```sql
--- The same:
 SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10 3)',
                          'LINESTRING(0 0 1, 0 0, 10 10 3)');
 -- Answer: TRUE
+```
 
--- Different:
+Different:
+```sql
 SELECT ST_OrderingEquals('LINESTRING(0 0, 10 10)',
                          'LINESTRING(0 0, 5 5, 10 10)');
 -- Answer: FALSE
+```
 
--- The same, but with opposite vertex order:
+The same, but with opposite vertex order:
+```sql
 SELECT ST_OrderingEquals('POLYGON(0 0, 10 10, 10 5, 0 0)',
                          'POLYGON(0 0, 10 5, 10 10, 0 0)');
 -- Answer: FALSE
+```
 
--- Different:
+Different:
+```sql
 SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10)',
                          'LINESTRING(0 0, 0 0, 10 10)');
 -- Answer: FALSE
+```
 
--- The same, but component POLYGONs are listed in opposite order:
+The same, but component POLYGONs are listed in opposite order:
+```sql
 SELECT ST_OrderingEquals('MULTIPOLYGON(((0 0, 10 10, 10 5, 0 0)),
                                        ((1 1, 2 2, 2 1, 1 1)))',
                          'MULTIPOLYGON(((1 1, 2 2, 2 1, 1 1)),

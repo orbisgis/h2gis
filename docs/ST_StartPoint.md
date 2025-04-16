@@ -27,7 +27,9 @@ SELECT ST_StartPoint('LINESTRING(1 2, 5 3, 2 6)');
 ```sql
 SELECT ST_StartPoint('MULTILINESTRING((1 1, 3 2, 3 1))');
 -- Answer: POINT(1 1)
+```
 
+```sql
 SELECT ST_StartPoint('MULTILINESTRING((1 1, 3 2, 3 1),
                                       (1 2, 5 3, 2 6))');
 -- Answer: NULL

@@ -22,17 +22,23 @@ Perimeter is measured in the units of the spatial reference system.
 ```sql
 SELECT ST_Perimeter('POLYGON((1 2, 4 2, 4 6, 1 6, 1 2))');
 -- Answer: 14.0
+```
 
+```sql
 SELECT ST_Perimeter('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
                                   ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: 20.0
+```
 
+```sql
 SELECT ST_Perimeter('GEOMETRYCOLLECTION(
                     MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                     LINESTRING(2 1, 1 3, 5 2),
                     POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: 14.0
+```
 
+```sql
 SELECT ST_Perimeter('LINESTRING(2 1, 1 3, 5 2)');
 -- Answer: 0
 ```

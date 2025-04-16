@@ -18,16 +18,22 @@ Returns the z-value of the first coordinate of `geom`.
 ```sql
 SELECT ST_Z('LINESTRING(2 1 0, 1 3 3, 5 2 1)');
 -- Answer: 0.0
+```
 
+```sql
 SELECT ST_Z('POLYGON((5 0 2, 7 0 4, 7 1 3, 5 1 6, 5 0 1))');
 -- Answer: 2.0
+```
 
+```sql
 SELECT ST_Z(
     ST_PointN(
         ST_ExteriorRing(
             'POLYGON((5 0 2, 7 0 4, 7 1 3, 5 1 6, 5 0 1))'), 3));
 -- Answer: 3.0
+```
 
+```sql
 SELECT ST_Z('GEOMETRYCOLLECTION(
                LINESTRING(2 1 0, 1 3 3, 5 2 1),
                MULTIPOINT((4 4 3), (1 1 1), (1 0 2), (0 3 6)),

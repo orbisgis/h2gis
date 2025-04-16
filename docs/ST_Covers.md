@@ -8,7 +8,7 @@ BOOLEAN ST_Covers(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Returns true if no point in `geomB` is outside `geomA`.
+Returns `TRUE` if no point in `geomB` is outside `geomA`.
 
 ```{include} spatial_indice_warning.md
 ```
@@ -24,16 +24,24 @@ Returns true if no point in `geomB` is outside `geomA`.
 ```sql
 SELECT ST_Covers(smallc, smallc) FROM input_table;
 -- Answer:    TRUE
+```
 
+```sql
 SELECT ST_Covers(smallc, bigc) FROM input_table;
 -- Answer:    FALSE
+```
 
+```sql
 SELECT ST_Covers(bigc, smallc) FROM input_table;
 -- Answer:    TRUE
+```
 
+```sql
 SELECT ST_Covers(bigc, ST_ExteriorRing(bigc)) FROM input_table;
 -- Answer:    TRUE
+```
 
+```sql
 SELECT ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;
 -- Answer:    FALSE
 ```

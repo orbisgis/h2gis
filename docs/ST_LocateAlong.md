@@ -14,16 +14,15 @@ Places points along the line segments composing `geom` at a distance of
 `segmentLengthFraction` along the segment and at an offset distance of
 `offsetDistance`. Returns them as a `MULTIPOINT`.
 
-<div class="note">
-  <h5>What about orientation?</h5>
-  <p>Line segment orientation is determined by the order of the coordinates. A
-  positive offset places the point to the left of the segment; a negative
-  offset to the right.</p>
-</div>
+:::{note}
+**What about orientation?**
 
-<div class="note warning">
-  <h5>Only exterior rings are supported for <code>POLYGON</code>s.</h5>
-</div>
+Line segment orientation is determined by the order of the coordinates. A positive offset places the point to the left of the segment; a negative offset to the right.
+:::
+
+:::{Warning}
+**Only exterior rings are supported for `POLYGON`s**
+:::
 
 ## Examples
 

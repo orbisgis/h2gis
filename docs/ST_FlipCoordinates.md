@@ -19,10 +19,14 @@ Useful to flip `latitude/longitude` coordinates.
 ```sql
 SELECT ST_FlipCoordinates('POINT(1 2)');
 -- Answer: POINT (2 1)
+```
 
+```sql
 SELECT ST_FlipCoordinates('LINESTRING(1 2, 3 3, 5 9)');
 -- Answer: LINESTRING (2 1, 3 3, 9 5)
+```
 
+```sql
 SELECT ST_FlipCoordinates('POLYGON ((0 1, 2 3, 3 2, 2 1, 0 1))');
 -- Answer: POLYGON ((1 0, 3 2, 2 3, 1 2, 1 0))
 ```

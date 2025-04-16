@@ -25,7 +25,7 @@ Here, `geometry` can be (multi)`point`, (multi)`linestring`, (multi)`polygon` or
 
 | Value | Description | Default value |
 |:-:|:-:|:-:|
-| `true` | Remove degenerated geometries from the result, i.e geometries which dimension is lower than the input `geometry` | x |
+| `true` | Remove degenerated geometries from the result,<br>i.e geometries which dimension is lower than the input `geometry` | x |
 | `false` | It is up to the client to filter degenerate geometries |  |
 
 Note that:
@@ -33,17 +33,16 @@ Note that:
 * A multi-geometry will always produce a multi-geometry *(eventually empty or made of a single component)*.
 * A simple `geometry` may produce a multi-geometry *(i.e polygon with self-intersection will generally produce a multi-polygon)*. In this case, it is up to the client to explode multi-geometries if needed.
 
-<div class="note warning">
-  <p>- Linear geometries (dim = 1): duplicate coordinates are preserved as much as possible. <br>
-          - Aeral geometries (dim = 2): duplicate coordinates are generally removed due to the use of overlay operations.</p>
-</div>
-
+:::{Warning}
+- Linear geometries (dim = 1): duplicate coordinates are preserved as much as possible.
+- Aeral geometries (dim = 2): duplicate coordinates are generally removed due to the use of overlay operations.
+:::
 
 ### Parameter: preserveDuplicateCoord
 
 | Value | Description | Default value |
 |:-:|:-:|:-:|
-| `true` | Preserve duplicate coordinates as much as possible. Generally, duplicate coordinates can be preserved for linear geometries but not for areal geometries (overlay operations used to repair polygons remove duplicate points) |  x  |
+| `true` | Preserve duplicate coordinates as much as possible.<br> Generally, duplicate coordinates can be preserved for linear geometries<br> but not for areal geometries (overlay operations used to repair polygons<br> remove duplicate points) |  x  |
 | `false` | All duplicated coordinates are removed |  |
 
 
@@ -54,13 +53,13 @@ Note that:
 | `true` | Preserves third and fourth ordinates | x |
 | `false` | Preserves third ordinates but not fourth one |  |
 
-<div class="note warning">
-  <p>Note that the fourth dimension is not yet supported in H2GIS. So for the moment, <code>preserveCoordDim</code> has no impact since third ordinates (<code>z</code>) will always be preserved.</p>
-</div>
+:::{Warning}
+Note that the fourth dimension is not yet supported in H2GIS. So for the moment, `preserveCoordDim` has no impact since third ordinates (`z`) will always be preserved.
+:::
 
-<div class="note warning">
-    <p>ST_MakeValid may add new points to node the original set of lines <i>(especially to make polygons valid)</i>. New points just have <code>x</code> and <code>y</code>. No interpolation is performed if original geometry is in <code>3D</code> or <code>4D</code>.</p>
-</div>
+:::{Warning}
+`ST_MakeValid` may add new points to node the original set of lines *(especially to make polygons valid)*. New points just have `x` and `y`. No interpolation is performed if original geometry is in `3D` or `4D`.</p>
+:::
 
 ## Examples
 
@@ -69,8 +68,10 @@ Note that:
 ```sql
 SELECT ST_MakeValid('POINT(0 0)');
 -- Answer: POINT(0 0) 
+```
 
--- Also works with z coordinates
+Also works with z coordinates
+```sql
 SELECT ST_MakeValid('POINT(1 2 3)');
 -- Answer: POINT(1 2 3) 
 ```
@@ -81,27 +82,33 @@ SELECT ST_MakeValid('POINT(1 2 3)');
 SELECT ST_MakeValid('
            LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)');
 -- Answer: LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0) 
+```
 
--- Same example but with preserveDuplicateCoord = false. 
--- So here duplicated coordinates are removed
+Same example but with `preserveDuplicateCoord` = `false`. So here duplicated coordinates are removed
+```sql
 SELECT ST_MakeValid('
            LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)', true, false);
 -- Answer: LINESTRING(0 0, 10 0, 20 0, 30 0) 
-
--- Same example but with z coordinates
+```
+Same example but with z coordinates
+```sql
 SELECT ST_MakeValid('
            LINESTRING(0 0 1, 10 0 2, 20 0 1, 20 0 1, 30 0 1)', 
            true,false);
 -- Answer: LINESTRING(0 0 1, 10 0 2, 20 0 1, 30 0 1)
+```
 
--- --------------------------------------------------------
--- Example with 'preserveGeomDim'
--- True
+### Example with `preserveGeomDim`
+
+True
+```sql
 SELECT ST_MakeValid('
            LINESTRING(1 1, 1 1)', true);
 -- Answer: LINESTRING EMPTY 
+```
 
--- False
+False
+```sql
 SELECT ST_MakeValid('
            LINESTRING(1 1, 1 1)', false);
 -- Answer: POINT (1 1)
@@ -143,9 +150,10 @@ SELECT ST_MakeValid('
 --         ((1 2.33, 1 1.66, 0 2, 1 2.33)), 
 --         ((1 1.66, 3 1, 1 1, 1 1.66)), 
 --         ((1 2.33, 1 3, 3 3, 1 2.33))) 
+```
 
--- Same example but with z coordinates. 
--- Here, created nodes have no z information.
+Same example but with z coordinates. Here, created nodes have no z information.
+```sql
 SELECT ST_MakeValid('
            POLYGON ((1 1 0, 3 1 1, 0 2 1, 3 3 0, 1 3 1, 1 1 0))');
 -- Answer: MULTIPOLYGON (
@@ -163,7 +171,6 @@ SELECT ST_MakeValid('
 ```
 
 ![](./ST_MakeValid_5.png){align=center}
-
 
 ```sql
 SELECT ST_MakeValid('
@@ -190,8 +197,10 @@ SELECT ST_MakeValid('
 --         POLYGON ((1 2, 1 3, 2 2, 1 2)), 
 --         LINESTRING (3 1, 3 3, 3 3, 4 3), 
 --         POINT (5 2)) 
+```
 
--- Same example but with preserveDuplicateCoord = false
+Same example but with `preserveDuplicateCoord` = `false`
+```sql
 SELECT ST_MakeValid('
     GEOMETRYCOLLECTION (
            POLYGON ((1 1, 1 1, 1 3, 2 2, 0 2, 1 1)), 

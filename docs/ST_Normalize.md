@@ -17,12 +17,16 @@ ordering on coordinates.
 ```sql
 SELECT ST_Normalize('POLYGON((2 4, 1 3, 2 1, 6 1, 6 3, 4 4, 2 4))');
 -- Answer:           POLYGON((1 3, 2 4, 4 4, 6 3, 6 1, 2 1, 1 3))
+```
 
+```sql
 SELECT ST_Normalize('MULTIPOINT((2 2), (2 5), (10 3), (7 1),
                                 (5 1), (5 3))');
 -- Answer:           MULTIPOINT((2 2), (2 5), (5 1), (5 3),
 --                              (7 1), (10 3))
+```
 
+```sql
 SELECT ST_Normalize('LINESTRING(3 1, 6 1, 6 3, 3 3, 1 1)');
 -- Answer:           LINESTRING(1 1, 3 3, 6 3, 6 1, 3 1)
 ```

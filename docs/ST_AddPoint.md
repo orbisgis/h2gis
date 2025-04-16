@@ -19,10 +19,14 @@ to the first one found.
 ```sql
 SELECT ST_AddPoint('POINT(0 0)', 'POINT(1 1)');
 -- Answer: NULL
+```
 
+```sql
 SELECT ST_AddPoint('MULTIPOINT((0 0), (3 3))', 'POINT(1 1)');
 -- Answer: MULTIPOINT((0 0), (3 3), (1 1))
+```
 
+```sql
 SELECT ST_AddPoint('LINESTRING(1 2, 2 4, 3 4, 4 5, 5 2)',
                    'POINT(4 3)', 1);
 -- Answer: LINESTRING(1 2, 2 4, 3 4, 4 5, 4.6 3.2, 5 2)
@@ -30,15 +34,17 @@ SELECT ST_AddPoint('LINESTRING(1 2, 2 4, 3 4, 4 5, 5 2)',
 
 ![](./ST_AddPoint_1.png){align=center}
 
+
+Note: The point added depends on the input geometry's coordinate order
 ```sql
--- Note: The point added depends on the input geometry's coordinate
--- order.
 SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
                             (2 2, 4 2, 4 4, 2 4, 2 2))',
                    'POINT(3 3)', 1);
 -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 --                  (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))
+```
 
+```sql
 SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
                             (2 2, 2 4, 4 4, 4 2, 2 2))',
                    'POINT(3 3)', 1);
@@ -57,13 +63,16 @@ INSERT INTO input VALUES ('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 SELECT ST_AddPoint(poly, p, 0.5) FROM input;
 -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 --                 (2 2, 4 2, 4 4, 2 4, 2 2))
+```
 
--- Note: In the next two examples, the result is the same regardless of
--- the tolerance.
+Note: In the next two examples, the result is the same regardless of the tolerance.
+```sql
 SELECT ST_AddPoint(poly, p, 1) FROM input;
 -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 --                 (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))
+```
 
+```sql
 SELECT ST_AddPoint(poly, p, 2) FROM input;
 -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 --                 (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))

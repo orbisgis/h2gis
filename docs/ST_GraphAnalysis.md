@@ -41,33 +41,23 @@ other vertices on relatively short paths; a high betweenness
 centrality score indicates that a vertex lies on a relatively high
 number of shortest paths.
 
-<div class="note">
-  <h5>All centrality scores are normalized.</h5>
-  <p>But this normalization depends on the graph being connected.
-  Use <a
-  href="../ST_ConnectedComponents"><code>ST_ConnectedComponents</code></a>
-  to make sure you're calling <code>ST_GraphAnalysis</code> on a
-  single (strongly) connected component.</p>
-</div>
+:::{note}
+**All centrality scores are normalized**
 
-<div class="note warning">
-  <h5>A few caveats.</h5>
-  <p> Results will not be accurate if the graph:
-  <ul>
-  <li> contains "duplicate" edges (having the same source,
-  destination and weight)
-  </li>
-  <li> is disconnected. If all closeness centrality scores are zero,
-  this is why.
-  </li>
-  </ul>
-  </p>
-  <p> Though Brande's algorithm is much faster than a naïve
-  approach, it still requires an augmented version of Dijkstra's
-  algorithm to be run starting from each vertex. Thus, calculation
-  times can be rather long for larger graphs.
-  </p>
-</div>
+But this normalization depends on the graph being connected.
+Use [`ST_ConnectedComponents`](../ST_ConnectedComponents) to make sure you're calling `ST_GraphAnalysis` on a single (strongly) connected component
+:::
+
+:::{warning}
+**A few caveats**
+
+ Results will not be accurate if the graph:
+
+- contains "duplicate" edges (having the same source, destination and weight)
+- is disconnected. If all closeness centrality scores are zero, this is why.
+
+Though Brande's algorithm is much faster than a naïve approach, it still requires an augmented version of Dijkstra's algorithm to be run starting from each vertex. Thus, calculation times can be rather long for larger graphs. 
+:::
 
 ### Input parameters
 

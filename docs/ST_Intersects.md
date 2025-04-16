@@ -8,7 +8,7 @@ BOOLEAN ST_Intersects(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Returns true if `geomA` intersects `geomB`.
+Returns `TRUE` if `geomA` intersects `geomB`.
 
 Intersects means that `geomA` and `geomB` have at least one point in common.
 
@@ -17,6 +17,7 @@ Intersects means that `geomA` and `geomB` have at least one point in common.
 
 ```{include} sfs-1-2-1.md
 ```
+
 ```{include} spatial_indice_warning.md
 ```
 

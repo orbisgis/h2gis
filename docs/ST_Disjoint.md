@@ -8,7 +8,7 @@ BOOLEAN ST_Disjoint(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Returns true if `geomA` and `geomB` are disjoint.
+Returns `TRUE` if `geomA` and `geomB` are disjoint.
 
 Disjoint means that the two geometries have no point in common.
 

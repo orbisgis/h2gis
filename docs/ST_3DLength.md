@@ -13,19 +13,23 @@ Returns the 3D length of a (multi)`Linestring`.
 In the case of a 2D Geometry, `ST_3DLength` returns the same value as
 `ST_Length`.
 
-<div class="note warning">
-  <p>Note that (multi)<code>point</code>s, (multi)<code>polygon</code>s or <code>GeometryCollection</code>s return <code>0.0</code>.</p>
-</div>
+:::{Warning}
+**Note that (multi)`point`s, (multi)`polygon`s or `GeometryCollection`s return `0.0`.**
+:::
 
 ## Examples
 
 ```sql
 SELECT ST_3DLength('LINESTRING(1 4, 15 7, 16 17)');
 -- Answer: 24.367696684397245 = SQRT(205) + SQRT(101)
+```
 
+```sql
 SELECT ST_3DLength('LINESTRING(1 4 3, 15 7 9, 16 17 22)');
 -- Answer: 31.955851421415005 = SQRT(241) + SQRT(270)
+```
 
+```sql
 SELECT ST_3DLength('MULTILINESTRING((1 4 3, 15 7 9, 16 17 22),
                                     (0 0 0, 1 0 0, 1 2 0, 0 2 1))');
 -- Answer: 36.3700649837881 = SQRT(241) + SQRT(270) + 3 + SQRT(2)

@@ -8,14 +8,11 @@ MULTIPOLYGON ST_Polygonize(GEOMETRY geom);
 
 ## Description
 
-Creates a `MULTIPOLYGON` containing all possible `POLYGON`s formed
-from `geom`.
+Creates a `MULTIPOLYGON` containing all possible `POLYGON`s formed from `geom`.
 
-<div class="note info">
-    <h5> Returns <code>NULL</code> if the endpoints of
-    <code>geom</code> are not properly joined or <code>geom</code>
-    cannot be "polygonized" (e.g., <code>POINT</code>s).</h5>
-</div>
+:::{note}
+**Returns `NULL` if the endpoints of `geom` are not properly joined or `geom` cannot be "polygonized" (e.g., `POINT`s)**
+:::
 
 ## Examples
 
@@ -39,10 +36,10 @@ SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 5 2),
 -- MULTIPOLYGON:
 SELECT ST_Polygonize('POLYGON((2 2, 2 4, 5 4, 5 2, 2 2))');
 -- Answer: MULTIPOLYGON((2 2, 2 4, 5 4, 5 2, 2 2))
+```
 
--- This example shows that ST_Polygonize is "greedy" in the sense
--- that it will construct as many POLYGONs as possible. Here it
--- finds only one:
+This example shows that `ST_Polygonize` is "greedy" in the sense that it will construct as many POLYGONs as possible. Here it finds only one:
+```sql
 SELECT ST_Polygonize(ST_Union('MULTILINESTRING((1 2, 2 4, 5 2),
                                                (1 4, 4 1, 4 4))'));
 -- Answer: MULTIPOLYGON(((1.6666666666666667 3.3333333333333335,
@@ -52,9 +49,8 @@ SELECT ST_Polygonize(ST_Union('MULTILINESTRING((1 2, 2 4, 5 2),
 
 ![](./ST_Polygonize_4.png){align=center}
 
+Here we do the same example as before but close the LINESTRINGs, so that three polygons are produced:
 ```sql
--- Here we do the same example as before but close the LINESTRINGs,
--- so that three polygons are produced:
 SELECT ST_Polygonize(
             ST_Union('MULTILINESTRING((1 2, 2 4, 5 2),
                                       (1 2, 1 4, 4 1, 4 4, 5 2))'));
@@ -71,21 +67,25 @@ Answer: MULTIPOLYGON(((4 2.6666666666666665, 4 1,
 
 ### Non-examples
 
+Returns NULL for Geometries which cannot be "polygonized":
 ```sql
--- Returns NULL for Geometries which cannot be "polygonized":
 SELECT ST_Polygonize('POINT(1 2)');
 -- Answer: NULL
+```
 
--- In the following three examples, the endpoints are not properly
--- joined:
+In the following three examples, the endpoints are not properly joined:
+```sql
 SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 5 2),
                                       (1 4, 4 1, 4 4))')
 -- Answer: NULL
+```
 
+```sql
 SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 4 4, 5 2),
                                       (5 2, 2 1, 2 4, 1 5))');
 -- Answer: NULL
-
+```
+```sql
 SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2, 2 2)');
 -- Answer: NULL
 ```

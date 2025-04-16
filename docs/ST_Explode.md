@@ -21,14 +21,16 @@ The select `query` must be enclosed in parenthesis `()`.
 ```sql
 CREATE TABLE test_point AS SELECT
     'MULTIPOINT((1 1), (2 2))'::Geometry as THE_GEOM;
+```
 
--- ST_Explode using the 'tableName'
+### With the `tableName`
+```sql
 SELECT * FROM ST_Explode('test_point');
+```
 
--- or
--- ST_Explode using a 'query'
-SELECT * FROM ST_Explode('(SELECT * FROM test_point 
-                          WHERE ST_Dimension(THE_GEOM)=0)');
+### With a `query`
+```sql
+SELECT * FROM ST_Explode('(SELECT * FROM test_point WHERE ST_Dimension(THE_GEOM)=0)');
 
 -- Answer:
 --    |   THE_GEOM  | EXPLOD_ID |
@@ -39,6 +41,8 @@ SELECT * FROM ST_Explode('(SELECT * FROM test_point
 ```
 
 ![](./ST_Explode.png){align=center}
+
+### With `tableName` and `fieldName`
 
 ```sql
 CREATE TABLE test_point AS SELECT

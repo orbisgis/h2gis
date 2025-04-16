@@ -40,22 +40,30 @@ SELECT ST_CompactnessRatio(ST_Buffer(('POINT(1 2)'), 10));
 --    Note: A buffer is a polygonal approximation to a circle.
 --    ST_Buffer uses 32 line segments. That explains why the
 --    compactness ratio is slightly less than 1.
+```
 
+```sql
 SELECT ST_CompactnessRatio(ST_MakeEllipse('POINT(1 2)', 10, 10));
 -- Answer: 0.9998354822360185
 --    Note: ST_MakeEllipse approximates using 100 line segments.
 --    So the approximation is more precise, explaining why this
 --    result is closer to 1 than the result from ST_Buffer.
+```
 
+```sql
 SELECT ST_CompactnessRatio(
     'POLYGON((4 12, 1 6, 6 3, 15 2, 17 5, 16 10, 9 14, 4 12),
              (7 9, 6 7, 10 6, 10 8, 7 9))');
 -- Answer: 0.7142366622175312
+```
 
+```sql
 SELECT ST_CompactnessRatio(
     'POLYGON((0 0 0, 3 0 0, 3 2 0, 0 2 1, 0 0 0))');
 -- Answer: 0.8683215054699213
+```
 
+```sql
 SELECT ST_CompactnessRatio('POINT(1 2)');
 -- Answer: NULL
 ```

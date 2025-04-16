@@ -8,7 +8,7 @@ BOOLEAN ST_DWithin(GEOMETRY geomA, GEOMETRY geomB, DOUBLE distance);
 
 ## Description
 
-Returns true if `geomA` is within `distance` of `geomB`.
+Returns `TRUE` if `geomA` is within `distance` of `geomB`.
 
 ## Examples
 
@@ -21,22 +21,34 @@ Returns true if `geomA` is within `distance` of `geomB`.
 ```sql
 SELECT ST_DWithin(geomA, geomB, 2.0) FROM input_table;
 -- Answer:    TRUE
+```
 
+```sql
 SELECT ST_DWithin(geomA, geomB, 1.0) FROM input_table;
 -- Answer:    FALSE
+```
 
+```sql
 SELECT ST_DWithin(geomA, geomB, -1.0) FROM input_table;
 -- Answer:    FALSE
+```
 
+```sql
 SELECT ST_DWithin(geomA, geomB, 3.0) FROM input_table;
 -- Answer:    TRUE
+```
 
+```sql
 SELECT ST_DWithin(geomA, geomA, -1.0) FROM input_table;
 -- Answer:    FALSE
+```
 
+```sql
 SELECT ST_DWithin(geomA, geomA, 0.0) FROM input_table;
 -- Answer:    TRUE
+```
 
+```sql
 SELECT ST_DWithin(geomA, geomA, 5000.0) FROM input_table;
 -- Answer:    TRUE
 ```

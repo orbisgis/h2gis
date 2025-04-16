@@ -23,12 +23,16 @@ Verifies that `wkt` does in fact specify a `POINT`.
 ```sql
 SELECT ST_PointFromText('POINT(25 89)');
 -- Answer: POINT(25 89)
+```
 
+```sql
 SELECT ST_PointFromText('POINT(44 31)', 101);
 -- Answer: POINT(44 31)
+```
 
+```sql
 SELECT ST_PointFromText('MULTIPOINT((2 3), (4 5))', 2154);
--- Answer: The provided WKT Geometry is not a POINT.
+-- Answer: The provided WKT Geometry is not a POINT
 ```
 
 ## See also

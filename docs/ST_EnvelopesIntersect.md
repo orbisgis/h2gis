@@ -8,7 +8,7 @@ BOOLEAN ST_EnvelopesIntersect(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Returns true if the envelope of `geomA` intersects the envelope of `geomA`.
+Returns `TRUE` if the envelope of `geomA` intersects the envelope of `geomA`.
 
 As a consequence, if `ST_Intersects(geomA, geomB)` is true, then
 `ST_EnvelopesIntersect(geomA, geomB)` is true.

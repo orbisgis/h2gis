@@ -32,24 +32,32 @@ value of `interpolate`:
 SELECT ST_ZUpdateLineExtremities(
             'LINESTRING(250 250, 280 290)', 40, 10);
 -- Answer:   LINESTRING(250 250 40, 280 290 10)
+```
 
--- Each component LINESTRING is interpolated individually:
+Each component LINESTRING is interpolated individually
+```sql
 SELECT ST_ZUpdateLineExtremities(
             'MULTILINESTRING((1 1 1, 1 6 2, 2 2 1, -1 2 3),
                              (1 2 0, 4 2, 4 6 2))', 0, 10);
 -- Answer:   MULTILINESTRING((1 1 0, 1 6 3.6889, 2 2 2.4746, -1 2 10),
 --                           (1 2 0, 4 2 5.7142, 4 6 10))
+```
 
--- The following two examples give the same result since the boolean
--- "interpolate" is TRUE by default:
+The following two examples give the same result since the boolean "interpolate" is TRUE by default:
+```sql
 SELECT ST_ZUpdateLineExtremities(
             'LINESTRING(0 0, 5 0 1, 15 0)', 0, 20);
 -- Answer:   LINESTRING(0 0 0, 5 0 13.333333333333332, 15 0 20)
+```
+
+```sql
 SELECT ST_ZUpdateLineExtremities(
             'LINESTRING(0 0, 5 0 1, 15 0)', 0, 20, 'true');
 -- Answer:   LINESTRING(0 0 0, 5 0 13.333333333333332, 15 0 20)
+```
 
--- If we set it to false, intermediate z-values are not updated:
+If we set it to false, intermediate z-values are not updated
+```sql
 SELECT ST_ZUpdateLineExtremities(
             'LINESTRING(0 0, 5 0 1, 10 0)', 0, 20, 'false');
 -- Answer:   LINESTRING(0 0 0, 5 0 1, 10 0 20)
@@ -57,9 +65,8 @@ SELECT ST_ZUpdateLineExtremities(
 
 ### Non-examples
 
+Returns NULL for Geometries other than LINESTRINGs and MULTILINESTRINGs
 ```sql
--- Returns NULL for Geometries other than LINESTRINGs and
--- MULTILINESTRINGs:
 SELECT ST_ZUpdateLineExtremities(
             'POLYGON((1 1, 1 7, 7 7 -1, 7 1 -1, 1 1))', 10, 15);
 -- Answer: NULL

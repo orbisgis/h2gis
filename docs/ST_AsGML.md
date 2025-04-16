@@ -24,12 +24,12 @@ SELECT ST_AsGML('POINT(-2.070365 47.643713)');
 ```
 
 Answer: 
-```
---	<gml:Point srsName='EPSG:0'>
---	  <gml:coordinates>
---	    -2.070365,47.643713 
---	  </gml:coordinates>
---	</gml:Point>
+```xml
+<gml:Point srsName='EPSG:0'>
+    <gml:coordinates>
+        -2.070365,47.643713 
+    </gml:coordinates>
+</gml:Point>
 ```
 
 ### For a (3D) Linestring
@@ -38,12 +38,12 @@ SELECT ST_AsGML('LINESTRING (12 25 10, 100 20 5, 56 65 8)');
 ```
 
 Answer: 
-```
---	<gml:LineString srsName='EPSG:0'>
---	  <gml:coordinates>
---	    12.0,25.0,10.0 100.0,20.0,5.0 56.0,65.0,8.0 
---	  </gml:coordinates>
---	</gml:LineString>
+```xml
+<gml:LineString srsName='EPSG:0'>
+    <gml:coordinates>
+        12.0,25.0,10.0 100.0,20.0,5.0 56.0,65.0,8.0 
+    </gml:coordinates>
+</gml:LineString>
 ```
 
 ### For a Linestring with a srid (here in WGS84)
@@ -52,12 +52,12 @@ SELECT ST_AsGML(ST_SetSRID('LINESTRING (-47.8 56.3, -44.2 57.3)', 4326));
 ```
 
 Answer: 
-```
---	<gml:LineString srsName='EPSG:4326'>
---	  <gml:coordinates>
---	    -47.8,56.3 -44.2,57.3 
---	  </gml:coordinates>
---	</gml:LineString>
+```xml
+<gml:LineString srsName='EPSG:4326'>
+    <gml:coordinates>
+        -47.8,56.3 -44.2,57.3 
+    </gml:coordinates>
+</gml:LineString>
 ```
 
 ### For a Polygon
@@ -66,16 +66,16 @@ SELECT ST_AsGML('POLYGON ((20 20, 40 20, 40 10, 20 10, 20 20))');
 ```
 
 Answer: 
-```
---	<gml:Polygon srsName='EPSG:0'>
---	  <gml:outerBoundaryIs>
---	    <gml:LinearRing>
---	      <gml:coordinates>
---		20.0,20.0 40.0,20.0 40.0,10.0 20.0,10.0 20.0,20.0
---	      </gml:coordinates>
---	    </gml:LinearRing>
---	  </gml:outerBoundaryIs>
---	</gml:Polygon>
+```xml
+<gml:Polygon srsName='EPSG:0'>
+    <gml:outerBoundaryIs>
+        <gml:LinearRing>
+            <gml:coordinates>
+                20.0,20.0 40.0,20.0 40.0,10.0 20.0,10.0 20.0,20.0
+            </gml:coordinates>
+        </gml:LinearRing>
+    </gml:outerBoundaryIs>
+</gml:Polygon>
 ```
 
 ### For a MultiPolygon
@@ -85,31 +85,31 @@ SELECT ST_AsGML('MULTIPOLYGON (((1 1, 1 3, 3 3, 3 1, 1 1)),
 ```
 
 Answer: 
-```
---	<gml:MultiPolygon srsName='EPSG:0'>
---	  <gml:polygonMember>
---	    <gml:Polygon>
---	      <gml:outerBoundaryIs>
---		<gml:LinearRing>
---		  <gml:coordinates>
---		    1.0,1.0 1.0,3.0 3.0,3.0 3.0,1.0 1.0,1.0 
---		  </gml:coordinates>
---		</gml:LinearRing>
---	      </gml:outerBoundaryIs>
---	    </gml:Polygon>
---	  </gml:polygonMember>
---	  <gml:polygonMember>
---	    <gml:Polygon>
---	      <gml:outerBoundaryIs>
---		<gml:LinearRing>
---		  <gml:coordinates>
---		    4.0,2.0 4.0,4.0 6.0,4.0 6.0,2.0 4.0,2.0 
---		  </gml:coordinates>
---		</gml:LinearRing>
---	      </gml:outerBoundaryIs>
---	    </gml:Polygon>
---	  </gml:polygonMember>
---	</gml:MultiPolygon>
+```xml
+<gml:MultiPolygon srsName='EPSG:0'>
+  <gml:polygonMember>
+    <gml:Polygon>
+      <gml:outerBoundaryIs>
+        <gml:LinearRing>
+          <gml:coordinates>
+            1.0,1.0 1.0,3.0 3.0,3.0 3.0,1.0 1.0,1.0 
+          </gml:coordinates>
+        </gml:LinearRing>
+      </gml:outerBoundaryIs>
+    </gml:Polygon>
+  </gml:polygonMember>
+  <gml:polygonMember>
+    <gml:Polygon>
+      <gml:outerBoundaryIs>
+        <gml:LinearRing>
+          <gml:coordinates>
+            4.0,2.0 4.0,4.0 6.0,4.0 6.0,2.0 4.0,2.0 
+          </gml:coordinates>
+        </gml:LinearRing>
+      </gml:outerBoundaryIs>
+    </gml:Polygon>
+  </gml:polygonMember>
+</gml:MultiPolygon>
 ```
 
 ## See also

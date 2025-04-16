@@ -8,14 +8,16 @@ BOOLEAN ST_IsRectangle(GEOMETRY geom);
 
 ## Description
 
-Returns true if `geom` is a rectangle.
+Returns `TRUE` if `geom` is a rectangle.
 
 ## Examples
 
 ```sql
 SELECT ST_IsRectangle('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
 -- Answer:    TRUE
+```
 
+```sql
 SELECT ST_IsRectangle('POLYGON((0 0, 10 0, 10 7, 0 5, 0 0))');
 -- Answer:    FALSE
 ```

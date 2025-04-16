@@ -19,7 +19,9 @@ moved through, with a single rotation.
 ```sql
 SELECT ST_MinimumDiameter('POINT(395 278)');
 -- Answer: LINESTRING(395 278, 395 278)
+```
 
+```sql
 SELECT ST_MinimumDiameter('LINESTRING(0 0, 1 1, 3 9, 7 1)');
 -- Answer: LINESTRING(1 3, 7 1)
 ```
@@ -31,7 +33,9 @@ SELECT ST_MinimumDiameter(
             'POLYGON((360 380, 230 150, 370 100, 510 100,
                       517 110, 650 390, 430 220, 360 380))');
 -- Answer: LINESTRING(282.35 242.62, 517 110)
+```
 
+```sql
 SELECT ST_MinimumDiameter(
             'GEOMETRYCOLLECTION(
                 POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)),

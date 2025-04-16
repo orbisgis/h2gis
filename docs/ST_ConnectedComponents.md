@@ -21,26 +21,21 @@ and a connected component ID.
 
 | Variable      | Meaning                                                                                                                                                                               |
 |---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`, and optionally an edge orientation column `eo` (required if global orientation is not `undirected`)         |
+| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`, and optionally<br> an edge orientation column `eo` (required if global orientation is not `undirected`)         |
 | `o`           | Global orientation string: `directed`, `reversed` or `undirected`                                                                                                                     |
-| `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed` |
+| `eo`          | Edge orientation column name indicating individual edge orientations:<br> `1` (directed), `-1` (reversed) or `0` (undirected); <br>required if global orientation is `directed` or `reversed` |
 
-<div class="note">
-  <h5>Edges in no SCC are assigned a connected component ID of
-  -1.</h5>
-  <p>Such edges have a start nodes and end nodes in different
-  SCCs.</p>
-</div>
+:::{note}
+**Edges in no SCC are assigned a connected component ID of -1.**
 
-<div class="note warning">
-  <h5>Connected component IDs are not guaranteed to be the same
-  after each execution of <code>ST_ConnectedComponents</code>.</h5>
-  <p>But of course, the vertex and edge set partitions they
-  represent remain consistent. In the examples below, you may have
-  to adjust certain requests according to how
-  <code>ST_ConnectedComponents</code> numbers the connected
-  components.</p>
-</div>
+Such edges have a start nodes and end nodes in different SCCs
+:::
+
+:::{warning}
+**Connected component IDs are not guaranteed to be the same after each execution of `ST_ConnectedComponents`.**
+
+But of course, the vertex and edge set partitions they represent remain consistent. In the examples below, you may have to adjust certain requests according to how `ST_ConnectedComponents` numbers the connected components.
+:::
 
 ## Examples
 
@@ -96,7 +91,7 @@ SELECT * FROM EDGES;
 -- |      18 |         12 |       12 |                1 |
 ```
 
-![](./scc-input.svg">
+![](./scc-input.svg)
 
 ```sql
 -- Do the SCC calculation and diplay the results:
@@ -143,13 +138,13 @@ SELECT * FROM EDGES_EDGE_CC
 -- |      12 |                   6 |
 ```
 
-![](./scc.svg">
+![](./scc.svg)
 
 ### Counting the number of edges in each SCC
 
+Count the number of edges in each SCC: 
+(We could similarly count the number of nodes in each SCC.)
 ```sql
--- Count the number of edges in each SCC:
--- (We could similarly count the number of nodes in each SCC.)
 DROP TABLE IF EXISTS EDGE_CC_TOTALS;
 CREATE TABLE EDGE_CC_TOTALS AS
     SELECT CONNECTED_COMPONENT CC,
@@ -172,8 +167,7 @@ SELECT * FROM EDGE_CC_TOTALS;
 ### Selecting the largest SCC
 
 ```sql
--- Creating these indices will greatly speed up the following
--- calculations.
+-- Creating these indices will greatly speed up the following calculations
 CREATE INDEX ON EDGES(EDGE_ID);
 CREATE INDEX ON EDGES_EDGE_CC(EDGE_ID);
 
@@ -263,7 +257,7 @@ SELECT * FROM EDGES_EDGE_CC
 -- |      18 |                   3 |
 ```
 
-![](./cc.svg">
+![](./cc.svg)
 
 ### Exercise
 

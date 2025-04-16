@@ -158,7 +158,7 @@ CREATE TABLE isovist AS
 ### Aim 
 Compute visibilities in the city center of [Vannes](https://www.openstreetmap.org/#map=17/47.65908/-2.75922) (France), every 10m, with a 100m maximum distance of visibility and export results into an animated .gif file.
 
-![](./st_isovist_vannes.gif"/>
+![](./st_isovist_vannes.gif){align=center}
 
 Cool isn't it? Thanks to H2GIS, [OrbisGIS](http://orbisgis.org/), [Groovy](http://www.groovy-lang.org/) and [The Gimp](https://www.gimp.org/) *(all free and open-source)* you will see that it's quite easy to reproduce.
 

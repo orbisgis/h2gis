@@ -25,16 +25,20 @@ SELECT ST_Scale('LINESTRING(1 2, 4 5)'::Geometry, 0.5, 0.75);
 ```sql
 SELECT ST_Scale('LINESTRING(1 2, 4 5)'::Geometry, 0.5, 0.75, 1.2);
 -- Answer:    LINESTRING(0.5 1.5, 2 3.75)
-
+```
+```sql
 SELECT ST_Scale('LINESTRING(1 2, 4 5)'::Geometry, 0.0, -1.0, 2.0);
 -- Answer:    LINESTRING(0 -2, 0 -5)
-
+```
+```sql
 SELECT ST_Scale('LINESTRING(1 2 3, 4 5 6)'::Geometry, 0.5, 0.75);
 -- Answer:    LINESTRING(0.5 1.5 3, 2 3.75 6)
-
+```
+```sql
 SELECT ST_Scale('LINESTRING(1 2 3, 4 5 6)'::Geometry, 0.5, 0.75, 1.2);
 -- Answer:    LINESTRING(0.5 1.5 3.6, 2 3.75 7.2)
-
+```
+```sql
 SELECT ST_Scale('LINESTRING(1 2 3, 4 5 6)'::Geometry, 0.0, -1.0, 2.0);
 -- Answer:    LINESTRING(0 -2 6, 0 -5 12)
 ```

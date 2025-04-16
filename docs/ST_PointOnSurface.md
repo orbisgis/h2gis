@@ -21,13 +21,19 @@ The point returned is always the same for the same input Geometry.
 ```sql
 SELECT ST_PointOnSurface('POINT(1 5)');
 -- Answer: POINT(1 5)
+```
 
+```sql
 SELECT ST_PointOnSurface('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: POINT(1 1)
+```
 
+```sql
 SELECT ST_PointOnSurface('LINESTRING(-1 5, 0 10)');
 -- Answer: POINT(0 10)
+```
 
+```sql
 SELECT ST_PointOnSurface('POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))');
 -- Answer: POINT(2.5 2.5)
 ```

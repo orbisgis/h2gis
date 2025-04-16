@@ -17,9 +17,8 @@ Geometry (e.g. it may be a rectangle, a line, or a point).
 ## Examples
 
 ```sql
-SELECT ST_OctogonalEnvelope('POLYGON((2 1, 1 2, 2 2, 2 4, 3 5,
-                                      3 3, 5 5, 7 2, 5 2, 6 1,
-                                      2 1))');
+SELECT ST_OctogonalEnvelope('POLYGON((2 1, 1 2, 2 2, 2 4, 3 5, 3 3,
+                                      5 5, 7 2, 5 2, 6 1, 2 1))');
 -- Answer: POLYGON((1 2, 1 3, 3 5, 5 5, 7 3, 7 2, 6 1, 2 1, 1 2))
 ```
 
@@ -28,9 +27,10 @@ SELECT ST_OctogonalEnvelope('POLYGON((2 1, 1 2, 2 2, 2 4, 3 5,
 ```sql
 SELECT ST_OctogonalEnvelope('POLYGON((2 2, 2 4, 4 4, 4 2, 2 2))');
 -- Answer: POLYGON((2 2, 2 4, 4 4, 4 2, 2 2))
+```
 
-SELECT ST_OctogonalEnvelope(
-    'POLYGON((1 2, 3 0, 5 2, 3 2, 2 3, 1 2))');
+```sql
+SELECT ST_OctogonalEnvelope('POLYGON((1 2, 3 0, 5 2, 3 2, 2 3, 1 2))');
 -- Answer: POLYGON((1 2, 2 3, 4 3, 5 2, 3 0, 1 2))
 ```
 
@@ -51,11 +51,9 @@ SELECT ST_OctogonalEnvelope('MULTIPOINT((1 1), (2 3))');
 ![](./ST_OctogonalEnvelope_3.png){align=center}
 
 ```sql
-SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120,
-                                      210 210, 159 205, 170 240,
-                                      170 350))');
--- Answer: POLYGON((95 214, 95 275, 170 350, 220 300, 220 120,
---                  189 120, 95 214))
+SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120, 210 210,
+                                      159 205, 170 240, 170 350))');
+-- Answer: POLYGON((95 214, 95 275, 170 350, 220 300, 220 120, 189 120, 95 214))                
 ```
 
 ## See also

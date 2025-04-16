@@ -72,7 +72,9 @@ INSERT INTO input_table VALUES
      ('POINT(9 10)');
 SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;
 -- Answer:     LINESTRING(1 2, 3 4, 5 6, 7 8, 9 10)
+```
 
+```sql
 CREATE TABLE input_table(point GEOMETRY);
 INSERT INTO input_table VALUES
      ('POINT(5 5)'),
@@ -81,7 +83,9 @@ INSERT INTO input_table VALUES
      ('POINT(99 3)');
 SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;
 -- Answer:     LINESTRING(5 5, 1 2, 7 9, 18 -4, 3 4, 99 3)
+```
 
+```sql
 CREATE TABLE input_table(multi_point MULTIPOINT);
 INSERT INTO input_table VALUES
      ('MULTIPOINT(5 5, 1 2, 3 4, 99 3)'),
@@ -94,4 +98,5 @@ SELECT ST_MakeLine(ST_Accum(multi_point)) FROM input_table;
 
 ## See also
 
+* [`ST_MakePoint`](../ST_MakePoint), [`ST_MakePolygon`](../ST_MakePolygon)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_MakeLine.java" target="_blank">Source code</a>

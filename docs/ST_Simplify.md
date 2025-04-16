@@ -37,19 +37,23 @@ SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
 
 ![](./ST_Simplify_1.png){align=center}
 
+If the distance tolerance is too large, the Geometry may be oversimplified:
 ```sql
--- If the distance tolerance is too large, the Geometry may be
--- oversimplified:
 SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
                              4 2, 4 1, 3 0, 2 0, 2 1))',
                     2)
 -- Answer: POLYGON EMPTY
+```
 
--- POINTs and MULTIPOINTs cannot be further simplified:
-SELECT ST_Simplify('MULTIPOINT((190 300), (10 11))', 4);
+POINTs and MULTIPOINTs cannot be further simplified:
+```sql
+SELECT ST_Simplify('MULTIPOINT((190 300), (10 11))', 
+                    4);
 -- Answer: MULTIPOINT((190 300), (10 11))
+```
 
--- Simplify a LINESTRING:
+Simplify a LINESTRING:
+```sql
 SELECT ST_Simplify('LINESTRING(250 250, 280 290, 300 230, 340 300,
                                360 260, 440 310, 470 360, 604 286)',
                    40);

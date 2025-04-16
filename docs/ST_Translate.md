@@ -11,12 +11,11 @@ GEOMETRY ST_Translate(GEOMETRY geom, DOUBLE x, DOUBLE y, DOUBLE z);
 
 Translates `geom` by the vector (`x`, `y`) or (`x`, `y`, `z`).
 
-<div class="note warning">
-  <h5>Cannot translate geometries of mixed dimension.</h5>
-  <p><code>LINESTRING(0 0, 1 0 0)</code> cannot be translated
-  because its second coordinate has a <i>z</i>-value while its first
-  coordinate does not.</p>
-</div>
+:::{Warning}
+**Cannot translate geometries of mixed dimension.**
+
+`LINESTRING(0 0, 1 0 0)` cannot be translated because its second coordinate has a *z*-value while its first coordinate does not.
+:::
 
 ## Examples
 

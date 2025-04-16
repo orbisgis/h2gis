@@ -19,17 +19,25 @@ Returns the area of `geom`.
 ```sql
 SELECT ST_Area('POINT(0 12)');
 -- Answer: 0.0
+```
 
+```sql
 SELECT ST_Area('LINESTRING(5 4, 1 1, 3 4, 4 5)');
 -- Answer: 0.0
+```
 
+```sql
 SELECT ST_Area('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))');
 -- Answer: 100.0
+```
 
+```sql
 SELECT ST_Area('MULTIPOLYGON(((0 0, 10 0, 10 10, 0 10, 0 0),
                               (5 4, 1 1, 3 4, 4 5, 5 4)))');
 -- Answer: 96.0
+```
 
+```sql
 SELECT ST_Area('GEOMETRYCOLLECTION(
                   LINESTRING(5 4, 1 1, 3 4, 4 5),
                   POINT(0 12),

@@ -18,9 +18,10 @@ Returns SRID value or 0 if input Geometry does not have one.
 ```sql
 SELECT ST_SRID(ST_GeomFromText('POINT(15 25)', 2154));
 -- Answer: 2154
+```
 
-SELECT ST_SRID(ST_GeomFromText('LINESTRING(2 1, 1 3, 5 2, 2 1)',
-               4326));
+```sql
+SELECT ST_SRID(ST_GeomFromText('LINESTRING(2 1, 1 3, 5 2, 2 1)', 4326));
 -- Answer: 4326
 ```
 

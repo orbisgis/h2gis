@@ -30,18 +30,17 @@ destination.
 
 | Variable      | Meaning                                                                                                                                                                                                                             |
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`; and optionally a weight column `w` (if the graph is weighted) and/or an edge orientation column `eo` (required if global orientation is not `undirected`) |
+| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`;<br> and optionally a weight column `w` (if the graph is weighted)<br> and/or an edge orientation column `eo` <br> (required if global orientation is not `undirected`) |
 | `o`           | Global orientation string: `directed`, `reversed` or `undirected`                                                                                                                                                                   |
-| `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed`                                               |
+| `eo`          | Edge orientation column name indicating individual edge orientations:<br> `1` (directed), `-1` (reversed) or `0` (undirected);<br> required if global orientation is `directed` or `reversed`                                               |
 | `w`           | Edge weights column name                                                                                                                                                                                                            |
 | `ds`          | Comma-separated destination string: `'dest1, dest2, ...'`                                                                                                                                                                           |
-| `dt`          | Destination table name; must contain column `DESTINATION` containing integer vertex ids                                                                                                                                             |
+| `dt`          | Destination table name; must contain column `DESTINATION` <br>containing integer vertex ids                                                                                                                                             |
 
 ## Examples
 
+We will do graph analysis on the directed weighted graph examined in the ST_ShortestPath examples, illustrated below
 ```sql
--- We will do graph analysis on the directed weighted graph examined
--- in the ST_ShortestPath examples, illustrated below.
 SELECT * FROM EDGES_EO_W;
 -- | EDGE_ID | START_NODE | END_NODE | WEIGHT | EDGE_ORIENTATION |
 -- |---------|------------|----------|--------|------------------|
@@ -59,7 +58,7 @@ SELECT * FROM EDGES_EO_W;
 -- |      12 |          7 |        8 |    2.0 |                1 |
 ```
 
-![](./wdo.svg">
+![](./wdo.svg)
 
 ### Destination string
 
@@ -78,7 +77,7 @@ SELECT * FROM ST_Accessibility('EDGES_EO_W',
 -- |      8 |           -1 | Infinity |
 ```
 
-![](./wdo-acc-2-5.svg">
+![](./wdo-acc-2-5.svg)
 
 ```sql
 SELECT * FROM ST_Accessibility('EDGES_EO_W',
@@ -95,13 +94,12 @@ SELECT * FROM ST_Accessibility('EDGES_EO_W',
 -- |      8 |           -1 | Infinity |
 ```
 
-![](./wdo-acc-2-5-7.svg">
+![](./wdo-acc-2-5-7.svg)
 
 ### Destination table
 
+Here we get the same results as before, but we do it using a destination table
 ```sql
--- Here we get the same results as before, but we do it using a
--- destination table.
 CREATE TABLE DESTS(DESTINATION INT);
 INSERT INTO DESTS VALUES (2), (5), (7);
 SELECT * FROM ST_ACCESSIBILITY('EDGES_EO_W',

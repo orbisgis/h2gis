@@ -11,13 +11,11 @@ GEOMETRY ST_Transform(GEOMETRY geom, INT srid);
 Transforms `geom` from its original coordinate reference system (CRS) to the
 CRS specified by `srid`.
 
-<div class="note">
-    <h5>Find the SRID you're looking for.</h5>
-    <p> All available CRS SRIDs may be found by executing
-    <code> SELECT * FROM SPATIAL_REF_SYS; </code>
-    Most SRIDs are EPSG, but the <code>SPATIAL_REF_SYS</code> table may be
-    enriched by other CRSes.</p>
-</div>
+:::{tip}
+**Find the SRID you're looking for**
+
+All available CRS SRIDs may be found by executing the query `SELECT * FROM SPATIAL_REF_SYS;`. Most SRIDs are EPSG, but the `SPATIAL_REF_SYS` table may be enriched by other CRSes.
+:::
 
 ```{include} sfs-1-2-1.md
 ```
@@ -25,8 +23,7 @@ CRS specified by `srid`.
 ## Examples
 
 ```sql
-SELECT ST_Transform(ST_GeomFromText(
-    'POINT(584173 2594514)', 27572), 4326);
+SELECT ST_Transform(ST_GeomFromText('POINT(584173 2594514)', 27572), 4326);
 -- Answer: POINT(2.1145411092971056 50.345602339855326)
 ```
 

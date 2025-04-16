@@ -22,33 +22,33 @@ This function supports:
 ### For a Point, with a srid
 ```sql
 SELECT ST_GeomFromGML('
-	<gml:Point>
-	    <gml:coordinates>
-	    	50.2,38.7
-	    </gml:coordinates>
-	</gml:Point>', 4326);
+    <gml:Point>
+        <gml:coordinates>
+            50.2,38.7
+        </gml:coordinates>
+    </gml:Point>', 4326);
 -- Answer: POINT (50.2 38.7)
 ```
 
 ### For a 3D Point
 ```sql
 SELECT ST_GeomFromGML('
-	<gml:Point>
-	    <gml:coordinates>
-	    	50.2,38.7,20
-	    </gml:coordinates>
-	</gml:Point>');
+    <gml:Point>
+        <gml:coordinates>
+            50.2,38.7,20
+        </gml:coordinates>
+    </gml:Point>');
 -- Answer: POINT (50.2 38.7 20)
 ```
 
 ### For a Linestring
 ```sql
 SELECT ST_GeomFromGML('
-	<gml:LineString srsName="EPSG:4326">
-	    <gml:coordinates>
-	    	-60.5,35.2 -62.3,47.4 -65.6,48.4
-	    </gml:coordinates>
-	</gml:LineString>');
+    <gml:LineString srsName="EPSG:4326">
+        <gml:coordinates>
+            -60.5,35.2 -62.3,47.4 -65.6,48.4
+        </gml:coordinates>
+    </gml:LineString>');
 -- Answer: LINESTRING (-60.5 35.2, -62.3 47.4, -65.6 48.4) 
 ```
 
@@ -72,6 +72,7 @@ SELECT ST_GeomFromGML('
 	     </LineString>
 	  </lineStringMember>
 	</MultiLineString>');
+
 -- Answer: MULTILINESTRING ((56.1 0.45, 67.23 0.67), 
 --			    (46.71 9.25, 56.88 10.44), 
 --			    (324.1 219.7, 0.45 0.56))
@@ -89,6 +90,7 @@ SELECT ST_GeomFromGML('
 	     </gml:LinearRing>
           </gml:outerBoundaryIs>
 	</gml:Polygon>');
+
 -- Answer: POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0))
 ```
 

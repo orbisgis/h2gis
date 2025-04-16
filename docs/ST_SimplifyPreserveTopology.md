@@ -49,11 +49,8 @@ The following three examples use the same input POLYGON.
 SELECT ST_SimplyPreserveTopology(
            POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 
                     45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25)), 10);
-```
 
-Answer: 
-```
-POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 
+-- Answer: POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 
          45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25))
 ```
 ### With `distance` = 20
@@ -62,10 +59,8 @@ POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36,
 SELECT ST_SimplyPreserveTopology(
            POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 
                     45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25)), 20);
-```
-Answer:
-```
-POLYGON((8 25, 33 3, 56 30, 47 44, 43 19, 8 25))
+
+-- Answer: POLYGON((8 25, 33 3, 56 30, 47 44, 43 19, 8 25))
 ```
 
 ### With `distance` = 30
@@ -74,21 +69,21 @@ POLYGON((8 25, 33 3, 56 30, 47 44, 43 19, 8 25))
 SELECT ST_SimplyPreserveTopology(
            POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 
                     45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25)), 30);
-```
-Answer:
-```
-POLYGON((8 25, 33 3, 56 30, 47 44, 8 25))
+
+-- Answer: POLYGON((8 25, 33 3, 56 30, 47 44, 8 25))
 ```
 
 ![](./ST_SimplifyPreserveTopology.png){align=center}
 
+POINTs and MULTIPOINTs cannot be further simplified:
 ```sql
--- POINTs and MULTIPOINTs cannot be further simplified:
 SELECT ST_SimplifyPreserveTopology(
             'MULTIPOINT((190 300), (10 11))', 4);
 -- Answer:   MULTIPOINT((190 300), (10 11))
+```
 
--- Simplify a LINESTRING:
+Simplify a LINESTRING:
+```sql
 SELECT ST_SimplifyPreserveTopology(
             'LINESTRING(250 250, 280 290, 300 230, 340 300, 360 260,
                         440 310, 470 360, 604 286)',

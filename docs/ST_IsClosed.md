@@ -19,7 +19,9 @@ otherwise. A `MULTILINESTRING` is closed if all its `LINESTRING`s are closed.
 ```sql
 SELECT ST_IsClosed('LINESTRING(2 1, 1 3, 5 2)');
 -- Answer: FALSE
+```
 
+```sql
 SELECT ST_IsClosed('LINESTRING(2 1, 1 3, 5 2, 2 1)');
 -- Answer: TRUE
 ```
@@ -30,7 +32,9 @@ SELECT ST_IsClosed('LINESTRING(2 1, 1 3, 5 2, 2 1)');
 SELECT ST_IsClosed('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 1),
                                     (5 0, 7 0, 7 1, 5 1, 5 0))');
 -- Answer: FALSE
+```
 
+```sql
 SELECT ST_IsClosed('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 2),
                                     (5 0, 7 0, 7 1, 5 1, 5 0))');
 -- Answer: TRUE

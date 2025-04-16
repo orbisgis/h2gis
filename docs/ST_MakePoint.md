@@ -29,4 +29,5 @@ SELECT ST_MakePoint(1.4, -3.7, 6.2);
 
 ## See also
 
+* [`ST_MakeLine`](../ST_MakeLine), [`ST_MakePolygon`](../ST_MakePolygon)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_MakePoint.java" target="_blank">Source code</a>

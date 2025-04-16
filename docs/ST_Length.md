@@ -12,9 +12,9 @@ Returns the length of (multi)`Linestring`.
 
 Length is measured in the units of the spatial reference system.
 
-<div class="note warning">
-  <p>Note that (multi)<code>point</code>s, (multi)<code>polygon</code>s or <code>GeometryCollection</code>s return <code>0.0</code>.</p>
-</div>
+:::{Warning}
+**Note that (multi)`point`s, (multi)`polygon`s or `GeometryCollection`s return `0.0`.**
+:::
 
 ```{include} sfs-1-2-1.md
 ```
@@ -24,7 +24,9 @@ Length is measured in the units of the spatial reference system.
 ```sql
 SELECT ST_Length('LINESTRING(2 1, 1 3, 5 2)');
 -- Answer: 6.35917360311745
+```
 
+```sql
 SELECT ST_Length('MULTILINESTRING ((1 1, 1 2, 2 2),
                                    (2 1, 3 1, 3 3))');
 -- Answer: 5
@@ -35,14 +37,20 @@ SELECT ST_Length('MULTILINESTRING ((1 1, 1 2, 2 2),
 ```sql
 SELECT ST_Length('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: 0.0
+```
 
+```sql
 SELECT ST_Length('POLYGON((1 2, 4 2, 4 6, 1 6, 1 2))');
 -- Answer: 0.0
+```
 
+```sql
 SELECT ST_Length('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
                                ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: 0.0
+```
 
+```sql
 SELECT ST_Length('GEOMETRYCOLLECTION(
                     MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                     LINESTRING(2 1, 1 3, 5 2),

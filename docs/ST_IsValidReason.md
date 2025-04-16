@@ -34,11 +34,15 @@ ESRI SDE model).
 SELECT ST_IsValidReason('POLYGON((210 440, 134 235, 145 233,
                                   310 200, 340 360, 210 440))');
 -- Answer: Valid Geometry
+```
 
+```sql
 SELECT ST_IsValidReason('POLYGON((0 0, 10 0, 10 5, 6 -2, 0 0))');
 -- Answer: Self-intersection at or near
 --         POINT(7.142857142857143, 0.0, NaN)
+```
 
+```sql
 SELECT ST_IsValidReason('POLYGON((1 1, 1 6, 5 1, 1 1),
                                  (3 4, 3 5, 4 4, 3 4))', 0);
 -- Answer: Hole lies outside shell at or near POINT(3.0, 4.0, NaN)
@@ -46,13 +50,14 @@ SELECT ST_IsValidReason('POLYGON((1 1, 1 6, 5 1, 1 1),
 
 ![](./ST_IsValidReason_1.png){align=center}
 
+The next two examples show that the validation model we choose is important.
 ```sql
--- The next two examples show that the validation model we choose
--- is important.
 SELECT ST_IsValidReason(
             'POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2, 3 0))', 0);
 -- Answer: Ring Self-intersection at or near POINT(3.0, 0.0, NaN)
+```
 
+```sql
 SELECT ST_IsValidReason(
             'POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2, 3 0))', 1);
 -- Answer: Valid Geometry

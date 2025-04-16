@@ -23,32 +23,44 @@ a single Geometry.
 SELECT ST_GeometryN('MULTIPOLYGON(((0 0, 3 -1, 1.5 2, 0 0)),
                                   ((1 2, 4 2, 4 6, 1 6, 1 2)))', 1);
 -- Answer: POLYGON((0 0, 3 -1, 1.5 2, 0 0))
+```
 
+```sql
 SELECT ST_GeometryN('MULTILINESTRING((1 1, 1 6, 2 2, -1 2),
                                      (1 2, 4 2, 4 6))', 2);
 -- Answer: LINESTRING(1 2, 4 2, 4 6)
+```
 
+```sql
 SELECT ST_GeometryN('MULTIPOINT((0 0), (1 6), (2 2), (1 2))', 2);
 -- Answer: POINT(1 6)
+```
 
+```sql
 SELECT ST_GeometryN('GEOMETRYCOLLECTION(
                        MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                        LINESTRING(2 6, 6 2),
                        POINT(4 4),
                        POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))', 3);
 -- Answer: POINT(4 4)
+```
 
--- Select Geometry 4 of the first Geometry in this GEOMETRYCOLLECTION.
+Select Geometry 4 of the first Geometry in this GEOMETRYCOLLECTION
+```sql
 SELECT ST_GeometryN(
            ST_GeometryN('GEOMETRYCOLLECTION(
                            MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                            LINESTRING(2 6, 6 2))', 1), 4);
 -- Answer: POINT(0 3)
+```
 
--- Returns NULL for single Geometries.
+Returns NULL for single Geometries
+```sql
 SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 1);
 -- Answer: NULL
+```
 
+```sql
 SELECT ST_GeometryN('MULTIPOINT((0 0), (1 6), (2 2), (1 2))', 0);
 -- Answer: GEOMETRY index out of range. Must be between 1 and ST_NumGeometries
 ```

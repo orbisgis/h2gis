@@ -59,5 +59,5 @@ Answer:
 
 ## See also
 
-* [`ST_ToMultiSegments`](../ST_ToMultiSegments)
+* [`ST_ToMultiPoint`](../ST_ToMultiPoint), [`ST_ToMultiSegments`](../ST_ToMultiSegments)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/convert/ST_ToMultiLine.java" target="_blank">Source code</a>

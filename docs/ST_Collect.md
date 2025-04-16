@@ -15,11 +15,9 @@ This aggregate function constructs a `GEOMETRYCOLLECTION` from a column of mixed
 
 If there is only `POINT`s in the column of Geometries, a `MULTIPOINT` is returned. Same process with `LINESTRING`s and `POLYGON`s.
 
-<div class="note warning">
-  <h5>This function is an alias for <code>ST_Accum</code>. To know more about this function, please consult <a href="http://www.h2gis.org/docs/dev/ST_Accum/">this page</a>.</h5>
-</div>
-
-
+:::{Warning}
+**This function is an alias for `ST_Accum`. For more details, please consult [this page](./ST_Accum).**
+:::
 
 
 ## See also

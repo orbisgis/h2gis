@@ -8,7 +8,7 @@ BOOLEAN ST_Within(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Returns true if `geomA` is within `geomB`.
+Returns `TRUE` if `geomA` is within `geomB`.
 
 Within means that every point of `geomA` is a point of `geomB`, and the
 interiors of the two geometries have at least one point in common.
@@ -23,6 +23,7 @@ As a consequence, the following are equivalent:
 
 ```{include} sfs-1-2-1.md
 ```
+
 ```{include} spatial_indice_warning.md
 ```
 

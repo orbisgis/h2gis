@@ -18,29 +18,41 @@ Returns the y-value of the first coordinate of `geom`.
 ```sql
 SELECT ST_Y('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: 4.0
+```
 
+```sql
 SELECT ST_Y(
     ST_GeometryN('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))', 2));
 -- Answer: 1.0
+```
 
+```sql
 SELECT ST_Y('LINESTRING(2 1, 1 3, 5 2)');
 -- Answer: 1.0
 
 SELECT ST_Y(ST_PointN('LINESTRING(2 1, 1 3, 5 2)', 3));
 -- Answer: 2.0
+```
 
+```sql
 SELECT ST_Y('POLYGON((5 0, 7 0, 7 1, 5 1, 5 0))');
 -- Answer: 0.0
+```
 
+```sql
 SELECT ST_Y(
     ST_PointN(
         ST_ExteriorRing('POLYGON((5 0, 7 0, 7 1, 5 1, 5 0))'), 3));
 -- Answer: 1.0
+```
 
+```sql
 SELECT ST_Y('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
                           ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: 2.0
+```
 
+```sql
 SELECT ST_Y('GEOMETRYCOLLECTION(
                MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                LINESTRING(2 1, 1 3, 5 2),

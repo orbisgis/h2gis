@@ -8,7 +8,7 @@ BOOLEAN ST_Touches(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Returns true if `geomA` touches `geomB`.
+Returns `TRUE` if `geomA` touches `geomB`.
 
 Touches means that:
 

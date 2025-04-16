@@ -39,14 +39,13 @@ SELECT ST_Expand('LINESTRING(3 2, 7 5, 2 7)', 2, 1);
 ![](./ST_Expand_2.png){align=center}
 
 ```sql
-SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
-                 5, -1);
--- ANswer: POLYGON((-4.5 2, -4.5 6, 6.5 6, 6.5 2, -4.5 2))
+SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))', 5, -1);
+-- Answer: POLYGON((-4.5 2, -4.5 6, 6.5 6, 6.5 2, -4.5 2))
+```
 
--- In this example, |deltaY| > ymax-ymin, so ST_Expand uses a deltaY
--- of (ymax-ymin)/2.
-SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
-                 5, -10);
+In this example, `deltaY` > `ymax-ymin`, so `ST_Expand` uses a `deltaY` of `(ymax-ymin)/2`.
+```sql
+SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))', 5, -10);
 -- Answer: LINESTRING(-4.5 4, 6.5 4)
 ```
 

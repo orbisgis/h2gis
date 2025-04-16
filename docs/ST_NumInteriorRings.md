@@ -21,27 +21,35 @@ SELECT ST_NumInteriorRings('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
                                     (1 1, 2 1, 2 5, 1 5, 1 1),
                                     (8 5, 8 4, 9 4, 9 5, 8 5))');
 -- Answer: 2
+```
 
+```sql
 SELECT ST_NumInteriorRings('MULTIPOLYGON(
                                 ((0 0, 10 0, 10 6, 0 6, 0 0),
                                 ((1 1, 2 1, 2 5, 1 5, 1 1)),
                                 ((8 5, 8 4, 9 4, 9 5, 8 5)))');
 -- Answer: 0
+```
 
+```sql
 SELECT ST_NumInteriorRings('MULTIPOLYGON(
                                 ((0 0, 10 0, 10 6, 0 6, 0 0),
                                  (1 1, 2 1, 2 5, 1 5, 1 1)),
                                 ((1 1, 2 1, 2 5, 1 5, 1 1)),
                                 ((8 5, 8 4, 9 4, 9 5, 8 5)))');
 -- Answer: 1
+```
 
+```sql
 SELECT ST_NumInteriorRings(
      'GEOMETRYCOLLECTION(
         MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
         LINESTRING(2 6, 6 2),
         POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: 0
+```
 
+```sql
 SELECT ST_NumInteriorRings(
      'GEOMETRYCOLLECTION(
         MULTIPOINT((4 4), (1 1), (1 0), (0 3)),

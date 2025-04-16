@@ -21,17 +21,23 @@ SELECT ST_RemoveRepeatedPoints(
                         3 3, 3 3, 5 2, 5 2, 5 1)');
 -- Answer:   LINESTRING(1 1, 2 2,      1 3,
 --                      3 3,      5 2,      5 1)
+```
 
+```sql
 SELECT ST_RemoveRepeatedPoints(
             'LINESTRING(1 1, 1 3, 2 3, 2 6, 3 8)', 2);
 -- Answer:   LINESTRING(1 1,      2 3, 2 6, 3 8)
+```
 
+```sql
 SELECT ST_RemoveRepeatedPoints(
             'POLYGON((2 4, 1 3, 2 1, 2 1, 6 1,
                       6 3, 4 4, 4 4, 2 4))');
 -- Answer:   POLYGON((2 4, 1 3, 2 1,      6 1,
 --                    6 3, 4 4,      2 4))
+```
 
+```sql
 SELECT ST_RemoveRepeatedPoints(
         'GEOMETRYCOLLECTION(
              POLYGON((1 2, 4 2, 4 6, 1 6, 1 6, 1 2)),
@@ -39,9 +45,10 @@ SELECT ST_RemoveRepeatedPoints(
 -- Answer: GEOMETRYCOLLECTION(
 --           POLYGON((1 2, 4 2, 4 6, 1 6,      1 2)),
 --           MULTIPOINT((4 4), (1 1), (1 0), (0 3)))
+```
 
--- Here POINT(4 4) is not removed since it is an independant
--- geometry:
+Here `POINT(4 4)` is not removed since it is an independant geometry:
+```sql
 SELECT ST_RemoveRepeatedPoints(
             'MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))');
 -- Answer:   MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))

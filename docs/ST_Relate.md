@@ -17,7 +17,6 @@ Returns
 ```{include} type-warning_geometrycollection.md
 ```
 
-
 ```{include} sfs-1-2-1.md
 ```
 
@@ -44,13 +43,17 @@ SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
                  'POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))',
                  '212101212');
 -- Answer: TRUE
+```
 
+```sql
 SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
                  'POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))',
                  '112101212');
 -- Answer: FALSE
+```
 
--- Note: * indicates that all values are accepted.
+Note: `*` indicates that all values are accepted
+```sql 
 SELECT ST_Relate('POINT(1 2)', ST_Buffer('POINT(1 2)', 2),
                  '0F*FFF212');
 -- Answer: TRUE

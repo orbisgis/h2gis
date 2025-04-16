@@ -25,15 +25,13 @@ SELECT ST_ToMultiSegments('LINESTRING(5 4, 1 1, 3 4, 4 5)');
 SELECT ST_ToMultiSegments(
     'MULTILINESTRING((1 4 3, 15 7 9, 16 17 22),
                      (0 0 0, 1 0 0, 1 2 0, 0 2 1))');
--- Answer: MULTILINESTRING((1 4, 15 7), (15 7, 16 17),
---                          (0 0, 1 0), (1 0, 1 2), (1 2, 0 2))
+-- Answer: MULTILINESTRING((1 4, 15 7), (15 7, 16 17), (0 0, 1 0), (1 0, 1 2), (1 2, 0 2))
+```
 
-SELECT ST_ToMultiSegments(
-    'POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
-              (1 1, 2 1, 2 5, 1 5, 1 1))');
--- Answer: MULTILINESTRING((0 0, 10 0), (10 0, 10 6), (10 6, 0 6),
---                          (0 6, 0 0), (1 1, 2 1), (2 1, 2 5),
---                          (2 5, 1 5), (1 5, 1 1))
+```sql
+SELECT ST_ToMultiSegments('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0), (1 1, 2 1, 2 5, 1 5, 1 1))');
+-- Answer: MULTILINESTRING((0 0, 10 0), (10 0, 10 6), (10 6, 0 6), (0 6, 0 0), 
+--                         (1 1, 2 1), (2 1, 2 5), (2 5, 1 5), (1 5, 1 1))
 ```
 
 ![](./ST_ToMultiSegments2.png){align=center}
@@ -51,7 +49,9 @@ SELECT ST_ToMultiSegments(
 --                         (2 4, 1 4), (1 4, 1 1), (7 1, 8 1),
 --                         (8 1, 8 3), (8 3, 7 3), (7 3, 7 1),
 --                         (8 7, 9 5), (9 5, 11 3))
+```
 
+```sql
 SELECT ST_ToMultiSegments('POINT(5 5)');
 -- Answer: MULTILINESTRING EMPTY
 ```
@@ -77,5 +77,5 @@ Answer:
 
 ## See also
 
-* [`ST_ToMultiLine`](../ST_ToMultiLine)
+* [`ST_ToMultiPoint`](../ST_ToMultiPoint), [`ST_ToMultiLine`](../ST_ToMultiLine)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/convert/ST_ToMultiSegments.java" target="_blank">Source code</a>

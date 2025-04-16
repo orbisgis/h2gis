@@ -18,7 +18,9 @@ required to be closed `LINESTRING`s.
 SELECT ST_MakePolygon(
         'LINESTRING(100 250, 100 350, 200 350, 200 250, 100 250)');
 -- Answer: POLYGON((100 250, 100 350, 200 350, 200 250, 100 250))
+```
 
+```sql
 SELECT ST_MakePolygon(
             'LINESTRING(0 5, 4 5, 4 0, 0 0, 0 5)',
             'LINESTRING(1 1, 1 2, 2 2, 2 1, 1 1)');
@@ -33,7 +35,9 @@ SELECT ST_MakePolygon(
 ```sql
 SELECT ST_MakePolygon('POINT(100 250)');
 -- ERROR: Only supports LINESTRINGs.
+```
 
+```sql
 SELECT ST_MakePolygon(
             'LINESTRING(100 250, 100 350, 200 350, 200 250)');
 -- ERROR: The LINESTRING must be closed.
@@ -41,4 +45,5 @@ SELECT ST_MakePolygon(
 
 ## See also
 
+* [`ST_MakePoint`](../ST_MakePoint), [`ST_MakeLine`](../ST_MakeLine)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_MakePolygon.java" target="_blank">Source code</a>

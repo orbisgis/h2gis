@@ -20,20 +20,26 @@ The optional parameter `updateCondition` determines which coordinates are update
 
 ## Examples
 
+Update all z-values by default
 ```sql
--- Update all z-values by default:
 SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10);
 -- Answer:         MULTIPOINT((190 300 10), (10 11 10))
+```
 
--- Update all z-values:
+Update all z-values
+```sql
 SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10, 1);
 -- Answer:         MULTIPOINT((190 300 10), (10 11 10))
+```
 
--- Update all z-values except non-existant ones:
+Update all z-values except non-existant ones
+```sql
 SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10, 2);
 -- Answer:         MULTIPOINT((190 300), (10 11 10))
+```
 
--- Update only non-existant z-values:
+Update only non-existant z-values
+```sql
 SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10, 3);
 -- Answer:         MULTIPOINT((190 300 10), (10 11 2))
 ```

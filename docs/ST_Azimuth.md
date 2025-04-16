@@ -18,10 +18,14 @@ or are coincident.
 ```sql
 SELECT ST_Azimuth('LINESTRING(0 0, 5 5)', 'POINT(10 0)');
 -- Answer: NULL
+```
 
+```sql
 SELECT DEGREES(ST_Azimuth('POINT(0 1)', 'POINT(10 1)'));
 -- Answer: 90.0
+```
 
+```sql
 SELECT ST_Azimuth('POINT(0 1)', 'POINT(10 1)');
 -- Answer: 1.5707963267948966
 ```

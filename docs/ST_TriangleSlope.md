@@ -18,19 +18,24 @@ Throws an error if `geom` is not a triangle.
 ```sql
 SELECT ST_TriangleSlope('POLYGON((0 0 0, 2 0 0, 1 1 0, 0 0 0))');
 -- Answer: 0
+```
 
+```sql
 SELECT ST_TriangleSlope('POLYGON((0 0 10, 10 0 1, 5 5 10, 0 0 10))');
 -- Answer: 127.27922061357853
+```
 
+```sql
 SELECT ST_TriangleSlope('POLYGON((0 0 0, 4 0 0, 2 3 6, 0 0 0))');
 -- Answer: 200.0
-
--- We try the function on a square.
+```
+We try the function on a square.
+```sql
 SELECT ST_TriangleSlope(
     'POLYGON((0 0 1, 3 0 0, 3 3 4, 0 3 1, 0 0 1))');
--- Exception calling user-defined function:
---     "computeSlope(POLYGON ((0 --> 0, 3 0, 3 3, 0 3, 0 0))):
---     The geometry must be a triangle"
+-- Answer: Exception calling user-defined function:
+--         "computeSlope(POLYGON ((0 --> 0, 3 0, 3 3, 0 3, 0 0))):
+--         The geometry must be a triangle"
 ```
 
 ![](./ST_TriangleSlope_1.png){align=center}

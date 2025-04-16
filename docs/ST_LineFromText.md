@@ -14,6 +14,7 @@ Verifies that `wkt` does in fact specify a `LINESTRING`.
 
 ```{include} z-coord-warning.md
 ```
+
 ```{include} sfs-1-2-1.md
 ```
 
@@ -22,13 +23,19 @@ Verifies that `wkt` does in fact specify a `LINESTRING`.
 ```sql
 SELECT ST_LineFromText('LINESTRING(2 3, 4 6, 10 6, 12 15)');
 -- Answer: LINESTRING(2 3, 4 6, 10 6, 12 15)
+```
 
+```sql
 SELECT ST_LineFromText('LINESTRING(5 5, 1 2, 3 4, 99 3)', 2154);
 -- Answer: LINESTRING(5 5, 1 2, 3 4, 99 3)
+```
 
+```sql
 SELECT ST_LineFromText('LINESTRING(0 0 -1, 2 0 2, 2 1 3)', 2154);
 -- Answer: LINESTRING(0 0, 2 0, 2 1)
+```
 
+```sql
 SELECT ST_LineFromText('POINT(2 3)', 2154);
 -- Answer: The provided WKT Geometry is not a LINESTRING.
 ```

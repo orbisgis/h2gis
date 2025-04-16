@@ -15,9 +15,10 @@ With other dimensions (`points` and `polygons`) or `multi`geometries, `ST_NumPoi
 ```{include} sfs-1-2-1.md
 ```
 
-<div class="note info">
-	<h5>Implements the SQL/MM specification. SQL-MM 3: 7.2.4</h5>
-</div>
+:::{note}
+Implements the SQL/MM specification. SQL-MM 3: 7.2.4
+:::
+
 
 ## Examples
 

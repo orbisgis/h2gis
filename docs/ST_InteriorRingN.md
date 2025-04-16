@@ -22,7 +22,9 @@ SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
                                  (1 1, 2 1, 2 5, 1 5, 1 1),
                                  (8 5, 8 4, 9 4, 9 5, 8 5))', 1);
 -- Answer: LINEARRING(1 1, 2 1, 2 5, 1 5, 1 1)
+```
 
+```sql
 SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
                                  (1 1, 2 1, 2 5, 1 5, 1 1),
                                  (8 5, 8 4, 9 4, 9 5, 8 5))', 2);
@@ -35,9 +37,10 @@ SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
 SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
                                  (1 1, 2 1, 2 5, 1 5, 1 1),
                                  (8 5, 8 4, 9 4, 9 5, 8 5))', 3);
--- Answer: Interior ring index out of range. Must be between 1 and
--- ST_NumInteriorRings.
+-- Answer: Interior ring index out of range. Must be between 1 and ST_NumInteriorRings.
+```
 
+```sql
 SELECT ST_InteriorRingN('POINT(1 2)', 1);
 -- Answer: NULL
 ```

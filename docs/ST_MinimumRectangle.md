@@ -15,7 +15,9 @@ Returns the minimum rectangle enclosing `geom`.
 ```sql
 SELECT ST_MinimumRectangle('MULTIPOINT((8 3), (4 6))');
 -- Answer: LINESTRING(8 3, 4 6)
+```
 
+```sql
 SELECT ST_MinimumRectangle('POLYGON((1 2, 3 0, 5 2, 3 2, 2 3, 1 2))');
 -- Answer: POLYGON((1.3999999999999997 3.1999999999999997,
 --                  0.6 0.8,
@@ -29,7 +31,9 @@ SELECT ST_MinimumRectangle('POLYGON((1 2, 3 0, 5 2, 3 2, 2 3, 1 2))');
 ```sql
 SELECT ST_MinimumRectangle('LINESTRING(1 2, 2 4, 5 5, 2 1, 6 1)');
 -- Answer: POLYGON((6 1, 6 5, 1 5, 1 1, 6 1))
+```
 
+```sql
 SELECT ST_MinimumRectangle('GEOMETRYCOLLECTION(
                                POLYGON((0 0, 3 -1, 1.5 2, 0 0)),
                                POLYGON((2 0, 3 3, 4 2, 2 0)),

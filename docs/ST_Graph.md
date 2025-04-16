@@ -28,62 +28,52 @@ Geometry column is used. Returns `true` if the operation is successful.
 
 If `deleteTables` is equal to `1`, existing tables (with the same prefix `inputTable`) are removed.
 
-<div class="note warning">
-  <h5>The column must only contain <code>LINESTRING</code>s.</h5>
-  <p>Otherwise, the operation will fail and <code>ST_Graph</code> will return
-  <code>false</code>.</p>
-</div>
+:::{warning}
+**The column must only contain `LINESTRING`s**
 
-<div class="note warning">
-  <h5>The <code>inputTable</code> must contain a Primary Key.</h5>
-  <p>Otherwise, the operation will fail.</p>
-</div>
+Otherwise, the operation will fail and `ST_Graph` will return `false`
+:::
 
-<div class="note info">
-  <h5>If the input table is named <code>input</code>, then the output tables
-  will be named <code>input_nodes</code> and <code>input_edges</code></h5>
-  <p>The <code>input_nodes</code> table contains:</p>
-  <ul>
-  <li>an integer id <code>node_id</code></li>
-  <li>a <code>POINT</code> Geometry representing each node</li>
-  </ul>
-  <p>The <code>input_edges</code> table is a copy of the input table with three
-  extra integer id columns:</p>
-  <ul>
-  <li><code>edge_id</code></li>
-  <li><code>start_node</code></li>
-  <li><code>end_node</code></li>
-  </ul>
-  <p>The last two columns correspond to the <code>node_id</code>s in the
-  <code>input_nodes</code> table.</p>
-</div>
+:::{warning}
+**The `inputTable`s must contain a Primary Key**
 
-<div class="note">
-  <h5>Correct data inaccuracies automatically.</h5>
-  <p>When the endpoints of certain <code>LINESTRINGs</code> are very close together, we
-  often wish to snap them together. The <code>tolerance</code> value allows us to do that.
-  It specifies the side length of a square Envelope around each node used to
-  snap together other nodes within the same Envelope. <i>Note</i>:
-  <ul>
-  <li>Edge geometries are left untouched.</li>
-  <li> <i>Coordinates</i> within a given tolerance of each other are not
-  necessarily snapped together. Only the first and last coordinates of a
-  Geometry are considered to be nodes, and only <i>nodes</i> within a given
-  tolerance of each other are snapped together.</li>
-  </ul>
-  </p>
-</div>
+Otherwise, the operation will fail
+:::
 
-<div class="note warning">
-  <h5>The tolerance works only in metric units.</h5>
-</div>
+:::{note}
+**If the input table is named `input`, then the output tables will be named `input_nodes` and `input_edges`**
 
-<div class="note">
-  <h5>Hydrologists, watch out!</h5>
-  <p>By setting <code>orientBySlope</code> to <code>true</code>, you can
-  specify that edges should be oriented from the endpoint with greatest
-  <i>z</i>-value to the endpoint with least <i>z</i>-value.</p>
-</div>
+The `input_nodes` table contains:
+
+- an integer id `node_id`
+- a `POINT` Geometry representing each node
+
+The input_edges table is a copy of the input table with three extra integer id columns:
+
+- `edge_id`
+- `start_node`
+- `end_node`
+
+The last two columns correspond to the `node_ids` in the `input_nodes` table.
+:::
+
+:::{tip}
+When the endpoints of certain `LINESTRING`s are very close together, we often wish to snap them together. The `tolerance` value allows us to do that. It specifies the side length of a square Envelope around each node used to snap together other nodes within the same Envelope. Note:
+
+- Edge geometries are left untouched.
+- Coordinates within a given tolerance of each other are not necessarily snapped together. Only the first and last coordinates of a Geometry are considered to be nodes, and only nodes within a given tolerance of each other are snapped together.
+:::
+
+:::{warning}
+**The tolerance works only in metric units**
+:::
+
+:::{note}
+**Hydrologists, watch out!**
+
+By setting `orientBySlope` to `true`, you can specify that edges should be oriented from the endpoint with greatest *z*-value to the endpoint with least *z*-value.
+:::
+
 
 ## Examples
 

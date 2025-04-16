@@ -8,7 +8,7 @@ BOOLEAN ST_Crosses(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Returns true if `geomA` crosses `geomB`.
+Returns `TRUE` if `geomA` crosses `geomB`.
 
 Crosses means that:
 

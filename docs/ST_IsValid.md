@@ -8,7 +8,7 @@ BOOLEAN ST_IsValid(GEOMETRY geom);
 
 ## Description
 
-Returns true if `geom` is valid.
+Returns `TRUE` if `geom` is valid.
 
 :::{note}
 **We have the following equivalence:**\
@@ -20,7 +20,9 @@ Returns true if `geom` is valid.
 ```sql
 SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
 -- Answer:    TRUE
+```
 
+```sql
 SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 6 -2, 0 0))');
 -- Answer:    FALSE
 ```

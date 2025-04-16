@@ -25,12 +25,16 @@ SELECT ST_MLineFromText('MULTILINESTRING((1 5, 4 6, 7 5),
                                          (2 4, 4 5, 6 3))');
 -- Answer: MULTILINESTRING((1 5, 4 6, 7 5), 
 --                         (2 4, 4 5, 6 3))
+```
 
+```sql
 SELECT ST_MLineFromText('MULTILINESTRING((10 48, 10 21, 10 0),
                                          (16 0, 16 23, 16 48))', 101);
 -- Answer: MULTILINESTRING((10 48, 10 21, 10 0),
 --                         (16 0, 16 23, 16 48))
+```
 
+```sql
 SELECT ST_MLineFromText('POINT(2 3)', 2154);
 -- Answer: The provided WKT Geometry is not a MULTILINESTRING.
 ```

@@ -16,10 +16,15 @@ Non-existent *z*-values are not updated.
 ```sql
 SELECT ST_MultiplyZ('MULTIPOINT((190 300 1), (10 11 50))', 10);
 -- Answer:           MULTIPOINT((190 300 10), (10 11 500))
+```
 
--- Non-existent z-values are not updated:
+Non-existent z-values are not updated
+```sql
 SELECT ST_MultiplyZ('MULTIPOINT((190 300), (10 11))', 10);
 -- Answer:           MULTIPOINT((190 300), (10 11)
+```
+
+```sql
 SELECT ST_MultiplyZ('MULTIPOINT((190 300 10), (10 11))', 10);
 -- Answer:           MULTIPOINT((190 300 100), (10 11))
 ```

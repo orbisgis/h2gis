@@ -45,7 +45,7 @@ drop table if exists voro;
 create table voro as select ST_VORONOI(ST_ACCUM(the_geom)) the_geom from PTS;
 ```
 
-Create voronoi polygons with Z values with input points as envelope.Then create a new table with one voronoi polygon per row.
+Create voronoi polygons with Z values with input points as envelope. Then create a new table with one voronoi polygon per row.
 
 ```sql
 drop table if exists voro;

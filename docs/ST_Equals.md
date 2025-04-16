@@ -8,7 +8,7 @@ BOOLEAN ST_Equals(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Return true if `geomA` is topologically equal to `geomB`.
+Return `TRUE` if `geomA` is topologically equal to `geomB`.
 
 Equal means:
 
@@ -18,6 +18,7 @@ Equal means:
 
 ```{include} sfs-1-2-1.md
 ```
+
 ```{include} spatial_indice_warning.md
 ```
 

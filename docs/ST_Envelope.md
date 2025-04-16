@@ -26,25 +26,28 @@ Returns the envelope of `geom` as a Geometry, optionally setting its SRID to
 
 ## Examples
 
+The envelope of a point is a point
 ```sql
--- The envelope of a point is a point.
 SELECT ST_Envelope('POINT(1 2)', 2154);
 -- Answer: POINT(1 2)
+```
 
--- This is a line parallel to the x-axis, so only the endpoints are
--- conserved.
+This is a line parallel to the x-axis, so only the endpoints are conserved
+```sql
 SELECT ST_Envelope('LINESTRING(1 1, 5 1, 9 1)');
 -- Answer: LINESTRING(1 1, 9 1)
+```
 
--- (minx miny, maxx miny, maxx maxy, minx maxy, minx miny)
+(minx miny, maxx miny, maxx maxy, minx maxy, minx miny)
+```sql
 SELECT ST_Envelope('MULTIPOINT(1 2, 3 1, 2 2, 5 1, 1 -1)');
 -- Answer: POLYGON((1 -1, 1 2, 5 2, 5 -1, 1 -1))
 ```
 
 ![](./ST_Envelope_1.png){align=center}
 
+(minx miny, maxx miny, maxx maxy, minx maxy, minx miny)
 ```sql
--- (minx miny, maxx miny, maxx maxy, minx maxy, minx miny)
 SELECT ST_Envelope('LINESTRING(1 2, 5 3, 2 6)');
 -- Answer: POLYGON((1 2, 1 6, 5 6, 5 2, 1 2))
 ```
@@ -53,14 +56,15 @@ SELECT ST_Envelope('LINESTRING(1 2, 5 3, 2 6)');
 
 ### Setting or preserving the SRID
 
+This shows that `ST_Envelope` preserves the SRID of the input geometry
 ```sql
--- This shows that ST_Envelope preserves the SRID of the input
--- geometry.
 SELECT ST_SRID(ST_Envelope(
     ST_GeomFromText('LINESTRING(1 1, 5 5)', 27572)))
 -- Answer: 27572
+```
 
--- This shows that ST_Envelope can set the SRID of Envelope.
+This shows that `ST_Envelope` can set the SRID of Envelope
+```sql
 SELECT ST_SRID(ST_Envelope(
     ST_GeomFromText('LINESTRING(1 1, 5 5)', 27572), 2154))
 -- Answer: 2154

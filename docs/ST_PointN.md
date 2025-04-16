@@ -13,6 +13,7 @@ Returns the <i>n</i>th point of `geom` if `geom` is a `LINESTRING` or a
 
 ```{include} one-to-n.md
 ```
+
 ```{include} sfs-1-2-1.md
 ```
 
@@ -21,21 +22,28 @@ Returns the <i>n</i>th point of `geom` if `geom` is a `LINESTRING` or a
 ```sql
 SELECT ST_PointN('LINESTRING(1 1, 1 6, 2 2, -1 2))', 2);
 -- Answer: POINT(1 6)
+```
 
+```sql
 SELECT ST_PointN('MULTILINESTRING((1 1, 1 6, 2 2, -1 2))', 3);
 -- Answer: POINT(2 2)
+```
 
+```sql
 SELECT ST_PointN('MULTIPOINT(1 1, 1 6, 2 2, -1 2)', 3);
 -- Answer: NULL
+```
 
--- This MULTILINESTRING contains two LINESTRINGs.
+This MULTILINESTRING contains two LINESTRINGs
+```sql
 SELECT ST_PointN('MULTILINESTRING((1 1, 1 6, 2 2, -1 2),
                                   (0 1, 2 4))', 3);
 -- Answer: NULL
+```
 
+```sql
 SELECT ST_PointN('LINESTRING(1 1, 1 6, 2 2, -1 2))', 0);
--- Answer: Point index out of range. Must be between 1 and
--- ST_NumPoints.
+-- Answer: Point index out of range. Must be between 1 and ST_NumPoints.
 ```
 
 ## See also

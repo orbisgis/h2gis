@@ -22,20 +22,22 @@ The default increment value is 1 but the user can set another one specifying the
 
 ```sql
 SELECT IntegerRange(2, 7);
--- Answer:
-	2, 3, 4, 5, 6
+-- Answer: 2, 3, 4, 5, 6
+```
 
+```sql
 SELECT IntegerRange(0, 6, 2);
--- Answer:
-	0, 2, 4
+-- Answer: 0, 2, 4
+```
 
+```sql
 SELECT IntegerRange(0, 1, 0.5);
--- Answer:
-	0
+-- Answer: 0
+```
 
+```sql
 SELECT IntegerRange(0, 4, 0.5);
--- Answer:
-	0, 1, 2, 3
+-- Answer: 0, 1, 2, 3
 ```
 
 ## See also

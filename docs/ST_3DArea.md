@@ -18,21 +18,29 @@ Area is measured in the units of the spatial reference system.
 ```sql
 SELECT ST_3DArea('POLYGON((0 0 3, 10 0 4, 10 10 6, 0 10 2, 0 0 3))');
 -- Answer: 105.27
+```
 
+```sql
 SELECT ST_3DArea('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))');
 -- Answer: 100.0
+```
 
+```sql
 SELECT ST_Area('MULTIPOLYGON(((0 0 3, 10 0 4, 10 10 6, 0 10 2, 0 0 3),
                               (5 4 1, 1 1 2, 3 4 3, 4 5 2, 5 4 1)))');
 -- Answer: 111.88
+```
 
+```sql
 SELECT ST_Area('GEOMETRYCOLLECTION(
                   LINESTRING(5 4, 1 1, 3 4, 4 5),
                   POINT(0 12),
                   POLYGON((0 0, 10 0, 10 10, 0 10, 0 0)),
                   POLYGON((5 4, 1 1, 3 4, 4 5, 5 4)))');
 -- Answer: XXXX
+```
 
+```sql
 SELECT ST_3DArea('LINESTRING(5 4, 1 1, 3 4, 4 5)');
 -- Answer: 0.0
 ```

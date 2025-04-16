@@ -10,24 +10,22 @@ GEOMETRY ST_Reverse(GEOMETRY geom);
 
 Returns `geom` with its vertex order reversed.
 
-<div class="note warning">
-    <h5>Component order for <code>GEOMETRYCOLLECTION</code>s depends
-    on the type.</h5>
-    <p>For <code>MULTIPOINT</code>s and
-    <code>MULTILINESTRING</code>s, each component Geometry is
-    reversed, and the order of these Geometries is also reversed.
-    For <code>GEOMETRYCOLLECTION</code>s and
-    <code>MULTIPOLYGON</code>s, component Geometries are reversed
-    but their order is not. This is due to the implementation in
-    JTS.</p>
-</div>
+:::{Warning}
+**Component order for `GEOMETRYCOLLECTION`s depends on the type.**
+
+For `MULTIPOINT`s and `MULTILINESTRING`s, each component Geometry is reversed, and the order of these Geometries is also reversed.
+
+For `GEOMETRYCOLLECTION`s and `MULTIPOLYGON`s, component Geometries are reversed but their order is not. This is due to the implementation in JTS.
+:::
 
 ## Examples
 
 ```sql
 SELECT ST_Reverse('MULTIPOINT((4 4), (1 1), (1 0), (0 3))');
 -- Answer:         MULTIPOINT((0 3), (1 0), (1 1), (4 4))
+```
 
+```sql
 SELECT ST_Reverse('LINESTRING(1 1, 2 2, 1 3, 3 3, 5 2, 5 1)');
 -- Answer:         LINESTRING(5 1, 5 2, 3 3, 1 3, 2 2, 1 1)
 ```
@@ -44,7 +42,9 @@ SELECT ST_Reverse(
 --                           (380 340, 357 170, 360 160,
 --                            142 129, 130 125, 120 120),
 --                           (286 286, 186 406, 150 290, 10 260))
+```
 
+```sql
 SELECT ST_Reverse('POLYGON((2 4, 1 3, 2 1, 6 1, 6 3, 4 4, 2 4))');
 -- Answer:         POLYGON((2 4, 4 4, 6 3, 6 1, 2 1, 1 3, 2 4))
 

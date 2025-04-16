@@ -8,7 +8,7 @@ BOOLEAN ST_Contains(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-Returns true if `geomA` contains `geomB`.
+Returns `TRUE` if `geomA` contains `geomB`.
 
 ```{include} sfs-1-2-1.md
 ```

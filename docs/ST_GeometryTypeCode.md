@@ -9,9 +9,7 @@ INT ST_GeometryTypeCode(GEOMETRY geom);
 ## Description
 
 Returns the geometry type code from the OpenGIS Simple Features
-Implementation Specification for SQL <a
-href="http://www.opengeospatial.org/standards/sfs"
-target="_blank">version 1.2.1</a>.
+Implementation Specification for SQL [version 1.2.1](http://www.opengeospatial.org/standards/sfs).
 Ignores *z*- and *m*-values.
 For use in contraints.
 
@@ -34,10 +32,14 @@ For use in contraints.
 ```sql
 SELECT ST_GeometryTypeCode(ST_GeomFromText('POINT(1 1)'));
 -- Answer: 1
+```
 
+```sql
 SELECT ST_GeometryTypeCode('LINESTRING(1 1, 5 5)'::Geometry);
 -- Answer: 2
+```
 
+```sql
 SELECT ST_GeometryTypeCode(
         ST_GeomFromText('MULTIPOLYGON(((1 1, 2 2, 5 3, 1 1)),
                                       ((0 0, 2 2, 5 3, 0 0)))'));

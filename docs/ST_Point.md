@@ -11,10 +11,9 @@ POINT ST_Point(DOUBLE x, DOUBLE y, DOUBLE z);
 
 Constructs a `POINT` from `x` and `y` (and possibly `z`).
 
-<div class="note warning">
-  <h5>This function is an alias for the <a href="/docs/1.4.0/ST_MakePoint">ST_MakePoint</a> function.</h5>
-</div>
-
+:::{Warning}
+**This function is an alias for the [`ST_MakePoint`](./ST_MakePoint) function**
+:::
 
 ## Examples
 

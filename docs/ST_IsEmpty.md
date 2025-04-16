@@ -8,7 +8,7 @@ BOOLEAN ST_IsEmpty(GEOMETRY geom);
 
 ## Description
 
-Returns true if `geom` is empty.
+Returns `TRUE` if `geom` is empty.
 
 ```{include} sfs-1-2-1.md
 ```
@@ -18,13 +18,17 @@ Returns true if `geom` is empty.
 ```sql
 SELECT ST_IsEmpty('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: FALSE
+```
 
+```sql
 SELECT ST_IsEmpty('GEOMETRYCOLLECTION(
                      MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                      LINESTRING(2 6, 6 2),
                      POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: FALSE
+```
 
+```sql
 SELECT ST_IsEmpty('POLYGON EMPTY');
 -- Answer: TRUE
 ```

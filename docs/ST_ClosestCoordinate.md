@@ -10,34 +10,36 @@
 
 Returns the coordinate of `geom` closest to `point` using 2D distances (z-coordinates are ignored).
 
-<div class="note">
-  <h5>What if the closest coordinate is not unique?</h5>
-  <p>Then all closest coordinates are returned in a <code>MULTIPOINT</code>.</p>
-</div>
+:::{note}
+**What if the closest coordinate is not unique?**
+
+Then all closest coordinates are returned in a `MULTIPOINT`
+:::
 
 ## Examples
 
 ```sql
 SELECT ST_ClosestCoordinate('POINT(0 0)',
                             'POLYGON((2 2, 10 0, 10 5, 0 5, 2 2))');
+-- Answer: POINT(2 2)
 ```
-Answer: POINT(2 2)
 
 ![](./ST_ClosestCoordinate_1.png){align=center}
 
 ```sql
 SELECT ST_ClosestCoordinate('POINT(4 2.5)',
                             'POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
+-- Answer: MULTIPOINT((0 0), (0 5))
 ```
-Answer: MULTIPOINT((0 0), (0 5))
+
 
 ![](./ST_ClosestCoordinate_2.png){align=center}
 
 ```sql
 SELECT ST_ClosestCoordinate('POINT(4 2)',
                             'LINESTRING(10 0, 10 5, 0 5)');
+-- Answer: POINT(0 5)
 ```
-Answer: POINT(0 5)
 
 ![](./ST_ClosestCoordinate_3.png){align=center}
 
