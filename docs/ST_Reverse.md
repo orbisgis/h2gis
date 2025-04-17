@@ -47,7 +47,9 @@ SELECT ST_Reverse(
 ```sql
 SELECT ST_Reverse('POLYGON((2 4, 1 3, 2 1, 6 1, 6 3, 4 4, 2 4))');
 -- Answer:         POLYGON((2 4, 4 4, 6 3, 6 1, 2 1, 1 3, 2 4))
+```
 
+```sql
 SELECT ST_Reverse(
             'MULTIPOLYGON(((2 4, 1 3, 2 1, 6 1, 6 3, 4 4, 2 4)),
                           ((1 6, 6 6, 6 5, 1 5, 1 6)),

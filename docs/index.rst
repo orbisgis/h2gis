@@ -6,7 +6,7 @@
 H2GIS Documentation
 =================================
 
-Welcome on the H2GIS's documentation, a spatial extension of the `H2 database <http://www.h2database.com/>`_ engine.
+Welcome on the H2GIS's documentation, a spatial extension for the `H2 database <http://www.h2database.com/>`_ engine.
 
 .. image:: images/banner/laptop_documentation.png
   :align: center
