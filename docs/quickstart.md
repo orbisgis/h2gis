@@ -1,6 +1,6 @@
 # Quick-start guide
 
-Download the latest H2GIS web interface on the home page ([here][]), unzip it and finally run the jar called h2-dist. Then click on **Connect** in the web interface. You will of course need a working [Java][] runtime environment.
+Download the latest H2GIS web interface on the home page ([here](https://github.com/orbisgis/h2gis/releases)), unzip it and finally run the jar called h2-dist. Then click on **Connect** in the web interface. You will of course need a working [Java](http://java.com/en/download/index.jsp) runtime environment.
 
 Command-line gurus can just execute the following commands *(example with v2.2.3)*:
 
@@ -35,11 +35,9 @@ This is the built-in web interface of the H2 Database:
 
 ## Graphical user interface
 
-Software GUI that use H2GIS:
+Software GUI that embed H2GIS:
 
-<a href="http://www.orbisgis.org" target="_blank">OrbisGIS 5.1
-![](./getting-started/screenshot_wms.png){align=center}</a>
+* [DBeaver](https://dbeaver.io/)
 
 
-[here]: https://github.com/orbisgis/h2gis/releases
-[Java]: http://java.com/en/download/index.jsp
+

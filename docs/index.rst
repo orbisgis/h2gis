@@ -8,7 +8,7 @@ H2GIS Documentation
 
 Welcome on the H2GIS's documentation, a spatial extension of the `H2 database <http://www.h2database.com/>`_ engine.
 
-.. image:: banner/laptop_documentation.png
+.. image:: images/banner/laptop_documentation.png
   :align: center
   :alt: H2GIS banner
 
@@ -73,6 +73,10 @@ Get help
 If you get stuck or just have a question, please `fill an issue <http://github.com/orbisgis/h2gis/issues/new>`_ on our GitHub repo.
 
 
+--------------------------------------------------------------------------
+
+Documentation
+----------------
 .. toctree::
     :maxdepth: 1
     :caption: Getting started
