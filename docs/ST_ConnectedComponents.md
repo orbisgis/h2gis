@@ -3,9 +3,9 @@
 ## Signatures
 
 ```sql
--- Creates two tables:
---     INPUT_EDGES_NODE_CC[NODE_ID, CONNECTED_COMPONENT]
---     INPUT_EDGES_EDGE_CC[EDGE_ID, CONNECTED_COMPONENT]
+Creates two tables:
+    INPUT_EDGES_NODE_CC[NODE_ID, CONNECTED_COMPONENT]
+    INPUT_EDGES_EDGE_CC[EDGE_ID, CONNECTED_COMPONENT]
 ST_ConnectedComponents('INPUT_EDGES', 'o[ - eo]');
 ```
 
@@ -42,7 +42,7 @@ But of course, the vertex and edge set partitions they represent remain consiste
 ### SCCs (directed graph)
 
 ```sql
--- Prepare example data:
+Prepare example data:
 DROP TABLE IF EXISTS EDGES;
 CREATE TABLE EDGES(EDGE_ID INT AUTO_INCREMENT PRIMARY KEY,
                    START_NODE INT,
@@ -69,76 +69,79 @@ INSERT INTO EDGES(START_NODE, END_NODE, EDGE_ORIENTATION)
            (12, 12, 1);
 
 SELECT * FROM EDGES;
--- | EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION |
--- |---------|------------|----------|------------------|
--- |       1 |          1 |        2 |                1 |
--- |       2 |          2 |        3 |                1 |
--- |       3 |          2 |        5 |                1 |
--- |       4 |          2 |        6 |                1 |
--- |       5 |          3 |        4 |                1 |
--- |       6 |          3 |        7 |                1 |
--- |       7 |          4 |        3 |                1 |
--- |       8 |          4 |        8 |                1 |
--- |       9 |          5 |        1 |                1 |
--- |      10 |          5 |        6 |                1 |
--- |      11 |          6 |        7 |                1 |
--- |      12 |          7 |        6 |                1 |
--- |      13 |          8 |        4 |                1 |
--- |      14 |          8 |        7 |                1 |
--- |      15 |          9 |       10 |                1 |
--- |      16 |         10 |        9 |                1 |
--- |      17 |         10 |       11 |                1 |
--- |      18 |         12 |       12 |                1 |
 ```
+| EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION |
+|---------|------------|----------|------------------|
+|       1 |          1 |        2 |                1 |
+|       2 |          2 |        3 |                1 |
+|       3 |          2 |        5 |                1 |
+|       4 |          2 |        6 |                1 |
+|       5 |          3 |        4 |                1 |
+|       6 |          3 |        7 |                1 |
+|       7 |          4 |        3 |                1 |
+|       8 |          4 |        8 |                1 |
+|       9 |          5 |        1 |                1 |
+|      10 |          5 |        6 |                1 |
+|      11 |          6 |        7 |                1 |
+|      12 |          7 |        6 |                1 |
+|      13 |          8 |        4 |                1 |
+|      14 |          8 |        7 |                1 |
+|      15 |          9 |       10 |                1 |
+|      16 |         10 |        9 |                1 |
+|      17 |         10 |       11 |                1 |
+|      18 |         12 |       12 |                1 |
 
-![](./scc-input.svg)
 
+![](./scc-input.svg){align=center}
+
+Do the SCC calculation and diplay the results:
 ```sql
--- Do the SCC calculation and diplay the results:
 CALL ST_ConnectedComponents('EDGES', 'directed - EDGE_ORIENTATION');
 
 SELECT * FROM EDGES_NODE_CC
     ORDER BY CONNECTED_COMPONENT ASC;
--- | NODE_ID | CONNECTED_COMPONENT |
--- |---------|---------------------|
--- |      12 |                   1 |
--- |       9 |                   2 |
--- |      10 |                   2 |
--- |      11 |                   3 |
--- |       5 |                   4 |
--- |       2 |                   4 |
--- |       1 |                   4 |
--- |       8 |                   5 |
--- |       3 |                   5 |
--- |       4 |                   5 |
--- |       6 |                   6 |
--- |       7 |                   6 |
+```
+| NODE_ID | CONNECTED_COMPONENT |
+|---------|---------------------|
+|      12 |                   1 |
+|       9 |                   2 |
+|      10 |                   2 |
+|      11 |                   3 |
+|       5 |                   4 |
+|       2 |                   4 |
+|       1 |                   4 |
+|       8 |                   5 |
+|       3 |                   5 |
+|       4 |                   5 |
+|       6 |                   6 |
+|       7 |                   6 |
 
+```sql
 SELECT * FROM EDGES_EDGE_CC
     ORDER BY CONNECTED_COMPONENT ASC;
--- | EDGE_ID | CONNECTED_COMPONENT |
--- |---------|---------------------|
--- |      14 |                  -1 |
--- |       6 |                  -1 |
--- |      17 |                  -1 |
--- |      10 |                  -1 |
--- |       4 |                  -1 |
--- |       2 |                  -1 |
--- |      18 |                   1 |
--- |      16 |                   2 |
--- |      15 |                   2 |
--- |       1 |                   4 |
--- |       3 |                   4 |
--- |       9 |                   4 |
--- |      13 |                   5 |
--- |       8 |                   5 |
--- |       7 |                   5 |
--- |       5 |                   5 |
--- |      11 |                   6 |
--- |      12 |                   6 |
 ```
+| EDGE_ID | CONNECTED_COMPONENT |
+|---------|---------------------|
+|      14 |                  -1 |
+|       6 |                  -1 |
+|      17 |                  -1 |
+|      10 |                  -1 |
+|       4 |                  -1 |
+|       2 |                  -1 |
+|      18 |                   1 |
+|      16 |                   2 |
+|      15 |                   2 |
+|       1 |                   4 |
+|       3 |                   4 |
+|       9 |                   4 |
+|      13 |                   5 |
+|       8 |                   5 |
+|       7 |                   5 |
+|       5 |                   5 |
+|      11 |                   6 |
+|      12 |                   6 |
 
-![](./scc.svg)
+![](./scc.svg){align=center}
 
 ### Counting the number of edges in each SCC
 
@@ -154,24 +157,26 @@ CREATE TABLE EDGE_CC_TOTALS AS
     ORDER BY CC_COUNT DESC;
 
 SELECT * FROM EDGE_CC_TOTALS;
--- | CC | CC_COUNT |
--- |----|----------|
--- | -1 |        6 |
--- |  5 |        4 |
--- |  4 |        3 |
--- |  2 |        2 |
--- |  6 |        2 |
--- |  1 |        1 |
 ```
+| CC | CC_COUNT |
+|----|----------|
+| -1 |        6 |
+|  5 |        4 |
+|  4 |        3 |
+|  2 |        2 |
+|  6 |        2 |
+|  1 |        1 |
 
 ### Selecting the largest SCC
 
+Creating these indices will greatly speed up the following calculations
 ```sql
--- Creating these indices will greatly speed up the following calculations
 CREATE INDEX ON EDGES(EDGE_ID);
 CREATE INDEX ON EDGES_EDGE_CC(EDGE_ID);
+```
 
--- Select the largest SCC:
+Select the largest SCC
+```sql
 DROP TABLE IF EXISTS EDGES_LARGEST;
 CREATE TABLE EDGES_LARGEST AS
     SELECT A.*, B.CONNECTED_COMPONENT CC
@@ -180,14 +185,16 @@ CREATE TABLE EDGES_LARGEST AS
     AND B.CONNECTED_COMPONENT=5;
 
 SELECT * FROM EDGES_LARGEST;
--- | EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION | CC |
--- |---------|------------|----------|------------------|----|
--- |       5 |          3 |        4 |                1 |  5 |
--- |       7 |          4 |        3 |                1 |  5 |
--- |       8 |          4 |        8 |                1 |  5 |
--- |      13 |          8 |        4 |                1 |  5 |
+```
+| EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION | CC |
+|---------|------------|----------|------------------|----|
+|       5 |          3 |        4 |                1 |  5 |
+|       7 |          4 |        3 |                1 |  5 |
+|       8 |          4 |        8 |                1 |  5 |
+|      13 |          8 |        4 |                1 |  5 |
 
--- We can also select the edges which are in no SCC:
+We can also select the edges which are in no SCC
+```sql
 DROP TABLE IF EXISTS EDGES_NO_SCC;
 CREATE TABLE EDGES_NO_SCC AS
     SELECT A.*, B.CONNECTED_COMPONENT CC
@@ -196,68 +203,71 @@ CREATE TABLE EDGES_NO_SCC AS
     AND B.CONNECTED_COMPONENT=-1;
 
 SELECT * FROM EDGES_NO_SCC;
--- | EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION | CC |
--- |---------|------------|----------|------------------|----|
--- |       2 |          2 |        3 |                1 | -1 |
--- |       4 |          2 |        6 |                1 | -1 |
--- |       6 |          3 |        7 |                1 | -1 |
--- |      10 |          5 |        6 |                1 | -1 |
--- |      14 |          8 |        7 |                1 | -1 |
--- |      17 |         10 |       11 |                1 | -1 |
 ```
+| EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION | CC |
+|---------|------------|----------|------------------|----|
+|       2 |          2 |        3 |                1 | -1 |
+|       4 |          2 |        6 |                1 | -1 |
+|       6 |          3 |        7 |                1 | -1 |
+|      10 |          5 |        6 |                1 | -1 |
+|      14 |          8 |        7 |                1 | -1 |
+|      17 |         10 |       11 |                1 | -1 |
 
 ### CCs (undirected graph)
 
+Now we will do the same calculation, this time considering the graph to be undirected:
 ```sql
--- Now we will do the same calculation, this time considering the
--- graph to be undirected:
 DROP TABLE IF EXISTS EDGES_NODE_CC;
 DROP TABLE IF EXISTS EDGES_EDGE_CC;
 CALL ST_ConnectedComponents('EDGES', 'undirected');
-
--- Notice that this time, we only have three CCs, as expected.
-SELECT * FROM EDGES_NODE_CC
-    ORDER BY CONNECTED_COMPONENT ASC;
--- | NODE_ID | CONNECTED_COMPONENT |
--- |---------|---------------------|
--- |       4 |                   1 |
--- |       5 |                   1 |
--- |       8 |                   1 |
--- |       7 |                   1 |
--- |       2 |                   1 |
--- |       1 |                   1 |
--- |       3 |                   1 |
--- |       6 |                   1 |
--- |       9 |                   2 |
--- |      10 |                   2 |
--- |      11 |                   2 |
--- |      12 |                   3 |
-
-SELECT * FROM EDGES_EDGE_CC
-    ORDER BY CONNECTED_COMPONENT ASC;
--- | EDGE_ID | CONNECTED_COMPONENT |
--- |---------|---------------------|
--- |      10 |                   1 |
--- |       8 |                   1 |
--- |       4 |                   1 |
--- |      11 |                   1 |
--- |      12 |                   1 |
--- |      13 |                   1 |
--- |      14 |                   1 |
--- |       1 |                   1 |
--- |       2 |                   1 |
--- |       3 |                   1 |
--- |       9 |                   1 |
--- |       5 |                   1 |
--- |       7 |                   1 |
--- |       6 |                   1 |
--- |      16 |                   2 |
--- |      17 |                   2 |
--- |      15 |                   2 |
--- |      18 |                   3 |
 ```
 
-![](./cc.svg)
+Notice that this time, we only have three CCs, as expected.
+```sql
+SELECT * FROM EDGES_NODE_CC
+    ORDER BY CONNECTED_COMPONENT ASC;
+```
+| NODE_ID | CONNECTED_COMPONENT |
+|---------|---------------------|
+|       4 |                   1 |
+|       5 |                   1 |
+|       8 |                   1 |
+|       7 |                   1 |
+|       2 |                   1 |
+|       1 |                   1 |
+|       3 |                   1 |
+|       6 |                   1 |
+|       9 |                   2 |
+|      10 |                   2 |
+|      11 |                   2 |
+|      12 |                   3 |
+
+```sql
+SELECT * FROM EDGES_EDGE_CC
+    ORDER BY CONNECTED_COMPONENT ASC;
+```
+| EDGE_ID | CONNECTED_COMPONENT |
+|---------|---------------------|
+|      10 |                   1 |
+|       8 |                   1 |
+|       4 |                   1 |
+|      11 |                   1 |
+|      12 |                   1 |
+|      13 |                   1 |
+|      14 |                   1 |
+|       1 |                   1 |
+|       2 |                   1 |
+|       3 |                   1 |
+|       9 |                   1 |
+|       5 |                   1 |
+|       7 |                   1 |
+|       6 |                   1 |
+|      16 |                   2 |
+|      17 |                   2 |
+|      15 |                   2 |
+|      18 |                   3 |
+
+![](./cc.svg){align=center}
 
 ### Exercise
 

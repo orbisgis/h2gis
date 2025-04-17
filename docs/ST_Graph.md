@@ -87,54 +87,63 @@ INSERT INTO test VALUES
 ('2','LINESTRING(1 2, 2 3, 4 3)', 'road2', 'LINESTRING(3 1, 2 0, 1 1)'),
 ('3','LINESTRING(4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING(1 1, 2 1)'),
 ('4','LINESTRING(4 3, 5 2)', 'road4', 'LINESTRING(2 1, 3 1)');
+```
 
--- We first demonstrate automatic Geometry column detection.
--- ST_Graph finds and uses the 'road' column.
+We first demonstrate automatic Geometry column detection.
+`ST_Graph` finds and uses the `road` column.
+```sql
 SELECT ST_Graph('test');
--- Answer: TRUE
+Answer: TRUE
 
 SELECT * FROM test_nodes;
--- Answer:
---     | NODE_ID |   THE_GEOM  |
---     |---------|-------------|
---     |    1    | POINT(0 0)  |
---     |    2    | POINT(1 2)  |
---     |    3    | POINT(4 3)  |
---     |    4    | POINT(5 2)  |
+```
 
+| NODE_ID |   THE_GEOM  |
+|---------|-------------|
+|    1    | POINT(0 0)  |
+|    2    | POINT(1 2)  |
+|    3    | POINT(4 3)  |
+|    4    | POINT(5 2)  |
+
+```sql
 SELECT * FROM test_edges;
--- Answer:
--- | EDGE_ID | START_NODE | END_NODE |
--- |---------|------------|----------|
--- |    1    |     1      |    2     |
--- |    2    |     2      |    3     |
--- |    3    |     3      |    2     |
--- |    4    |     3      |    4     |
+```
 
--- We may also choose which Geometry column we want to use.
--- Here we specify the 'way' column.
+| EDGE_ID | START_NODE | END_NODE |
+|---------|------------|----------|
+|    1    |     1      |    2     |
+|    2    |     2      |    3     |
+|    3    |     3      |    2     |
+|    4    |     3      |    4     |
+
+We may also choose which Geometry column we want to use. Here we specify the `way` column.
+```sql
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
 SELECT ST_Graph('test', 'way');
--- Answer: TRUE
-
-SELECT * FROM test_nodes;
--- Answer:
---     | NODE_ID |   THE_GEOM  |
---     |---------|-------------|
---     |    1    | POINT(1 1)  |
---     |    2    | POINT(3 1)  |
---     |    3    | POINT(2 1)  |
-
-SELECT * FROM test_edges;
--- Answer:
--- | EDGE_ID | START_NODE | END_NODE |
--- |---------|------------|----------|
--- |    1    |     1      |    2     |
--- |    2    |     2      |    1     |
--- |    3    |     1      |    3     |
--- |    4    |     3      |    2     |
 ```
+Answer: `TRUE`
+
+```sql
+SELECT * FROM test_nodes;
+```
+| NODE_ID |   THE_GEOM  |
+|---------|-------------|
+|    1    | POINT(1 1)  |
+|    2    | POINT(3 1)  |
+|    3    | POINT(2 1)  |
+
+```sql
+SELECT * FROM test_edges;
+```
+
+| EDGE_ID | START_NODE | END_NODE |
+|---------|------------|----------|
+|    1    |     1      |    2     |
+|    2    |     2      |    1     |
+|    3    |     1      |    3     |
+|    4    |     3      |    2     |
+
 
 ### Using a tolerance
 
@@ -146,66 +155,79 @@ INSERT INTO test VALUES ('1', 'LINESTRING(0 0, 1 0)', 'road1'),
                         ('3', 'LINESTRING(2.05 0, 3 0)', 'road3'),
                         ('4', 'LINESTRING(1 0.1, 1 1)', 'road4'),
                         ('5', 'LINESTRING(2 0.05, 2 1)', 'road5');
-
--- This example shows that coordinates within a tolerance of 0.05 of
--- each other are considered to be a single node. Note, however, that
--- edge geometries are left untouched.
-SELECT ST_Graph('test', 'road', 0.05);
--- Answer: TRUE
-
-SELECT * FROM test_nodes;
--- Answer:
---     | NODE_ID |   THE_GEOM    |
---     |---------|---------------|
---     |    1    | POINT(0 0)    |
---     |    2    | POINT(1.05 0) |
---     |    3    | POINT(2.05 0) |
---     |    4    | POINT(3 0)    |
---     |    5    | POINT(1 1)    |
---     |    6    | POINT(2 1)    |
-
-SELECT * FROM test_edges;
--- Answer:
--- | EDGE_ID | START_NODE | END_NODE |
--- |---------|------------|----------|
--- |    1    |     1      |    2     |
--- |    2    |     2      |    3     |
--- |    3    |     3      |    4     |
--- |    4    |     2      |    5     |
--- |    5    |     3      |    6     |
 ```
+
+This example shows that coordinates within a tolerance of 0.05 of each other are considered to be a single node. Note, however, that edge geometries are left untouched.
+
+```sql
+SELECT ST_Graph('test', 'road', 0.05);
+```
+Answer: `TRUE`
+
+```sql
+SELECT * FROM test_nodes;
+```
+
+| NODE_ID |   THE_GEOM    |
+|---------|---------------|
+|    1    | POINT(0 0)    |
+|    2    | POINT(1.05 0) |
+|    3    | POINT(2.05 0) |
+|    4    | POINT(3 0)    |
+|    5    | POINT(1 1)    |
+|    6    | POINT(2 1)    |
+
+```sql
+SELECT * FROM test_edges;
+```
+
+| EDGE_ID | START_NODE | END_NODE |
+|---------|------------|----------|
+|    1    |     1      |    2     |
+|    2    |     2      |    3     |
+|    3    |     3      |    4     |
+|    4    |     2      |    5     |
+|    5    |     3      |    6     |
 
 ### Orienting by z-values
 
-```sql
--- This test proves that orientation by slope works. Three cases:
---     1. first.z == last.z -- Orient first --> last
---     2. first.z > last.z -- Orient first --> last
---     3. first.z < last.z -- Orient last --> first
+This test proves that orientation by slope works. Three cases:
 
---------------------------------------
--- CASE 1: 0 == 0.
+1. first.z == last.z -- Orient first --> last
+2. first.z > last.z -- Orient first --> last
+3. first.z < last.z -- Orient last --> first
+
+
+#### CASE 1: 0 == 0
+
+```sql
 CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING, 
                   description VARCHAR);
 INSERT INTO test VALUES ('1', 'LINESTRING(0 0 0, 1 0 0)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
--- Answer: TRUE
+```
+Answer: `TRUE`
 
+```sql
 SELECT * FROM test_nodes;
--- Answer:
---     | NODE_ID |   THE_GEOM    |
---     |---------|---------------|
---     |    1    | POINT(0 0 0)  |
---     |    2    | POINT(1 0 0)  |
+```
+| NODE_ID |   THE_GEOM    |
+|---------|---------------|
+|    1    | POINT(0 0 0)  |
+|    2    | POINT(1 0 0)  |
 
+```sql
 SELECT * FROM test_edges;
--- Answer:
--- | EDGE_ID | START_NODE | END_NODE |
--- |---------|------------|----------|
--- |    1    |     1      |    2     |
+```
 
---------------------------------------
--- CASE 2: 1 > 0.
+| EDGE_ID | START_NODE | END_NODE |
+|---------|------------|----------|
+|    1    |     1      |    2     |
+
+
+#### CASE 2: 1 > 0
+
+```sql
 DROP TABLE test;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
@@ -213,23 +235,30 @@ CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING,
                   description VARCHAR);
 INSERT INTO test VALUES ('1', 'LINESTRING(0 0 1, 1 0 0)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
--- Answer: TRUE
+```
+Answer: `TRUE`
 
+```sql
 SELECT * FROM test_nodes;
--- Answer:
---     | NODE_ID |   THE_GEOM    |
---     |---------|---------------|
---     |    1    | POINT(0 0 1)  |
---     |    2    | POINT(1 0 0)  |
+```
 
+| NODE_ID |   THE_GEOM    |
+|---------|---------------|
+|    1    | POINT(0 0 1)  |
+|    2    | POINT(1 0 0)  |
+
+```sql
 SELECT * FROM test_edges;
--- Answer:
--- | EDGE_ID | START_NODE | END_NODE |
--- |---------|------------|----------|
--- |    1    |     1      |    2     |
+```
 
---------------------------------------
--- CASE 3: 0 < 1.
+| EDGE_ID | START_NODE | END_NODE |
+|---------|------------|----------|
+|    1    |     1      |    2     |
+
+
+#### CASE 3: 0 < 1
+
+```sql
 DROP TABLE test;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
@@ -237,21 +266,26 @@ CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING,
                   description VARCHAR);
 INSERT INTO test VALUES ('1', 'LINESTRING(0 0 0, 1 0 1)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
--- Answer: TRUE
-
-SELECT * FROM test_nodes;
--- Answer:
---     | NODE_ID |   THE_GEOM    |
---     |---------|---------------|
---     |    1    | POINT(0 0 0)  |
---     |    2    | POINT(1 0 1)  |
-
-SELECT * FROM test_edges;
--- Answer:
--- | EDGE_ID | START_NODE | END_NODE |
--- |---------|------------|----------|
--- |    1    |     2      |    1     |
 ```
+
+Answer: `TRUE`
+
+```sql
+SELECT * FROM test_nodes;
+```
+
+| NODE_ID |   THE_GEOM    |
+|---------|---------------|
+|    1    | POINT(0 0 0)  |
+|    2    | POINT(1 0 1)  |
+
+```sql
+SELECT * FROM test_edges;
+```
+| EDGE_ID | START_NODE | END_NODE |
+|---------|------------|----------|
+|    1    |     2      |    1     |
+
 
 ## See also
 
