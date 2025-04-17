@@ -6,7 +6,7 @@
 H2GIS Documentation
 =================================
 
-Welcome on the H2GIS's documentation
+Welcome on the H2GIS's documentation, a spatial extension of the H2 database
 
 .. toctree::
     :maxdepth: 1

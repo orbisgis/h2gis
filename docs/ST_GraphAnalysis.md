@@ -11,35 +11,34 @@ ST_GraphAnalysis('INPUT_EDGES', 'o[ - eo]'[, 'w']);
 
 ## Description
 
-Uses [Brande's betweenness centrality algorithm][brandes] to
-calculate closeness and betweenness [centrality][wiki] for vertices
+Uses [Brande's betweenness centrality algorithm][brandes] to calculate closeness and betweenness [centrality][wiki] for vertices
 and betweenness centrality for edges.
 
-Let $$d(s, t)$$ denote the **distance** from $$s \in V$$ to $$t \in
-V$$, i.e., the minimum length of all paths connecting $$s$$ to
-$$t$$. We have $$d(s, s) = 0$$ for all $$s \in V$$.
+Let $d(s, t)$ denote the **distance** from $s \in V$ to $t \in V$, i.e., the minimum length of all paths connecting $s$ to
+$t$. We have $d(s, s) = 0$ for all $s \in V$.
 
-Let $$\sigma_{st}$$ denote the number of shortest paths from $$s \in
-V$$ to $$t \in V$$ and set $$\sigma_{ss}=1$$ by convention. Let
-$$\sigma_{st}(v)$$ denote the number of shortest paths from $$s$$ to
-$$t$$ containing $$v \in V$$.
+Let $\sigma_{st}$ denote the number of shortest paths from $s \in V$ to $t \in V$ and set $\sigma_{ss}=1$ by convention. 
+
+Let $\sigma_{st}(v)$ denote the number of shortest paths from $s$ to $t$ containing $v \in V$.
 
 We have the following definitions for vertices:
-<div>
-\begin{array}{l r}
-    C_C(v) = \left(\sum_{t \in V} d(v, t)\right)^{-1}
-    & \qquad \textrm{closeness centrality} \\
-    C_B(v) = \sum_{s \neq t \neq v \in V} \frac{\sigma_{st}(v)}{\sigma_{st}}
-    & \qquad \textrm{betweenness centrality} \\
-\end{array}
-</div>
+
+Closeness centrality {eq}`closeness_centrality` 
+
+$$
+C_C(v) = \left(\sum_{t \in V} d(v, t)\right)^{-1}
+$$ (closeness_centrality)
+
+Betweenness centrality {eq}`betweenness_centrality`
+
+$$
+C_B(v) = \sum_{s \neq t \neq v \in V} \frac{\sigma_{st}(v)}{\sigma_{st}}
+$$ (betweenness_centrality)
 
 Betweenness centrality for edges is defined similarly.
 
-A high closeness centrality score indicates that a vertex can reach
-other vertices on relatively short paths; a high betweenness
-centrality score indicates that a vertex lies on a relatively high
-number of shortest paths.
+A high closeness centrality score indicates that a vertex can reach other vertices on relatively short paths; a high betweenness
+centrality score indicates that a vertex lies on a relatively high number of shortest paths.
 
 :::{note}
 **All centrality scores are normalized**
@@ -63,9 +62,9 @@ Though Brande's algorithm is much faster than a naïve approach, it still requir
 
 | Variable      | Meaning                                                                                                                                                                                                                             |
 |---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`; and optionally a weight column `w` (if the graph is weighted) and/or an edge orientation column `eo` (required if global orientation is not `undirected`) |
+| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`;<br> and optionally a weight column `w` (if the graph is weighted) and/or an edge<br> orientation column `eo` (required if global orientation is not `undirected`) |
 | `o`           | Global orientation string: `directed`, `reversed` or `undirected`                                                                                                                                                                   |
-| `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed`                                               |
+| `eo`          | Edge orientation column name indicating individual edge orientations:<br> `1` (directed), `-1` (reversed) or `0` (undirected);<br> required if global orientation is `directed` or `reversed`                                               |
 | `w`           | Edge weights column name                                                                                                                                                                                                            |
 
 ### Screenshots
@@ -73,22 +72,20 @@ Though Brande's algorithm is much faster than a naïve approach, it still requir
 Closeness centrality of Nantes, France. Notice the limited traffic
 zone in the center.
 
-![](./nantes-closeness-cropped.png){align=center}>
+![](./nantes-closeness-cropped.png){align=center}
 
 Edge betweenness centrality of Nantes, France. Notice how the
 beltway and bridges really stand out.
 
-![](./nantes-betweenness-cropped.png){align=center}>
-
-The above screenshots were generated in [OrbisGIS][og].
+![](./nantes-betweenness-cropped.png){align=center}
 
 ## Examples
 
+We will do graph analysis on the largest strongly connected component of the directed weighted graph examined in `ST_ShortestPath` examples, illustrated below
+
 ```sql
--- We will do graph analysis on the largest strongly connected
--- component of the directed weighted graph examined in
--- ST_ShortestPath examples, illustrated below.
 SELECT * FROM EDGES_EO_W_SCC;
+
 -- | EDGE_ID | START_NODE | END_NODE | WEIGHT | EDGE_ORIENTATION |
 -- |---------|------------|----------|--------|------------------|
 -- |       1 |          1 |        2 |   10.0 |                1 |
@@ -103,14 +100,15 @@ SELECT * FROM EDGES_EO_W_SCC;
 -- |      10 |          5 |        1 |    7.0 |                0 |
 ```
 
-![](./wdo-largest-scc.svg">
+![](./wdo-largest-scc.svg){align=center}
 
+Do the graph analysis
 ```sql
--- Do the graph analysis.
 CALL ST_GraphAnalysis('EDGES_EO_W_SCC',
     'directed - EDGE_ORIENTATION', 'WEIGHT');
 -- The results for nodes:
 SELECT * FROM EDGES_EO_W_SCC_NODE_CENT;
+
 -- | NODE_ID |        BETWEENNESS |           CLOSENESS |
 -- |---------|--------------------|---------------------|
 -- |       1 |                0.0 | 0.12121212121212122 |
@@ -118,15 +116,17 @@ SELECT * FROM EDGES_EO_W_SCC_NODE_CENT;
 -- |       3 | 0.8333333333333334 | 0.18181818181818182 |
 -- |       4 | 0.3333333333333333 | 0.21052631578947367 |
 -- |       5 |                1.0 | 0.13793103448275862 |
+```
 
--- We use linear interpolation from red (0) to blue (1) to
--- illustrate node betweenness.
+We use linear interpolation from red (0) to blue (1) to illustrate node betweenness
+```sql
 SELECT NODE_ID,
        BETWEENNESS,
        CAST(255*(1-BETWEENNESS) AS INT) RED,
        CAST(255*BETWEENNESS AS INT) BLUE
     FROM EDGES_EO_W_SCC_NODE_CENT
     ORDER BY BETWEENNESS DESC;
+
 -- | NODE_ID |        BETWEENNESS |                 RED | BLUE |
 -- |---------|--------------------|---------------------|------|
 -- |       5 |                1.0 |                   0 |  255 |
@@ -136,11 +136,10 @@ SELECT NODE_ID,
 -- |       1 |                0.0 |                 255 |    0 |
 ```
 
-![](./wdo-largest-scc-node-betw.svg">
+![](./wdo-largest-scc-node-betw.svg){align=center}
 
+We use linear interpolation from red (0) to blue (1) to illustrate closeness
 ```sql
--- We use linear interpolation from red (0) to blue (1) to
--- illustrate closeness.
 SELECT NODE_ID,
        CLOSENESS,
        CLOSE_INTERP,
@@ -157,6 +156,7 @@ SELECT NODE_ID,
                 AS CLOSE_INTERP
          FROM EDGES_EO_W_SCC_NODE_CENT)
     ORDER BY CLOSENESS DESC;
+
 -- |NODE_ID |           CLOSENESS |        CLOSE_INTERP |RED |BLUE |
 -- |--------| --------------------|---------------------|----|-----|
 -- |      4 | 0.21052631578947367 |                 1.0 |  0 | 255 |
@@ -166,11 +166,12 @@ SELECT NODE_ID,
 -- |      1 | 0.12121212121212122 |                 0.0 |255 |   0 |
 ```
 
-![](./wdo-largest-scc-node-close.svg">
+![](./wdo-largest-scc-node-close.svg){align=center}
 
+The results for edges
 ```sql
--- The results for edges:
 SELECT * FROM EDGES_EO_W_SCC_EDGE_CENT ORDER BY BETWEENNESS DESC;
+
 -- | EDGE_ID |         BETWEENNESS |
 -- |---------|---------------------|
 -- |       7 |                 1.0 |
@@ -184,15 +185,17 @@ SELECT * FROM EDGES_EO_W_SCC_EDGE_CENT ORDER BY BETWEENNESS DESC;
 -- |     -10 | 0.14285714285714285 |
 -- |       1 |                 0.0 |
 -- |       6 |                 0.0 |
+```
 
--- We use linear interpolation from red (0) to blue (1) to
--- illustrate node betweenness.
+We use linear interpolation from red (0) to blue (1) to illustrate node betweenness.
+```sql
 SELECT EDGE_ID,
        BETWEENNESS,
        CAST(255*(1-BETWEENNESS) AS INT) RED,
        CAST(255*BETWEENNESS AS INT) BLUE
     FROM EDGES_EO_W_SCC_EDGE_CENT
     ORDER BY BETWEENNESS DESC;
+
 -- | EDGE_ID |         BETWEENNESS | RED | BLUE |
 -- |---------|---------------------|-----|------|
 -- |       7 |                 1.0 |   0 |  255 |
@@ -208,21 +211,15 @@ SELECT EDGE_ID,
 -- |       6 |                 0.0 | 255 |    0 |
 ```
 
-![](./wdo-largest-scc-edge-betw.svg">
+![](./wdo-largest-scc-edge-betw.svg){align=center}
 
 ## Exercises
 
-1. Use [`ST_ShortestPathTree`](../ST_ShortestPathTree) to calculate
-   the shortest path trees for nodes 1 through 5. Then use the
-   definition of node betweenness to calculate betweenness by hand
-   and verify the results above.
-2. Make use of [`ST_ShortestPath`](../ST_ShortestPath) to write a
-   script that calculates node betweenness automatically without
-   using `ST_GraphAnalysis`. Make sure you get the same results as
-   above.
-3. Repeat exercise 2 using
-   [`ST_ShortestPathLength`](../ST_ShortestPathLength) to verify
-   node closeness.
+1. Use [`ST_ShortestPathTree`](../ST_ShortestPathTree) to calculate the shortest path trees for nodes 1 through 5. Then use the
+   definition of node betweenness to calculate betweenness by hand and verify the results above.
+2. Make use of [`ST_ShortestPath`](../ST_ShortestPath) to write a script that calculates node betweenness automatically without
+   using `ST_GraphAnalysis`. Make sure you get the same results as above.
+3. Repeat exercise 2 using [`ST_ShortestPathLength`](../ST_ShortestPathLength) to verify node closeness.
 
 ## See also
 
@@ -237,4 +234,3 @@ target="_blank">GraphAnalyzer</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Centrality
 [brandes]: http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
-[og]: http://www.orbisgis.org

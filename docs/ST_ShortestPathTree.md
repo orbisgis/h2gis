@@ -16,26 +16,24 @@ ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, r)
 Calculates the [shortest path tree][wiki] (SPT) from a given vertex
 of a graph using Dijkstra's algorithm.
 
-<div class="note info">
-  <h5>The result may not technically be a <a
-  href="http://en.wikipedia.org/wiki/Tree_(graph_theory)">tree</a>.</h5>
-  <p>If there are multiple shortest paths, they are all
-  returned.</p>
-</div>
+:::{note}
+**The result may not technically be a [tree][tree]**
 
-<div class="note">
-  <h5>Edges are not returned in any particular order.</h5>
-  <p>The SPT is composed of many edges, but their order is not
-  important.</p>
-</div>
+If there are multiple shortest paths, they are all returned
+:::
 
-<div class="note">
-  <h5>The SPT is confined to the same (strongly) connected component
-  as the source vertex.</h5>
-  <p>That is, it includes only vertices reachable from the source
-  vertex. See <a
-  href="../ST_ConnectedComponents"><code>ST_ConnectedComponents</code></a>.</p>
-</div>
+:::{hint}
+**Edges are not returned in any particular order**
+
+The SPT is composed of many edges, but their order is not important.
+:::
+
+:::{hint}
+**The SPT is confined to the same (strongly) connected component as the source vertex**
+
+That is, it includes only vertices reachable from the source vertex. See [`ST_ConnectedComponents`](../ST_ConnectedComponents)
+:::
+
 
 ### Input parameters
 
@@ -83,7 +81,6 @@ DROP TABLE IF EXISTS INPUT_EDGES;
 CALL ST_Graph('INPUT');
 SELECT * FROM INPUT_EDGES;
 ```
-Gives:
 
 | EDGE_ID | START_NODE | END_NODE |
 |---------|------------|----------|
@@ -99,7 +96,6 @@ Gives:
 |      10 |          5 |        1 |
 |      11 |          6 |        7 |
 |      12 |          7 |        8 |
-
 
 ![](./u.svg){align=center}
 
@@ -222,6 +218,7 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W_GEOM',
 
 
 **METHOD 2**: Recover Geometries after calculation.
+
 Notice the call to the ABS function (edge ids could be negative). We get the same result.
 ```sql
 SELECT A.THE_GEOM,
@@ -278,3 +275,4 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-network/src/main/java/org/h2gis/network/functions/ST_ShortestPathTree.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Shortest-path_tree
+[tree]: http://en.wikipedia.org/wiki/Tree_(graph_theory)

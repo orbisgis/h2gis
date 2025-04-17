@@ -78,5 +78,6 @@ htmlhelp_basename = 'H2GIS doc'
 myst_enable_extensions = [
     "attrs_inline", 
     "html_image",
-    "colon_fence"
+    "colon_fence",
+    "dollarmath"
     ]
