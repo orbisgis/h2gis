@@ -72,6 +72,22 @@ Get help
 
 If you get stuck or just have a question, please `fill an issue <http://github.com/orbisgis/h2gis/issues/new>`_ on our GitHub repo.
 
+Authors
+--------------------------
+H2GIS is leaded by scientists and engineers in GIS and computer science from `CNRS <https://cnrs.fr/fr>`_ within the French `Lab-STICC <https://labsticc.fr/fr>`_ research laboratory (DECIDE team of `Vannes <https://www.openstreetmap.org/relation/192306>`_). H2GIS is funded by research programs.
+
+**Team** : `Erwan Bocher <https://github.com/ebocher>`_, `Gwendall Petit <https://github.com/gpetit>`_, `Nicolas Fortin <https://github.com/nicolas-f>`_
+
+**Former contributors** : Sylvain Palominos, Adam Gouge, Mireille Lecoeuvre, Alexis Guéganno
+
+Acknowledgements
+--------------------------
+The H2GIS team would like to extend its warmest thanks to:
+
+* Thomas Mueller, Noel Grandin and Evgenij Ryazanov from the `H2 database <http://www.h2database.com/>`_ community
+* Martin Davis from the `JTS Topology Suite <https://github.com/locationtech/jts>`_ community
+* Michaël Michaud from `IGN <https://www.ign.fr/>`_ and `OpenJump <https://github.com/openjump-gis>`_ community, for creating JTransfoCoord, the father of `CTS <https://github.com/orbisgis/cts>`_ used to manage projections in H2GIS
+
 
 --------------------------------------------------------------------------
 
