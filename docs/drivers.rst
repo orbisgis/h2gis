@@ -9,6 +9,8 @@ H2GIS provides several drivers for importing from and exporting to various file 
    
    * - Function
      - Description
+   * - :doc:`ASCRead`
+     - ASC → Table
    * - :doc:`CSVRead`
      - CSV → Table
    * - :doc:`CSVWrite`
@@ -51,6 +53,7 @@ H2GIS provides several drivers for importing from and exporting to various file 
 .. toctree::
     :maxdepth: 1
 
+    ASCRead
     CSVRead
     CSVWrite
     DBFRead

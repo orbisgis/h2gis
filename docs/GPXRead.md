@@ -4,18 +4,21 @@
 
 ```sql
 GPXRead(VARCHAR path);
+GPXRead(VARCHAR path, BOOLEAN deleteTable);
+
 GPXRead(VARCHAR path, VARCHAR tableName);
-GPXRead(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTables);
+GPXRead(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTable);
+
+GPXRead(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
+GPXRead(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding, BOOLEAN deleteTable);
 ```
 
 ## Description
 
-Reads a [GPX][wiki] file from `path` and creates several tables
-prefixed by `tableName` representing the file's contents. If `deleteTables` is equal to `true`, existing tables (with the same prefix) are removed.
+Reads a [GPX][wiki] file from `path` and creates several tables prefixed by `tableName` representing the file's contents. 
 
 
-Tables are produced depending on the content of the GPX file,
-and may include:
+Tables are produced depending on the content of the GPX file, and may include:
 
 * `TABLENAME_WAYPOINT`
 * `TABLENAME_ROUTE`
@@ -24,8 +27,12 @@ and may include:
 * `TABLENAME_TRACKPOINT`
 * `TABLENAME_TRACKSEGMENT`
 
-By default, the `tableName` is the filename given in `path` without
-the extension.
+Define `fileEncoding` to force encoding (useful when the header is missing encoding information) (default value is `ISO-8859-1`).
+
+If:
+
+- the `tablename` parameter is not specified, then the resulting tables are prefixed with the same name as the GPX file.
+- the `deleteTable` parameter is `true` and tables prefixed with `tableName` already exists in the database, then tables `tableName` will be removed / replaced by the new ones. Else (no `deleteTable` parameter or `deleteTable` equal to `false`), an error indicating that the tables prefixed with `tableName` already exists will be throwned.
 
 <div class="note">
   <h5>Warning on the input file name</h5>
@@ -34,32 +41,108 @@ the extension.
 
 ## Examples
 
-Takes the table name from the filename, producing
-* ROUTE_TRACK
-* ROUTE_TRACKPOINT
-* ROUTE_TRACKSEGMENT
-```sql
-CALL GPXRead('/home/user/route.gpx');
+In the following example, we are using two `.gpx` files presented below *(and coming from this [webpage](https://www.rigacci.org/wiki/doku.php/tecnica/gps_cartografia_gis/gpx))* and stored in `/home/user/`:
+
+Track file : `road.gpx`
+
+```xml
+<trk>
+ <name>ACTIVE LOG</name>
+ <trkseg>
+  <trkpt lat="43.858259" lon="11.097178">
+    <ele>66.468262</ele>
+    <time>2005-03-20T07:20:37Z</time>
+  </trkpt>
+  <trkpt lat="43.858280" lon="11.097243">
+    <ele>40.032104</ele>
+    <time>2005-03-20T07:20:49Z</time>
+  </trkpt>
+  <trkpt lat="43.858280" lon="11.097114">
+    <ele>40.512817</ele>
+    <time>2005-03-20T07:20:57Z</time>
+  </trkpt>
+ </trkseg>
+</trk>
 ```
 
-Uses the given table name, producing
-* GPXDATA_TRACK
-* GPXDATA_TRACKPOINT
-* GPXDATA_TRACKSEGMENT
+Waypoints file : `station.gpx`
 
-```sql
-CALL GPXRead('/home/user/route.gpx', 'GPXDATA');
+```xml
+<wpt lat="43.148408839" lon="10.853555845">
+  <ele>74.387085</ele>
+  <name>020</name>
+  <cmt>020</cmt>
+  <desc>020</desc>
+  <sym>Flag</sym>
+</wpt>
 ```
 
-Existing tables starting with 'GPXDATA' will be removed
+#### 1. Using `path`
+
+**a. With a `track` file**
+
 ```sql
-CALL GPXRead('/home/user/route.gpx', 'GPXDATA', true);
+CALL GPXRead('/home/user/road.gpx');
 ```
 
-Produces STATION_WAYPOINT.
+Returns the following tables:
+
+- ROAD_TRACK
+- ROAD_TRACKPOINT
+- ROAD_TRACKSEGMENT
+
+**b. With a `waypoints` file**
+
 ```sql
 CALL GPXRead('/home/user/station.gpx');
 ```
+
+Returns the following table:
+
+- STATION_WAYPOINT
+
+#### 2. Using `path` and `tableName`
+
+```sql
+CALL GPXRead('/home/user/road.gpx', 'GPXROAD');
+```
+
+Returns the following tables:
+
+- GPXROAD_TRACK
+- GPXROAD_TRACKPOINT
+- GPXROAD_TRACKSEGMENT
+
+### 3. Case with `fileEncoding`
+
+```sql
+CALL GPXRead('/home/user/road.gpx', 'GPXROAD', 'utf-8');
+```
+
+### 4. Case with `deleteTable`
+
+Load the `road.gpx` file
+```sql
+CALL GPXRead('/home/user/road.gpx', 'GPXROAD');
+```
+
+&rarr; the tables `GPXROAD_TRACK`, `GPXROAD_TRACKPOINT` and `GPXROAD_TRACKSEGMENT` are created.
+
+Now, load once again, using `deleteTable` = `true`
+
+```sql
+CALL GPXRead('/home/user/road.gpx', 'GPXROAD', true);
+```
+
+&rarr; the already existing `GPXROAD_` tables are removed / replaced.
+
+Now, load once again, using `deleteTable` = `false`
+
+```sql
+CALL GPXRead('/home/user/road.gpx', 'GPXROAD', false);
+```
+
+&rarr; Error message: `The table "GPXROAD_TRACK" already exists`.
 
 ## See also
 

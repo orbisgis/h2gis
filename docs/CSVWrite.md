@@ -16,8 +16,7 @@ CSVWrite(VARCHAR path, VARCHAR sqlSelectTable, VARCHAR stringDecode);
   target="_blank">documentation</a> on the H2 website.</p>
 </div>
 
-Writes a CSV file from the SQL select statement `sqlSelectTable` to
-the CSV file specified by `path`.
+Writes a CSV file from the SQL select statement `sqlSelectTable` to the CSV file specified by `path`.
 
 Optional variable `stringDecode` is a space-separated string for setting CSV options. If `NULL`, its default value is used:
 
@@ -27,17 +26,22 @@ charset=UTF-8 fieldDelimiter=" fieldSeparator=, lineSeparator=\n writeColumnHead
 
 ## Examples
 
+In the following examples, we are using a table named `AREA` and defined as follow:
+
 ```sql
--- Create an example table to use with CSVWrite:
 CREATE TABLE AREA(THE_GEOM VARCHAR(100), ID INT PRIMARY KEY);
 INSERT INTO AREA VALUES
     ('POLYGON((-10 109, 90 9, -10 9, -10 109))', 1),
     ('POLYGON((90 109, 190 9, 90 9, 90 109))', 2);
+```
 
--- Write it to a CSV file:
+Write it to a CSV file:
+```sql
 CALL CSVWrite('/home/user/area.csv', 'SELECT * FROM AREA');
+```
 
--- Read it back:
+Read it back:
+```sql
 SELECT * FROM CSVRead('/home/user/area.csv');
 ```
 Answer:
@@ -52,7 +56,10 @@ CALL CSVWRITE('/home/user/area.csv',
               'SELECT * FROM AREA', 'charset=UTF-8
                                      fieldSeparator=;');
 
--- Read it back:
+```
+
+Read it back:
+```sql
 SELECT * FROM CSVRead('/home/user/area.csv',
                       NULL,
                       'charset=UTF-8 fieldSeparator=;');
