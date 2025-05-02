@@ -3,7 +3,7 @@
 ## Signature
 
 ```sql
-GEOMETRY ST_SimplyPreserveTopology(GEOMETRY geom, DOUBLE distance);
+GEOMETRY ST_SimplifyPreserveTopology(GEOMETRY geom, DOUBLE distance);
 ```
 
 ## Description
@@ -46,7 +46,7 @@ The following three examples use the same input POLYGON.
 ### With `distance` = 10
 
 ```sql
-SELECT ST_SimplyPreserveTopology(
+SELECT ST_SimplifyPreserveTopology(
            POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 
                     45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25)), 10);
 
@@ -56,7 +56,7 @@ SELECT ST_SimplyPreserveTopology(
 ### With `distance` = 20
 
 ```sql
-SELECT ST_SimplyPreserveTopology(
+SELECT ST_SimplifyPreserveTopology(
            POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 
                     45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25)), 20);
 
@@ -66,7 +66,7 @@ SELECT ST_SimplyPreserveTopology(
 ### With `distance` = 30
 
 ```sql
-SELECT ST_SimplyPreserveTopology(
+SELECT ST_SimplifyPreserveTopology(
            POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 
                     45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25)), 30);
 
