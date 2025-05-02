@@ -19,3 +19,4 @@ The following projection functions are available:
     
     ST_SetSRID
     ST_Transform
+    UpdateGeometrySRID

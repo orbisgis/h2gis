@@ -29,4 +29,5 @@ SELECT ST_Transform(ST_GeomFromText('POINT(584173 2594514)', 27572), 4326);
 
 ## See also
 
+* [`ST_SetSRID`](../ST_SetSRID), [`ST_SRID`](../ST_SRID), [`UpdateGeometrySRID`](../UpdateGeometrySRID)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/crs/ST_Transform.java" target="_blank">Source code</a>
