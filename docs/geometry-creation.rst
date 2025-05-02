@@ -17,6 +17,10 @@ The following geometry creation functions are available:
      - Construct an array of Geometries
    * - :doc:`ST_Expand`
      - Expand a Geometry's envelope
+   * - :doc:`ST_GeneratePoints`
+     - (MULTI)POLYGON → random points   
+   * - :doc:`ST_GeneratePointsInGrid`
+     - (MULTI)POLYGON → grided points         
    * - :doc:`ST_MakeEllipse`
      - Construct an ellipse
    * - :doc:`ST_MakeEnvelope`
@@ -49,6 +53,8 @@ The following geometry creation functions are available:
     ST_BoundingCircle
     ST_Collect    
     ST_Expand
+    ST_GeneratePoints
+    ST_GeneratePointsInGrid
     ST_MakeEllipse    
     ST_MakeEnvelope    
     ST_MakeGrid    

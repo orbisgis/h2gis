@@ -36,7 +36,7 @@ All geometry types are handled. Empty and point geometries are returned unchange
 
 If a small hole is very near an edge, it is possible for the edge to be moved by a relatively large tolerance value and end
 up with the hole outside the result shell. Similarly, it is possible for a small polygon component to end up inside a nearby
-larger polygon. A workaround is to test for this situation in post-processing and remove any invalid holes or polygons.
+larger polygon. A workaround is to test for this situation in pre-processing and remove any invalid holes or polygons.
 :::
 
 ## Examples
