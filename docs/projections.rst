@@ -13,6 +13,9 @@ The following projection functions are available:
      - Return a copy of a Geometry with a new SRID
    * - :doc:`ST_Transform`
      - Transform a Geometry from one CRS to another
+   * - :doc:`UpdateGeometrySRID`
+     - Update the SRID of a geometry column
+
 
 .. toctree::
     :maxdepth: 1
