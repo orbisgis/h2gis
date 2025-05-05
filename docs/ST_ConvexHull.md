@@ -30,4 +30,5 @@ SELECT ST_ConvexHull('GEOMETRYCOLLECTION(
 
 ## See also
 
+* [`ST_ConcaveHull`](../ST_ConcaveHull)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/operators/ST_ConvexHull.java" target="_blank">Source code</a>

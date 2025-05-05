@@ -11,6 +11,8 @@ The following operator functions are available:
      - Description
    * - :doc:`ST_Buffer`
      - Compute a buffer around a Geometry
+   * - :doc:`ST_ConcaveHull`
+     - Compute the smallest concave POLYGON that contains all the points in the Geometry
    * - :doc:`ST_ConvexHull`
      - Compute the smallest convex POLYGON that contains all the points in the Geometry
    * - :doc:`ST_Difference`
@@ -26,6 +28,7 @@ The following operator functions are available:
     :maxdepth: 1
     
     ST_Buffer
+    ST_ConcaveHull
     ST_ConvexHull
     ST_Difference
     ST_Intersection
