@@ -108,7 +108,7 @@ SELECT ST_ConcaveHull('MULTIPOINT((1 2), (2 2), (3 2), (4 2), (5 2), (1 3), (3 3
 ![](./ST_ConcaveHull_3.png){align=center}
 
 
-### With `allow_holes`
+### With `ratio` and `allow_holes`
 
 ```sql
 SELECT ST_ConcaveHull('MULTIPOINT ((1 2), (1 3), (1 4), (2 1), (2 2), (2 3), (2 4), 

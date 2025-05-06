@@ -10,19 +10,19 @@ The following operator functions are available:
    * - Function
      - Description
    * - :doc:`ST_Buffer`
-     - Compute a buffer around a Geometry
+     - Compute a buffer around a geometry
    * - :doc:`ST_ConcaveHull`
-     - Compute the smallest concave POLYGON that contains all the points in the Geometry
+     - Compute the smallest concave POLYGON containing the geometry's vertices
    * - :doc:`ST_ConvexHull`
-     - Compute the smallest convex POLYGON that contains all the points in the Geometry
+     - Compute the smallest convex POLYGON containing the geometry's vertices
    * - :doc:`ST_Difference`
      - Compute the difference between two geometries
    * - :doc:`ST_Intersection`
-     - Compute the intersection of two Geometries
+     - Compute the intersection of two geometries
    * - :doc:`ST_SymDifference`
-     - Compute the symmetric difference between two Geometries
+     - Compute the symmetric difference between two geometries
    * - :doc:`ST_Union`
-     - Compute the union of two or more Geometries
+     - Compute the union of two or more geometries
 
 .. toctree::
     :maxdepth: 1

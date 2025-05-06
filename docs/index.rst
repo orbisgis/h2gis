@@ -55,13 +55,12 @@ Why using H2GIS?
 -----------------
 
 * Free and open-source (`LGPL v3.0 <https://github.com/orbisgis/h2gis/?tab=LGPL-3.0-1-ov-file>`_)
-* Made by french public researchers from `CNRS <https://www.cnrs.fr>`_
+* Standalone: no installation or configuration needed
 * Very lightweight (less than 15mb once unzipped)
-* Standalone: no installation / configuration needed
-* Easy to embed in (mobile) apps
 * Cross-platform
+* Easy to embed in (mobile) apps
 * `Simple Feature SQL <https://www.ogc.org/standards/sfs/>`_ compliant
-
+* Made by french public researchers from `CNRS <https://www.cnrs.fr>`_
 
 Download the last version
 --------------------------
@@ -74,7 +73,7 @@ If you get stuck or just have a question, please `fill an issue <http://github.c
 
 Authors
 --------------------------
-H2GIS is leaded by scientists and engineers in GIS and computer science from `CNRS <https://cnrs.fr/fr>`_ within the French `Lab-STICC <https://labsticc.fr/fr>`_ research laboratory (DECIDE team of `Vannes <https://www.openstreetmap.org/relation/192306>`_). H2GIS is funded by research programs.
+H2GIS is leaded by scientists and engineers in GIS and computer science from `CNRS <https://cnrs.fr/fr>`_ within the French `Lab-STICC <https://labsticc.fr/fr>`_ research laboratory (DECIDE team of `Vannes <https://www.openstreetmap.org/relation/192306>`_). H2GIS is funded by (public) research projects.
 
 **Team** : `Erwan Bocher <https://github.com/ebocher>`_, `Gwendall Petit <https://github.com/gpetit>`_, `Nicolas Fortin <https://github.com/nicolas-f>`_
 
@@ -84,7 +83,7 @@ Acknowledgements
 --------------------------
 The H2GIS team would like to extend its warmest thanks to:
 
-* Thomas Mueller, Noel Grandin and Evgenij Ryazanov from the `H2 database <http://www.h2database.com/>`_ community
+* `Thomas Mueller <https://github.com/thomasmueller>`_, `Noel Grandin <https://github.com/grandinj>`_ and `Evgenij Ryazanov <https://github.com/katzyn>`_ from the `H2 database <http://www.h2database.com/>`_ community
 * Martin Davis from the `JTS Topology Suite <https://github.com/locationtech/jts>`_ community
 * Michaël Michaud from `IGN <https://www.ign.fr/>`_ and `OpenJump <https://github.com/openjump-gis>`_ community, for creating JTransfoCoord, the father of `CTS <https://github.com/orbisgis/cts>`_ used to manage projections in H2GIS
 
