@@ -29,6 +29,8 @@ The following geometry creation functions are available:
      - Calculate a regular grid of POLYGONs based on a Geometry or a table
    * - :doc:`ST_MakeGridPoints`
      - Calculate a regular grid of POINTs based on a Geometry or a table
+   * - :doc:`ST_MaximumInscribedCircle`
+     - Calculate the largest circle contained within a Geometry
    * - :doc:`ST_MakeLine`
      - (MULTI)POINT → LINESTRING
    * - :doc:`ST_MakePoint`
