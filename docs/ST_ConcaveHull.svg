@@ -81,11 +81,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="1161.5997"
-     inkscape:cy="349.13397"
+     inkscape:zoom="2"
+     inkscape:cx="-338.25"
+     inkscape:cy="239.25"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer5"
      showgrid="false"
      inkscape:window-width="3398"
      inkscape:window-height="1371"
@@ -183,6 +183,26 @@
        x="1092.2903"
        y="567.60431"
        inkscape:export-filename="ST_ConcaveHull_5_ratio_1.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect2"
+       width="480.07205"
+       height="217.39906"
+       x="-588.17896"
+       y="329.2677"
+       inkscape:export-filename="ST_ConcaveHull_hole_true.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect250"
+       width="480.07205"
+       height="217.39906"
+       x="-588.17896"
+       y="573.7677"
+       inkscape:export-filename="ST_ConcaveHull_hole_false.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
   </g>
@@ -2950,6 +2970,794 @@
        id="path372"
        d="m 1387.5232,614.56243 h 165.3522"
        style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none"
+       d="M -552.48604,337.33938 V 534.3227"
+       id="path9"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m -573.39269,516.22548 h 195.90976"
+       id="path28"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path48"
+       d="M -512.47001,351.18616 V 516.22114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -472.44137,351.18616 V 516.22114"
+       id="path49"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path50"
+       d="M -432.41272,351.18616 V 516.22114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path51"
+       d="m -552.45411,476.18597 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -552.45411,436.17964 h 165.35218"
+       id="path52"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path53"
+       d="m -552.45411,396.17333 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot53"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.61674087,0,0,0.61674087,-690.85463,128.53717)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion53"
+         style="font-family:sans-serif"><rect
+           id="rect53"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara53"
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif">x</flowPara></flowRoot>
+    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,-876.81968,-61.71443)"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot54"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion54"
+         style="font-family:sans-serif"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect54" /></flowRegion><flowPara
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif"
+         id="flowPara54">y</flowPara></flowRoot>
+    <flowRoot
+       transform="matrix(0.26110367,0,0,0.26110367,-702.26631,356.82985)"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot55"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion55"
+         style="font-family:sans-serif"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect55" /></flowRegion><flowPara
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif"
+         id="flowPara55">0,0</flowPara></flowRoot>
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -392.40262,351.18616 V 516.22114"
+       id="path55"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path56"
+       d="m -552.45411,356.21824 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -532.4817,351.18616 V 516.22114"
+       id="path57"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path58"
+       d="M -492.45306,351.18616 V 516.22114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -452.4244,351.18616 V 516.22114"
+       id="path59"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path60"
+       d="M -412.41431,351.18616 V 516.22114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -552.45411,496.19354 h 165.35218"
+       id="path61"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path62"
+       d="m -552.45411,456.18721 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -552.45411,416.1809 h 165.35218"
+       id="path63"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -552.45411,376.22582 h 165.35218"
+       id="path64"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path65"
+       d="M -292.97785,337.33938 V 534.3227"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path66"
+       d="m -313.8845,516.22548 h 195.90976"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -252.96182,351.18616 V 516.22114"
+       id="path67"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path68"
+       d="M -212.93318,351.18616 V 516.22114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -172.90453,351.18616 V 516.22114"
+       id="path69"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -292.94592,476.18597 h 165.35218"
+       id="path70"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path71"
+       d="m -292.94592,436.17964 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -292.94592,396.17333 h 165.35218"
+       id="path80"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       transform="matrix(0.61674087,0,0,0.61674087,-431.34644,128.53717)"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot82"
+       xml:space="preserve"><flowRegion
+         id="flowRegion82"
+         style="font-family:sans-serif"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect82" /></flowRegion><flowPara
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif"
+         id="flowPara82">x</flowPara></flowRoot>
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       xml:space="preserve"
+       id="flowRoot83"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.61674087,0,0,0.61674087,-617.31149,-61.71443)"><flowRegion
+         id="flowRegion83"
+         style="font-family:sans-serif"><rect
+           id="rect83"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara83"
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif">y</flowPara></flowRoot>
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       xml:space="preserve"
+       id="flowRoot84"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26110367,0,0,0.26110367,-442.75812,356.82985)"><flowRegion
+         id="flowRegion84"
+         style="font-family:sans-serif"><rect
+           id="rect84"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara84"
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif">0,0</flowPara></flowRoot>
+    <path
+       inkscape:connector-curvature="0"
+       id="path99"
+       d="M -132.89443,351.18616 V 516.22114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -292.94592,356.21824 h 165.35218"
+       id="path112"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path113"
+       d="M -272.97351,351.18616 V 516.22114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -232.94487,351.18616 V 516.22114"
+       id="path114"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path115"
+       d="M -192.91621,351.18616 V 516.22114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -152.90612,351.18616 V 516.22114"
+       id="path116"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path117"
+       d="m -292.94592,496.19354 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -292.94592,456.18721 h 165.35218"
+       id="path118"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path119"
+       d="m -292.94592,416.1809 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path120"
+       d="m -292.94592,376.22582 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none"
+       d="M -552.48604,581.83938 V 778.8227"
+       id="path251"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m -573.39269,760.72548 h 195.90976"
+       id="path252"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path253"
+       d="M -512.47001,595.68616 V 760.72114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -472.44137,595.68616 V 760.72114"
+       id="path254"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path255"
+       d="M -432.41272,595.68616 V 760.72114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path256"
+       d="m -552.45411,720.68597 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -552.45411,680.67964 h 165.35218"
+       id="path257"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path258"
+       d="m -552.45411,640.67333 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot258"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.61674087,0,0,0.61674087,-690.85463,373.03717)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion258"
+         style="font-family:sans-serif"><rect
+           id="rect258"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara258"
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif">x</flowPara></flowRoot>
+    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,-876.81968,182.78557)"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot259"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion259"
+         style="font-family:sans-serif"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect259" /></flowRegion><flowPara
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif"
+         id="flowPara259">y</flowPara></flowRoot>
+    <flowRoot
+       transform="matrix(0.26110367,0,0,0.26110367,-702.26631,601.32985)"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot260"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion260"
+         style="font-family:sans-serif"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect260" /></flowRegion><flowPara
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif"
+         id="flowPara260">0,0</flowPara></flowRoot>
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -392.40262,595.68616 V 760.72114"
+       id="path260"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path261"
+       d="m -552.45411,600.71824 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -532.4817,595.68616 V 760.72114"
+       id="path262"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path263"
+       d="M -492.45306,595.68616 V 760.72114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -452.4244,595.68616 V 760.72114"
+       id="path264"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path265"
+       d="M -412.41431,595.68616 V 760.72114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -552.45411,740.69354 h 165.35218"
+       id="path266"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path267"
+       d="m -552.45411,700.68721 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -552.45411,660.6809 h 165.35218"
+       id="path268"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -552.45411,620.72582 h 165.35218"
+       id="path269"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path288"
+       d="M -292.97785,581.83938 V 778.8227"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path307"
+       d="m -313.8845,760.72548 h 195.90976"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -252.96182,595.68616 V 760.72114"
+       id="path320"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path321"
+       d="M -212.93318,595.68616 V 760.72114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -172.90453,595.68616 V 760.72114"
+       id="path322"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -292.94592,720.68597 h 165.35218"
+       id="path323"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path325"
+       d="m -292.94592,680.67964 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -292.94592,640.67333 h 165.35218"
+       id="path326"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       transform="matrix(0.61674087,0,0,0.61674087,-431.34644,373.03717)"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot326"
+       xml:space="preserve"><flowRegion
+         id="flowRegion326"
+         style="font-family:sans-serif"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect326" /></flowRegion><flowPara
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif"
+         id="flowPara326">x</flowPara></flowRoot>
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       xml:space="preserve"
+       id="flowRoot327"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.61674087,0,0,0.61674087,-617.31149,182.78557)"><flowRegion
+         id="flowRegion327"
+         style="font-family:sans-serif"><rect
+           id="rect327"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara327"
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif">y</flowPara></flowRoot>
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       xml:space="preserve"
+       id="flowRoot328"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26110367,0,0,0.26110367,-442.75812,601.32985)"><flowRegion
+         id="flowRegion328"
+         style="font-family:sans-serif"><rect
+           id="rect328"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara328"
+         style="font-style:italic;font-size:40px;line-height:1.25;font-family:sans-serif">0,0</flowPara></flowRoot>
+    <path
+       inkscape:connector-curvature="0"
+       id="path328"
+       d="M -132.89443,595.68616 V 760.72114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -292.94592,600.71824 h 165.35218"
+       id="path329"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path343"
+       d="M -272.97351,595.68616 V 760.72114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -232.94487,595.68616 V 760.72114"
+       id="path362"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path381"
+       d="M -192.91621,595.68616 V 760.72114"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -152.90612,595.68616 V 760.72114"
+       id="path382"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path383"
+       d="m -292.94592,740.69354 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="m -292.94592,700.68721 h 165.35218"
+       id="path384"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path385"
+       d="m -292.94592,660.6809 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:connector-curvature="0"
+       id="path386"
+       d="m -292.94592,620.72582 h 165.35218"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;stroke-opacity:1" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -4077,6 +4885,1303 @@
          style="fill:#c9e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.498898;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
          d="M 627.9874,714.52422 728.05638,734.505 668.01604,714.56457 Z"
          id="path380" />
+    </g>
+    <path
+       id="path121"
+       style="opacity:0.75;fill:#ff8080;stroke:#ff0000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -172.9043 376.17981 L -252.96094 376.30481 C -252.94644 389.61585 -252.97584 402.96252 -252.96094 416.27356 L -273.03906 436.17981 L -272.97266 476.12317 L -252.96094 496.09778 L -172.9043 496.24817 L -172.9043 376.17981 z M -212.93359 396.11145 L -192.91602 416.18176 L -192.91602 456.1427 L -212.93359 476.4552 L -232.94531 456.18762 L -232.94531 416.2677 L -212.93359 396.11145 z " />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow2Mend)"
+       d="m -360.12309,437.79756 h 35.35534"
+       id="path122"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle139"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-532.47925"
+       cy="476.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle140"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-532.47925"
+       cy="456.18719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle141"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-532.47925"
+       cy="436.17963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle142"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="436.17963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle143"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="436.17963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle144"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="456.18719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle145"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="476.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle146"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-472.47925"
+       cy="476.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle147"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="476.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle148"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="456.18719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle149"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="436.17963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle150"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="416.18091"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle151"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="396.17334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle152"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="476.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle167"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="456.18719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle168"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-472.47925"
+       cy="496.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle169"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="496.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle170"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="496.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle171"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="476.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle172"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="456.18719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle173"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="436.17963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle174"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="416.18091"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle175"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="396.17334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle176"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="496.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle205"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="416.17963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle206"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="416.17963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle207"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="396.17334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle208"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="396.17334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle209"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="376.22583"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle210"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-472.47925"
+       cy="376.22583"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle211"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-472.47925"
+       cy="396.17334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle212"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="496.18597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle213"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="376.22583"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle214"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="376.22583"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle215"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="376.22583"
+       r="2.75" />
+    <g
+       id="g250"
+       transform="translate(259.50574)">
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle216"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-532.47925"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle217"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-532.47925"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle218"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-532.47925"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle219"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle220"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle221"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle222"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle223"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-472.47925"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle224"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle225"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle226"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle227"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="416.18091"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle228"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle229"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle230"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle231"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-472.47925"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle232"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle233"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle234"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle235"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle236"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle237"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="416.18091"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle238"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle239"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle240"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="416.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle241"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="416.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle242"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle243"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle244"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="376.22583"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle245"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-472.47925"
+         cy="376.22583"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle246"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-472.47925"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle247"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle248"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="376.22583"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle249"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="376.22583"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle250"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="376.22583"
+         r="2.75" />
+    </g>
+    <path
+       style="opacity:0.75;fill:#ff8080;stroke:#ff0000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m -172.90453,620.67896 -80.05729,0.125 c 0.0145,13.31104 -0.0149,26.65838 0,39.96942 l -20.07798,19.90626 0.0663,39.94383 20.01169,19.97412 80.05729,0.15088 z"
+       id="path387"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow2Mend)"
+       d="m -360.12309,682.29756 h 35.35534"
+       id="path388"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle388"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-532.47925"
+       cy="720.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle389"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-532.47925"
+       cy="700.68719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle390"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-532.47925"
+       cy="680.67963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle391"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="680.67963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle392"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="680.67963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle393"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="700.68719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle394"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="720.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle395"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-472.47925"
+       cy="720.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle396"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="720.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle397"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="700.68719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle398"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="680.67963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle399"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="660.68091"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle400"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="640.67334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle401"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="720.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle402"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="700.68719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle403"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-472.47925"
+       cy="740.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle404"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="740.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle405"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="740.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle406"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="720.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle407"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="700.68719"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle408"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="680.67963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle409"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="660.68091"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle410"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="640.67334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle411"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="740.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle412"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="660.67963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle413"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="660.67963"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle414"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="640.67334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle415"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="640.67334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle416"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-492.47925"
+       cy="620.72583"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle417"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-472.47925"
+       cy="620.72583"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle418"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-472.47925"
+       cy="640.67334"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle419"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="740.68597"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle420"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-452.42441"
+       cy="620.72583"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle421"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-432.41272"
+       cy="620.72583"
+       r="2.75" />
+    <circle
+       style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="circle422"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"
+       cx="-512.47925"
+       cy="620.72583"
+       r="2.75" />
+    <g
+       id="g457"
+       transform="translate(259.50574,244.5)">
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle423"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-532.47925"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle424"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-532.47925"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle425"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-532.47925"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle426"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle427"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle428"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle429"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle430"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-472.47925"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle431"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle432"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle433"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle434"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="416.18091"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle435"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle436"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle437"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle438"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-472.47925"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle439"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle440"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle441"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="476.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle442"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="456.18719"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle443"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="436.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle444"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="416.18091"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle445"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle446"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle447"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="416.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle448"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="416.17963"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle449"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle450"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle451"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-492.47925"
+         cy="376.22583"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle452"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-472.47925"
+         cy="376.22583"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle453"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-472.47925"
+         cy="396.17334"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle454"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="496.18597"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle455"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-452.42441"
+         cy="376.22583"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle456"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-432.41272"
+         cy="376.22583"
+         r="2.75" />
+      <circle
+         style="fill:#c8e6ff;fill-opacity:0.988235;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle457"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ConvexHull.png"
+         inkscape:export-xdpi="111"
+         inkscape:export-ydpi="111"
+         cx="-512.47925"
+         cy="376.22583"
+         r="2.75" />
     </g>
   </g>
 </svg>
