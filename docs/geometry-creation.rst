@@ -59,6 +59,7 @@ The following geometry creation functions are available:
     ST_MakeEnvelope    
     ST_MakeGrid    
     ST_MakeGridPoints
+    ST_MaximumInscribedCircle
     ST_MakeLine    
     ST_MakePoint    
     ST_MakePolygon    
