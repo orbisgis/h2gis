@@ -38,5 +38,5 @@ SELECT ST_LineIntersector('LINESTRING(0 0, 4 2)',
 
 ## See also
 
-* [`ST_Split`](../ST_Split), [`ST_Intersection`](../ST_Intersection)
+* [`ST_Split`](../ST_Split), [`ST_Clip`](../ST_Clip), [`ST_Intersection`](../ST_Intersection)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/split/ST_LineIntersector.java" target="_blank">Source code</a>

@@ -106,4 +106,5 @@ SELECT ST_Split('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))',
 
 ## See also
 
+* [`ST_Clip`](../ST_Clip), [`ST_LineIntersector`](../ST_LineIntersector), [`ST_Intersection`](../ST_Intersection)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/split/ST_Split.java" target="_blank">Source code</a>

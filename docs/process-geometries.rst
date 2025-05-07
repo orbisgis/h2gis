@@ -9,6 +9,8 @@ The following functions are available to process geometries:
    
    * - Function
      - Description
+   * - :doc:`ST_Clip`
+     - Clip one geometry with another one
    * - :doc:`ST_ISOVist`
      - Compute the visibility from a point
    * - :doc:`ST_LineInterpolatePoint`
@@ -43,6 +45,7 @@ The following functions are available to process geometries:
 .. toctree::
     :maxdepth: 1
     
+    ST_Clip
     ST_ISOVist
     ST_LineInterpolatePoint
     ST_LineIntersector
