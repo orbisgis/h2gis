@@ -58,4 +58,5 @@ SELECT ST_Snap(geomB, geomA, 2) FROM input_table;
 
 ## See also
 
+* [`ST_SnapToSelf`](../ST_SnapToSelf)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/snap/ST_Snap.java" target="_blank">Source code</a>

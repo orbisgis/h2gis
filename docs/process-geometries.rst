@@ -39,6 +39,8 @@ The following functions are available to process geometries:
      - Simplify a Geometry, preserving its topology
    * - :doc:`ST_Snap`
      - Snap two Geometries together
+   * - :doc:`ST_SnapToSelf`
+     - Snap a Geometries to itself
    * - :doc:`ST_Split`
      - Split Geometry A by Geometry B
 
@@ -60,4 +62,5 @@ The following functions are available to process geometries:
     ST_Simplify
     ST_SimplifyPreserveTopology
     ST_Snap
+    ST_SnapToSelf
     ST_Split
