@@ -8,7 +8,7 @@ GEOMETRY ST_LineIntersector(GEOMETRY geomA, GEOMETRY geomB);
 
 ## Description
 
-LineIntersector is used to split an input `geometry` (`LINESTRING` or `MULTILINESTRING`) (`geomA`) with a set of geometries (`geomB`).
+This function is used to split an input `geometry` (`LINESTRING` or `MULTILINESTRING`) (`geomA`) with a set of geometries (`geomB`).
 
 As a result, a collection of `LINESTRING` is returned.
 

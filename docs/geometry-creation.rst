@@ -20,7 +20,11 @@ The following geometry creation functions are available:
    * - :doc:`ST_GeneratePoints`
      - (MULTI)POLYGON → random points   
    * - :doc:`ST_GeneratePointsInGrid`
-     - (MULTI)POLYGON → grided points         
+     - (MULTI)POLYGON → grided points 
+   * - :doc:`ST_MakeArcLine`
+     - Construct an LINESTRING elliptical arc
+   * - :doc:`ST_MakeArcPolygon`
+     - Construct a POLYGONAL elliptical arc
    * - :doc:`ST_MakeEllipse`
      - Construct an ellipse
    * - :doc:`ST_MakeEnvelope`
@@ -57,6 +61,8 @@ The following geometry creation functions are available:
     ST_Expand
     ST_GeneratePoints
     ST_GeneratePointsInGrid
+    ST_MakeArcLine
+    ST_MakeArcPolygon
     ST_MakeEllipse    
     ST_MakeEnvelope    
     ST_MakeGrid    

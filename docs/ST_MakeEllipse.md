@@ -26,5 +26,5 @@ SELECT ST_MakeEllipse('POINT(4 -5)', 2, 5);
 
 ## See also
 
-* [`ST_Buffer`](../ST_Buffer)
+* [`ST_Buffer`](../ST_Buffer), [`ST_MakeArcPolygon`](../ST_MakeArcPolygon)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_MakeEllipse.java" target="_blank">Source code</a>
