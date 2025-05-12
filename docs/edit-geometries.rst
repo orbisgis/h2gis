@@ -17,6 +17,10 @@ The following functions are available to edit geometries:
      - Insert extra vertices along the line segments of a Geometry
    * - :doc:`ST_FlipCoordinates`
      - Flip the X and Y coordinates of a Geometry
+   * - :doc:`ST_ForcePolygonCW`
+     - Forces (Multi)Polygons to use a clockwise orientation
+   * - :doc:`ST_ForcePolygonCCW`
+     - Forces (Multi)Polygons to use a counter-clockwise orientation
    * - :doc:`ST_Normalize`
      - Return a Geometry with a normal form
    * - :doc:`ST_RemoveDuplicatedCoordinates`
@@ -37,6 +41,8 @@ The following functions are available to edit geometries:
     ST_CollectionExtract
     ST_Densify
     ST_FlipCoordinates
+    ST_ForcePolygonCW
+    ST_ForcePolygonCCW
     ST_Normalize
     ST_RemoveDuplicatedCoordinates
     ST_RemoveHoles
