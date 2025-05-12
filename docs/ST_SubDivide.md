@@ -9,7 +9,7 @@ GEOMETRY ST_SubDivide(GEOMETRY geom, INTEGER max_vertices);
 
 ## Description
 
-Divides geometry (`geom`) into parts using its internal envelope, until each part can be represented using no more than `max_vertices`. If no vertices, apply a single recurve.
+Divides geometry (`geom`) into parts using its internal envelope, until each part can be represented using no more than `max_vertices`.
 
 Where:
 
