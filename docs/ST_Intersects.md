@@ -12,9 +12,6 @@ Returns `TRUE` if `geomA` intersects `geomB`.
 
 Intersects means that `geomA` and `geomB` have at least one point in common.
 
-```{include} type-warning_geometrycollection.md
-```
-
 ```{include} sfs-1-2-1.md
 ```
 
@@ -77,6 +74,12 @@ SELECT ST_Intersects(geomA, geomB) FROM input_table;
 | POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))  | MULTIPOINT((4 3), (6 2))  |
 
 ![](./ST_Intersects_8.png){align=center}
+
+| geomA GEOMETRYCOLLECTION                       | geomB POLYGON                       |
+|-------------------------------------|-------------------------------------|
+| GEOMETRYCOLLECTION(<br>POLYGON((1 1, 4 1, 4 5, 1 5, 1 1)), <br>LINESTRING(5 1, 7 7), <br>POINT(1 6)) | POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))  |
+
+![](./ST_Intersects_10.png){align=center}
 
 ### Cases where `ST_Intersects` is false
 
