@@ -43,6 +43,8 @@ The following functions are available to process geometries:
      - Snap a Geometries to itself
    * - :doc:`ST_Split`
      - Split Geometry A by Geometry B
+   * - :doc:`ST_SubDivide`
+     - Divides geometry into parts
 
 .. toctree::
     :maxdepth: 1
@@ -64,3 +66,4 @@ The following functions are available to process geometries:
     ST_Snap
     ST_SnapToSelf
     ST_Split
+    ST_SubDivide
