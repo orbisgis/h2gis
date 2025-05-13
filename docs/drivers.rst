@@ -21,6 +21,10 @@ H2GIS provides several drivers for importing from and exporting to various file 
      - Table → DBF
    * - :doc:`FILE_TABLE`
      - Link a table to a file
+   * - :doc:`FGBRead`
+     - FlatGeobuf → Table
+   * - :doc:`FGBWrite`
+     - Table → FlatGeobuf
    * - :doc:`GPXRead`
      - GPX → Table
    * - :doc:`GeoJsonRead`
@@ -59,6 +63,8 @@ H2GIS provides several drivers for importing from and exporting to various file 
     DBFRead
     DBFWrite
     FILE_TABLE
+    FGBRead
+    FGBWrite
     GPXRead    
     GeoJsonRead
     GeoJsonWrite
