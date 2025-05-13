@@ -3,9 +3,7 @@
 ### Signatures
 
 ```sql
-BOOLEAN UpdateGeometrySRID(VARCHAR tableName, 
-                           GEOMETRY geom, 
-                           INT srid);
+BOOLEAN UpdateGeometrySRID(VARCHAR tableName, GEOMETRY geom, INTEGER srid);
 ```
 
 ### Description
@@ -22,7 +20,7 @@ Returns `TRUE` if the `srid` has been updated.
 
 ### Examples
 
-Create a table and insert a POINT with a SRID equal to 0
+Create a table named `GEO_POINT` and insert a POINT with a SRID equal to 0
 ```sql
 CREATE TABLE GEO_POINT (THE_GEOM GEOMETRY(POINT));
 INSERT INTO GEO_POINT VALUES('SRID=0;POINT(0 0)');
