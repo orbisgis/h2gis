@@ -21,6 +21,8 @@ The following property functions are available:
      - Return the dimension of a Geometry
    * - :doc:`ST_Distance`
      - Return the distance between two Geometries
+   * - :doc:`ST_DistanceSphere`
+     - Return the minimum distance between two points
    * - :doc:`ST_EndPoint`
      - Return the last coordinate of a LINESTRING
    * - :doc:`ST_Envelope`
@@ -93,6 +95,7 @@ The following property functions are available:
     ST_CoordDim
     ST_Dimension
     ST_Distance
+    ST_DistanceSphere
     ST_EndPoint
     ST_Envelope
     ST_Explode
