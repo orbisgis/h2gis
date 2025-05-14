@@ -29,6 +29,8 @@ The following functions are available to process geometries:
      - Create a MULTIPOLYGON from edges of Geometries
    * - :doc:`ST_PrecisionReducer`
      - Reduce a Geometry's precision
+   * - :doc:`ST_Project`
+     - Project a point
    * - :doc:`ST_RingSideBuffer`
      - Compute a ring buffer on one side
    * - :doc:`ST_SideBuffer`
@@ -59,6 +61,7 @@ The following functions are available to process geometries:
     ST_Node
     ST_Polygonize
     ST_PrecisionReducer
+    ST_Project
     ST_RingSideBuffer
     ST_SideBuffer
     ST_Simplify
