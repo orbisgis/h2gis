@@ -13,14 +13,10 @@ The following functions are available to process geometries:
      - Clip one geometry with another one
    * - :doc:`ST_ISOVist`
      - Compute the visibility from a point
-   * - :doc:`ST_LineInterpolatePoint`
-     - Return a point along (MULTI)LINESTRING based on starting fraction
    * - :doc:`ST_LineIntersector`
      - Split an input LINESTRING with another geometry
    * - :doc:`ST_LineMerge`
      - Merge a collection of linear components to form maximal-length LINESTRING
-   * - :doc:`ST_LineSubstring`
-     - Return a Linestring along (MULTI)LINESTRING based on starting & ending fractions
    * - :doc:`ST_MakeValid`
      - Make a Geometry valid
    * - :doc:`ST_Node`
@@ -53,10 +49,8 @@ The following functions are available to process geometries:
     
     ST_Clip
     ST_ISOVist
-    ST_LineInterpolatePoint
     ST_LineIntersector
     ST_LineMerge
-    ST_LineSubstring
     ST_MakeValid
     ST_Node
     ST_Polygonize

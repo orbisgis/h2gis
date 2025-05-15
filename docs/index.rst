@@ -109,6 +109,7 @@ Documentation
     geometry-conversion
     geometry-creation
     edit-geometries
+    linear-referencing
     distance-functions
     operators
     predicates
