@@ -12,17 +12,15 @@ GEOMETRY ST_ConvexHull(GEOMETRY geom, double ratio, boolean allow_holes)
 ## Description
 
 Computes the smallest concave `POLYGON` that contains all the points of the input `geom`.
-`geom` can be a set of `POINT`s, `LINESTRING`s, `POLYGON`s or a
-`GEOMETRYCOLLECTION`.
+
+`geom` can be a set of `POINT`s, `LINESTRING`s, `POLYGON`s or a `GEOMETRYCOLLECTION`.
 
 Set `allow_holes` to `TRUE` to allow hole in the concave geometry.
 
 Set a `ratio` value between `0` and `1` to increase the hull concaveness. Values between `0.3` and `0.1` produce reasonable results. 
 
-:::{tip}
-If `geom` is `(MULTI)POINT` or `(MULTI)LINESTRING` then the resulting hull will enclose all the vertices of `geom`.
-
-If `geom` is `(MULTI)POLYGON`, then the resulting hull will enclose enclose all the vertices of `geom` **AND ALSO** all the areas covered by `geom`.
+:::{warning}
+Whether `geom` is `(MULTI)POINT`, `(MULTI)LINESTRING` or `(MULTI)POLYGON`, the resulting hull will **ONLY** enclose the input vertices of `geom`.
 :::
 
 
