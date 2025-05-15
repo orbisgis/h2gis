@@ -1,9 +1,9 @@
-# H2GISversion
+# H2GISVersion
 
 ## Signature
 
 ```sql
-STRING H2GISversion();
+STRING H2GISVersion();
 ```
 ## Description
 
@@ -19,4 +19,5 @@ Answer: ``2.2.3-SNAPSHOT``
 
 ## See also
 
+* [H2Version](https://www.h2database.com/html/functions.html?highlight=H2VERSION&search=h2version#h2version), [`JTSVersion`](../JTSVersion)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/system/H2GISversion.java" target="_blank">Source code</a>

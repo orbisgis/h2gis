@@ -97,6 +97,7 @@ Documentation
     :caption: Getting started
     
     quickstart
+    data-management
     drivers
     spatial-indices
     CHANGELOG

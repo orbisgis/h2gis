@@ -15,6 +15,8 @@ The following system functions are available:
      - Return H2GIS version
    * - :doc:`IntegerRange`
      - Return an array of integers
+   * - :doc:`JTSVersion`
+     - Return JTS version
 
 .. toctree::
     :maxdepth: 1
@@ -22,3 +24,4 @@ The following system functions are available:
     DoubleRange
     H2GISversion
     IntegerRange
+    JTSVersion
