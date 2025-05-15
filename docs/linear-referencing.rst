@@ -1,7 +1,7 @@
 Linear referencing
 =================================
 
-The following functions are available to process geometries:
+The following functions are available:
 
 .. list-table:: 
    :widths: 25 75
