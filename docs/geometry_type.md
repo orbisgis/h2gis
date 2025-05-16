@@ -1,10 +1,8 @@
-# Data management
+# GEOMETRY data type
 
 H2GIS can handle `GEOMETRY` geospatial datasets.
 
-## `GEOMETRY` data type
-
-### Supported geometry types
+## Supported geometry types
 
 [H2 database](https://www.h2database.com/html/datatypes.html#geometry_type) and H2GIS supports the following geometry types:
 
@@ -17,7 +15,7 @@ H2GIS can handle `GEOMETRY` geospatial datasets.
 * `MULTIPOLYGON` : a complex geometry, made of a set of `POLYGON`'s,
 * `GEOMETRYCOLLECTION` : a set of simple and/or complex geometries (`POINT`, `LINESTRING`, `POLYGON`, `MULTIPOINT`, `MULTILINESTRING` and `MULTIPOLYGON`).
 
-### Supported coordinates
+## Supported coordinates
 
 For each of the geometry types, [H2 database](https://www.h2database.com/html/datatypes.html#geometry_type) and H2GIS supports the following geometry coordinates:
 * 2D : `X Y`
@@ -25,7 +23,7 @@ For each of the geometry types, [H2 database](https://www.h2database.com/html/da
 * M : `X Y M`
 * ZM : `X Y Z M`
 
-### Projection management
+## Projection management
 
 [H2 database](https://www.h2database.com/html/datatypes.html#geometry_type) and H2GIS allows to manage SRS ([Spatial reference system](https://en.wikipedia.org/wiki/Spatial_reference_system)) thanks to the specification of SRID (Spatial Reference System Identifier) constraint on geometries.
 
@@ -34,7 +32,7 @@ Example : `GEOMETRY(POINT Z, 4326)`
 
 See some dedicated H2GIS functions [here](./projections).
 
-### Examples
+## Table creation examples
 
 Here are some examples to create a table named `myTable` in which we have two columns : the geometry `the_geom` and a unique identifier (Primary Key) `id`:
 
@@ -65,11 +63,11 @@ CREATE TABLE myTable(the_geom GEOMETRY(POINT, 4326), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(MULTIPOLYGON ZM, 2154), id INTEGER PRIMARY KEY);
 ```
 
-### Specifying geometries on the fly
+## Specifying geometries on the fly
 
 [H2 database](https://www.h2database.com/html/datatypes.html#geometry_type) and H2GIS allows you to manipulate geometries on the fly in a query, using a quoted string (' '), containing a [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry)/EWKT formatted chain.
 
-#### Examples
+### Examples
 
 Generate a `POINT` in a `SELECT`:
 
@@ -92,7 +90,7 @@ Generate a `POLYGON` (having a hole) in a `SELECT`.
 SELECT 'POLYGON((2 2, 5 2, 6 4, 4 6, 1 6, 2 2), (3 3, 3 4, 4 4, 4 3, 3 3))'::GEOMETRY;
 ```
 
-![](./data-management_2.png){align=center}
+![](./geometry_type_2.png){align=center}
 
 ---
 
@@ -118,5 +116,8 @@ Answer:
 | 2  | POINT(2 2)  |
 | 4  | POINT(4 4)  |
 
-![](./data-management_1.png){align=center}
+![](./geometry_type_1.png){align=center}
 
+## See also
+
+* [How to manage spatial indices?](../spatial-indices)

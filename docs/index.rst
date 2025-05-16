@@ -99,7 +99,6 @@ Documentation
     quickstart
     data-management
     drivers
-    spatial-indices
     CHANGELOG
 
 .. toctree::
