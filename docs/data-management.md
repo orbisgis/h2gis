@@ -1,6 +1,6 @@
 # Data management
 
-H2GIS is able to manage two main types of geospatial data : `GEOMETRY` and `GEOGRAPHY`.
+H2GIS can handle two main types of geospatial data : `GEOMETRY` and `GEOGRAPHY`.
 
 ## `GEOMETRY` data type
 
@@ -15,7 +15,7 @@ H2GIS is able to manage two main types of geospatial data : `GEOMETRY` and `GEOG
 * `MULTIPOINT` : a complex geometry, made of a set of `POINT`'s,
 * `MULTILINESTRING` : a complex geometry, made of a set of `LINESTRING`'s,
 * `MULTIPOLYGON` : a complex geometry, made of a set of `POLYGON`'s,
-* `GEOMETRYCOLLECTION` : a set of simple or complex geometries (`POINT`, `LINESTRING`, `POLYGON`, `MULTIPOINT`, `MULTILINESTRING` and `MULTIPOLYGON`).
+* `GEOMETRYCOLLECTION` : a set of simple and/or complex geometries (`POINT`, `LINESTRING`, `POLYGON`, `MULTIPOINT`, `MULTILINESTRING` and `MULTIPOLYGON`).
 
 ### Supported coordinates
 
@@ -43,20 +43,24 @@ CREATE TABLE myTable(the_geom GEOMETRY, id INTEGER PRIMARY KEY);
 ```
 The same but with adding some constraints on geometry and `SRID`:
 
+* With various geometry types
 ```sql
--- With various geometry types
 CREATE TABLE myTable(the_geom GEOMETRY(POINT), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(LINESTRING), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(MULTIPOLYGON), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(GEOMETRYCOLLECTION), id INTEGER PRIMARY KEY);
+```
 
--- With the various coordinates
+* With the various coordinates
+```sql
 CREATE TABLE myTable(the_geom GEOMETRY(POINT), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(POINT Z), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(POINT M), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(POINT ZM), id INTEGER PRIMARY KEY);
+```
 
--- With SRID
+* With SRID
+```sql
 CREATE TABLE myTable(the_geom GEOMETRY(POINT, 4326), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(MULTIPOLYGON ZM, 2154), id INTEGER PRIMARY KEY);
 ```
@@ -67,16 +71,16 @@ CREATE TABLE myTable(the_geom GEOMETRY(MULTIPOLYGON ZM, 2154), id INTEGER PRIMAR
 
 #### Examples
 
-Generate a POINT in a `SELECT` (here the coordinates are exprimed in Lambert 93 - [EPSG:2154](https://spatialreference.org/ref/epsg/2154/))
+Generate a `POINT` in a `SELECT` (here the coordinates are exprimed in Lambert 93 - [EPSG:2154](https://spatialreference.org/ref/epsg/2154/))
 
 ```sql
 SELECT 'POINT(348238.151 6683011.940)'::GEOMETRY;
 ```
-Note that we are using `::` symbol to cast the string chain `POINT(348238.151 6683011.940)` into a geometry, that can be interpreted by H2/H2GIS.
+Note that we are using `::` symbol to cast the string chain `POINT(348238.151 6683011.940)` into a geometry, so that it can be interpreted by H2/H2GIS.
 
 ---
 
-Generate a POLYGON (having a hole) in a `SELECT`. 
+Generate a `POLYGON` (having a hole) in a `SELECT`. 
 
 ```sql
 SELECT 'POLYGON((2 2, 5 2, 6 4, 4 6, 1 6, 2 2), (3 3, 3 4, 4 4, 4 3, 3 3))'::GEOMETRY;
