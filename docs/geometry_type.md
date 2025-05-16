@@ -63,7 +63,7 @@ CREATE TABLE myTable(the_geom GEOMETRY(POINT, 4326), id INTEGER PRIMARY KEY);
 CREATE TABLE myTable(the_geom GEOMETRY(MULTIPOLYGON ZM, 2154), id INTEGER PRIMARY KEY);
 ```
 
-## Specifying geometries on the fly
+## Using geometries on the fly
 
 [H2 database](https://www.h2database.com/html/datatypes.html#geometry_type) and H2GIS allows you to manipulate geometries on the fly in a query, using a quoted string (' '), containing a [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry)/EWKT formatted chain.
 
