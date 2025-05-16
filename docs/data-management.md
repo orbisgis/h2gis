@@ -1,6 +1,6 @@
 # Data management
 
-H2GIS can handle two main types of geospatial data : `GEOMETRY` and `GEOGRAPHY`.
+H2GIS can handle `GEOMETRY` geospatial datasets.
 
 ## `GEOMETRY` data type
 
@@ -71,12 +71,18 @@ CREATE TABLE myTable(the_geom GEOMETRY(MULTIPOLYGON ZM, 2154), id INTEGER PRIMAR
 
 #### Examples
 
-Generate a `POINT` in a `SELECT` (here the coordinates are exprimed in Lambert 93 - [EPSG:2154](https://spatialreference.org/ref/epsg/2154/))
+Generate a `POINT` in a `SELECT`:
 
 ```sql
 SELECT 'POINT(348238.151 6683011.940)'::GEOMETRY;
 ```
-Note that we are using `::` symbol to cast the string chain `POINT(348238.151 6683011.940)` into a geometry, so that it can be interpreted by H2/H2GIS.
+Note that: we are using `::` symbol to cast the string chain `POINT(348238.151 6683011.940)` into a geometry, so that it can be interpreted by H2/H2GIS.
+
+Since the coordinates are here in Lambert 93 - [EPSG:2154](https://spatialreference.org/ref/epsg/2154/), we can force the SRID in the same time:
+
+```sql
+SELECT 'SRID=2154; POINT(348238.151 6683011.940)'::GEOMETRY;
+```
 
 ---
 
@@ -114,4 +120,3 @@ Answer:
 
 ![](./data-management_1.png){align=center}
 
-## Geography data type
