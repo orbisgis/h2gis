@@ -75,5 +75,5 @@ SELECT ST_RingBuffer('MULTIPOLYGON(((0 1, 1 1, 1 0, 0 0, 0 1)),
 
 ## See also
 
-* [`ST_Buffer`](../ST_Buffer), [`ST_SideBuffer`](../ST_SideBuffer), [`ST_RingSideBuffer`](../ST_RingSideBuffer), [`ST_OffSetCurve`](../ST_OffSetCurve)
+* [`ST_Buffer`](../ST_Buffer), [`ST_SideBuffer`](../ST_SideBuffer), [`ST_RingSideBuffer`](../ST_RingSideBuffer), [`ST_OffSetCurve`](../ST_OffSetCurve), [`ST_VariableBuffer`](../ST_VariableBuffer)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_RingBuffer.java" target="_blank">Source code</a>

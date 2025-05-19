@@ -134,6 +134,5 @@ SELECT ST_Buffer('GEOMETRYCOLLECTION(
 ```
 
 ## See also
-* [`ST_MakeEllipse`](../ST_MakeEllipse),
-  [`ST_RingBuffer`](../ST_RingBuffer)
+* [`ST_MakeEllipse`](../ST_MakeEllipse), [`ST_SideBuffer`](../ST_SideBuffer), [`ST_RingBuffer`](../ST_RingBuffer), [`ST_RingSideBuffer`](../ST_RingSideBuffer), [`ST_VariableBuffer`](../ST_VariableBuffer)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/buffer/ST_Buffer.java" target="_blank">Source code</a>

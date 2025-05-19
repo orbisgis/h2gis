@@ -51,6 +51,8 @@ The following geometry creation functions are available:
      - 	Construct a POINT from two or three coordinates
    * - :doc:`ST_RingBuffer`
      - Return a MULTIPOLYGON of buffers centered at a Geometry and of increasing buffer Size
+   * - :doc:`ST_VariableBuffer`
+     - Return a buffer having a width increasing between 2 sizes (start & end)
 
 .. toctree::
     :maxdepth: 1
@@ -76,9 +78,5 @@ The following geometry creation functions are available:
     ST_OctogonalEnvelope    
     ST_Point
     ST_RingBuffer
-
-
-
-
-
+    ST_VariableBuffer
 
