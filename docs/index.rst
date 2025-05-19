@@ -120,7 +120,7 @@ Documentation
     
 .. toctree::
     :maxdepth: 1
-    :caption: Geometry 3D functions
+    :caption: Geometry 3D/4D functions
     
     geometry-conversion-3D
     geometry-creation-3D

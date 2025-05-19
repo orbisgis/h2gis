@@ -21,6 +21,8 @@ The following functions are available to process geometries:
      - Make a Geometry valid
    * - :doc:`ST_Node`
      - Add nodes on a geometry for each intersection
+   * - :doc:`ST_OffSetCurve`
+     - Return an offset (collection of) line(s) at a given distance
    * - :doc:`ST_Polygonize`
      - Create a MULTIPOLYGON from edges of Geometries
    * - :doc:`ST_PrecisionReducer`
@@ -53,6 +55,7 @@ The following functions are available to process geometries:
     ST_LineMerge
     ST_MakeValid
     ST_Node
+    ST_OffSetCurve
     ST_Polygonize
     ST_PrecisionReducer
     ST_Project

@@ -46,6 +46,5 @@ SELECT ST_Z('GEOMETRYCOLLECTION(
 * [`ST_ExteriorRing`](../ST_ExteriorRing),
   [`ST_GeometryN`](../ST_GeometryN),
   [`ST_PointN`](../ST_PointN),
-  [`ST_X`](../ST_X),
-  [`ST_Y`](../ST_Y)
+  [`ST_X`](../ST_X), [`ST_Y`](../ST_Y), [`ST_M`](../ST_M)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_Z.java" target="_blank">Source code</a>

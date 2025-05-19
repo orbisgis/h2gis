@@ -75,5 +75,5 @@ SELECT ST_RINGSIDEBUFFER('LINESTRING (1 1, 4 4, 4 2)', 0.5, 3,
 * [`ST_RingBuffer`](../ST_RingBuffer),
   [`ST_SideBuffer`](../ST_SideBuffer),
   [`ST_Buffer`](../ST_Buffer),
-  [`ST_MakeEllipse`](../ST_MakeEllipse)
+  [`ST_OffSetCurve`](../ST_OffSetCurve)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/buffer/ST_RingSideBuffer.java" target="_blank">Source code</a>

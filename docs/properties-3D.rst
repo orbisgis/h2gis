@@ -11,6 +11,8 @@ The following 3D property functions are available:
      - Description
    * - :doc:`ST_Is3D`
      - Return ``1`` if a Geometry has at least one z-coordinate; ``0`` otherwise
+   * - :doc:`ST_M`
+     - Return the m-value of the first coordinate of a Geometry
    * - :doc:`ST_Z`
      - Return the z-value of the first coordinate of a Geometry
    * - :doc:`ST_ZMax`
@@ -22,6 +24,7 @@ The following 3D property functions are available:
     :maxdepth: 1
     
     ST_Is3D
+    ST_M
     ST_Z
     ST_ZMax
     ST_ZMin
