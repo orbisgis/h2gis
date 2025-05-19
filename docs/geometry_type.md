@@ -118,6 +118,30 @@ Answer:
 
 ![](./geometry_type_1.png){align=center}
 
+## Compatibility with PostGIS
+
+[H2 database](https://www.h2database.com/html/datatypes.html#geometry_type) and H2GIS allows you to define your geometries in two ways: with or without spaces:
+
+* `POINT Z` = `POINTZ`
+* `LINESTRING M` = `LINESTRINGM`
+* `POLYGON ZM` = `POLYGONZM`
+* ...
+
+In both cases, H2 and H2GIS will return a geometry with space. E.g
+
+```sql
+SELECT ST_Force3DM('POINT Z (-10 10 12)',10);
+-- or
+SELECT ST_Force3DM('POINTZ (-10 10 12)',10);
+```
+
+Returns in both cases `POINT M(-10 10 10)`.
+
+At the same time, **PostGIS only accepts signatures without spaces** ([see](https://postgis.net/docs/using_postgis_dbmanagement.html)).
+
+So, if you plan to make your .sql instructions compatible with PostGIS, **make sure you don't use spaces** when defining your geometries.
+
+
 ## See also
 
 * [How to manage spatial indices?](../spatial-indices)
