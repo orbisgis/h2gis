@@ -55,6 +55,7 @@ SELECT ST_MinimumRectangle('GEOMETRYCOLLECTION(
 
 * [`ST_Envelope`](../ST_Envelope),
   [`ST_Extent`](../ST_Extent),
+  [`ST_EstimatedExtent`](../ST_EstimatedExtent),
   [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope),
   [`ST_MinimumDiameter`](../ST_MinimumDiameter)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_MinimumRectangle.java" target="_blank">Source code</a>

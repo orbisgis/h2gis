@@ -27,6 +27,8 @@ The following property functions are available:
      - Return the last coordinate of a LINESTRING
    * - :doc:`ST_Envelope`
      - Return a Geometry's envelope as a Geometry
+   * - :doc:`ST_EstimatedExtent`
+     - Return the estimated extent of a table
    * - :doc:`ST_Explode`
      - Explode GEOMETRYCOLLECTIONs into multiple Geometries
    * - :doc:`ST_Extent`
@@ -98,6 +100,7 @@ The following property functions are available:
     ST_DistanceSphere
     ST_EndPoint
     ST_Envelope
+    ST_EstimatedExtent
     ST_Explode
     ST_Extent
     ST_ExteriorRing

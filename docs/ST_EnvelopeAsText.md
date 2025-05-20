@@ -1,15 +1,18 @@
-# ST_Envelope
+# ST_EnvelopeAsText
 
 ## Signatures
 
 ```sql
-GEOMETRY ST_Envelope(GEOMETRY geom);
+GEOMETRY ST_EnvelopeAsText(GEOMETRY geom);
 GEOMETRY ST_Envelope(GEOMETRY geom, INT srid);
 GEOMETRY ST_Envelope(GEOMETRYCOLLECTION geom);
 GEOMETRY ST_Envelope(GEOMETRYCOLLECTION geom, INT srid);
 ```
 
 ## Description
+
+Return a string representation of the envelope of `geom` : west, south, east, north -> minX, minY, maxX, max
+
 
 Returns the envelope of `geom` as a Geometry, optionally setting its SRID to
 `srid`. The default SRID is the same as that of `geom`.
@@ -70,23 +73,10 @@ SELECT ST_SRID(ST_Envelope(
 -- Answer: 2154
 ```
 
-### Comparison with [`ST_Extent`](../ST_Extent)
-
-```{include} extent-envelope-cf.md
-```
-
-### Comparison with [`ST_MinimumRectangle`](../ST_MinimumRectangle)
-
-```{include} minimumrectangle-envelope-cf.md
-```
 
 ## See also
 
-* [`ST_Extent`](../ST_Extent),
-  [`ST_EstimatedExtent`](../ST_EstimatedExtent),
-  [`ST_MinimumRectangle`](../ST_MinimumRectangle),
+* [`ST_Envelope`](../ST_Envelope), [`ST_Extent`](../ST_Extent), [`ST_EstimatedExtent`](../ST_EstimatedExtent), [`ST_MinimumRectangle`](../ST_MinimumRectangle),
   [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope)
-* JTS [Geometry#getEnvelope][jts]
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_Envelope.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/others/ST_EnvelopeAsText.java" target="_blank">Source code</a>
 
-[jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/geom/Geometry.html#getEnvelope()

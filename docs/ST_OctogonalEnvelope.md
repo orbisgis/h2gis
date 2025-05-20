@@ -60,6 +60,7 @@ SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120, 210 210,
 
 * [`ST_Envelope`](../ST_Envelope),
   [`ST_Extent`](../ST_Extent),
+  [`ST_EstimatedExtent`](../ST_EstimatedExtent),
   [`ST_MinimumRectangle`](../ST_MinimumRectangle),
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_OctogonalEnvelope.java" target="_blank">Source code</a>
 * JTS [OctogonalEnvelope](http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/geom/OctagonalEnvelope.html)
