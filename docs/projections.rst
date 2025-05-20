@@ -9,6 +9,8 @@ The following projection functions are available:
    
    * - Function
      - Description
+   * - :doc:`ST_FindUTMSRID`
+     - Find the UTM SRID code from a geometry
    * - :doc:`ST_SetSRID`
      - Return a copy of a Geometry with a new SRID
    * - :doc:`ST_Transform`
@@ -20,6 +22,7 @@ The following projection functions are available:
 .. toctree::
     :maxdepth: 1
     
+    ST_FindUTMSRID
     ST_SetSRID
     ST_Transform
     UpdateGeometrySRID
