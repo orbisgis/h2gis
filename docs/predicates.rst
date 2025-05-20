@@ -11,6 +11,8 @@ The following predicate functions are available:
      - Description
    * - :doc:`ST_Contains`
      - Return true if Geometry A contains Geometry B
+   * - :doc:`ST_CoveredBy`
+     - eturns true if Geometry A is covered by Geometry B
    * - :doc:`ST_Covers`
      - Return true if no point in Geometry B is outside Geometry A
    * - :doc:`ST_Crosses`
@@ -41,6 +43,7 @@ The following predicate functions are available:
     :maxdepth: 1
     
     ST_Contains
+    ST_CoveredBy
     ST_Covers
     ST_Crosses
     ST_DWithin

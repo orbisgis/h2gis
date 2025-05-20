@@ -61,7 +61,7 @@ SELECT ST_Relate('POINT(1 2)', ST_Buffer('POINT(1 2)', 2),
 
 ## See also
 
-* [`ST_Contains`](../ST_Contains), [`ST_Covers`](../ST_Covers), [`ST_Crosses`](../ST_Crosses), [`ST_Disjoint`](../ST_Disjoint),
+* [`ST_Contains`](../ST_Contains), [`ST_Covers`](../ST_Covers), [`ST_CoveredBy`](../ST_CoveredBy), [`ST_Crosses`](../ST_Crosses), [`ST_Disjoint`](../ST_Disjoint),
  [`ST_Equals`](../ST_Equals), [`ST_Intersects`](../ST_Intersects),
  [`ST_Overlaps`](../ST_Overlaps), [`ST_Touches`](../ST_Touches),
  [`ST_Within`](../ST_Within),

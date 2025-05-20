@@ -13,6 +13,10 @@ Returns `TRUE` if no point in `geomB` is outside `geomA`.
 ```{include} spatial_indice_warning.md
 ```
 
+:::{warning}
+Operation on mixed SRID geometries is not supported
+:::
+
 ## Examples
 
 | smallc POLYGON                     | bigc POLYGON                         |
@@ -48,4 +52,5 @@ SELECT ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;
 
 ## See also
 
+* [`ST_CoveredBy`](../ST_CoveredBy)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/predicates/ST_Covers.java" target="_blank">Source code</a>
