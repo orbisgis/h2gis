@@ -82,7 +82,8 @@ SELECT ST_SRID(ST_Envelope(
 
 ## See also
 
-* [`ST_Extent`](../ST_Extent),
+* [`ST_EnvelopeAsText`](../ST_EnvelopeAsText),
+  [`ST_Extent`](../ST_Extent),
   [`ST_EstimatedExtent`](../ST_EstimatedExtent),
   [`ST_MinimumRectangle`](../ST_MinimumRectangle),
   [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope)

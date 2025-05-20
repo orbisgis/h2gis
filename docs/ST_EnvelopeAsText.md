@@ -4,75 +4,54 @@
 
 ```sql
 GEOMETRY ST_EnvelopeAsText(GEOMETRY geom);
-GEOMETRY ST_Envelope(GEOMETRY geom, INT srid);
-GEOMETRY ST_Envelope(GEOMETRYCOLLECTION geom);
-GEOMETRY ST_Envelope(GEOMETRYCOLLECTION geom, INT srid);
 ```
 
 ## Description
 
-Return a string representation of the envelope of `geom` : west, south, east, north -> minX, minY, maxX, max
-
-
-Returns the envelope of `geom` as a Geometry, optionally setting its SRID to
-`srid`. The default SRID is the same as that of `geom`.
-
-| Input type                 | Return type                                                                                 |
-|----------------------------|---------------------------------------------------------------------------------------------|
-| A `POINT`                  | `POINT`                                                                                     |
-| A line parallel to an axis | A two-vertex `LINESTRING`                                                                   |
-| Otherwise                  | A `POLYGON` whose coordinates are `(minx miny, maxx miny, maxx maxy, minx maxy, minx miny)` |
-
-```{include} sfs-1-2-1.md
-```
-<!-- Is this function also SQL-MM? -->
+Return a string representation of the envelope of `geom` : West, South, East, North &rarr; X<sub>Min</sub>, Y<sub>Min</sub>, X<sub>Max</sub>, Y<sub>Max</sub>.
 
 ## Examples
 
-The envelope of a point is a point
+### With a `POINT` 
+
 ```sql
-SELECT ST_Envelope('POINT(1 2)', 2154);
--- Answer: POINT(1 2)
+SELECT ST_EnvelopeAsText('POINT(1 2)');
+-- Answer: 1.0,2.0,1.0,2.0
+```
+### With a `LINESTRING`
+
+```sql
+SELECT ST_EnvelopeAsText('LINESTRING(1 1, 5 5)');
+-- Answer: 1.0,1.0,5.0,5.0
 ```
 
-This is a line parallel to the x-axis, so only the endpoints are conserved
+### With a `LINESTRING` parallel to the x-axis
+
 ```sql
-SELECT ST_Envelope('LINESTRING(1 1, 5 1, 9 1)');
--- Answer: LINESTRING(1 1, 9 1)
+SELECT ST_EnvelopeAsText('LINESTRING(1 1, 5 1, 9 1)');
+-- Answer: 1.0,1.0,9.0,1.0
 ```
 
-(minx miny, maxx miny, maxx maxy, minx maxy, minx miny)
+### With a `MULTIPOINT`
+
 ```sql
-SELECT ST_Envelope('MULTIPOINT(1 2, 3 1, 2 2, 5 1, 1 -1)');
--- Answer: POLYGON((1 -1, 1 2, 5 2, 5 -1, 1 -1))
+SELECT ST_EnvelopeAsText('MULTIPOINT(1 2, 3 1, 2 1, 5 1, 1 -1)');
+-- Answer: 1.0,-1.0,5.0,2.0
 ```
 
-![](./ST_Envelope_1.png){align=center}
+![](./ST_EnvelopeAsText_1.png){align=center}
 
-(minx miny, maxx miny, maxx maxy, minx maxy, minx miny)
+
+### With a `GEOMETRYCOLLECTION`
+
 ```sql
-SELECT ST_Envelope('LINESTRING(1 2, 5 3, 2 6)');
--- Answer: POLYGON((1 2, 1 6, 5 6, 5 2, 1 2))
+SELECT ST_EnvelopeAsText('GEOMETRYCOLLECTION(
+                               MULTIPOINT(1 2, 2 1, 1 -1),
+                               LINESTRING(3 -1, 5 1),
+                               POLYGON((2 2, 4 3, 3 1, 2 2)))');
+-- Answer: 1.0,-1.0,5.0,3.0
 ```
-
-![](./ST_Envelope_2.png){align=center}
-
-### Setting or preserving the SRID
-
-This shows that `ST_Envelope` preserves the SRID of the input geometry
-```sql
-SELECT ST_SRID(ST_Envelope(
-    ST_GeomFromText('LINESTRING(1 1, 5 5)', 27572)))
--- Answer: 27572
-```
-
-This shows that `ST_Envelope` can set the SRID of Envelope
-```sql
-SELECT ST_SRID(ST_Envelope(
-    ST_GeomFromText('LINESTRING(1 1, 5 5)', 27572), 2154))
--- Answer: 2154
-```
-
+![](./ST_EnvelopeAsText_2.png){align=center}
 
 ## See also
 

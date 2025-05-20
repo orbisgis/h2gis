@@ -33,7 +33,7 @@ INSERT INTO myTable VALUES('LINESTRING(1 1, 5 5, 7 2)'::GEOMETRY),
                           ('LINESTRING(1 4, 3 1, 4 7)'::GEOMETRY),
                           ('LINESTRING(5 2, 7 6)'::GEOMETRY);
 
-SELECT  ST_EstimatedExtent('myTable');
+SELECT ST_EstimatedExtent('myTable');
 -- Answer: POLYGON ((1 1, 1 7, 7 7, 7 1, 1 1)) (red dashed line)
 ```
 
@@ -49,7 +49,7 @@ INSERT INTO myTable VALUES(ST_MPolyFromText('
       MULTIPOLYGON(((28 26,28 0,84 0, 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),
                    ((59 18,67 18,67 13,59 13,59 18)))', 4326));
 
-SELECT  ST_EstimatedExtent('myTable', 'THE_GEOM');
+SELECT ST_EstimatedExtent('myTable', 'THE_GEOM');
 
 -- Answer: SRID=4326;POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0)) (red dashed line)
 ```

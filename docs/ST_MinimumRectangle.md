@@ -54,6 +54,7 @@ SELECT ST_MinimumRectangle('GEOMETRYCOLLECTION(
 ## See also
 
 * [`ST_Envelope`](../ST_Envelope),
+  [`ST_EnvelopeAsText`](../ST_EnvelopeAsText),
   [`ST_Extent`](../ST_Extent),
   [`ST_EstimatedExtent`](../ST_EstimatedExtent),
   [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope),

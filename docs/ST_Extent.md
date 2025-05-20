@@ -34,6 +34,7 @@ SELECT ST_Extent('POINT(5 6)'::Geometry);
 
 * [`ST_EstimatedExtent`](../ST_EstimatedExtent),
   [`ST_Envelope`](../ST_Envelope),
+  [`ST_EnvelopeAsText`](../ST_EnvelopeAsText),
   [`ST_MinimumRectangle`](../ST_MinimumRectangle),
   [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_Extent.java" target="_blank">Source code</a>
