@@ -27,5 +27,5 @@ Here, [EPSG:32630](https://epsg.io/32630) correspond to WGS 84 / UTM zone 30N.
 
 ## See also
 
-* [`ST_SRID`](../ST_SRID), [`ST_SetSRID`](../ST_SetSRID), [`ST_Transform`](../ST_Transform), [`UpdateGeometrySRID`](../UpdateGeometrySRID), [`ST_GeomFromText`](../ST_GeomFromText)
+* [`ST_SRID`](../ST_SRID), [`ST_SetSRID`](../ST_SetSRID), [`ST_Transform`](../ST_Transform), [`UpdateGeometrySRID`](../UpdateGeometrySRID), [`ST_GeomFromText`](../ST_GeomFromText), [`ST_IsGeographicCRS`](../ST_IsGeographicCRS)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_SRID.java" target="_blank">Source code</a>

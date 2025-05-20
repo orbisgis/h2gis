@@ -35,5 +35,5 @@ Answer:
 
 ## See also
 
-* [`ST_Transform`](../ST_Transform), [`ST_SRID`](../ST_SRID), [`UpdateGeometrySRID`](../UpdateGeometrySRID), [`ST_FindUTMSRID`](../ST_FindUTMSRID)
+* [`ST_Transform`](../ST_Transform), [`ST_SRID`](../ST_SRID), [`UpdateGeometrySRID`](../UpdateGeometrySRID), [`ST_FindUTMSRID`](../ST_FindUTMSRID), [`ST_IsGeographicCRS`](../ST_IsGeographicCRS)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/crs/ST_SetSRID.java" target="_blank">Source code</a>

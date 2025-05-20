@@ -48,5 +48,5 @@ Answer: SRID = `4326`
 
 ##### See also
 
-* [`ST_Transform`](../ST_Transform), [`ST_SRID`](../ST_SRID), [`ST_SetSRID`](../ST_SetSRID), [`ST_FindUTMSRID`](../ST_FindUTMSRID)
+* [`ST_Transform`](../ST_Transform), [`ST_SRID`](../ST_SRID), [`ST_SetSRID`](../ST_SetSRID), [`ST_FindUTMSRID`](../ST_FindUTMSRID), [`ST_IsGeographicCRS`](../ST_IsGeographicCRS)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/crs/UpdateGeometrySRID.java" target="_blank">Source code</a>

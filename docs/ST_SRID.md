@@ -27,5 +27,5 @@ SELECT ST_SRID(ST_GeomFromText('LINESTRING(2 1, 1 3, 5 2, 2 1)', 4326));
 
 ## See also
 
-* [`ST_SetSRID`](../ST_SetSRID), [`ST_Transform`](../ST_Transform), [`UpdateGeometrySRID`](../UpdateGeometrySRID), [`ST_FindUTMSRID`](../ST_FindUTMSRID), [`ST_GeomFromText`](../ST_GeomFromText)
+* [`ST_SetSRID`](../ST_SetSRID), [`ST_Transform`](../ST_Transform), [`UpdateGeometrySRID`](../UpdateGeometrySRID), [`ST_FindUTMSRID`](../ST_FindUTMSRID), [`ST_GeomFromText`](../ST_GeomFromText), [`ST_IsGeographicCRS`](../ST_IsGeographicCRS)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_SRID.java" target="_blank">Source code</a>
