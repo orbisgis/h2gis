@@ -138,6 +138,6 @@ Answer:
 
 ## See also
 
-* [`ST_Simplify`](../ST_Simplify)
+* [`ST_Simplify`](../ST_Simplify), [`ST_SimplifyVW`](../ST_SimplifyVW)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/generalize/ST_SimplifyPreserveTopology.java" target="_blank">Source code</a>
 * JTS [DouglasPeuckerSimplifier#simplify](http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/simplify/DouglasPeuckerSimplifier.html#simplify)

@@ -22,7 +22,7 @@ But note that `ST_Simplify` is significantly faster.
 ```sql
 SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
                              4 2, 4 1, 3 0, 2 0, 2 1))',
-                    0.5)
+                    0.5);
 -- Answer: POLYGON((2 1, 1 2, 3 3, 4 1, 3 0, 2 0, 2 1))
 ```
 
@@ -31,7 +31,7 @@ SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
 ```sql
 SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
                              4 2, 4 1, 3 0, 2 0, 2 1))',
-                    1)
+                    1);
 -- Answer:POLYGON((2 1, 1 2, 3 3, 4 1, 2 1))
 ```
 
@@ -41,7 +41,7 @@ If the distance tolerance is too large, the Geometry may be oversimplified:
 ```sql
 SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
                              4 2, 4 1, 3 0, 2 0, 2 1))',
-                    2)
+                    2);
 -- Answer: POLYGON EMPTY
 ```
 
@@ -107,6 +107,6 @@ Answer:
 
 ## See also
 
-* [`ST_SimplifyPreserveTopology`](../ST_SimplifyPreserveTopology)
+* [`ST_SimplifyPreserveTopology`](../ST_SimplifyPreserveTopology), [`ST_SimplifyVW`](../ST_SimplifyVW)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/generalize/ST_Simplify.java" target="_blank">Source code</a>
 * JTS [DouglasPeuckerSimplifier#simplify](http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/simplify/DouglasPeuckerSimplifier.html#simplify)

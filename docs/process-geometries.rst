@@ -34,9 +34,11 @@ The following functions are available to process geometries:
    * - :doc:`ST_SideBuffer`
      - Compute a single buffer on one side
    * - :doc:`ST_Simplify`
-     - Simplify a Geometry
+     - Simplify a Geometry using Douglas-Peuker algorithm 
    * - :doc:`ST_SimplifyPreserveTopology`
      - Simplify a Geometry, preserving its topology
+   * - :doc:`ST_SimplifyVW`
+     - Simplify a Geometry using Visvalingam-Whyatt algorithm
    * - :doc:`ST_Snap`
      - Snap two Geometries together
    * - :doc:`ST_SnapToSelf`
@@ -63,6 +65,7 @@ The following functions are available to process geometries:
     ST_SideBuffer
     ST_Simplify
     ST_SimplifyPreserveTopology
+    ST_SimplifyVW
     ST_Snap
     ST_SnapToSelf
     ST_Split
