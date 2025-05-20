@@ -59,6 +59,8 @@ The following property functions are available:
      - Return a valid detail as an array of objects
    * - :doc:`ST_IsValidReason`
      - Return text stating if a geometry is valid or not and if not valid, a reason why
+   * - :doc:`ST_MemSize`
+     - Returns the amount of memory space (in bytes) taken by the geometry
    * - :doc:`ST_NPoints`
      - Return the number of points in a Geometry
    * - :doc:`ST_NumGeometries`
@@ -118,6 +120,7 @@ The following property functions are available:
     ST_IsValid
     ST_IsValidDetail
     ST_IsValidReason
+    ST_MemSize
     ST_NPoints
     ST_NumGeometries
     ST_NumInteriorRing
