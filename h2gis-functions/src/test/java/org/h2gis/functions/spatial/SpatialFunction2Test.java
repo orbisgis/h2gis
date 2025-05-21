@@ -1270,4 +1270,31 @@ public class SpatialFunction2Test {
         assertGeometryEquals("POLYGON ((26 20, 32 36, 35 45, 39 55, 43 69, 50 84, 57 100, 63 118, 68 133, 74 149, 81 164, 88 180, 101 180, 112 180, 119 164, 126 149, 132 131, 139 113, 143 100, 150 84, 157 69, 163 51, 168 36, 174 20, 163 20, 150 20, 143 36, 139 49, 132 64, 114 64, 99 64, 81 64, 63 64, 57 49, 52 36, 46 20, 37 20, 26 20), (74 93, 83 82, 99 82, 112 82, 121 96, 114 109, 110 122, 103 138, 92 138, 88 124, 81 109, 74 93))", rs.getObject(1));
         rs.close();
     }
+
+    @Test
+    public void test_ST_M1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_M('POINT(0 0)') ;");
+        assertTrue(rs.next());
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_M2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_M('POINTM(0 0 2)') ;");
+        assertTrue(rs.next());
+        assertEquals(2.0d,rs.getDouble(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_M3() throws Exception {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.executeQuery("SELECT ST_M('LINESTRING (-0.9 3.6, 1.7 3.3)') ;");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
+    }
 }
