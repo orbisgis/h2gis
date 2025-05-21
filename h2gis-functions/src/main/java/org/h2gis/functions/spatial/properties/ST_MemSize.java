@@ -52,6 +52,6 @@ public class ST_MemSize extends DeterministicScalarFunction {
         }else if(value instanceof ValueGeometry) {
             return value.octetLength();
         }
-        throw new SQLException("ST_MenSize only support geometry value ");
+        throw new SQLException("ST_MemSize only support geometry value ");
     }
 }
