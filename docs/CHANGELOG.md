@@ -14,5 +14,6 @@
 - Fix bug when read GeometryCollection with the ST_GeomFromGeoJSON function 
 - ST_MAKEGRID and ST_MAKEGRIDPOINTS : add an option to order the cells starting from the upper left corner 
 - Change ST_Collect to scalar function
-- Upgrade the version of FlatGeoBuffer driver (update of guava, flatbuffer)- 
+- Upgrade the version of FlatGeoBuffer driver (update of guava, flatbuffer)
 - Fix ST_MemSize typo
+- Fix doc for ST_SimplifyVW
