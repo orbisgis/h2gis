@@ -112,10 +112,10 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
     }
 
     /**
-     * Convert the a geometry as a list of segments and mark it with a flag
-     * @param geometry
-     * @param flag
-     * @param segments 
+     * Convert a geometry as a list of segments and mark it with a flag
+     * @param geometry {@link Geometry}
+     * @param flag mark
+     * @param segments array to fill
      */
     public static void addGeometryToSegments(Geometry geometry, int flag, ArrayList<SegmentString> segments) {
         for (int i = 0; i < geometry.getNumGeometries(); i++) {

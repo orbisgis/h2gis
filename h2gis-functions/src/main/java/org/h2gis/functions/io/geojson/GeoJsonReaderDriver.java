@@ -487,7 +487,6 @@ public class GeoJsonReaderDriver {
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
      * @param jp
-     * @throws IOException
      */
     private void parseMultiPointMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -669,8 +668,7 @@ public class GeoJsonReaderDriver {
      *
      * 100.0, 0.0]
      *
-     * @param jp
-     * @throws IOException
+     * @param jp parser
      * @return Coordinate
      */
     private void parseCoordinateMetadata(JsonParser jp) throws IOException {
@@ -862,8 +860,7 @@ public class GeoJsonReaderDriver {
      *
      * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
      *
-     * @param jp
-     * @throws IOException
+     * @param jp parser
      * @return Geometry
      */
     private Geometry parseGeometry(JsonParser jp, String geometryType) throws IOException, SQLException {
@@ -1022,8 +1019,7 @@ public class GeoJsonReaderDriver {
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
-     * @param jp
-     * @throws IOException
+     * @param jp parser
      * @return Point
      */
     private Point parsePoint(JsonParser jp) throws IOException, SQLException {
@@ -1044,8 +1040,7 @@ public class GeoJsonReaderDriver {
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jp
-     * @throws IOException
+     * @param jp parser
      * @return MultiPoint
      */
     private MultiPoint parseMultiPoint(JsonParser jp) throws IOException, SQLException {
@@ -1291,8 +1286,7 @@ public class GeoJsonReaderDriver {
      *
      * 100.0, 0.0]
      *
-     * @param jp
-     * @throws IOException
+     * @param jp parser
      * @return Coordinate
      */
     private Coordinate parseCoordinate(JsonParser jp) throws IOException {

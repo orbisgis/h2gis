@@ -45,7 +45,7 @@ public class FullConvexHull
 
     /**
      * Create a new convex hull construction for the input {@link Geometry}.
-     * @param geometry
+     * @param geometry {@link Geometry}
      */
     public FullConvexHull(Geometry geometry)
     {
@@ -112,7 +112,7 @@ public class FullConvexHull
     /**
      * An alternative to Stack.toArray, which is not present in earlier versions
      * of Java.
-     * @param stack
+     * @param stack coordinate stack
      */
     protected Coordinate[] toCoordinateArray(Stack stack) {
         Coordinate[] coordinates = new Coordinate[stack.size()];

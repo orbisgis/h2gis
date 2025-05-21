@@ -60,7 +60,6 @@
             <groupId>org.wololo</groupId>
             <artifactId>flatgeobuf</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-api</artifactId>

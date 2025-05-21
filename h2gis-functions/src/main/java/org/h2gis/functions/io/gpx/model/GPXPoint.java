@@ -41,7 +41,7 @@ public class GPXPoint {
     /**
      * This method is used to create a new array of values
      *
-     * @param valuesCount
+     * @param valuesCount array size
      */
     public void clearValues(int valuesCount) {
         ptValues = new Object[valuesCount];

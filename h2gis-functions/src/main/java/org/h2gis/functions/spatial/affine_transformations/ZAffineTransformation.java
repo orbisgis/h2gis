@@ -83,9 +83,9 @@ public class ZAffineTransformation implements Cloneable, CoordinateSequenceFilte
      * Populate the matrix element of the linear transformation used to
      * rotate, scale, translate or shear in 3D a geometry.
      * 
-     * @param dx
-     * @param dy
-     * @param dz 
+     * @param dx double
+     * @param dy double
+     * @param dz double
      */
     public ZAffineTransformation(double dx, double dy, double dz) {
         this.m00 = 1.0;  this.m01 = 0.0; this.m02 = 0.0; this.m03 = dx;

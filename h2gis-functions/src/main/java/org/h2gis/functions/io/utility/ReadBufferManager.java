@@ -122,7 +122,7 @@ public final class ReadBufferManager {
         /**
          * Specifies the byte order. One of the constants in {@link java.nio.ByteBuffer}
          *
-         * @param order
+         * @param order {@link ByteOrder}
          */
         public void order(ByteOrder order) {
                 buffer.order(order);
@@ -222,7 +222,7 @@ public final class ReadBufferManager {
         /**
          * Moves the current position to the specified one
          *
-         * @param position
+         * @param position buffer position
          */
         public void position(long position) {
                 this.positionInFile = position;

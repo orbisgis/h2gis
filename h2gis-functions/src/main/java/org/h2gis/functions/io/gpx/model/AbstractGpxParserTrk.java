@@ -211,7 +211,7 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
     /**
      * Set the parent of this specific parser.
      *
-     * @param parent
+     * @param parent {@link AbstractGpxParserDefault}
      */
     public void setParent(AbstractGpxParserDefault parent) {
         this.parent = parent;
@@ -230,7 +230,7 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
      * Set the list corresponding to the segments' list of coordinates of the
      * actual track.
      *
-     * @param trkList
+     * @param trkList tracks
      */
     public void setTrkList(List<LineString> trkList) {
         this.trkList = trkList;
@@ -240,7 +240,7 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
      * Set the list corresponding to the points' coordinates of the actual track
      * segment.
      *
-     * @param trksegList
+     * @param trksegList segments
      */
     public void setTrksegList(List<Coordinate> trksegList) {
         this.trksegList = trksegList;

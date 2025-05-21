@@ -71,7 +71,7 @@ public class SHPDriver implements FileDriver {
 
     /**
      * Insert values in the row
-     * @param values
+     * @param values values to insert
      */
     @Override
     public void insertRow(Object[] values) throws IOException {
@@ -107,9 +107,9 @@ public class SHPDriver implements FileDriver {
 
     /**
      * Init Driver for Write mode
-     * @param shpFile
-     * @param shapeType
-     * @param dbaseHeader
+     * @param shpFile shp file
+     * @param shapeType type of the shape
+     * @param dbaseHeader dbase header
      */
     public void initDriver(File shpFile, ShapeType shapeType, DbaseFileHeader dbaseHeader) throws IOException {
         String path = shpFile.getAbsolutePath();
@@ -272,7 +272,7 @@ public class SHPDriver implements FileDriver {
 
     /**
      * Set a SRID code that will be used for geometries.
-     * @param srid 
+     * @param srid int value
      */
     public void setSRID(int srid) {
         this.srid=srid;

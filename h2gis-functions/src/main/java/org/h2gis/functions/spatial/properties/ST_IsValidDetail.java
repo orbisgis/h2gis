@@ -53,7 +53,7 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
      * Returns a valid_detail as an array of objects
      * [0] = isvalid,[1] = reason, [2] = error location
      * 
-     * @param geometry
+     * @param geometry geometry to validate
      * @return array with all valid details
      */
     public static String[] isValidDetail(Geometry geometry) {

@@ -92,7 +92,7 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
      * @param connection database connection
      * @param fileName input file
      * @param tableReference output table name
-     * @param encoding
+     * @param encoding chartset encoding
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFile) throws SQLException, IOException {
         TSVDriverFunction tSVDriverFunction = new TSVDriverFunction();

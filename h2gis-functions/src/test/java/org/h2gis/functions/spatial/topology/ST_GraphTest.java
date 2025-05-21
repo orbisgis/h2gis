@@ -26,10 +26,7 @@ import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.jupiter.api.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.jupiter.api.Assertions.*;
@@ -92,7 +89,8 @@ public class ST_GraphTest {
                 + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', DEFAULT),"
                 + "('LINESTRING (4 3, 5 2)', 'road4', DEFAULT),"
                 + "('LINESTRING (4.05 4.1, 7 5)', 'road5', DEFAULT),"
-                + "('LINESTRING (7.1 5, 8 4)', 'road6', DEFAULT);");
+                + "('LINESTRING (7.1 5, 8 4)', 'road6', DEFAULT),"
+                + "('LINESTRING EMPTY', 'road7', DEFAULT);");
 
         try ( // Make sure everything went OK.
                 ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)")) {
@@ -669,6 +667,54 @@ public class ST_GraphTest {
             assertTrue(edgesCount.next());
             assertEquals(6, edgesCount.getInt(1));
             edgesCount.close();
+        }
+    }
+
+    @Test
+    public void test_ST_GraphSerialID() throws Exception {
+        // Prepare the input table.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id SERIAL);"
+                + "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
+                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', DEFAULT),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', DEFAULT),"
+                + "('LINESTRING (4 3, 5 2)', 'road4', DEFAULT),"
+                + "('LINESTRING (4.05 4.1, 7 5)', 'road5', DEFAULT),"
+                + "('LINESTRING (7.1 5, 8 4)', 'road6', DEFAULT),"
+                + "('LINESTRING EMPTY', 'road7', DEFAULT);");
+
+        try ( // Make sure everything went OK.
+              ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)")) {
+            assertTrue(rs.next());
+            assertTrue(rs.getBoolean(1));
+            assertFalse(rs.next());
+
+            // Test nodes table.
+            ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
+            assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
+            checkNode(nodesResult, 1, "POINT (0 0)");
+            checkNode(nodesResult, 2, "POINT (1 2)");
+            checkNode(nodesResult, 3, "POINT (4 3)");
+            checkNode(nodesResult, 4, "POINT (4.05 4.1)");
+            checkNode(nodesResult, 5, "POINT (7.1 5)");
+            checkNode(nodesResult, 6, "POINT (5 2)");
+            checkNode(nodesResult, 7, "POINT (8 4)");
+            assertFalse(nodesResult.next());
+            nodesResult.close();
+
+            // Test edges table.
+            ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
+            // This is a copy of the original table with three columns added.
+            assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
+            checkEdge(edgesResult, 1, 1, 2);
+            checkEdge(edgesResult, 2, 2, 3);
+            checkEdge(edgesResult, 3, 3, 2);
+            checkEdge(edgesResult, 4, 3, 6);
+            checkEdge(edgesResult, 5, 4, 5);
+            checkEdge(edgesResult, 6, 5, 7);
+            assertFalse(edgesResult.next());
+            edgesResult.close();
         }
     }
 

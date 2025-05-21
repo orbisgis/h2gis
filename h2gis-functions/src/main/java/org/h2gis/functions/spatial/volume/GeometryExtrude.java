@@ -113,9 +113,9 @@ public class GeometryExtrude {
     
     /**
      * Extract the walls from a polygon
-     * @param polygon
-     * @param height
-     * @return 
+     * @param polygon input footprint
+     * @param height height
+     * @return MultiPolygon
      */
     public static MultiPolygon extractWalls(Polygon polygon, double height){
         GeometryFactory factory = polygon.getFactory();

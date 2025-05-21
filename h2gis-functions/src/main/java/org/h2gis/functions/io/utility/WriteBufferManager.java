@@ -107,7 +107,7 @@ public final class WriteBufferManager {
 	/**
 	 * Specifies the byte order. One of the constants in {@link java.nio.ByteBuffer}
 	 *
-	 * @param order
+	 * @param order {@link ByteOrder}
 	 */
 	public void order(ByteOrder order) {
 		this.buffer.order(order);

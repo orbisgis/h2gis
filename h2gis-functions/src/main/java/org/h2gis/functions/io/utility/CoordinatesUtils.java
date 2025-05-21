@@ -140,8 +140,8 @@ public final class CoordinatesUtils {
         /**
          * Find the furthest coordinate in a geometry from a base coordinate
          *
-         * @param base
-         * @param coords
+         * @param base {@link Coordinate}
+         * @param coords {@link Coordinate}
          * @return the base coordinate and the target coordinate
          */
         public static Coordinate[] getFurthestCoordinate(Coordinate base, Coordinate[] coords) {
