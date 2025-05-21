@@ -1,9 +1,9 @@
 # ST_EnvelopeAsText
 
-## Signatures
+## Signature
 
 ```sql
-GEOMETRY ST_EnvelopeAsText(GEOMETRY geom);
+VARCHAR ST_EnvelopeAsText(GEOMETRY geom);
 ```
 
 ## Description

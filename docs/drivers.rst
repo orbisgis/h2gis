@@ -45,10 +45,14 @@ H2GIS provides several drivers for importing from and exporting to various file 
      - Geometry → GeoJSON
    * - :doc:`ST_AsKML`
      - Geometry → KML
+   * - :doc:`ST_AsOverpassBbox`
+     - Geometry → OverPass Bbox     
    * - :doc:`ST_GeomFromGeoJson`
      - GeoJSON → Geometry
    * - :doc:`ST_OSMDownloader`
      - OSM → File
+   * - :doc:`ST_OverpassDownloader`
+     - Overpass OSM → File  
    * - :doc:`TSVRead`
      - TSV → Table
    * - :doc:`TSVWrite`
@@ -75,7 +79,9 @@ H2GIS provides several drivers for importing from and exporting to various file 
     SHPWrite
     ST_AsGeoJson
     ST_AsKML
+    ST_AsOverpassBbox
     ST_GeomFromGeoJson
     ST_OSMDownloader
+    ST_OverpassDownloader
     TSVRead
     TSVWrite
