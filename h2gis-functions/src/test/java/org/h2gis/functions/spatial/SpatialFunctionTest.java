@@ -2358,6 +2358,14 @@ public class SpatialFunctionTest {
         rs.close();
     }
 
+    @Test
+    public void test_ST_Force3DM8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force3DM('MULTIPOINT((2 2), (10 0))'::GEOMETRY, 5);");
+        rs.next();
+        assertGeometryEquals("MULTIPOINT M ((2 2 5), (10 0 5))", rs.getBytes(1));
+        rs.close();
+    }
+
 
     @Test
     public void test_ST_Force3D1() throws Exception {
