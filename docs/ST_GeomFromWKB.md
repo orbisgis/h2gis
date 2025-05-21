@@ -32,6 +32,6 @@ SELECT ST_GeomFromWKB('000000000300000001000000064048800000000000403e00000000000
 
 ## See also
 
-* [`ST_PointFromWKB`](../ST_PointFromWKB), [`ST_LineFromWKB`](../ST_LineFromWKB), [`ST_PolyFromWKB`](../ST_PolyFromWKB)
+* [`ST_PointFromWKB`](../ST_PointFromWKB), [`ST_LineFromWKB`](../ST_LineFromWKB), [`ST_PolyFromWKB`](../ST_PolyFromWKB), [`ST_AsEWKB`](../ST_AsEWKB)
 
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/convert/ST_GeomFromWKB.java" target="_blank">Source code</a>

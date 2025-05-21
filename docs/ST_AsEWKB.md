@@ -1,0 +1,32 @@
+# ST_AsEWKB
+
+## Signature
+
+```sql
+BINARY ST_AsEWKB(GEOMETRY geom);
+```
+
+## Description
+
+Convert a geometry (`geom`) into an [Extended Well-Known Text](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) (EWKB) representation.
+
+## Examples
+
+```sql
+SELECT ST_AsEWKB('POLYGON((0 0,0 1,1 1,1 0,0 0))'::GEOMETRY);
+-- Answer: 000000000300000001000000050000000000000000000000000000000000000000000000003ff00000000000003ff00000000000003ff00000000000003ff0000000000000000000000000000000000000000000000000000000000000
+```
+```sql
+SELECT ST_AsEWKB('LINESTRING (4 3, 6 5, 8 12)'::GEOMETRY);
+-- Answer: 000000000200000003401000000000000040080000000000004018000000000000401400000000000040200000000000004028000000000000
+```
+```sql
+SELECT ST_AsEWKB(ST_GeomFromText('POLYGON((0 0,0 1,1 1,1 0,0 0))',4326));
+-- Answer: 0020000003000010e600000001000000050000000000000000000000000000000000000000000000003ff00000000000003ff00000000000003ff00000000000003ff0000000000000000000000000000000000000000000000000000000000000
+```
+
+## See also
+
+* [`ST_GeomFromWKB`](../ST_GeomFromWKB), [`ST_PointFromWKB`](../ST_PointFromWKB), [`ST_LineFromWKB`](../ST_LineFromWKB), [`ST_PolyFromWKB`](../ST_PolyFromWKB), [`ST_AsBinary`](../ST_AsBinary)
+
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/convert/ST_AsEWKB.java" target="_blank">Source code</a>

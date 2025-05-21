@@ -8,7 +8,7 @@ BINARY ST_AsBinary(GEOMETRY geom);
 
 ## Description
 
-Converts `geom` into its Well Known Binary value.
+Convert a geometry (`geom`) into an Well Known Binary (WKB) representation.
 
 ```{include} sfs-1-2-1.md
 ```
@@ -26,4 +26,5 @@ SELECT ST_AsBinary(
 
 ## See also
 
+* [`ST_AsEWKB`](../ST_AsEWKB), [`ST_GeomFromWKB`](../ST_GeomFromWKB), [`ST_PointFromWKB`](../ST_PointFromWKB), [`ST_LineFromWKB`](../ST_LineFromWKB), [`ST_PolyFromWKB`](../ST_PolyFromWKB)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/convert/ST_AsBinary.java" target="_blank">Source code</a>

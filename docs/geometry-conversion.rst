@@ -12,6 +12,8 @@ The following geometry conversion functions are available:
      - Description
    * - :doc:`ST_AsBinary`
      - Geometry → Well Known Binary
+   * - :doc:`ST_AsEWKB`
+     - Geometry → Extended Well Known Binary
    * - :doc:`ST_AsGML`
      - Geometry → GML
    * - :doc:`ST_AsText`
@@ -64,6 +66,7 @@ The following geometry conversion functions are available:
     :maxdepth: 1
     
     ST_AsBinary
+    ST_AsEWKB
     ST_AsGML
     ST_AsWKT
     ST_AsText
