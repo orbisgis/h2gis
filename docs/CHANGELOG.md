@@ -17,3 +17,6 @@
 - Upgrade the version of FlatGeoBuffer driver (update of guava, flatbuffer)
 - Fix ST_MemSize typo
 - Fix doc for ST_SimplifyVW
+- Fix typo on FlatGeobuf driver
+- Fix doc on ST_MaximumInscribedCircle
+- Fix typo on ST_Force3DM

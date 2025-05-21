@@ -152,7 +152,7 @@ public class FGBWriteDriver {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
                 } else if (fileName.exists()) {
-                    throw new IOException("The geojson file already exist.");
+                    throw new IOException("The flatgeobuffer file already exist.");
                 }
                 String filePath = fileName.getName();
                 final int dotIndex = filePath.lastIndexOf('.');
