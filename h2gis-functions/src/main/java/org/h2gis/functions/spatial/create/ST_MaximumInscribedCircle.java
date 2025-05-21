@@ -35,7 +35,8 @@ public class ST_MaximumInscribedCircle extends DeterministicScalarFunction {
 
     public ST_MaximumInscribedCircle() {
         addProperty(PROP_REMARKS, "Compute the largest circle that is contained within a (multi)polygon or " +
-                "the largest circle of a set of geometries constrained by their envelope.");
+                "the largest circle of a set of geometries constrained by obstacles.\n" +
+                " The obstacles may be any combination of point, linear and polygonal geometries.");
     }
 
     @Override
@@ -68,4 +69,5 @@ public class ST_MaximumInscribedCircle extends DeterministicScalarFunction {
             return geom;
         }
     }
+
 }

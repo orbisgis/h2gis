@@ -16,4 +16,5 @@
 - Change ST_Collect to scalar function
 - Upgrade the version of FlatGeoBuffer driver (update of guava, flatbuffer)
 - Fix typo on FlatGeobuf driver
+- Fix doc on ST_MaximumInscribedCircle
   
