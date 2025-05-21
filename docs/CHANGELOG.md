@@ -20,3 +20,4 @@
 - Fix typo on FlatGeobuf driver
 - Fix doc on ST_MaximumInscribedCircle
 - Fix typo on ST_Force3DM
+- ST_Force3DM returns MULTIPOINT instead of GEOMETRYCOLLECTION M 

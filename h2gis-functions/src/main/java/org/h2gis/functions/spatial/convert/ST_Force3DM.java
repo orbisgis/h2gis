@@ -116,6 +116,40 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     }
 
     /**
+     * Force the dimension of the Point and update correctly the coordinate
+     * dimension
+     * @param p {@link Point}
+     * @param mValue m value
+     * @return Point
+     */
+    public static Point convert(Point p, double mValue) {
+        int dimension =2;
+        CoordinateSequence cs = p.getCoordinateSequence();
+        if(cs.getDimension()!=dimension|| cs.getMeasures()!=1) {
+            Point g = gf.createPoint(convertSequence(cs, mValue));
+            g.setSRID(p.getSRID());
+            return g;
+        }
+        return p;
+    }
+
+    /**
+     * Force the dimension of the MultiPoint and update correctly the coordinate
+     * dimension
+     * @param mp {@link MultiPoint}
+     * @param mValue m value
+     * @return MultiPoint
+     */
+    public static MultiPoint convert(MultiPoint mp, double mValue) {
+        int nb = mp.getNumGeometries();
+        final Point[] geometries = new Point[nb];
+        for (int i = 0; i < nb; i++) {
+            geometries[i]=convert((Point) mp.getGeometryN(i), mValue);
+        }
+        return gf.createMultiPoint(geometries);
+    }
+
+    /**
      * Force the dimension of the GeometryCollection and update correctly the coordinate
      * dimension
      * @param gc {@link GeometryCollection}
