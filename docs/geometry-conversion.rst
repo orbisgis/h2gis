@@ -44,6 +44,8 @@ The following geometry conversion functions are available:
      - Well Known Text → MULTIPOINT
    * - :doc:`ST_MPolyFromText`
      - Well Known Text → MULTIPOLYGON
+   * - :doc:`ST_Multi`
+     - SIMPLE → MULTI geometry
    * - :doc:`ST_OSMMapLink`
      - Geometry → OSM map link
    * - :doc:`ST_PointFromText`
@@ -82,6 +84,7 @@ The following geometry conversion functions are available:
     ST_MLineFromText
     ST_MPointFromText
     ST_MPolyFromText
+    ST_Multi
     ST_OSMMapLink
     ST_PointFromText
     ST_PointFromWKB
