@@ -38,7 +38,7 @@ public class ST_Force3DM extends DeterministicScalarFunction {
     public ST_Force3DM() {
         addProperty(PROP_REMARKS, "Forces the geometries into XYM mode.\n "
                 + "If a geometry has no M component, then a M value is tacked on." +
-                " Z value is removed. Default M value is z to zero.");
+                " Z value is removed. Default M value is set to zero.");
     }
 
     @Override
