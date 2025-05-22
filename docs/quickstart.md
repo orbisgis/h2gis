@@ -111,3 +111,7 @@ In this example you can see that a new db, named `myDB`, will be stored in the f
 5. Press `Terminate`. You can now play with H2GIS in DBeaver
 
 ![](./quickstart_dbeaver_new_db_5.png){align=center}
+
+:::{tip}
+Here, you don't need to initialize the H2GIS extension. It's already done by DBeaver, in the background.
+:::
