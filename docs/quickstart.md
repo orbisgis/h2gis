@@ -43,6 +43,17 @@ In a terminal (`Ctrl+Alt+T`), just execute the following commands *(example with
 ```
 The execution of the .jar file, will load the web interface seen above.
 
+#### On Mac
+
+In a terminal, just execute the following commands *(example with v2.2.3)*:
+
+```console
+~ $ curl -L https://github.com/orbisgis/h2gis/releases/download/v2.2.3/h2gis-standalone-bin.zip -o h2gis-standalone-bin.zip
+~ $ unzip h2gis-standalone-bin.zip
+~ $ cd h2gis-standalone
+~/h2gis-standalone $ java -jar h2gis-dist-2.2.3.jar
+```
+
 ## Initialize the H2GIS extension
 
 Once connected to a new H2GIS database, users have to load the spatial functions. To do so, in the SQL console, just execute the following SQL instructions:
@@ -58,7 +69,7 @@ Of course, you only need to do this the first time. When you reopen an existing 
 
 Once done, you will see in the left-side part new spatial elements:
 * `SPATIAL_REF_SYS` : table where all the CRS are stored
-* `GEOMETRY_COLUMNS` : metadata view storing all the system's table needed to manipulate geometry 
+* `GEOMETRY_COLUMNS` : metadata view storing all the system's tables needed to manipulate geometry 
 
 ![](./quickstart_h2gis_panel_3.png){align=center}
 
