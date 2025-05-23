@@ -1,0 +1,5 @@
+/* Center the main content */
+.wy-nav-content {
+    max-width: 900px; /* Adjust width as needed */
+    margin: 0 auto;
+}
