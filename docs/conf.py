@@ -86,9 +86,3 @@ myst_enable_extensions = [
     ]
     
 
-# -- Pour centrer la documentation -------------------------------------------------
-html_static_path = ['_static']  # If not already present
-
-def setup(app):
-    app.add_css_file('custom.css')  # Use app.add_stylesheet in Sphinx <1.8
-
