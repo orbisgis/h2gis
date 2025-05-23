@@ -54,6 +54,17 @@ In a terminal, just execute the following commands *(example with v2.2.3)*:
 ~/h2gis-standalone $ java -jar h2gis-dist-2.2.3.jar
 ```
 
+#### On Windows
+
+In a Powershell terminal, just execute the following commands *(example with v2.2.3)*:
+
+```console
+~ $ Invoke-WebRequest -Uri "https://github.com/orbisgis/h2gis/releases/download/v2.2.3/h2gis-standalone-bin.zip" -OutFile "h2gis-standalone-bin.zip"
+~ $ Expand-Archive -Path "h2gis-standalone-bin.zip" -DestinationPath "."
+~ $ cd h2gis-standalone
+~/h2gis-standalone $ java -jar h2gis-dist-2.2.3.jar
+```
+
 ## Initialize the H2GIS extension
 
 Once connected to a new H2GIS database, users have to load the spatial functions. To do so, in the SQL console, just execute the following SQL instructions:
