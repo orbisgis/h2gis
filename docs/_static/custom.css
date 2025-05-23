@@ -3,3 +3,10 @@
     max-width: 900px; /* Adjust width as needed */
     margin: 0 auto;
 }
+
+
+/* Center the entire layout including sidebar and content */
+.wy-grid-for-nav {
+    max-width: 1200px;  /* Adjust this to your liking */
+    margin: 0 auto;
+}
