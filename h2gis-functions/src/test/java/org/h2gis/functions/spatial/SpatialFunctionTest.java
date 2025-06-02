@@ -2466,6 +2466,22 @@ public class SpatialFunctionTest {
         rs.close();
     }
 
+    @Test
+    public void test_ST_Force2D7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('POLYGON M((2 2 2, 10 0 1, 10 5 1, 0 5 2, 2 2 2))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((2 2, 10 0, 10 5, 0 5, 2 2))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Force2D8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('POLYGON ZM((2 2 3 2, 10 0 1 1, 10 5 2 1, 0 5 2 2, 2 2 3 2))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 5, 10 5, 10 0, 2 2, 0 5))", rs.getBytes(1));
+        rs.close();
+    }
+
 
     @Test
     public void test_ST_ProjectPoint1() throws Exception {
