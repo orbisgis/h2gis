@@ -22,3 +22,4 @@
 - Fix typo on ST_Force3DM
 - ST_Force3DM returns MULTIPOINT instead of GEOMETRYCOLLECTION M - 
 - Implement ST_M correctly
+- Fix write empty table in FGB file
