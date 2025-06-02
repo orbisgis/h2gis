@@ -130,10 +130,12 @@ public class FGBWriteDriver {
                     int recordCount = 0;
                     rs.last();
                     recordCount = rs.getRow();
-                    Object value = rs.getObject(spatialFieldNameAndIndex.second());
-                    if(value!=null){
-                        Geometry geom = (Geometry) value;
-                        srid = geom.getSRID();
+                    if(recordCount>0) {
+                        Object value = rs.getObject(spatialFieldNameAndIndex.second());
+                        if (value != null) {
+                            Geometry geom = (Geometry) value;
+                            srid = geom.getSRID();
+                        }
                     }
                     rs.beforeFirst();
                     ProgressVisitor copyProgress = progress.subProcess(recordCount);
