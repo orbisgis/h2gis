@@ -24,3 +24,4 @@
 - Implement ST_M correctly
 - Fix write empty table in FGB file
 - Fix ST_FORCE2D to return 2D coordinates
+- Use central portal to publish snapshots
