@@ -97,43 +97,33 @@
       
         <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>
-        <maven-assembly-version>3.3.0</maven-assembly-version>
+        <maven-assembly-version>3.6.0</maven-assembly-version>
         <maven-bundle-version>5.1.2</maven-bundle-version>
-        <maven-enforcer-version>3.0.0</maven-enforcer-version>
-        <maven-gpg-plugin-version>3.0.1</maven-gpg-plugin-version>
-        <maven-jar-version>3.2.0</maven-jar-version>
+        <maven-enforcer-version>3.4.1</maven-enforcer-version>
+        <maven-gpg-plugin-version>3.1.0</maven-gpg-plugin-version>
+        <maven-jar-version>3.3.0</maven-jar-version>
         <maven-javadoc-version>3.3.1</maven-javadoc-version>
-        <maven-release-version>3.0.0-M4</maven-release-version>
+        <maven-release-version>3.0.1</maven-release-version>
         <maven-source-version>3.2.1</maven-source-version>
-        <maven-surefire-version>3.0.0-M5</maven-surefire-version>
-        <version-maven-version>2.8.1</version-maven-version>
+        <maven-surefire-version>3.2.2</maven-surefire-version>
+        <version-maven-version>2.16.0</version-maven-version>
     </properties>
 
     <!-- Dependencies -->
     <repositories>
         <repository>
-            <id>oss-sonatype</id>
-            <name>oss-sonatype-snapshot</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <name>Central Portal Snapshots</name>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
-        </repository>
-        <repository>
-            <id>orbisgis-release</id>
-            <name>oss-sonatype-release</name>
-            <url>https://oss.sonatype.org/content/repositories/releases/</url>
             <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
                 <enabled>true</enabled>
-            </releases>
+            </snapshots>
         </repository>
     </repositories>
+
 
     <dependencyManagement>
         <dependencies>
@@ -243,12 +233,12 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>central</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
