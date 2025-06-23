@@ -78,15 +78,18 @@
         <!-- Test dependencies -->
         <dependency>
             <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
+            <artifactId>commons-io</artifactId>            
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter-api</artifactId>            
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
+            <artifactId>junit-jupiter-engine</artifactId>            
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
