@@ -12,7 +12,7 @@
     </parent>
     <artifactId>h2gis-dist</artifactId>
     <properties>
-        <native.maven.plugin.version>0.9.12</native.maven.plugin.version>
+        <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
         <imageName>h2gis</imageName>
     </properties>
 
@@ -150,20 +150,32 @@
                         <phase>test</phase>
                     </execution>
                 </executions>
+
                 <configuration>
+
+                    <metadataRepository>
+                        <enabled>true</enabled>
+                    </metadataRepository>
+                    <agent>
+                        <enabled>true</enabled>
+                    </agent>
                     <mainClass>org.h2.tools.Console</mainClass>
                     <imageName>${imageName}</imageName>
                     <fallback>false</fallback>
                     <buildArgs>
-                        <arg>-H:DashboardDump=h2gis -H:+DashboardAll</arg>
+
+                        <!-- Enable runtime reporting for missing elements -->
+                        <arg>--report-unsupported-elements-at-runtime</arg>
+
+                        <!-- Initialize certain packages/classes at runtime -->
+                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+
+                        <buildArg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</buildArg>
+
+
                     </buildArgs>
-                    <agent>
-                        <enabled>true</enabled>
-                        <options>
-                            <option>experimental-class-loader-support</option>
-                        </options>
-                    </agent>
                 </configuration>
+
             </plugin>
 
             <!-- Skip deployment on this module -->
