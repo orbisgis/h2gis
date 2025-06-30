@@ -11,6 +11,11 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>h2gis-dist</artifactId>
+    <properties>
+        <native.maven.plugin.version>0.9.12</native.maven.plugin.version>
+        <imageName>h2gis</imageName>
+    </properties>
+
 
     <!-- Project Information -->
     <name>h2gis-dist</name>
@@ -122,6 +127,45 @@
                     </descriptors>
                 </configuration>
             </plugin>
+
+            <!-- native compilation with GraalVM -->
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>${native.maven.plugin.version}</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>build-native</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                    <execution>
+                        <id>test-native</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <phase>test</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>org.h2.tools.Console</mainClass>
+                    <imageName>${imageName}</imageName>
+                    <fallback>false</fallback>
+                    <buildArgs>
+                        <arg>-H:DashboardDump=h2gis -H:+DashboardAll</arg>
+                    </buildArgs>
+                    <agent>
+                        <enabled>true</enabled>
+                        <options>
+                            <option>experimental-class-loader-support</option>
+                        </options>
+                    </agent>
+                </configuration>
+            </plugin>
+
             <!-- Skip deployment on this module -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

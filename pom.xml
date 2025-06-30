@@ -75,6 +75,7 @@
         <java-version>11</java-version>
         <maven.compiler.target>${java-version}</maven.compiler.target>
         <maven.compiler.source>${java-version}</maven.compiler.source>
+        <imageName>native-h2gis</imageName>
 
         <!-- Dependencies versions -->
         <commons-compress-version>1.27.1</commons-compress-version>
@@ -107,6 +108,8 @@
         <maven-source-version>3.2.1</maven-source-version>
         <maven-surefire-version>3.2.2</maven-surefire-version>
         <version-maven-version>2.16.0</version-maven-version>
+        <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
+
     </properties>
 
     <!-- Dependencies -->
@@ -268,6 +271,24 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>native</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>h2gis-dist</module>
+            </modules>
+            <build>
+                <pluginManagement>
+
+                    <plugins>
+
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
     </profiles>
 
     <build>
