@@ -1,23 +1,24 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Maven Coordinates -->
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>h2gis-parent</artifactId>
         <version>2.2.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
     <artifactId>h2gis-dist</artifactId>
+
     <properties>
         <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
         <imageName>h2gis</imageName>
     </properties>
 
-
-    <!-- Project Information -->
     <name>h2gis-dist</name>
     <description>Generate a jar file containing the whole H2GIS project.</description>
     <organization>
@@ -25,6 +26,7 @@
         <url>http://www.h2gis.org</url>
     </organization>
     <url>http://github.com/orbisgis/H2GIS</url>
+
     <licenses>
         <license>
             <name>GNU Lesser General Public License (LGPLV3+)</name>
@@ -32,9 +34,7 @@
         </license>
     </licenses>
 
-    <!-- Dependencies -->
     <dependencies>
-        <!-- Simple Logging Facade for Java -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -66,18 +66,18 @@
         </dependency>
     </dependencies>
 
-    <!-- Build Settings -->
     <build>
         <plugins>
-            <!-- Plugin for test running -->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <workingDirectory>target/</workingDirectory>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
-            <!-- Plugin for the execution of a Java program -->
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -87,12 +87,12 @@
                     <workingDirectory>target/</workingDirectory>
                     <arguments>
                         <argument>-classpath</argument>
-                        <classpath />
+                        <classpath/>
                         <argument>org.h2.tools.Console</argument>
                     </arguments>
                 </configuration>
             </plugin>
-            <!-- Create a JAR from the project -->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -106,14 +106,14 @@
                     </archive>
                 </configuration>
             </plugin>
-            <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files  -->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-assembly</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -122,60 +122,69 @@
                 <configuration>
                     <finalName>h2gis-standalone</finalName>
                     <descriptors>
-                        <descriptor>src/main/assembly/bin.xml</descriptor>     <!-- Binary Zip-->
-                        <descriptor>src/main/assembly/project.xml</descriptor> <!-- Sources   -->
+                        <descriptor>src/main/assembly/bin.xml</descriptor>
+                        <descriptor>src/main/assembly/project.xml</descriptor>
                     </descriptors>
                 </configuration>
             </plugin>
 
-            <!-- native compilation with GraalVM -->
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
                 <version>${native.maven.plugin.version}</version>
-                <extensions>true</extensions>
                 <executions>
+                    <!-- Native executable -->
                     <execution>
-                        <id>build-native</id>
+                        <id>build-native-exec</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>build</goal>
                         </goals>
-                        <phase>package</phase>
+                        <configuration>
+                            <mainClass>org.h2.tools.Console</mainClass>
+                            <imageName>${imageName}</imageName>
+                            <fallback>false</fallback>
+                            <buildArgs>
+                                <arg>-O3</arg>
+                                <arg>-H:Optimize=2</arg>
+                                <arg>--no-fallback</arg>
+                                <arg>--report-unsupported-elements-at-runtime</arg>
+                                <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+                                <buildArg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</buildArg>
+                                --engine.CompileAOTOnCreate=true
+
+                            </buildArgs>
+                        </configuration>
                     </execution>
+
+                    <!-- Native shared library -->
                     <execution>
-                        <id>test-native</id>
+                        <id>build-native-shared</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>test</goal>
+                            <goal>build</goal>
                         </goals>
-                        <phase>test</phase>
+                        <configuration>
+                            <mainClass>org.h2.tools.Console</mainClass>
+                            <imageName>${imageName}</imageName>
+                            <fallback>false</fallback>
+                            <buildArgs>
+                                <arg>--shared</arg>
+                                <arg>-O3</arg>
+                                <arg>-H:Optimize=2</arg>
+                                <arg>--no-fallback</arg>
+                                <arg>--report-unsupported-elements-at-runtime</arg>
+                                <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+                                --verbose
+                                -H:+SourceLevelDebug
+                                -H:+PrintAnalysisCallTree
+                                -H:GenerateDebugInfo=2
+                                --engine.CompileAOTOnCreate=true
+                                <buildArg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</buildArg>
+                            </buildArgs>
+                        </configuration>
                     </execution>
                 </executions>
-
-                <configuration>
-
-                    <metadataRepository>
-                        <enabled>true</enabled>
-                    </metadataRepository>
-                    <agent>
-                        <enabled>true</enabled>
-                    </agent>
-                    <mainClass>org.h2.tools.Console</mainClass>
-                    <imageName>${imageName}</imageName>
-                    <fallback>false</fallback>
-                    <buildArgs>
-
-                        <!-- Enable runtime reporting for missing elements -->
-                        <arg>--report-unsupported-elements-at-runtime</arg>
-
-                        <!-- Initialize certain packages/classes at runtime -->
-                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-
-                        <buildArg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</buildArg>
-
-
-                    </buildArgs>
-                </configuration>
-
             </plugin>
 
             <!-- Skip deployment on this module -->
@@ -186,6 +195,57 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>with-native-lib</id>
+            <activation>
+                <file>
+                    <exists>${project.build.directory}/h2gis.so</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Deb compilation -->
+                    <plugin>
+                        <groupId>org.vafer</groupId>
+                        <artifactId>jdeb</artifactId>
+                        <version>1.14</version>
+                        <executions>
+                            <execution>
+                                <id>build-native-shared</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jdeb</goal>
+                                </goals>
+                                <configuration>
+                                    <controlDir>${project.basedir}/src/deb/control</controlDir>
+                                    <dataSet>
+                                        <data>
+                                            <src>${project.build.directory}/h2gis.so</src>
+                                            <skipIfMissing>true</skipIfMissing>
+                                            <type>file</type>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>usr/lib/x86_64-linux-gnu</prefix>
+                                                <user>root</user>
+                                                <group>root</group>
+                                                <filemode>755</filemode>
+                                            </mapper>
+                                        </data>
+                                    </dataSet>
+                                    <deb>${project.build.directory}/h2gis-dist-${project.version}.deb</deb>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
 </project>

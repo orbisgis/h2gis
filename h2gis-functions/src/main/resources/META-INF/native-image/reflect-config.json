@@ -1,0 +1,1177 @@
+[
+  {
+    "name": "org.h2.Driver",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.h2.Driver",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.postgresql.Driver",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.h2gis.functions.factory.H2GISFunctions",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
+  },
+
+    {
+      "name": "org.h2gis.functions.io.HexToVarBinary",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_GeomFromText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_Area",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_AsBinary",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_GeometryType",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_PointFromText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_MPointFromText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_LineFromText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_MLineFromText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_PolyFromText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_MPolyFromText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_Dimension",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_AsText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_AsWKT",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_PolyFromWKB",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_IsEmpty",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_IsSimple",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_Boundary",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_Envelope",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_X",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_Y",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_Z",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_StartPoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_EndPoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_IsClosed",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_IsRing",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_LineFromWKB",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_Length",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_NumPoints",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_PointN",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_Centroid",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_PointOnSurface",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Contains",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_ExteriorRing",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_NumInteriorRings",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_NumInteriorRing",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_InteriorRingN",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_NumGeometries",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_GeometryN",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Equals",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Disjoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Touches",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Within",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Overlaps",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Crosses",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Intersects",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Relate",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_Distance",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_DistanceSphere",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Intersection",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Difference",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Union",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_SymDifference",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Buffer",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_ConvexHull",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_SRID",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_EnvelopesIntersect",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.aggregate.ST_Accum",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_Transform",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_SetSRID",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_CoordDim",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_GeometryTypeCode",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_OrderingEquals",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_Is3D",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_PointFromWKB",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_GeomFromWKB",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.DBFRead",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.DBFWrite",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "java.sql.DriverManager",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.GPXRead",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.GeoJsonRead",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.GeoJsonWrite",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.KMLWrite",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.SHPRead",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.SHPWrite",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_3DLength",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_AddPoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_AddZ",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_AsGeoJSON",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_AsKml",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_BoundingCircle",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_BoundingCircleCenter",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MinimumBoundingCircle",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_ClosestCoordinate",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_ClosestPoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_CompactnessRatio",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_ConstrainedDelaunay",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_Covers",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_DWithin",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Delaunay",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Densify",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Expand",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Explode",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_Extent",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Extrude",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_FurthestCoordinate",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_Holes",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Interpolate3DLine",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_IsRectangle",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_IsValid",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_LocateAlong",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakeEllipse",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakeEnvelope",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakeGrid",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakeGridPoints",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakeLine",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakePoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MinimumRectangle",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_MultiplyZ",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Normalize",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_OctogonalEnvelope",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Polygonize",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_PrecisionReducer",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_RemoveHoles",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_RemovePoints",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_RemoveRepeatedPoints",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Reverse",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Reverse3DLine",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Rotate",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Scale",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Simplify",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_SimplifyVW",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_SimplifyPreserveTopology",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Snap",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Split",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_ToMultiLine",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_ToMultiPoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_ToMultiSegments",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Translate",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_TriangleAspect",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_TriangleContouring",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_TriangleDirection",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_TriangleSlope",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_UpdateZ",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_XMax",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_XMin",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_YMax",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_YMin",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_ZMax",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_ZMin",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_ZUpdateLineExtremities",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_MinimumDiameter",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_RingBuffer",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Force2D",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Force3D",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_Azimuth",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakePolygon",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_IsValidReason",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_IsValidDetail",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_LineIntersector",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_OffSetCurve",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.OSMRead",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.ST_OSMDownloader",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_ProjectPoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_CollectionExtract",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.aggregate.DoubleRange",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.aggregate.IntegerRange",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_SideBuffer",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_RingSideBuffer",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_SunPosition",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_GeometryShadow",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Voronoi",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Tessellate",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_LineMerge",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_FlipCoordinates",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_MaxDistance",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_LongestLine",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_Perimeter",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_3DPerimeter",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_3DArea",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_GeomFromGML",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_GeomFromGeoJSON",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_OSMMapLink",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_GoogleMapLink",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_AsGML",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.TSVRead",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.TSVWrite",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_NPoints",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Graph",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.system.H2GISversion",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.aggregate.ST_Collect",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_RemoveDuplicatedCoordinates",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_MakeValid",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_Point",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.topology.ST_Node",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Drape",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Svf",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.JsonWrite",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_ShortestLine",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_OrientedEnvelope",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_Isovist",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_EstimatedExtent",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.crs.ST_FindUTMSRID",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_GeneratePoints",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_GeneratePointsInGrid",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.AscRead",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.system.FindGeometryMetadata",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.system.UpdateGeometrySRID",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_InsertPoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.system.JTSVersion",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Force4D",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Force3DM",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_VariableBuffer",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_SubDivide",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_MemSize",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_Multi",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_AsEWKB",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_ConcaveHull",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_LineSubstring",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_LineInterpolatePoint",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MaximumInscribedCircle",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_Clip",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_ForcePolygonCW",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_ForcePolygonCCW",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakeArcLine",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.creation.ST_MakeArcPolygon",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.measures.ST_MinimumBoundingRadius",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.crs.ST_Project",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.crs.ST_IsProjectedCRS",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.crs.ST_IsGeographicCRS",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_SnapToGrid",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.operators.ST_SnapToSelf",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.relate.ST_CoveredBy",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.aggregate.ST_CoverageUnion",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.FGBRead",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.FGBWrite",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.io.ST_OverpassDownloader",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_EnvelopeAsText",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.conversion.ST_AsOverpassBbox",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "name": "org.h2gis.functions.spatial.property.ST_M",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    }
+
+]

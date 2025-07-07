@@ -106,7 +106,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+    
     <!-- Build Settings -->
     <build>
         <plugins>
@@ -128,6 +128,31 @@
                             !org.h2.*,*
                         </Import-Package>
                     </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>${native.maven.plugin.version}</version>
+                <configuration>
+                    <metadataRepository>
+                        <enabled>true</enabled>
+                    </metadataRepository>                
+                    <agent>
+                        <enabled>true</enabled>
+                    </agent>
+
+                    <buildArgs>
+
+                        <!-- Enable runtime reporting for missing elements -->
+                        <arg>--report-unsupported-elements-at-runtime</arg>
+
+                        <!-- Initialize certain packages/classes at runtime -->
+                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+
+
+                    </buildArgs>
+                
                 </configuration>
             </plugin>
         </plugins>

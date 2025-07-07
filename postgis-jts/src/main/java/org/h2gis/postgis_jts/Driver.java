@@ -19,8 +19,13 @@
  */
 package org.h2gis.postgis_jts;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.graalvm.nativeimage.IsolateThread;
+import org.graalvm.nativeimage.c.function.CEntryPoint;
+import org.graalvm.nativeimage.c.function.CFunction;
+import org.graalvm.nativeimage.c.type.CCharPointer;
+import org.graalvm.nativeimage.c.type.CTypeConversion;
+
+import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -100,4 +105,13 @@ public class Driver extends JtsWrapper {
     public Connection connect(String url, Properties info) throws SQLException {
         return new ConnectionWrapper(super.connect(POSTGIS_PROTOCOL + url.substring(POSTGIS_H2PROTOCOL.length()), info));
     }
+
+
+
+
+
+
+
+
+
 }

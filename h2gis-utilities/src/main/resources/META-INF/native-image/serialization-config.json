@@ -1,0 +1,23 @@
+{
+  "types":[
+    {
+      "name":"int[]"
+    },
+    {
+      "name":"java.lang.String"
+    },
+    {
+      "name":"java.util.Hashtable"
+    },
+    {
+      "name":"java.util.Properties"
+    },
+    {
+      "name":"org.junit.platform.launcher.TestIdentifier$SerializedForm"
+    }
+  ],
+  "lambdaCapturingTypes":[
+  ],
+  "proxies":[
+  ]
+}

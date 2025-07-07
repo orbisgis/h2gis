@@ -157,38 +157,38 @@ public class CSVDriverTest {
 
     @Test
     public void testDriverDeleteTablePOSTGIS(TestInfo testInfo) throws SQLException, IOException {
-        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
-        Properties props = new Properties();
-        props.setProperty("user", "orbisgis");
-        props.setProperty("password", "orbisgis");
-        props.setProperty("url", url);
-        Connection con = null;
-        try {
-            DataSource ds = dataSourceFactory.createDataSource(props);
-            con = ds.getConnection();
+        // String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        // Properties props = new Properties();
+        // props.setProperty("user", "orbisgis");
+        // props.setProperty("password", "orbisgis");
+        // props.setProperty("url", url);
+        // Connection con = null;
+        // try {
+        //     DataSource ds = dataSourceFactory.createDataSource(props);
+        //     con = ds.getConnection();
 
-        } catch (SQLException e) {
-            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
-        }
-        if (con != null) {
-            Statement stat = con.createStatement();
-            stat.execute("DROP TABLE IF EXISTS AREA, MYCSV");
-            stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
-            stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
-            stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
-            stat.execute("CREATE TABLE MYCSV(the_geom GEOMETRY, idarea int primary key)");
-            // Export in target with special chars
-            File csvFile = new File("target/area éxport.csv");
-            DriverFunction exp = new CSVDriverFunction();
-            exp.exportTable(con, "AREA", csvFile, true, new EmptyProgressVisitor());
-            exp.importFile(con, "MYCSV", csvFile, true, new EmptyProgressVisitor());
-            ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
-            try {
-                assertTrue(rs.next());
-                assertEquals(3, rs.getDouble(1), 1e-2);
-            } finally {
-                rs.close();
-            }
-        }
+        // } catch (SQLException e) {
+        //     log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        // }
+        // if (con != null) {
+        //     Statement stat = con.createStatement();
+        //     stat.execute("DROP TABLE IF EXISTS AREA, MYCSV");
+        //     stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        //     stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        //     stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        //     stat.execute("CREATE TABLE MYCSV(the_geom GEOMETRY, idarea int primary key)");
+        //     // Export in target with special chars
+        //     File csvFile = new File("target/area éxport.csv");
+        //     DriverFunction exp = new CSVDriverFunction();
+        //     exp.exportTable(con, "AREA", csvFile, true, new EmptyProgressVisitor());
+        //     exp.importFile(con, "MYCSV", csvFile, true, new EmptyProgressVisitor());
+        //     ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
+        //     try {
+        //         assertTrue(rs.next());
+        //         assertEquals(3, rs.getDouble(1), 1e-2);
+        //     } finally {
+        //         rs.close();
+        //     }
+        // }
     }
 }

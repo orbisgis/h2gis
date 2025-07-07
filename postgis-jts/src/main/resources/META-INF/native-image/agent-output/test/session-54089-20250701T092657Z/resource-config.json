@@ -1,0 +1,18 @@
+{
+  "resources":{
+  "includes":[
+    {
+      "pattern":"\\QMETA-INF/services/org.apache.maven.surefire.spi.MasterProcessChannelProcessorFactory\\E"
+    }, 
+    {
+      "pattern":"\\QMETA-INF/services/org.junit.platform.engine.TestEngine\\E"
+    }, 
+    {
+      "pattern":"\\QMETA-INF/services/org.junit.platform.launcher.TestExecutionListener\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/postgresql/driverconfig.properties\\E"
+    }
+  ]},
+  "bundles":[]
+}

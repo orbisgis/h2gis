@@ -80,6 +80,7 @@
         </dependency>
     </dependencies>
 
+
     <!-- Build Settings -->
     <build>
         <plugins>
@@ -94,6 +95,16 @@
                         <Export-Package>org.h2gis.utilities.*</Export-Package>
                         <Private-Package>org.h2gis.utilities.wrapper</Private-Package>
                     </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>${native.maven.plugin.version}</version>
+                <configuration>
+                    <agent>
+                    <enabled>true</enabled>
+                    </agent>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,0 +1,1301 @@
+[
+{
+  "name":"java.security.MessageDigestSpi"
+},
+{
+  "name":"java.security.SecureRandomParameters"
+},
+{
+  "name":"org.apache.maven.surefire.junitplatform.JUnitPlatformProvider",
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.maven.surefire.api.provider.ProviderParameters"] }]
+},
+{
+  "name":"org.apiguardian.api.API",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2.Driver"
+},
+{
+  "name":"org.h2.store.fs.async.FilePathAsync",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2.store.fs.mem.FilePathMem",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2.store.fs.mem.FilePathMemLZF",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2.store.fs.niomapped.FilePathNioMapped",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2.store.fs.niomem.FilePathNioMem",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2.store.fs.niomem.FilePathNioMemLZF",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2.store.fs.retry.FilePathRetryOnInterrupt",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2.store.fs.split.FilePathSplit",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2.store.fs.zip.FilePathZip",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.h2gis.functions.io.DriverManager",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.asc.AscRead",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.dbf.DBFRead",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.dbf.DBFWrite",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.fgb.FGBRead",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.fgb.FGBWrite",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.geojson.GeoJsonRead",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.geojson.GeoJsonWrite",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.geojson.ST_AsGeoJSON",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.geojson.ST_GeomFromGeoJSON",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.gpx.GPXRead",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.json.JsonWrite",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.kml.KMLWrite",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.kml.ST_AsKml",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.osm.OSMRead",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.osm.ST_OSMDownloader",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.overpass.ST_AsOverpassBbox",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.overpass.ST_OverpassDownloader",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.shp.SHPRead",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.shp.SHPWrite",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.tsv.TSVRead",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.io.tsv.TSVWrite",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.affine_transformations.ST_Rotate",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.affine_transformations.ST_Scale",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.affine_transformations.ST_Translate",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.aggregate.ST_Collect",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.aggregate.ST_LineMerge",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.buffer.ST_Buffer",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.buffer.ST_OffSetCurve",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.buffer.ST_RingSideBuffer",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.buffer.ST_SideBuffer",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.buffer.ST_VariableBuffer",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.clean.ST_MakeValid",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_AsBinary",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_AsEWKB",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_AsGML",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_AsText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_AsWKT",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_Force2D",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_Force3D",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_Force3DM",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_Force4D",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_GeomFromGML",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_GeomFromText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_GeomFromWKB",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_GoogleMapLink",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_Holes",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_LineFromText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_LineFromWKB",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_MLineFromText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_MPointFromText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_MPolyFromText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_Multi",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_OSMMapLink",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_PointFromText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_PointFromWKB",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_PolyFromText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_PolyFromWKB",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_ToMultiLine",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_ToMultiPoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.convert.ST_ToMultiSegments",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.coverage.ST_CoverageUnion",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_BoundingCircle",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_BoundingCircleCenter",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_Expand",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_Extrude",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_GeneratePoints",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_GeneratePointsInGrid",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakeArcLine",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakeArcPolygon",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakeEllipse",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakeEnvelope",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakeGrid",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakeGridPoints",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakeLine",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakePoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MakePolygon",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MaximumInscribedCircle",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MinimumBoundingCircle",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MinimumBoundingRadius",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_MinimumRectangle",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_OctogonalEnvelope",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_OrientedEnvelope",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_Point",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.create.ST_RingBuffer",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.crs.ST_FindUTMSRID",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.crs.ST_IsGeographicCRS",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.crs.ST_IsProjectedCRS",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.crs.ST_SetSRID",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.crs.ST_Transform",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.crs.UpdateGeometrySRID",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.distance.ST_ClosestCoordinate",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.distance.ST_ClosestPoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.distance.ST_FurthestCoordinate",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.distance.ST_LocateAlong",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.distance.ST_LongestLine",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.distance.ST_MaxDistance",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.distance.ST_ProjectPoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.distance.ST_ShortestLine",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.earth.ST_GeometryShadow",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.earth.ST_Isovist",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.earth.ST_SunPosition",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.earth.ST_Svf",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_AddPoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_AddZ",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_CollectionExtract",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_Densify",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_FlipCoordinates",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_ForcePolygonCCW",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_ForcePolygonCW",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_InsertPoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_Interpolate3DLine",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_MultiplyZ",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_Normalize",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_RemoveDuplicatedCoordinates",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_RemoveHoles",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_RemovePoints",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_RemoveRepeatedPoints",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_Reverse",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_Reverse3DLine",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_UpdateZ",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.edit.ST_ZUpdateLineExtremities",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.generalize.ST_PrecisionReducer",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.generalize.ST_Simplify",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.generalize.ST_SimplifyPreserveTopology",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.generalize.ST_SimplifyVW",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.generalize.ST_SnapToGrid",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.linear_referencing.ST_LineInterpolatePoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.linear_referencing.ST_LineSubstring",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.mesh.ST_ConstrainedDelaunay",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.mesh.ST_Delaunay",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.mesh.ST_Tessellate",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.mesh.ST_Voronoi",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.metadata.FindGeometryMetadata",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.operators.ST_ConcaveHull",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.operators.ST_ConvexHull",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.operators.ST_Difference",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.operators.ST_Intersection",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.operators.ST_SymDifference",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.operators.ST_Union",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.others.ST_Clip",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.others.ST_EnvelopeAsText",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Contains",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_CoveredBy",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Covers",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Crosses",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_DWithin",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Disjoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_EnvelopesIntersect",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Equals",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Intersects",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_OrderingEquals",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Overlaps",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Relate",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Touches",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.predicates.ST_Within",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_3DArea",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_3DLength",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_3DPerimeter",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Area",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Boundary",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Centroid",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_CompactnessRatio",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_CoordDim",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Dimension",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Distance",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_DistanceSphere",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_EndPoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Envelope",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_EstimatedExtent",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Explode",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_ExteriorRing",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_GeometryN",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_GeometryType",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_GeometryTypeCode",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_InteriorRingN",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Is3D",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_IsClosed",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_IsEmpty",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_IsRectangle",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_IsRing",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_IsSimple",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_IsValid",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_IsValidDetail",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_IsValidReason",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Length",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_M",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_MemSize",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_MinimumDiameter",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_NPoints",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_NumGeometries",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_NumInteriorRing",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_NumInteriorRings",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_NumPoints",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Perimeter",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_PointN",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_PointOnSurface",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_SRID",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_StartPoint",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_X",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_XMax",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_XMin",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Y",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_YMax",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_YMin",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_Z",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_ZMax",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.properties.ST_ZMin",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.snap.ST_Project",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.snap.ST_Snap",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.snap.ST_SnapToSelf",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.split.ST_LineIntersector",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.split.ST_Split",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.split.ST_SubDivide",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.topography.ST_Drape",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.topography.ST_TriangleAspect",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.topography.ST_TriangleContouring",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.topography.ST_TriangleDirection",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.topography.ST_TriangleSlope",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.topology.ST_Graph",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.topology.ST_Node",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.topology.ST_Polygonize",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.spatial.trigonometry.ST_Azimuth",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.string.HexToVarBinary",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.system.DoubleRange",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.system.H2GISversion",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.system.IntegerRange",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.functions.system.JTSVersion",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.h2gis.network.functions.GraphCreatorTest",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"tearUp","parameterTypes":[] }, 
+    {"name":"testDO","parameterTypes":[] }, 
+    {"name":"testInvalidOrientation","parameterTypes":[] }, 
+    {"name":"testNullOrientation","parameterTypes":[] }, 
+    {"name":"testRO","parameterTypes":[] }, 
+    {"name":"testU","parameterTypes":[] }, 
+    {"name":"testWDO","parameterTypes":[] }, 
+    {"name":"testWRO","parameterTypes":[] }, 
+    {"name":"testWU","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.GraphFunctionParserTest",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setUp","parameterTypes":[] }, 
+    {"name":"tearDown","parameterTypes":[] }, 
+    {"name":"testDFail","parameterTypes":[] }, 
+    {"name":"testDestinationsString","parameterTypes":[] }, 
+    {"name":"testDestinationsStringFail","parameterTypes":[] }, 
+    {"name":"testDoubleOrientation","parameterTypes":[] }, 
+    {"name":"testDoubleWeight","parameterTypes":[] }, 
+    {"name":"testEdgeOrientationUndirectedGraphError","parameterTypes":[] }, 
+    {"name":"testGlobalOrientationSpellingError","parameterTypes":[] }, 
+    {"name":"testMissingEdgeOrientationError","parameterTypes":[] }, 
+    {"name":"testNonNullOrientations","parameterTypes":[] }, 
+    {"name":"testNonNullWeights","parameterTypes":[] }, 
+    {"name":"testNullOrientation","parameterTypes":[] }, 
+    {"name":"testNullWeight","parameterTypes":[] }, 
+    {"name":"testParseInputTable","parameterTypes":[] }, 
+    {"name":"testSuffixTableLocation","parameterTypes":[] }, 
+    {"name":"testWDFail1","parameterTypes":[] }, 
+    {"name":"testWDFail2","parameterTypes":[] }, 
+    {"name":"testWeightOrientationParser","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_Accessibility",
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"getAccessibility","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","java.lang.String"] }, 
+    {"name":"getAccessibility","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","java.lang.String","java.lang.String"] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_AccessibilityTest",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"DO","parameterTypes":[] }, 
+    {"name":"DOSingleDestination","parameterTypes":[] }, 
+    {"name":"RO","parameterTypes":[] }, 
+    {"name":"U","parameterTypes":[] }, 
+    {"name":"WDO","parameterTypes":[] }, 
+    {"name":"WDOSingleDestination","parameterTypes":[] }, 
+    {"name":"WRO","parameterTypes":[] }, 
+    {"name":"WU","parameterTypes":[] }, 
+    {"name":"setUp","parameterTypes":[] }, 
+    {"name":"setUpStatement","parameterTypes":[] }, 
+    {"name":"tearDown","parameterTypes":[] }, 
+    {"name":"tearDownStatement","parameterTypes":[] }, 
+    {"name":"testST_AccST_SPLSingleDestEquivalence","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_ConnectedComponents",
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"getConnectedComponents","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String"] }]
+},
+{
+  "name":"org.h2gis.network.functions.ST_ConnectedComponentsTest",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"DO","parameterTypes":[] }, 
+    {"name":"RO","parameterTypes":[] }, 
+    {"name":"U","parameterTypes":[] }, 
+    {"name":"setUp","parameterTypes":[] }, 
+    {"name":"setUpStatement","parameterTypes":[] }, 
+    {"name":"tearDown","parameterTypes":[] }, 
+    {"name":"tearDownStatement","parameterTypes":[] }, 
+    {"name":"testLineGraph","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_GraphAnalysis",
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"doGraphAnalysis","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String"] }, 
+    {"name":"doGraphAnalysis","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","java.lang.String"] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_GraphAnalysisTest",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"DO","parameterTypes":[] }, 
+    {"name":"RO","parameterTypes":[] }, 
+    {"name":"U","parameterTypes":[] }, 
+    {"name":"WDO","parameterTypes":[] }, 
+    {"name":"WRO","parameterTypes":[] }, 
+    {"name":"WU","parameterTypes":[] }, 
+    {"name":"setUp","parameterTypes":[] }, 
+    {"name":"setUpStatement","parameterTypes":[] }, 
+    {"name":"tearDown","parameterTypes":[] }, 
+    {"name":"tearDownStatement","parameterTypes":[] }, 
+    {"name":"testDisconnectedGraph","parameterTypes":[] }, 
+    {"name":"testLineGraphEven","parameterTypes":[] }, 
+    {"name":"testLineGraphOdd","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_ShortestPath",
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"getShortestPath","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","int","int"] }, 
+    {"name":"getShortestPath","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","java.lang.String","int","int"] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_ShortestPathLength",
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"getShortestPathLength","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","java.lang.String","org.h2.value.Value","org.h2.value.Value"] }, 
+    {"name":"getShortestPathLength","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","org.h2.value.Value"] }, 
+    {"name":"getShortestPathLength","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","org.h2.value.Value","org.h2.value.Value"] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_ShortestPathLengthTest",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"arg3Fail","parameterTypes":[] }, 
+    {"name":"arg4Fail","parameterTypes":[] }, 
+    {"name":"arg5Fail","parameterTypes":[] }, 
+    {"name":"edgesWithInfiniteWeights","parameterTypes":[] }, 
+    {"name":"emptyDestTableFail","parameterTypes":[] }, 
+    {"name":"emptySourceTableDestTableFail","parameterTypes":[] }, 
+    {"name":"emptySourceTableFail","parameterTypes":[] }, 
+    {"name":"manyToManyDO","parameterTypes":[] }, 
+    {"name":"manyToManyDOSTDT","parameterTypes":[] }, 
+    {"name":"manyToManyRO","parameterTypes":[] }, 
+    {"name":"manyToManyROSTDT","parameterTypes":[] }, 
+    {"name":"manyToManyU","parameterTypes":[] }, 
+    {"name":"manyToManyUSTDT","parameterTypes":[] }, 
+    {"name":"manyToManyWDO","parameterTypes":[] }, 
+    {"name":"manyToManyWDOSTDT","parameterTypes":[] }, 
+    {"name":"manyToManyWDOSTSTSquare","parameterTypes":[] }, 
+    {"name":"manyToManyWRO","parameterTypes":[] }, 
+    {"name":"manyToManyWROSTDT","parameterTypes":[] }, 
+    {"name":"manyToManyWU","parameterTypes":[] }, 
+    {"name":"manyToManyWUSTDT","parameterTypes":[] }, 
+    {"name":"nonExistentNodeFail","parameterTypes":[] }, 
+    {"name":"oneToAllDO","parameterTypes":[] }, 
+    {"name":"oneToAllRO","parameterTypes":[] }, 
+    {"name":"oneToAllU","parameterTypes":[] }, 
+    {"name":"oneToAllWDO","parameterTypes":[] }, 
+    {"name":"oneToAllWRO","parameterTypes":[] }, 
+    {"name":"oneToAllWU","parameterTypes":[] }, 
+    {"name":"oneToOneDO","parameterTypes":[] }, 
+    {"name":"oneToOneRO","parameterTypes":[] }, 
+    {"name":"oneToOneU","parameterTypes":[] }, 
+    {"name":"oneToOneWDO","parameterTypes":[] }, 
+    {"name":"oneToOneWRO","parameterTypes":[] }, 
+    {"name":"oneToOneWU","parameterTypes":[] }, 
+    {"name":"oneToSeveralDO","parameterTypes":[] }, 
+    {"name":"oneToSeveralFail","parameterTypes":[] }, 
+    {"name":"oneToSeveralRO","parameterTypes":[] }, 
+    {"name":"oneToSeveralU","parameterTypes":[] }, 
+    {"name":"oneToSeveralWDO","parameterTypes":[] }, 
+    {"name":"oneToSeveralWRO","parameterTypes":[] }, 
+    {"name":"oneToSeveralWU","parameterTypes":[] }, 
+    {"name":"setUp","parameterTypes":[] }, 
+    {"name":"setUpStatement","parameterTypes":[] }, 
+    {"name":"tearDown","parameterTypes":[] }, 
+    {"name":"tearDownStatement","parameterTypes":[] }, 
+    {"name":"testUnreachableVertices","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_ShortestPathTest",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"oneToOneDO","parameterTypes":[] }, 
+    {"name":"oneToOneRO","parameterTypes":[] }, 
+    {"name":"oneToOneU","parameterTypes":[] }, 
+    {"name":"oneToOneWDO","parameterTypes":[] }, 
+    {"name":"oneToOneWRO","parameterTypes":[] }, 
+    {"name":"oneToOneWU","parameterTypes":[] }, 
+    {"name":"setUp","parameterTypes":[] }, 
+    {"name":"setUpStatement","parameterTypes":[] }, 
+    {"name":"tearDown","parameterTypes":[] }, 
+    {"name":"tearDownStatement","parameterTypes":[] }, 
+    {"name":"testNoGeometryField","parameterTypes":[] }, 
+    {"name":"testNoGeometryFieldDifferentCCs","parameterTypes":[] }, 
+    {"name":"testNonexistantDestinationVertex","parameterTypes":[] }, 
+    {"name":"testNonexistantSourceVertex","parameterTypes":[] }, 
+    {"name":"testUnreachableVertices","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_ShortestPathTree",
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"getShortestPathTree","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","int"] }, 
+    {"name":"getShortestPathTree","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","java.lang.String","int","double"] }, 
+    {"name":"getShortestPathTree","parameterTypes":["java.sql.Connection","java.lang.String","java.lang.String","org.h2.value.Value","org.h2.value.Value"] }
+  ]
+},
+{
+  "name":"org.h2gis.network.functions.ST_ShortestPathTreeTest",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"DO","parameterTypes":[] }, 
+    {"name":"DOlimitBy1point1","parameterTypes":[] }, 
+    {"name":"RO","parameterTypes":[] }, 
+    {"name":"ROlimitedBy1point1","parameterTypes":[] }, 
+    {"name":"U","parameterTypes":[] }, 
+    {"name":"UlimitedBy1point1","parameterTypes":[] }, 
+    {"name":"WDO","parameterTypes":[] }, 
+    {"name":"WDODisconnectedGraph","parameterTypes":[] }, 
+    {"name":"WDODisconnectedGraphLimitedBy1point1","parameterTypes":[] }, 
+    {"name":"WDOlimitedBy6point1","parameterTypes":[] }, 
+    {"name":"WRO","parameterTypes":[] }, 
+    {"name":"WROlimitedBy6point1","parameterTypes":[] }, 
+    {"name":"WU","parameterTypes":[] }, 
+    {"name":"WUlimitedBy6point1","parameterTypes":[] }, 
+    {"name":"otherUnrecognizedArg5","parameterTypes":[] }, 
+    {"name":"setUp","parameterTypes":[] }, 
+    {"name":"setUpStatement","parameterTypes":[] }, 
+    {"name":"tearDown","parameterTypes":[] }, 
+    {"name":"tearDownStatement","parameterTypes":[] }, 
+    {"name":"testNoGeometryField","parameterTypes":[] }, 
+    {"name":"unrecognizedArg4","parameterTypes":[] }, 
+    {"name":"unrecognizedArg5","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.javanetworkanalyzer.data.VAccess",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Integer"] }]
+},
+{
+  "name":"org.javanetworkanalyzer.data.VDijkstra",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Integer"] }]
+},
+{
+  "name":"org.javanetworkanalyzer.data.VUCent",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Integer"] }]
+},
+{
+  "name":"org.javanetworkanalyzer.data.VWCent",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Integer"] }]
+},
+{
+  "name":"org.javanetworkanalyzer.model.Edge",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.javanetworkanalyzer.model.EdgeCent",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.junit.jupiter.api.Test",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.junit.platform.commons.annotation.Testable",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.junit.platform.launcher.LauncherSession",
+  "methods":[{"name":"getLauncher","parameterTypes":[] }]
+},
+{
+  "name":"org.junit.platform.launcher.core.LauncherFactory",
+  "methods":[{"name":"openSession","parameterTypes":[] }]
+},
+{
+  "name":"org.locationtech.jts.geom.Geometry"
+},
+{
+  "name":"sun.security.provider.SHA",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.provider.SHA2$SHA256",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.provider.SecureRandom",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+}
+]

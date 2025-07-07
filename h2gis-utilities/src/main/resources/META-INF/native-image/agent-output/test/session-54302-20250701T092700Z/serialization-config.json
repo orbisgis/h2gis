@@ -1,0 +1,20 @@
+{
+  "types":[
+    {
+      "name":"int[]"
+    },
+    {
+      "name":"java.lang.String"
+    },
+    {
+      "name":"java.util.Hashtable"
+    },
+    {
+      "name":"java.util.Properties"
+    }
+  ],
+  "lambdaCapturingTypes":[
+  ],
+  "proxies":[
+  ]
+}
