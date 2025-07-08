@@ -3,7 +3,7 @@
 [![codecov](https://img.shields.io/codecov/c/github/orbisgis/h2gis.svg)](https://codecov.io/gh/orbisgis/h2gis) 
 [![Codacy Badge](https://img.shields.io/codacy/grade/93899ea0675d43a2a3787ce5dd3c5595.svg)](https://www.codacy.com/app/orbisgis/h2gis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=orbisgis/h2gis&amp;utm_campaign=Badge_Grade) 
 
-![](./images/banner/laptop_documentation.png){align=center}
+![](./images/banner/laptop_documentation.png)
 
 H2GIS is a spatial extension of the [H2](http://www.h2database.com/) database engine in the spirit of [PostGIS](http://postgis.net/). It adds support for managing spatial features and operations on the new `Geometry` type of H2, the [Open
 Geospatial Consortium](http://www.opengeospatial.org/) (OGC) [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL) functions and additional spatial functions that we (the [CNRS](http://www.cnrs.fr/))
