@@ -15,9 +15,16 @@ H2GIS is licensed under the [LGPL 3](https://www.gnu.org/licenses/lgpl-3.0.fr.ht
 
 ## Official website & documentation
 
-To find out more about this tool, including detailed documentation, please visit [www.h2gis.org](http://www.h2gis.org/).
+To find out more about this tool, including detailed documentation, please visit the official website [www.h2gis.org](http://www.h2gis.org/).
 
-## GEOMETRY data type
+## Download
+
+To download the last H2GIS stable release:
+
+* Go to [http://www.h2gis.org](http://www.h2gis.org)
+* Or, if you are familiar with GitHub, you can directly have a look to the ["Releases" page](https://github.com/orbisgis/h2gis/releases).
+
+## `GEOMETRY` data type
 
 Since H2 2.2.X version, the [geometry](https://h2database.com/html/datatypes.html?highlight=geometry&search=geometry#geometry_type) encoding to store the value in H2 is the EWKB (extended well-known binary) format. The [EWKB](https://postgis.net/docs/using_postgis_dbmanagement.html#EWKB_EWKT) format is not an OGC standard, but a PostGIS specific format that includes the spatial reference system (SRID) identifier.
 Its textual representation using the WKT (well-known text) uses the pattern :
@@ -25,11 +32,9 @@ Its textual representation using the WKT (well-known text) uses the pattern :
 ```
 'SRID=4326;POINT(0 0)'
 ```
-H2 supports POINT, LINESTRING, POLYGON, MULTIPOINT, MULTILINESTRING, MULTIPOLYGON, and GEOMETRYCOLLECTION geometries with the following coordinate dimension 2D (XY), Z (XYZ), M (XYM), and ZM (XYZM).
+H2 supports `POINT`, `LINESTRING`, `POLYGON`, `MULTIPOINT`, `MULTILINESTRING`, `MULTIPOLYGON`, and `GEOMETRYCOLLECTION` geometries with the following coordinate dimension 2D (`XY`), Z (`XYZ`), M (`XYM`), and ZM (`XYZM`).
 
-H2 provides the same syntax as PostGIS to build a table with a geometry data type.
-
-Examples:
+H2 provides the same syntax as PostGIS to build a table with a geometry data type. Below are some examples:
 
 ```sql
 CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY);
@@ -42,39 +47,34 @@ CREATE TABLE mygeometrytable (ID INTEGER, GEOM GEOMETRY(POINTM, 4326));
 
 ## Spatial functions
 
-h2gis-functions is the main module of the H2GIS distribution. 
-It extends H2 by adding analysis capabilities,including
-* spatial operators (`ST_Intersection`, `ST_Difference`, etc.)
-* spatial predicates (`ST_Intersects`, `ST_Contains`, etc.)
-* additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
+`h2gis-functions` is the main module of the H2GIS distribution. 
+It extends H2 by adding analysis capabilities,including:
+* spatial operators (`ST_Intersection`, `ST_Difference`, *etc.*)
+* spatial predicates (`ST_Intersects`, `ST_Contains`, *etc.*)
+* additional custom spatial SQL functions that are not defined in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL), such as `ST_Extent`, `ST_Explode`, `ST_MakeGrid`
 
-Ex: `ST_Extent`, `ST_Explode`, `ST_MakeGrid`
+H2GIS contains a set of driver functions (I/O) to read/write file formats such as `.shp`, `.dbf`, `.geojson`, `.gpx`.
 
-H2GIS contains a set of driver functions (I/O)) to read/write file formats such as .shp, .dbf, .geojson, .gpx
-
-This I/O package include 2 implementation of TableEngine that allow you to immediatly 'link' a table with a shape file.
+This I/O package include 2 implementations of `TableEngine` that allow you to immediatly 'link' a table with a shape file.
 
 It include also file copy functions (import):
-* SHPREAD( ) and SHPWRITE( ) to read and write Esri shape files.
-* DBFREAD( ) and DBFWRITE( ) to read and write DBase III files.
-* GeoJsonRead() and GeoJsonWrite() 
-* to read and write GeoJSON files.
-* GPXRead() to read GPX files.
+* `SHPREAD()` and `SHPWRITE()` to read and write Esri shape files,
+* `DBFREAD()` and `DBFWRITE()` to read and write DBase III files,
+* `GeoJsonRead()` and `GeoJsonWrite()` to read and write GeoJSON files,
+* `GPXRead()` to read GPX files.
 
 ## Usage
 
 H2GIS requires Java 11. Run `maven clean install -P standalone` in the H2GIS's root directory.
 
-In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`.Unzip the file then open `h2gis-dist-xxx.jar` It will open a browser based console application.
+In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`. Unzip the file and then open `h2gis-dist-xxx.jar`. It will open a browser based console application.
 
 ```bash
 ~ $ unzip h2gis-standalone-bin.zip
-
 ~ $ cd h2gis-standalone
-
 ~/h2gis-standalone $ java -jar h2gis-dist-xxx.jar
 ```
-Click Connect in the web interface
+Click `Connect` in the web interface.
 
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
@@ -106,22 +106,19 @@ Or copy the content of a spatial table in a new shape file:
 CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
 ```
 
-## Contributing
+## Support - contribute
+
+Many thanks to those who have reported bugs or provided patches... H2GIS is open, so we welcome all contributions to this project!
+
+### Contributor License Agreement
 
 For legal reasons, contributors are asked to provide a contributor license agreement (CLA). 
 
 The message need to include the following statement:
 
-```
-"I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [LGPL 3.0](http://www.gnu.org/copyleft/lgpl.html)." 
-```
+> I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [LGPL 3.0](http://www.gnu.org/copyleft/lgpl.html)." 
 
 If you want to contribute, send a Pull Request (PR) on GitHub and refer the CLA in your message.
-
-## Download
-
-To download the last H2GIS stable release and find documentation please go to [http://www.h2gis.org](http://www.h2gis.org)
-
 
 ## Include H2GIS into projects
 
@@ -146,10 +143,6 @@ The H2GIS team uses open source software. Specifically, we would like to thank  
 * Thomas Mueller, Noel Grandin and Evgenij Ryazanov from the [H2 database community](http://www.h2database.com).
 * Martin Davis from the [JTS Topology Suite community](https://github.com/locationtech/jts).
 * Michaël Michaud from [OpenJump community](https://github.com/openjump-gis)
-
-## Supporters
-
-Many thanks to those who have reported bugs or provided patches... We welcome all contributions to this open project!
 
 ## Team
 
