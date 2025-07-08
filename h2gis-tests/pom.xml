@@ -88,22 +88,23 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <pluginManagement>
-        <plugins>
-            <plugin>
-            <groupId>org.graalvm.buildtools</groupId>
-            <artifactId>native-maven-plugin</artifactId>
-            <version>${native.maven.plugin.version}</version>
-            <configuration>
-                <agent>
-                <enabled>true</enabled>
-                </agent>
-            </configuration>
-            </plugin>
-        </plugins>
-    </pluginManagement>
+
     <!-- Build Settings -->
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.graalvm.buildtools</groupId>
+                    <artifactId>native-maven-plugin</artifactId>
+                    <version>${native.maven.plugin.version}</version>
+                    <configuration>
+                        <agent>
+                            <enabled>true</enabled>
+                        </agent>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!-- Skip deployment on this module -->
             <plugin>
