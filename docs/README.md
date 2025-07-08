@@ -122,7 +122,7 @@ H2GIS is open, so we welcome all contributions to this project! You can contribu
 
 For legal reasons, (code / documentation) contributors are asked to provide a **Contributor License Agreement** (CLA). 
 
-To do so, contributors are asked to **add the following statement in the description of their Pull Request** (PR):
+To do so, contributors just have to **add the following statement in the description of their Pull Request** (PR):
 
 > "I wrote the code, it's mine, and I'm providing it to H2GIS for distribution licensed under the [LGPL 3.0](http://www.gnu.org/copyleft/lgpl.html)."
 
