@@ -15,32 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Import GPG Key
-        run: |
-          echo "${{ secrets.GPG_PUBLIC_KEY }}" | gpg --import
-          echo "${{ secrets.GPG_SECRET_KEY }}" | gpg --import --no-tty --batch --yes
-        env:
-          GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
-          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
-
-      - name: Setup java 11 using Adoptium Temurin
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-          server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
-
       - uses: graalvm/setup-graalvm@v1
         with:
           version: '22.3.3'
           java-version: '11'  # ✅ Ensures GraalVM with Java 11
           components: 'native-image'
           set-java-home: true
-
 
       - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
         with:
