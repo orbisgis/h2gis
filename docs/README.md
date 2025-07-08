@@ -76,7 +76,7 @@ In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bi
 ```
 Click `Connect` in the web interface.
 
-[Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
+You can now [create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
 ### Initialize the H2GIS extension
 
@@ -87,7 +87,9 @@ CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.factory.H2GISF
 CALL H2GIS_SPATIAL();
 ```
 
-When the functions are installed you can open a shapefile by calling the following SQL request:
+### Start playing with H2GIS
+
+When the functions are installed you can open a shapefile by calling the following SQL query:
 
 ```sql
 CALL FILE_TABLE('/home/user/myshapefile.shp', 'tablename');
@@ -108,17 +110,22 @@ CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
 
 ## Support - contribute
 
-Many thanks to those who have reported bugs or provided patches... H2GIS is open, so we welcome all contributions to this project!
+H2GIS is open, so we welcome all contributions to this project! You can contribute in many ways:
+* bug report,
+* code optimization / correction,
+* new function implementation,
+* documentation,
+* participation to discussions / questions on H2GIS GitHub repo or anywhere else,
+* ...
 
 ### Contributor License Agreement
 
-For legal reasons, contributors are asked to provide a contributor license agreement (CLA). 
+For legal reasons, (code / documentation) contributors are asked to provide a **Contributor License Agreement** (CLA). 
 
-The message need to include the following statement:
+To do so, contributors are asked to **add the following statement in the description of their Pull Request** (PR):
 
-> I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [LGPL 3.0](http://www.gnu.org/copyleft/lgpl.html)." 
+> "I wrote the code, it's mine, and I'm providing it to H2GIS for distribution licensed under the [LGPL 3.0](http://www.gnu.org/copyleft/lgpl.html)."
 
-If you want to contribute, send a Pull Request (PR) on GitHub and refer the CLA in your message.
 
 ## Include H2GIS into projects
 
@@ -126,7 +133,7 @@ You can include H2GIS in your project thanks to Maven repositories.
 
 From maven central, check https://search.maven.org/artifact/org.orbisgis/h2gis/2.2.1/bundle
 
-To use the current snapshot, just add the following lines in your pom
+To use the current snapshot, just add the following lines in your `pom.xml` file
 
 ```xml
 <repository>
@@ -138,11 +145,13 @@ To use the current snapshot, just add the following lines in your pom
 
 ## Acknowledgements
 
-The H2GIS team uses open source software. Specifically, we would like to thank  :
+Many thanks to those who have reported bugs or provided patches. It helps us a lot!
 
-* Thomas Mueller, Noel Grandin and Evgenij Ryazanov from the [H2 database community](http://www.h2database.com).
-* Martin Davis from the [JTS Topology Suite community](https://github.com/locationtech/jts).
-* Michaël Michaud from [OpenJump community](https://github.com/openjump-gis)
+H2GIS is based on amazing open source softwares. So we would like to thank:
+
+* [Thomas Mueller](https://github.com/thomasmueller), [Noel Grandin](https://github.com/grandinj) and [Evgenij Ryazanov](https://github.com/katzyn) from the [H2 database community](http://www.h2database.com),
+* Martin Davis from the [JTS Topology Suite community](https://github.com/locationtech/jts),
+* Michaël Michaud from [IGN](https://www.ign.fr/) and [OpenJump community](https://github.com/openjump-gis), for creating JTransfoCoord, the father of [CTS](https://github.com/orbisgis/cts) used to manage projections in H2GIS
 
 ## Team
 
