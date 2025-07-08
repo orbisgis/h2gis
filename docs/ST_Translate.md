@@ -27,8 +27,26 @@ SELECT ST_Translate('POLYGON((0 0, 3 0, 3 5, 0 5, 0 0))', 2, 1);
 ![](./ST_Translate.png){align=center}
 
 ```sql
+SELECT ST_Translate('LINESTRING(-71.01 42.37, -71.11 42.38)', 1, 0.5);
+-- Answer: LINESTRING(-70.01 42.87, -70.11 42.88)
+```
+
+```sql
 SELECT ST_Translate('POINT(1 2 3)', 10, 20, 30);
 -- Answer: POINT(11 22 33)
+```
+
+```sql
+SELECT ST_Translate('MULTIPOINT((0 1), (2 2), (1 3))', 1, 0);
+-- Answer: MULTIPOINT((1 1), (3 2), (2 3))
+```
+
+```sql
+SELECT ST_Translate('GEOMETRYCOLLECTION(
+                        POLYGON((0 0, 3 5, 6  6, 0 7, 0 0)),
+                        MULTIPOINT((0 1), (2 2), (1 3)))', -1, 1);
+-- Answer: GEOMETRYCOLLECTION(POLYGON((-1 1, 2 6, 5 7, -1 8, -1 1)),
+--                            MULTIPOINT((-1 2), (1 3), (0 4)))
 ```
 
 Doing a 3D translation on a 2D Geometry is the same as doing a 2D translation:
@@ -36,26 +54,11 @@ Doing a 3D translation on a 2D Geometry is the same as doing a 2D translation:
 SELECT ST_Translate('LINESTRING(0 0, 1 0)', 1, 2, 3);
 -- Answer: LINESTRING(1 2, 2 2)
 ```
+
 Doing a 2D translation on a 3D Geometry leaves z-values unchanged:
 ```sql
-SELECT ST_Translate('LINESTRING(0 0 0, 1 0 0)', 1, 2);
--- Answer: LINESTRING(1 2 0, 2 2 0)
-```
-```sql
-SELECT ST_Translate('LINESTRING(-71.01 42.37, -71.11 42.38)',
-                    1, 0.5);
--- Answer: LINESTRING(-70.01 42.87, -70.11 42.88)
-```
-```sql
-SELECT ST_Translate('MULTIPOINT((0 1), (2 2), (1 3))', 1, 0);
--- Answer: MULTIPOINT((1 1), (3 2), (2 3))
-```
-```sql
-SELECT ST_Translate('GEOMETRYCOLLECTION(
-                        POLYGON((0 0, 3 5, 6  6, 0 7, 0 0)),
-                        MULTIPOINT((0 1), (2 2), (1 3)))', -1, 1);
--- Answer: GEOMETRYCOLLECTION(POLYGON((-1 1, 2 6, 5 7, -1 8, -1 1)),
---                            MULTIPOINT((-1 2), (1 3), (0 4)))
+SELECT ST_Translate('LINESTRING Z(0 0 0, 1 0 0)', 1, 2);
+-- Answer: LINESTRING Z(1 2 0, 2 2 0)
 ```
 
 ### Non-examples

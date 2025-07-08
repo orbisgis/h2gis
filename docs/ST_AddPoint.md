@@ -57,8 +57,8 @@ SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 ```sql
 CREATE TABLE input(poly POLYGON, p POINT);
 INSERT INTO input VALUES ('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
-                                  (2 2, 4 2, 4 4, 2 4, 2 2))',
-                         'POINT(3 3)');
+                                   (2 2, 4 2, 4 4, 2 4, 2 2))',
+                          'POINT(3 3)');
 
 SELECT ST_AddPoint(poly, p, 0.5) FROM input;
 -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),

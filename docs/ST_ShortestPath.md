@@ -39,7 +39,7 @@ In the following examples, we will use the geometrical data below as input.
 
 ```sql
 DROP TABLE IF EXISTS INPUT;
-CREATE TABLE INPUT(THE_GEOM LINESTRING,
+CREATE TABLE INPUT(THE_GEOM GEOMETRY(LINESTRING),
                    ID INT AUTO_INCREMENT PRIMARY KEY,
                    WEIGHT DOUBLE,
                    EDGE_ORIENTATION INT);

@@ -64,7 +64,7 @@ Why using H2GIS?
 
 Download the last version
 --------------------------
-You can download the last release of H2GIS `here <https://github.com/orbisgis/h2gis/releases>`_ 
+You can download the last release of H2GIS `here <https://github.com/orbisgis/h2gis/releases>`_.
 
 Get help
 -----------------

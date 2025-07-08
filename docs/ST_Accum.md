@@ -19,7 +19,7 @@ If there is only `POINT`s in the column of Geometries, a `MULTIPOINT` is returne
 
 ### Case with same dimension geometries
 ```sql
-CREATE TABLE input_table(geom GEOMETRY);
+CREATE TABLE input_table(geom GEOMETRY(POINT));
 INSERT INTO input_table VALUES
     ('POINT(0 0)'),
     ('POINT(1 1)'),

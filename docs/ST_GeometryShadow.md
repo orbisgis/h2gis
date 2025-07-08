@@ -82,7 +82,7 @@ SELECT ST_Geometryshadow('POLYGON((356090.9 6693096.6, 356132.1 6693112.3, 35614
 Computes shadow on polygons that are in a table and which height is stored in a field.
 
 ```sql
-CREATE TABLE building (the_geom geometry, height double);
+CREATE TABLE building (the_geom geometry (POLYGON), height double);
 INSERT INTO building values('POLYGON((356090.9 6693096.6, 356132.1 6693112.3, 356147.4 6693071.3, 356105.8 6693055.8, 356090.9 6693096.6))', 6);
 INSERT INTO building values('POLYGON((356160 6693075.8, 356144.7 6693116.9, 356185.8 6693132.4, 356201.2 6693091.6, 356160 6693075.8))', 10);
 

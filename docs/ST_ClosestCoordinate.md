@@ -44,7 +44,7 @@ SELECT ST_ClosestCoordinate('POINT(4 2)',
 ![](./ST_ClosestCoordinate_3.png){align=center}
 
 ```sql
-CREATE TABLE input_table(point POINT);
+CREATE TABLE input_table(point GEOMETRY(POINT));
 INSERT INTO input_table VALUES
     ('POINT(0 0)'),
     ('POINT(4 2.5)'),

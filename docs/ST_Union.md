@@ -46,7 +46,7 @@ SELECT ST_Union(geomA, geomB) FROM input_table;
 ### Aggregate function
 
 ```sql
-CREATE TABLE input_table(geom POLYGON);
+CREATE TABLE input_table(geom GEOMETRY(POLYGON));
 INSERT INTO input_table VALUES
      ('POLYGON((1 1, 7 1, 7 6, 1 6, 1 1))'),
      ('POLYGON((3 2, 8 2, 8 8, 3 8, 3 2))'),

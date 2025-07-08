@@ -40,15 +40,15 @@ SELECT ST_ToMultiSegments('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0), (1 1, 2 1, 2 5, 
 SELECT ST_ToMultiSegments(
     'GEOMETRYCOLLECTION(
        POLYGON((0 0, 10 0, 10 5, 0 5, 0 0),
-                (1 1, 2 1, 2 4, 1 4, 1 1),
-                (7 1, 8 1, 8 3, 7 3, 7 1)),
+               (1 1, 2 1, 2 4, 1 4, 1 1),
+               (7 1, 8 1, 8 3, 7 3, 7 1)),
        POINT(2 3),
        LINESTRING(8 7, 9 5, 11 3))');
 -- Answer:MULTILINESTRING((0 0, 10 0), (10 0, 10 5), (10 5, 0 5),
---                         (0 5, 0 0), (1 1, 2 1), (2 1, 2 4),
---                         (2 4, 1 4), (1 4, 1 1), (7 1, 8 1),
---                         (8 1, 8 3), (8 3, 7 3), (7 3, 7 1),
---                         (8 7, 9 5), (9 5, 11 3))
+--                        (0 5, 0 0), (1 1, 2 1), (2 1, 2 4),
+--                        (2 4, 1 4), (1 4, 1 1), (7 1, 8 1),
+--                        (8 1, 8 3), (8 3, 7 3), (7 3, 7 1),
+--                        (8 7, 9 5), (9 5, 11 3))
 ```
 
 ```sql
@@ -59,11 +59,11 @@ SELECT ST_ToMultiSegments('POINT(5 5)');
 ### Comparison with [`ST_ToMultiLine`](../ST_ToMultiLine)
 
 ```sql
-CREATE TABLE input(poly POLYGON);
+CREATE TABLE input(poly GEOMETRY(POLYGON));
 INSERT INTO input VALUES (
     'POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
-              (1 1, 2 1, 2 5, 1 5, 1 1),
-              (7 1, 8 1, 8 3, 7 3, 7 1))');
+             (1 1, 2 1, 2 5, 1 5, 1 1),
+             (7 1, 8 1, 8 3, 7 3, 7 1))');
 SELECT ST_ToMultiSegments(poly) SEG,
        ST_ToMultiLine(poly) LINE FROM input;
 ```

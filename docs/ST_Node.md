@@ -25,8 +25,8 @@ CREATE TABLE line AS SELECT
 CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
 
 -- Answer: MULTILINESTRING ((1 1, 2.5 2.5), 
-			    (2.5 2.5, 4 4, 1 4, 2.5 2.5), 
-			    (2.5 2.5, 4 1))
+--                          (2.5 2.5, 4 4, 1 4, 2.5 2.5), 
+--                          (2.5 2.5, 4 1))
 ```
 
 ![](./ST_Node_4.png){align=center}
@@ -36,13 +36,13 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
 ```sql
 -- Initialize the input 3D Linestring layer
 CREATE TABLE line AS SELECT 
-  ST_GeomFromText('LINESTRING(1 1 0, 4 4 3, 1 4 3, 4 1 0)') as the_geom;
+  ST_GeomFromText('LINESTRING Z(1 1 0, 4 4 3, 1 4 3, 4 1 0)') as the_geom;
 -- Compute nodes
 CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM line;
 
 -- Answer: MULTILINESTRING ((1 1 0, 2.5 2.5), 
-			    (2.5 2.5, 4 4 3, 1 4 3, 2.5 2.5), 
-			    (2.5 2.5, 4 1 0))
+--                          (2.5 2.5, 4 4 3, 1 4 3, 2.5 2.5), 
+--                          (2.5 2.5, 4 1 0))
 ```
 
 ### With `MultiLinestring`
@@ -54,7 +54,7 @@ CREATE TABLE lines AS SELECT
 CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM lines;
 
 -- Answer: MULTILINESTRING ((1 1, 2.5 2.5), (2.5 2.5, 4 4), 
-			    (1 3, 2.5 2.5), (2.5 2.5, 4 2))
+--                          (1 3, 2.5 2.5), (2.5 2.5, 4 2))
 ```
 
 ![](./ST_Node_1.png){align=center}
@@ -64,13 +64,13 @@ CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM lines;
 -- Initialize the input MultiPolygon layer
 CREATE TABLE polygon AS SELECT 
   ST_GeomFromText('MULTIPOLYGON(((1 1, 1 3, 3 3, 3 1, 1 1)), 
-				((2 4, 4 4, 4 2, 2 2, 2 4)))') as the_geom;
+  	                        ((2 4, 4 4, 4 2, 2 2, 2 4)))') as the_geom;
 -- Compute nodes
 CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM polygon;
 
 -- Answer: MULTILINESTRING ((1 1, 1 3, 2 3), (2 3, 3 3, 3 2), 
-			    (3 2, 3 1, 1 1), (2 4, 4 4, 4 2, 3 2), 
-			    (3 2, 2 2, 2 3), (2 3, 2 4))
+--                          (3 2, 3 1, 1 1), (2 4, 4 4, 4 2, 3 2), 
+--                          (3 2, 2 2, 2 3), (2 3, 2 4))
 ```
 
 ![](./ST_Node_2.png){align=center}
@@ -86,8 +86,8 @@ CREATE TABLE geomColl AS SELECT
 CREATE TABLE nodes AS SELECT ST_NODE(the_geom) FROM geomColl;
 
 -- Answer: MULTILINESTRING ((1 1, 1 3, 2 3), (2 3, 3 3, 3 2), 
-			    (3 2, 3 1, 1 1), (1 4, 2 3), 
-			    (2 3, 3 2), (3 2, 4 1))
+--                          (3 2, 3 1, 1 1), (1 4, 2 3), 
+--                          (2 3, 3 2), (3 2, 4 1))
 ```
 
 ![](./ST_Node_3.png){align=center}

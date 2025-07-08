@@ -34,7 +34,7 @@ Answer:
 
 ### For a (3D) Linestring
 ```sql
-SELECT ST_AsGML('LINESTRING (12 25 10, 100 20 5, 56 65 8)');
+SELECT ST_AsGML('LINESTRING Z(12 25 10, 100 20 5, 56 65 8)');
 ```
 
 Answer: 

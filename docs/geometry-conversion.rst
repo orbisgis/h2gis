@@ -21,7 +21,7 @@ The following geometry conversion functions are available:
    * - :doc:`ST_AsWKT`
      - Geometry → Well Known Text
    * - :doc:`ST_Force2D`
-     - 3D Geometry → 2D Geometry
+     - 3D or 4D Geometry → 2D Geometry
    * - :doc:`ST_GeomFromGML`
      - GML → Geometry
    * - :doc:`ST_GeomFromText`

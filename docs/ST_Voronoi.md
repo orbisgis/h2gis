@@ -36,7 +36,9 @@ If the input is  a `MULTIPOLYGON` made of triangles mesh. Using geometry coordin
 ```sql
 -- Create input data point cloud
 drop table if exists pts;
-create table pts as select ST_MakePoint(A.X + (COS(B.X)), B.X - (SIN(A.X)), ROUND(LOG10(1 + A.X * (5 * B.X)),2)) THE_GEOM from SYSTEM_RANGE(0,50) A,SYSTEM_RANGE(30,50) B;
+create table pts as select ST_MakePoint(A.X + (COS(B.X)), B.X - (SIN(A.X)), 
+	ROUND(LOG10(1 + A.X * (5 * B.X)),2)) THE_GEOM 
+	from SYSTEM_RANGE(0,50) A, SYSTEM_RANGE(30,50) B;
 ```
 
 Create classic voronoi polygons with default envelope. (Z values are not kept.)
@@ -49,7 +51,9 @@ Create voronoi polygons with Z values with input points as envelope. Then create
 
 ```sql
 drop table if exists voro;
-create table voro as select ST_VORONOI(ST_DELAUNAY(ST_ACCUM(the_geom)), 2 , ST_ACCUM(the_geom)) the_geom from PTS;
+create table voro as select ST_VORONOI(ST_DELAUNAY(
+	ST_ACCUM(the_geom)), 2 , 
+	ST_ACCUM(the_geom)) the_geom from PTS;
 drop table if exists voroexpl;
 create table voroexpl as select * from st_explode('voro');
 ```

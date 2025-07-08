@@ -80,8 +80,8 @@ By setting `orientBySlope` to `true`, you can specify that edges should be orien
 ### First Geometry column detection
 
 ```sql
-CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING, 
-                  description VARCHAR, way LINESTRING);
+CREATE TABLE test(pk INTEGER PRIMARY KEY, road GEOMETRY(LINESTRING), 
+                  description VARCHAR, way GEOMETRY(LINESTRING));
 INSERT INTO test VALUES
 ('1','LINESTRING(0 0, 1 2)', 'road1', 'LINESTRING(1 1, 2 2, 3 1)'),
 ('2','LINESTRING(1 2, 2 3, 4 3)', 'road2', 'LINESTRING(3 1, 2 0, 1 1)'),
@@ -148,8 +148,7 @@ SELECT * FROM test_edges;
 ### Using a tolerance
 
 ```sql
-CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING, 
-                                 description VARCHAR);
+CREATE TABLE test(pk INTEGER PRIMARY KEY, road GEOMETRY(LINESTRING), description VARCHAR);
 INSERT INTO test VALUES ('1', 'LINESTRING(0 0, 1 0)', 'road1'),
                         ('2', 'LINESTRING(1.05 0, 2 0)', 'road2'),
                         ('3', 'LINESTRING(2.05 0, 3 0)', 'road3'),
@@ -201,8 +200,7 @@ This test proves that orientation by slope works. Three cases:
 #### CASE 1: 0 == 0
 
 ```sql
-CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING, 
-                  description VARCHAR);
+CREATE TABLE test(pk INTEGER PRIMARY KEY, road GEOMETRY(LINESTRING), description VARCHAR);
 INSERT INTO test VALUES ('1', 'LINESTRING(0 0 0, 1 0 0)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
 ```
@@ -231,8 +229,7 @@ SELECT * FROM test_edges;
 DROP TABLE test;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
-CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING, 
-                  description VARCHAR);
+CREATE TABLE test(pk INTEGER PRIMARY KEY, road GEOMETRY(LINESTRING), description VARCHAR);
 INSERT INTO test VALUES ('1', 'LINESTRING(0 0 1, 1 0 0)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
 ```
@@ -262,8 +259,7 @@ SELECT * FROM test_edges;
 DROP TABLE test;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
-CREATE TABLE test(pk INTEGER PRIMARY KEY, road LINESTRING, 
-                  description VARCHAR);
+CREATE TABLE test(pk INTEGER PRIMARY KEY, road GEOMETRY(LINESTRING), description VARCHAR);
 INSERT INTO test VALUES ('1', 'LINESTRING(0 0 0, 1 0 1)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
 ```

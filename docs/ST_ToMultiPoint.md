@@ -58,11 +58,11 @@ SELECT ST_ToMultiPoint(
 ### Aggregate form
 
 ```sql
-CREATE TABLE input_table(line LINESTRING);
+CREATE TABLE input_table(line GEOMETRY(LINESTRING));
 INSERT INTO input_table VALUES
-    ('LINESTRING(5 5, 1 2, 3 4, 0 3))'),
-    ('LINESTRING(0 0, 1 -2, 3 1))'),
-    ('LINESTRING(0 1, 2 2, 3 6))');
+    ('LINESTRING(5 5, 1 2, 3 4, 0 3)'),
+    ('LINESTRING(0 0, 1 -2, 3 1)'),
+    ('LINESTRING(0 1, 2 2, 3 6)');
 SELECT ST_ToMultiPoint(ST_Accum(line)) FROM input_table;
 
 -- Answer: MULTIPOINT((5 5), (1 2), (3 4), (0 3), (0 0), (1 -2), (3 1), (0 1), (2 2), (3 6))
