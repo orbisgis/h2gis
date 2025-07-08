@@ -149,12 +149,11 @@ The H2GIS team uses open source software. Specifically, we would like to thank  
 
 ## Supporters
 
-Many thanks for those who reported bugs or provide patches...  
-
+Many thanks to those who have reported bugs or provided patches... We welcome all contributions to this open project!
 
 ## Team
 
-H2GIS is leaded by scientists and engineers in GIS and informatic sciences from [CNRS](https://www.cnrs.fr/) within the French [Lab-STICC](https://labsticc.fr/fr) laboratory ([DECIDE](https://labsticc.fr/fr/equipes/decide) team of Vannes).
+H2GIS is leaded by scientists and engineers in GIS and computer sciences from [CNRS](https://www.cnrs.fr/) within the French [Lab-STICC](https://labsticc.fr/fr) laboratory ([DECIDE](https://labsticc.fr/fr/equipes/decide) team of [Vannes](https://www.openstreetmap.org/relation/192306)).
 
 
 ## Fundings
