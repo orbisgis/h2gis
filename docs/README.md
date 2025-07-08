@@ -150,7 +150,7 @@ Many thanks to those who have reported bugs or provided patches. It helps us a l
 H2GIS is based on amazing open source softwares. So we would like to thank:
 
 * [Thomas Mueller](https://github.com/thomasmueller), [Noel Grandin](https://github.com/grandinj) and [Evgenij Ryazanov](https://github.com/katzyn) from the [H2 database community](http://www.h2database.com),
-* Martin Davis from the [JTS Topology Suite community](https://github.com/locationtech/jts),
+* [Martin Davis](https://github.com/dr-jts) from the [JTS Topology Suite community](https://github.com/locationtech/jts),
 * Michaël Michaud from [IGN](https://www.ign.fr/) and [OpenJump community](https://github.com/openjump-gis), for creating JTransfoCoord, the father of [CTS](https://github.com/orbisgis/cts) used to manage projections in H2GIS
 
 ## Team

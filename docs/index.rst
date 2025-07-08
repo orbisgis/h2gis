@@ -84,7 +84,7 @@ Acknowledgements
 The H2GIS team would like to extend its warmest thanks to:
 
 * `Thomas Mueller <https://github.com/thomasmueller>`_, `Noel Grandin <https://github.com/grandinj>`_ and `Evgenij Ryazanov <https://github.com/katzyn>`_ from the `H2 database <http://www.h2database.com/>`_ community
-* Martin Davis from the `JTS Topology Suite <https://github.com/locationtech/jts>`_ community
+* `Martin Davis <https://github.com/dr-jts>`_ from the `JTS Topology Suite <https://github.com/locationtech/jts>`_ community
 * Michaël Michaud from `IGN <https://www.ign.fr/>`_ and `OpenJump <https://github.com/openjump-gis>`_ community, for creating JTransfoCoord, the father of `CTS <https://github.com/orbisgis/cts>`_ used to manage projections in H2GIS
 
 
