@@ -6,6 +6,21 @@
     "allDeclaredFields": true
   },
   {
+    "name": "org.h2gis.functions.system.GraalCInterface",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.h2gis.functions.factory.H2GISFunctions",
+    "methods": [
+      {
+        "name": "load",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "org.h2gis.postgis_jts.StatementWrapper",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,

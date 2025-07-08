@@ -67,6 +67,14 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>META-INF/native-image/**</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
 
             <plugin>
@@ -171,7 +179,6 @@
                             <buildArgs>
                                 <arg>--shared</arg>
                                 <arg>-O3</arg>
-                                <arg>-H:Optimize=2</arg>
                                 <arg>--no-fallback</arg>
                                 <arg>--report-unsupported-elements-at-runtime</arg>
                                 <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
