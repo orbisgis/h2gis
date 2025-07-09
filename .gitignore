@@ -12,7 +12,9 @@ _site/
 **/reports
 reports/**
 agent-output
-**/META-INF/native-image/**
-!keep-these/**/agent-output/
+**/resources/META-INF/native-image/**
+!h2gis-dist/**/native-image/
+!h2gis-functions/**/native-image/
+
 graal_isolate.h
 graal_isolate_dynamic.h
