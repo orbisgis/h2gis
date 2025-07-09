@@ -9,4 +9,7 @@ _site/
 *.swp
 *~
 *nb-configuration.xml
+**/reports
 reports/**
+**/agent-output
+agent-output/**

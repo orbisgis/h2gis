@@ -360,32 +360,32 @@ public class AscReaderDriverTest {
 
     @Test
     public void testReadPrecipEnvelopePOSTGIS(TestInfo testInfo) throws IOException, SQLException {
-        // String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
-        // Properties props = new Properties();
-        // props.setProperty("user", "orbisgis");
-        // props.setProperty("password", "orbisgis");
-        // props.setProperty("url", url);
-        // Connection con = null;
-        // try {
-        //     DataSource ds = dataSourceFactory.createDataSource(props);
-        //     con = ds.getConnection();
-        //     con.setAutoCommit(false);
-        // } catch (SQLException e) {
-        //     log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
-        // }
-        // if (con != null) {
-        //     AscReaderDriver reader = new AscReaderDriver();
-        //     reader.setExtractEnvelope(new Envelope(-178.242, -174.775, -89.707, -85.205));
-        //     reader.setDeleteTable(true);
-        //     reader.read(con, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
-        //     // Check database content
-        //     // Check number of extracted cells
-        //     Statement st = con.createStatement();
-        //     try (ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
-        //         assertTrue(rs.next());
-        //         assertEquals(90, rs.getInt("CPT"));
-        //     }
-        // }
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+        Connection con = null;
+        try {
+            DataSource ds = dataSourceFactory.createDataSource(props);
+            con = ds.getConnection();
+            con.setAutoCommit(false);
+        } catch (SQLException e) {
+            log.warn("Cannot connect to the database to execute the test " + testInfo.getDisplayName());
+        }
+        if (con != null) {
+            AscReaderDriver reader = new AscReaderDriver();
+            reader.setExtractEnvelope(new Envelope(-178.242, -174.775, -89.707, -85.205));
+            reader.setDeleteTable(true);
+            reader.read(con, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
+            // Check database content
+            // Check number of extracted cells
+            Statement st = con.createStatement();
+            try (ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
+                assertTrue(rs.next());
+                assertEquals(90, rs.getInt("CPT"));
+            }
+        }
     }
     
     @Test
