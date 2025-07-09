@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Maven Coordinates -->
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>h2gis-parent</artifactId>
@@ -14,6 +13,7 @@
 
     <artifactId>h2gis-dist</artifactId>
 
+    <!-- Project Information -->
     <properties>
         <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
         <imageName>h2gis</imageName>
@@ -34,7 +34,9 @@
         </license>
     </licenses>
 
+    <!-- Dependencies -->
     <dependencies>
+        <!-- Simple Logging Facade for Java -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -72,6 +74,7 @@
         </dependency>
     </dependencies>
 
+    <!-- Build Settings -->
     <build>
         <resources>
             <resource>
@@ -82,16 +85,15 @@
             </resource>
         </resources>
         <plugins>
-
+            <!-- Plugin for test running -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <workingDirectory>target/</workingDirectory>
-                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
-
+            <!-- Plugin for the execution of a Java program -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -106,7 +108,7 @@
                     </arguments>
                 </configuration>
             </plugin>
-
+            <!-- Create a JAR from the project -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -120,14 +122,14 @@
                     </archive>
                 </configuration>
             </plugin>
-
+            <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -136,8 +138,8 @@
                 <configuration>
                     <finalName>h2gis-standalone</finalName>
                     <descriptors>
-                        <descriptor>src/main/assembly/bin.xml</descriptor>
-                        <descriptor>src/main/assembly/project.xml</descriptor>
+                        <descriptor>src/main/assembly/bin.xml</descriptor> <!-- Binary Zip-->
+                        <descriptor>src/main/assembly/project.xml</descriptor> <!-- Sources -->
                     </descriptors>
                 </configuration>
             </plugin>

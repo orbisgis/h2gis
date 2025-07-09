@@ -2,12 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Maven Coordinates -->
     <groupId>org.orbisgis</groupId>
     <artifactId>h2gis-parent</artifactId>
     <version>2.2.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
+    <!-- Project Information -->
     <name>H2GIS</name>
     <description>H2GIS is a spatial extension of the H2 database engine in the spirit of PostGIS. It adds support for
         the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.
@@ -67,14 +69,15 @@
         <url>https://github.com/orbisgis/h2gis/issues</url>
     </issueManagement>
 
+    <!-- Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-version>3.5.0</maven-version>
         <java-version>11</java-version>
         <maven.compiler.target>${java-version}</maven.compiler.target>
         <maven.compiler.source>${java-version}</maven.compiler.source>
-        <imageName>native-h2gis</imageName>
 
+        <!-- Dependencies versions -->
         <commons-compress-version>1.27.1</commons-compress-version>
         <commons-io-version>2.16.1</commons-io-version>
         <h2-version>2.3.232</h2-version>
@@ -93,6 +96,7 @@
         <geographiclib-version>2.0</geographiclib-version>
         <slf4j-version>2.0.16</slf4j-version>
 
+        <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>
         <maven-assembly-version>3.6.0</maven-assembly-version>
         <maven-bundle-version>5.1.2</maven-bundle-version>
@@ -108,6 +112,7 @@
 
     </properties>
 
+    <!-- Dependencies -->
     <repositories>
         <repository>
             <name>Central Portal Snapshots</name>
@@ -201,6 +206,7 @@
                 <version>${geographiclib-version}</version>
             </dependency>
 
+            <!-- Test dependencies -->
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
@@ -239,6 +245,7 @@
         </repository>
     </distributionManagement>
 
+    <!-- Build Settings -->
     <profiles>
         <profile>
             <id>standalone</id>
@@ -296,6 +303,7 @@
             <id>deploy</id>
             <build>
                 <plugins>
+                    <!-- Sign -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -327,7 +335,8 @@
     <build>
         <pluginManagement>
             <plugins>
-               <plugin>
+                <!-- Sign -->
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>${maven-gpg-plugin-version}</version>
@@ -348,6 +357,7 @@
                     </executions>
                 </plugin>
                 <plugin>
+                    <!-- Test -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-version}</version>
@@ -356,11 +366,10 @@
                             -agentlib:native-image-agent=config-output-dir=${project.build.directory}/native-image-config
                         </argLine>
                         <useSystemClassLoader>false</useSystemClassLoader>
-                        <testFailureIgnore>true</testFailureIgnore>
                     </configuration>
                 </plugin>
 
-
+                <!-- Package the project into a JAR file -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
@@ -377,7 +386,7 @@
                         </archive>
                     </configuration>
                 </plugin>
-
+                <!-- Generation of the OSGI bundle -->
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
@@ -389,6 +398,7 @@
                         </instructions>
                     </configuration>
                 </plugin>
+                <!-- Tool version check -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
@@ -402,6 +412,7 @@
                             <configuration>
                                 <rules>
                                     <bannedPlugins>
+                                        <!-- Will only display a warning but does not fail the build. -->
                                         <level>WARN</level>
                                         <excludes>
                                             <exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
@@ -418,6 +429,7 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- Versions check -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
@@ -428,6 +440,7 @@
                         </rulesUri>
                     </configuration>
                 </plugin>
+                <!-- Javadoc generation -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
@@ -460,6 +473,7 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- Maven release generation -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
