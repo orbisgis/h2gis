@@ -12,9 +12,33 @@ jobs:
     name: Release and next iteration
     runs-on: ubuntu-latest
     steps:
+
+      # Checkout the source code of the project
       - name: Checkout
         uses: actions/checkout@v4
+          
+      # Install the GPG secret key
+      - name: Import GPG Key
+        run: |
+          echo "${{ secrets.GPG_PUBLIC_KEY }}" | gpg --import
+          echo "${{ secrets.GPG_SECRET_KEY }}" | gpg --import --no-tty --batch --yes
+        env:
+          GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
 
+      # Setup the jdk using version 11 of Adoptium Temurin
+      - name: Setup java 11 using Adoptium Temurin
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      #Setup graalvm
       - uses: graalvm/setup-graalvm@v1
         with:
           version: '22.3.3'
@@ -22,6 +46,7 @@ jobs:
           components: 'native-image'
           set-java-home: true
 
+      # Setup postgis test DB
       - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
         with:
           psql_version: '9.6'
@@ -31,14 +56,21 @@ jobs:
           db_user: 'orbisgis'
           db_name: 'orbisgis_db'
 
+      # Configure git user in order to sign release with OrbisGIS user.
       - name: Configure Git User
         run: |
           git config user.email "info@orbisgis.org"
           git config user.name OrbisGIS
 
+      # Test build
       - name: Build test
         run: mvn -ntp clean validate compile test javadoc:test-javadoc javadoc:jar
 
+      # Create the release :
+      #   - move from Snapshot version to Release
+      #   - commit and tag release
+      #   - move to next Snapshot
+      #   - upload release to maven repo
       - name: Release
         run: |
           VERSION=${{ github.event.inputs.nextVersion }}
@@ -55,9 +87,11 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
+      # Export the last git tag into env.
       - name: Export env values
         run: echo "GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
 
+      # Make the Github release from the last created tag. Write in its body the content of the changelog file.
       - name: Make Github release
         uses: ncipollo/release-action@v1
         env:
@@ -70,12 +104,14 @@ jobs:
           prerelease: false
           artifacts: "h2gis-dist/target/h2gis-standalone-bin.zip"
 
+      # Clear the changelog file and add its header
       - name: Clear changelog
         run: |
           echo "## Changelog for v$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)" > docs/CHANGELOG.md
           git commit -a -m "Empty changelog."
           git push origin master
 
+      # If the version change is a major or minor, create a branch from the previous tag for future revisions.
       - name: Branch fork
         run: |
           GIT_TAG="${GIT_TAG:1}"
@@ -91,6 +127,7 @@ jobs:
             mvn versions:set -DnewVersion="${SPLIT0[0]}.${SPLIT0[1]}.$((${SPLIT0[2]}+1))-SNAPSHOT"
             git commit -a -m "Set next version."
             git push -u origin "$BRANCH"
+          fi
 
 
   native-windows:
