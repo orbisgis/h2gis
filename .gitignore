@@ -11,5 +11,7 @@ _site/
 *nb-configuration.xml
 **/reports
 reports/**
-**/agent-output
-agent-output/**
+agent-output
+**/META-INF/native-image/agent-output/**
+graal_isolate.h
+graal_isolate_dynamic.h
