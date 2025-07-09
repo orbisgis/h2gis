@@ -67,35 +67,35 @@ public class PostGIS_JTSTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     public void testCreatePostGIS() throws Exception {
-        // Statement st = connection.createStatement();
-        // st.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE_INDEX; CREATE TABLE MYSCHEMA.GEOMTABLE_INDEX (THE_GEOM GEOMETRY);");
-        // st.execute("INSERT INTO MYSCHEMA.GEOMTABLE_INDEX VALUES ('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))'),('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))' )");
-        // ResultSetWrapper rs = (ResultSetWrapper) st.executeQuery("select * from MYSCHEMA.GEOMTABLE_INDEX");
-        // assertTrue(rs.next());
-        // Geometry geom = (Geometry) rs.getObject(1);
-        // assertEquals(1, geom.getNumGeometries());
-        // assertTrue(geom.getArea() > 0);
-        // assertTrue(rs.next());
-        // geom = (Geometry) rs.getObject(1);
-        // assertEquals(1, geom.getNumGeometries());
-        // assertTrue(geom.getArea() > 0);
+        Statement st = connection.createStatement();
+        st.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE_INDEX; CREATE TABLE MYSCHEMA.GEOMTABLE_INDEX (THE_GEOM GEOMETRY);");
+        st.execute("INSERT INTO MYSCHEMA.GEOMTABLE_INDEX VALUES ('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))'),('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))' )");
+        ResultSetWrapper rs = (ResultSetWrapper) st.executeQuery("select * from MYSCHEMA.GEOMTABLE_INDEX");
+        assertTrue(rs.next());
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertEquals(1, geom.getNumGeometries());
+        assertTrue(geom.getArea() > 0);
+        assertTrue(rs.next());
+        geom = (Geometry) rs.getObject(1);
+        assertEquals(1, geom.getNumGeometries());
+        assertTrue(geom.getArea() > 0);
     }
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     public void testEstimateExtentMethod() throws Exception {
-        // Statement st = connection.createStatement();
-        // st.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE(THE_GEOM GEOMETRY);");
-        // st.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES ('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))'),('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))' )");
-        // st.execute("ANALYZE MYSCHEMA.GEOMTABLE");
-        // StringBuilder query = new StringBuilder("SELECT  ST_EstimatedExtent(");
-        // query.append("'").append("myschema").append("',");
-        // query.append("'").append("geomtable").append("','").append("the_geom").append("') :: geometry");
-        // try (ResultSetWrapper rs = (ResultSetWrapper) connection.createStatement().executeQuery(query.toString())) {
-        //     if (rs.next()) {
-        //         Geometry geom = ((Geometry) rs.getObject(1));
-        //         assertTrue(geom.getArea() > 0);
-        //     }
-        // }
+        Statement st = connection.createStatement();
+        st.execute("DROP SCHEMA IF EXISTS MYSCHEMA CASCADE; CREATE SCHEMA MYSCHEMA; DROP TABLE IF EXISTS MYSCHEMA.GEOMTABLE; CREATE TABLE MYSCHEMA.GEOMTABLE(THE_GEOM GEOMETRY);");
+        st.execute("INSERT INTO MYSCHEMA.GEOMTABLE VALUES ('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))'),('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))' )");
+        st.execute("ANALYZE MYSCHEMA.GEOMTABLE");
+        StringBuilder query = new StringBuilder("SELECT  ST_EstimatedExtent(");
+        query.append("'").append("myschema").append("',");
+        query.append("'").append("geomtable").append("','").append("the_geom").append("') :: geometry");
+        try (ResultSetWrapper rs = (ResultSetWrapper) connection.createStatement().executeQuery(query.toString())) {
+            if (rs.next()) {
+                Geometry geom = ((Geometry) rs.getObject(1));
+                assertTrue(geom.getArea() > 0);
+            }
+        }
     }
 }
