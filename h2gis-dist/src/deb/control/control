@@ -3,5 +3,4 @@ Version: 0.0.0.1
 Section: libs
 Priority: optional
 Architecture: amd64
-Maintainer: Lemap <maelphilippe25@gmail.com>
 Description: Librairie native libexample compilée avec Maven
