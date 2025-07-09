@@ -6,7 +6,7 @@
     "allDeclaredFields": true
   },
   {
-    "name": "org.h2gis.functions.system.GraalCInterface",
+    "name": "org.h2gis.graalvm.GraalCInterface",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true

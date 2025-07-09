@@ -22,6 +22,7 @@
         <module>h2gis-functions-osgi</module>
         <module>postgis-jts</module>
         <module>postgis-jts-osgi</module>
+        <module>h2gis-graalvm</module>
     </modules>
 
     <organization>

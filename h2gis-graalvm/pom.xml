@@ -10,13 +10,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>h2gis</artifactId>
+    <artifactId>h2gis-graalvm</artifactId>
     <packaging>bundle</packaging>
 
     <!-- Project Information -->
-    <name>h2gis-functions</name>
-    <description>Main module of the H2GIS distribution. It extends H2 by adding spatial storage and analysis
-        capabilities.</description>
+    <name>h2gis-graalvm</name>
+    <description>Graalvm managment code.</description>
 
     <organization>
         <name>CNRS</name>
@@ -111,6 +110,12 @@
             <version>24.2.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis</artifactId>
+            <version>2.2.4-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <!-- Build Settings -->
@@ -123,7 +128,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.h2gis.functions.*</Export-Package>
+                        <Export-Package>org.h2gis.graalvm.*</Export-Package>
                         <Fragment-Host>org.h2</Fragment-Host>
                         <Bundle-Vendor>CNRS</Bundle-Vendor>
                         <Bundle-Category>JDBC</Bundle-Category>
@@ -155,6 +160,9 @@
 
                         <!-- Initialize certain packages/classes at runtime -->
                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+                        -H:CEntryPointLibrary=h2gis
+                        --enable-native-access=ALL-UNNAMED
+                        --features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature
 
 
                     </buildArgs>

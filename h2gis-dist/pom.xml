@@ -51,6 +51,12 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis-graalvm</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
             <version>${project.parent.version}</version>
             <exclusions>
@@ -160,6 +166,10 @@
                                 <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
                                 <buildArg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</buildArg>
                                 --engine.CompileAOTOnCreate=true
+                                -H:CEntryPointLibrary=h2gis
+                                --enable-native-access=ALL-UNNAMED
+                                --features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature
+
 
                             </buildArgs>
                         </configuration>

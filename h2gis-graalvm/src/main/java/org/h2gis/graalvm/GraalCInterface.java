@@ -1,9 +1,10 @@
-package org.h2gis.functions.system;
+package org.h2gis.graalvm;
 
 import org.graalvm.nativeimage.IsolateThread;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
+import org.graalvm.nativeimage.hosted.Feature;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.JDBCUtilities;
@@ -17,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * org.h2gis.functions.system.GraalCInterface exposes H2GIS database operations to native code via the GraalVM C interface.
+ * org.orbisgis.GraalCInterface exposes H2GIS database operations to native code via the GraalVM C interface.
  * It allows connecting to an H2 database, executing SQL queries and updates, retrieving results,
  * and managing resources like connections, statements, and result sets.
  *
@@ -241,6 +242,36 @@ public class GraalCInterface {
                 return;
             }
             conn.close();
+        } catch (Exception e) {
+            logAndSetError("Failed to close connection", e);
+        }
+    }
+
+    /**
+     * Closes a database connection, and delete the database
+     *
+     * @param thread           Isolate thread
+     * @param connectionHandle Handle to the connection
+     */
+    @CEntryPoint(name = "h2gis_delete_database_and_close")
+    public static void h2gisDeleteClose(IsolateThread thread, long connectionHandle) {
+        Connection conn = connections.get(connectionHandle);
+        try {
+            if (conn == null) {
+                logAndSetError("Attempted to close an invalid or already-closed connection handle: " + connectionHandle, null);
+                return;
+            }
+            try (Statement stmt = conn.createStatement()) {
+                stmt.setQueryTimeout(30); // Prevent long blocking
+                stmt.executeUpdate("drop all objects delete files");
+            } catch (Exception e) {
+                logAndSetError("Failed to execute update", e);
+                return;
+            }
+
+            conn.close();
+            connections.remove(connectionHandle);
+
         } catch (Exception e) {
             logAndSetError("Failed to close connection", e);
         }
