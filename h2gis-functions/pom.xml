@@ -105,12 +105,6 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.graalvm.sdk</groupId>
-            <artifactId>nativeimage</artifactId>
-            <version>24.2.1</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <!-- Build Settings -->
@@ -147,18 +141,6 @@
                     <agent>
                         <enabled>true</enabled>
                     </agent>
-
-                    <buildArgs>
-
-                        <!-- Enable runtime reporting for missing elements -->
-                        <arg>--report-unsupported-elements-at-runtime</arg>
-
-                        <!-- Initialize certain packages/classes at runtime -->
-                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-
-
-                    </buildArgs>
-
                 </configuration>
             </plugin>
         </plugins>
