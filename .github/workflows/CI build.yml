@@ -1,47 +1,33 @@
-name: CI release
+name: CI build
 
 on:
+  pull_request:
+    branches: [ '**' ]
+  workflow_run:
+    workflows: ["CI release"]
+    branches: [ '**' ]
+    types:
+      - completed
   workflow_dispatch:
-    inputs:
-      nextVersion:
-        required: false
-        description: "Next version (optional)"
 
 jobs:
   build:
-    name: Release and next iteration
+    # Main build job used to
+    name: Build
     runs-on: ubuntu-latest
     steps:
+      # Checkout the source code of the project
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Import GPG Key
-        run: |
-          echo "${{ secrets.GPG_PUBLIC_KEY }}" | gpg --import
-          echo "${{ secrets.GPG_SECRET_KEY }}" | gpg --import --no-tty --batch --yes
-        env:
-          GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
-          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
-
+      # Setup the jdk using version 11 of Adoptium Temurin
       - name: Setup java 11 using Adoptium Temurin
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
-          server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          version: '22.3.3'
-          java-version: '11'  # ✅ Ensures GraalVM with Java 11
-          components: 'native-image'
-          set-java-home: true
-
-
+      # Setup postgis test DB
       - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
         with:
           psql_version: '9.6'
@@ -51,78 +37,7 @@ jobs:
           db_user: 'orbisgis'
           db_name: 'orbisgis_db'
 
-      - name: Configure Git User
-        run: |
-          git config user.email "info@orbisgis.org"
-          git config user.name OrbisGIS
-
-      - name: Build test
-        run: mvn -ntp clean validate compile test javadoc:test-javadoc javadoc:jar
-
-      - name: Release
-        run: |
-          VERSION=${{ github.event.inputs.nextVersion }}
-          mvn \
-            -ntp \
-            --batch-mode \
-            -P deploy \
-            -Dmaven.test.skip=true \
-            -P standalone,integration \
-            release:prepare release:perform \
-            -Dusername=$GITHUB_ACTOR -Dpassword=$GITHUB_TOKEN ${VERSION:+"-DdevelopmentVersion="$VERSION"-SNAPSHOT"}
-        env:
-          MAVEN_USERNAME: ${{ secrets.MVN_CENTRAL_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Export env values
-        run: echo "GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
-
-      - name: Make Github release
-        uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag: ${{ env.GIT_TAG }}
-          release: ${{ env.GIT_TAG }}
-          bodyFile: "docs/CHANGELOG.md"
-          draft: false
-          prerelease: false
-          artifacts: "h2gis-dist/target/h2gis-standalone-bin.zip"
-
-      - name: Clear changelog
-        run: |
-          echo "## Changelog for v$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)" > docs/CHANGELOG.md
-          git commit -a -m "Empty changelog."
-          git push origin master
-
-      - name: Branch fork
-        run: |
-          GIT_TAG="${GIT_TAG:1}"
-          CUR_TAG="$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)"
-          SPLIT0=(${GIT_TAG//./ })
-          SPLIT1=(${CUR_TAG//./ })
-          if [ "${SPLIT0[0]}" = "${SPLIT1[0]}" ] && [ "${SPLIT0[1]}" = "${SPLIT1[1]}" ]; then
-            echo "Revision change"
-          else
-            echo "Minor or Major change"
-            BRANCH="${SPLIT0[0]}.${SPLIT0[1]}.X"
-            git checkout -b "$BRANCH" "v${GIT_TAG}"
-            mvn versions:set -DnewVersion="${SPLIT0[0]}.${SPLIT0[1]}.$((${SPLIT0[2]}+1))-SNAPSHOT"
-            git commit -a -m "Set next version."
-            git push -u origin "$BRANCH"
-
-
-  native-windows:
-    name: Build native binary (Windows)
-    runs-on: windows-latest
-    needs: build
-    defaults:
-      run:
-        shell: pwsh
-    steps:
-      - uses: actions/checkout@v4
-
+      #Setup graalvm
       - uses: graalvm/setup-graalvm@v1
         with:
           version: '22.3.3'
@@ -130,22 +45,29 @@ jobs:
           components: 'native-image'
           set-java-home: true
 
-      - name: Build native image with Visual Studio shell
-        run: |
-          $vsPath = "C:\Program Files\Microsoft Visual Studio\2022\Community"
-          $devShellModule = "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
-          Import-Module $devShellModule
-          Enter-VsDevShell -VsInstallPath $vsPath -DevCmdArguments '-arch=x64'
+      # Build the project using
+      #   - clean : clean up the workspace
+      #   - validate : perform different check like the dependency and plugin version update
+      #   - compile : compile the source code.
+      #   - test : Perform the tests.
+      - name: Build
+        run: mvn -ntp clean validate compile test javadoc:test-javadoc javadoc:jar
 
-          java -version
-          native-image --version
-
-          mvn -ntp clean package -Pnative
-
-      - uses: actions/upload-artifact@v4
+      # Check changelog update
+      - name: Check changelog update
+        uses: dorny/paths-filter@v2
+        id: changes
         with:
-          name: h2gis-native-windows
-          path: |
-            **/target/*.exe
-            **/target/*.bin
-            **/target/*.zip
+          filters: |
+            changelog:
+              - 'docs/CHANGELOG.md'
+            sources:
+              - '**/pom.xml'
+              - '**/README.md'
+              - '**/src/**'
+        if: github.event_name != 'workflow_dispatch'
+
+      - if: steps.changes.outputs.changelog == 'false' && github.event_name != 'workflow_dispatch' && steps.changes.outputs.sources == 'true'
+        run: |
+          echo "Please update the Changelog.md file."
+          exit 1

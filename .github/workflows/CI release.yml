@@ -42,7 +42,7 @@ jobs:
       - uses: graalvm/setup-graalvm@v1
         with:
           version: '22.3.3'
-          java-version: '11'  # ✅ Ensures GraalVM with Java 11
+          java-version: '11'
           components: 'native-image'
           set-java-home: true
 
@@ -130,39 +130,39 @@ jobs:
           fi
 
 
-  native-windows:
-    name: Build native binary (Windows)
-    runs-on: windows-latest
-    needs: build
-    defaults:
-      run:
-        shell: pwsh
-    steps:
-      - uses: actions/checkout@v4
+  # native-windows:
+  #   name: Build native binary (Windows)
+  #   runs-on: windows-latest
+  #   needs: build
+  #   defaults:
+  #     run:
+  #       shell: pwsh
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          version: '22.3.3'
-          java-version: '11'
-          components: 'native-image'
-          set-java-home: true
+  #     - uses: graalvm/setup-graalvm@v1
+  #       with:
+  #         version: '22.3.3'
+  #         java-version: '11'
+  #         components: 'native-image'
+  #         set-java-home: true
 
-      - name: Build native image with Visual Studio shell
-        run: |
-          $vsPath = "C:\Program Files\Microsoft Visual Studio\2022\Community"
-          $devShellModule = "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
-          Import-Module $devShellModule
-          Enter-VsDevShell -VsInstallPath $vsPath -DevCmdArguments '-arch=x64'
+  #     - name: Build native image with Visual Studio shell
+  #       run: |
+  #         $vsPath = "C:\Program Files\Microsoft Visual Studio\2022\Community"
+  #         $devShellModule = "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+  #         Import-Module $devShellModule
+  #         Enter-VsDevShell -VsInstallPath $vsPath -DevCmdArguments '-arch=x64'
 
-          java -version
-          native-image --version
+  #         java -version
+  #         native-image --version
 
-          mvn -ntp clean package -Pnative
+  #         mvn -ntp clean package -Pnative
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: h2gis-native-windows
-          path: |
-            **/target/*.exe
-            **/target/*.bin
-            **/target/*.zip
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: h2gis-native-windows
+  #         path: |
+  #           **/target/*.exe
+  #           **/target/*.bin
+  #           **/target/*.zip
