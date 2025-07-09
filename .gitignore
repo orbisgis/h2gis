@@ -12,6 +12,7 @@ _site/
 **/reports
 reports/**
 agent-output
-**/META-INF/native-image/agent-output/**
+**/META-INF/native-image/**
+!keep-these/**/agent-output/
 graal_isolate.h
 graal_isolate_dynamic.h
