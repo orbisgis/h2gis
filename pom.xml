@@ -296,10 +296,10 @@
             <id>deploy</id>
             <build>
                 <plugins>
-                    <?ignore <plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                    </plugin> ?>
+                    </plugin>
                 </plugins>
                 <pluginManagement>
 
@@ -327,7 +327,7 @@
     <build>
         <pluginManagement>
             <plugins>
-               <?ignore <plugin>
+               <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>${maven-gpg-plugin-version}</version>
@@ -346,7 +346,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>?>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
