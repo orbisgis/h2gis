@@ -157,6 +157,8 @@ H2GIS is based on amazing open source softwares. So we would like to thank:
 
 H2GIS is leaded by scientists and engineers in GIS and computer sciences from [CNRS](https://www.cnrs.fr/) within the French [Lab-STICC](https://labsticc.fr/fr) laboratory ([DECIDE](https://labsticc.fr/fr/equipes/decide) team of [Vannes](https://www.openstreetmap.org/relation/192306)).
 
+You can contact the team through GitHub, or by email at `info` at `h2gis` dot `org`
+
 
 ## Fundings
 

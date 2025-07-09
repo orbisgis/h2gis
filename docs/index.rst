@@ -27,7 +27,7 @@ H2GIS adds support for:
 H2GIS in action
 ----------------
 
-The following is just a small sample of what H2GIS has to offer
+H2GIS includes nearly 200 functions. The following is just a small sample of what H2GIS has to offer:
 
 .. |buffer| image:: ./ST_Buffer_5.png
    :align: middle
@@ -73,11 +73,21 @@ If you get stuck or just have a question, please `fill an issue <http://github.c
 
 Authors
 --------------------------
-H2GIS is leaded by scientists and engineers in GIS and computer science from `CNRS <https://cnrs.fr/fr>`_ within the French `Lab-STICC <https://labsticc.fr/fr>`_ research laboratory (DECIDE team of `Vannes <https://www.openstreetmap.org/relation/192306>`_). H2GIS is funded by (public) research projects.
+H2GIS is leaded by scientists and engineers in GIS and computer science from `CNRS <https://cnrs.fr/fr>`_ within the French `Lab-STICC <https://labsticc.fr/fr>`_ research laboratory (DECIDE team of `Vannes <https://www.openstreetmap.org/relation/192306>`_). 
+H2GIS is funded by public research projects.
 
-**Team** : `Erwan Bocher <https://github.com/ebocher>`_, `Gwendall Petit <https://github.com/gpetit>`_, `Nicolas Fortin <https://github.com/nicolas-f>`_
+Core team
+^^^^^^^^^^^^^^^^^^^
+* `Erwan Bocher <https://github.com/ebocher>`_ : Project leader, dev & GIS guru
+* `Nicolas Fortin <https://github.com/nicolas-f>`_ : geo-contaminated dev expert
+* `Gwendall Petit <https://github.com/gpetit>`_ : GIS expert, in charge of user-side / documentation
 
-**Former contributors** : Sylvain Palominos, Adam Gouge, Mireille Lecoeuvre, Alexis Guéganno
+You can contact the team through `GitHub <https://github.com/orbisgis/h2gis/>`_, or by email at `info` at `h2gis` dot `org`
+
+Former contributors
+^^^^^^^^^^^^^^^^^^^
+
+Sylvain Palominos, Adam Gouge, Mireille Lecoeuvre, Alexis Guéganno
 
 Acknowledgements
 --------------------------
