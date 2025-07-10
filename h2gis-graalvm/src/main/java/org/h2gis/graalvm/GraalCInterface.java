@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * org.orbisgis.GraalCInterface exposes H2GIS database operations to native code via the GraalVM C interface.
+ * org.h2gis.graalvm.GraalCInterface exposes H2GIS database operations to native code via the GraalVM C interface.
  * It allows connecting to an H2 database, executing SQL queries and updates, retrieving results,
  * and managing resources like connections, statements, and result sets.
  *
