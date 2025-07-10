@@ -99,13 +99,4 @@ public class Driver extends JtsWrapper {
     public Connection connect(String url, Properties info) throws SQLException {
         return new ConnectionWrapper(super.connect(POSTGIS_PROTOCOL + url.substring(POSTGIS_H2PROTOCOL.length()), info));
     }
-
-
-
-
-
-
-
-
-
 }

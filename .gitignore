@@ -13,8 +13,8 @@ _site/
 reports/**
 agent-output
 **/resources/META-INF/native-image/**
-!h2gis-dist/**/native-image/
-!h2gis-functions/**/native-image/
+!h2gis-dist/**/native-image/**
+!h2gis-functions/**/native-image/**
 **/sources/**
 
 graal_isolate.h

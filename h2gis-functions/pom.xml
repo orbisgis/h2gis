@@ -74,6 +74,12 @@
             <groupId>net.sf.geographiclib</groupId>
             <artifactId>GeographicLib-Java</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.graalvm.sdk</groupId>
+            <artifactId>nativeimage</artifactId>
+            <version>24.2.1</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -141,6 +147,21 @@
                     <agent>
                         <enabled>true</enabled>
                     </agent>
+
+
+                    <buildArgs>
+
+                        <!-- Enable runtime reporting for missing elements -->
+                        <arg>--report-unsupported-elements-at-runtime</arg>
+
+                        <!-- Initialize certain packages/classes at runtime -->
+                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+                        <arg>-H:ResourceConfigurationFiles=h2gis-functions/src/main/resources/META-INF/native-image/resource-config.json</arg>
+                        <arg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</arg>
+
+
+
+                    </buildArgs>
                 </configuration>
             </plugin>
         </plugins>

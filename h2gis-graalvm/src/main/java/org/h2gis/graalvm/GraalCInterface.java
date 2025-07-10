@@ -1,10 +1,28 @@
+/*
+ * H2GIS is a library that brings spatial support to the H2 Database Engine
+ * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
+ * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
+ *
+ * This code is part of the H2GIS project. H2GIS is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU
+ * Lesser General Public License as published by the Free Software Foundation;
+ * version 3.0 of the License.
+ *
+ * H2GIS is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details <http://www.gnu.org/licenses/>.
+ *
+ *
+ * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
+ * or contact directly: info_at_h2gis.org
+ */
 package org.h2gis.graalvm;
 
 import org.graalvm.nativeimage.IsolateThread;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
-import org.graalvm.nativeimage.hosted.Feature;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.JDBCUtilities;
@@ -18,51 +36,38 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * org.h2gis.graalvm.GraalCInterface exposes H2GIS database operations to native code via the GraalVM C interface.
- * It allows connecting to an H2 database, executing SQL queries and updates, retrieving results,
- * and managing resources like connections, statements, and result sets.
- *
- * Handles are used to track resources safely between native and Java code.
+ * Native C interface to access H2GIS via GraalVM native-image.
+ * Provides functions for connection management, query execution, result retrieval and cleanup.
  */
 public class GraalCInterface {
 
-    // --- Static Fields ---
-
-    /** Logger used for internal error reporting */
     private static final Logger LOGGER = Logger.getLogger(GraalCInterface.class.getName());
-
-    /** Map storing active database connections, referenced by a unique handle */
     private static final Map<Long, Connection> connections = new ConcurrentHashMap<>();
-
-    /** Map storing statements associated with queries, referenced by a handle */
     private static final Map<Long, Statement> statements = new ConcurrentHashMap<>();
-
-    /** Map storing result sets from executed SELECT queries */
     private static final Map<Long, ResultSet> results = new ConcurrentHashMap<>();
-
-    /** Global atomic counter to generate unique handles for connections, statements, and results */
     private static final AtomicLong handleCounter = new AtomicLong(1);
-
-    /** Thread-local error string to store the last error per native thread */
     private static final ThreadLocal<String> lastError = new ThreadLocal<>();
 
-    // --- Public C API Methods (Accessible from native C) ---
+    static {
+        try {
+            DriverManager.registerDriver(new org.h2.Driver());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
-     * Returns the last error message that occurred in the current native thread.
-     * The message is cleared after retrieval.
-     *
-     * @param thread The current isolate thread (required by GraalVM)
-     * @return C string containing the error, or an empty string if none
+     * Get last error as a C string. Cleared after read.
      */
     @CEntryPoint(name = "h2gis_get_last_error")
     public static CCharPointer h2gisGetLastError(IsolateThread thread) {
         String error = lastError.get();
-        if (error == null) {
-            return CTypeConversion.toCString("").get();
+        lastError.remove();
+        if (error == null) error = "";
+        try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString(error)) {
+            return holder.get();
         }
-        lastError.remove();  // Clear after retrieval
-        return CTypeConversion.toCString(error).get();
     }
 
     /**
@@ -79,6 +84,10 @@ public class GraalCInterface {
                                     CCharPointer filePathPointer,
                                     CCharPointer usernamePointer,
                                     CCharPointer passwordPointer) {
+
+
+
+
         // Null pointer checks for safety
         if (filePathPointer.isNull() || usernamePointer.isNull() || passwordPointer.isNull()) {
             logAndSetError("Null pointer received in connection parameters", null);
@@ -99,10 +108,11 @@ public class GraalCInterface {
             properties.setProperty("user", username);
             properties.setProperty("password", password);
 
-            //Connection conn = org.h2.Driver.load().connect(url, properties);
             Connection connection = JDBCUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(properties)).getConnection();
+
             long handle = handleCounter.getAndIncrement();
             connections.put(handle, connection);
+
             return handle;
         } catch (Exception e) {
             logAndSetError("Failed to open H2 connection", e);
@@ -111,17 +121,11 @@ public class GraalCInterface {
     }
 
     /**
-     * Executes a SQL SELECT query and stores the result.
-     *
-     * @param thread          Isolate thread
-     * @param connectionHandle Handle to a valid JDBC connection
-     * @return Non-zero handle to the result set, or 0 on failure
+     * Load H2GIS spatial functions into the database connection.
+     * @return 1 on success, 0 on failure
      */
     @CEntryPoint(name = "h2gis_load")
-    public static long h2gsLoad(IsolateThread thread,
-                                    long connectionHandle) {
-
-
+    public static long h2gisLoad(IsolateThread thread, long connectionHandle) {
         try {
             Connection conn = connections.get(connectionHandle);
             if (conn == null) {
@@ -129,26 +133,23 @@ public class GraalCInterface {
                 return 0;
             }
             H2GISFunctions.load(conn);
-
             return 1;
         } catch (Exception e) {
-            logAndSetError("Failed to execute query", e);
+            logAndSetError("Failed to load H2GIS functions", e);
             return 0;
         }
     }
 
     /**
-     * Executes a SQL SELECT query and stores the result.
+     * Executes a SQL query and stores the result.
      *
      * @param thread          Isolate thread
      * @param connectionHandle Handle to a valid JDBC connection
-     * @param queryPointer    C string containing the SQL SELECT query
+     * @param queryPointer    C string containing the SQL query
      * @return Non-zero handle to the result set, or 0 on failure
      */
     @CEntryPoint(name = "h2gis_execute")
-    public static long h2gisExecute(IsolateThread thread,
-                                    long connectionHandle,
-                                    CCharPointer queryPointer) {
+    public static long h2gisExecute(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
         if (queryPointer.isNull()) {
             logAndSetError("Null pointer received for query", null);
             return 0;
@@ -163,13 +164,12 @@ public class GraalCInterface {
             }
 
             Statement stmt = conn.createStatement();
-            stmt.setQueryTimeout(30); // Prevent infinite execution
             ResultSet rs = stmt.executeQuery(query);
 
-            long queryHandle = handleCounter.getAndIncrement();
-            statements.put(queryHandle, stmt);
-            results.put(queryHandle, rs);
-            return queryHandle;
+            long handle = handleCounter.getAndIncrement();
+            statements.put(handle, stmt);
+            results.put(handle, rs);
+            return handle;
         } catch (Exception e) {
             logAndSetError("Failed to execute query", e);
             return 0;
@@ -177,17 +177,11 @@ public class GraalCInterface {
     }
 
     /**
-     * Executes an SQL UPDATE, INSERT, or DELETE query.
-     *
-     * @param thread          Isolate thread
-     * @param connectionHandle Handle to a valid JDBC connection
-     * @param queryPointer    C string containing the SQL update
-     * @return Number of rows affected, or -1 on error
+     * Execute a SQL update (INSERT, UPDATE, DELETE).
+     * @return number of affected rows, or -1 on failure
      */
     @CEntryPoint(name = "h2gis_execute_update")
-    public static int h2gisExecuteUpdate(IsolateThread thread,
-                                         long connectionHandle,
-                                         CCharPointer queryPointer) {
+    public static int h2gisExecuteUpdate(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
         if (queryPointer.isNull()) {
             logAndSetError("Null pointer received for update query", null);
             return -1;
@@ -201,7 +195,6 @@ public class GraalCInterface {
 
         String query = CTypeConversion.toJavaString(queryPointer);
         try (Statement stmt = conn.createStatement()) {
-            stmt.setQueryTimeout(30); // Prevent long blocking
             return stmt.executeUpdate(query);
         } catch (Exception e) {
             logAndSetError("Failed to execute update", e);
@@ -210,10 +203,9 @@ public class GraalCInterface {
     }
 
     /**
-     * Closes a result set and its associated statement, identified by queryHandle.
-     *
-     * @param thread      Isolate thread
-     * @param queryHandle Handle to the result set
+     * Closes a resultset and its associated statement, identified by queryHandle.
+     * @param thread Isolate thread
+     * @param queryHandle Handle to the resultset
      */
     @CEntryPoint(name = "h2gis_close_query")
     public static void h2gisCloseQuery(IsolateThread thread, long queryHandle) {
@@ -228,118 +220,116 @@ public class GraalCInterface {
     }
 
     /**
-     * Closes a database connection, identified by its handle.
-     *
-     * @param thread           Isolate thread
-     * @param connectionHandle Handle to the connection
+     * Close a database connection.
      */
     @CEntryPoint(name = "h2gis_close_connection")
     public static void h2gisCloseConnection(IsolateThread thread, long connectionHandle) {
         Connection conn = connections.remove(connectionHandle);
         try {
-            if (conn == null) {
-                logAndSetError("Attempted to close an invalid or already-closed connection handle: " + connectionHandle, null);
-                return;
+            if (conn != null) {
+                conn.close();
+            } else {
+                logAndSetError("Invalid or already closed connection handle: " + connectionHandle, null);
             }
-            conn.close();
         } catch (Exception e) {
             logAndSetError("Failed to close connection", e);
         }
     }
 
     /**
-     * Closes a database connection, and delete the database
-     *
-     * @param thread           Isolate thread
-     * @param connectionHandle Handle to the connection
+     * Delete all objects and files of the database, then close it.
      */
     @CEntryPoint(name = "h2gis_delete_database_and_close")
     public static void h2gisDeleteClose(IsolateThread thread, long connectionHandle) {
         Connection conn = connections.get(connectionHandle);
         try {
             if (conn == null) {
-                logAndSetError("Attempted to close an invalid or already-closed connection handle: " + connectionHandle, null);
+                logAndSetError("Invalid or already closed connection handle: " + connectionHandle, null);
                 return;
             }
+
             try (Statement stmt = conn.createStatement()) {
-                stmt.setQueryTimeout(30); // Prevent long blocking
-                stmt.executeUpdate("drop all objects delete files");
-            } catch (Exception e) {
-                logAndSetError("Failed to execute update", e);
-                return;
+                stmt.setQueryTimeout(30);
+                stmt.executeUpdate("DROP ALL OBJECTS DELETE FILES");
             }
 
             conn.close();
             connections.remove(connectionHandle);
-
         } catch (Exception e) {
-            logAndSetError("Failed to close connection", e);
+            logAndSetError("Failed to delete and close database", e);
         }
     }
 
     /**
-     * Fetches the next row from a query result set, formatted as a CSV string.
-     * @return The next row in CSV format, or an empty string if no more rows.
+     * Fetch the next row from a result set as a CSV string.
+     * Returns an empty string when all rows have been fetched.
      */
-    @CEntryPoint(name = "h2gis_fetch_row")
-    public static CCharPointer h2gisFetchRow(IsolateThread thread, long queryHandle) {
+    @CEntryPoint(name = "h2gis_fetch_rows")
+    public static CCharPointer h2gisFetchRows(IsolateThread thread, long queryHandle) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
-                // No error log here, as it's valid for a handle to be closed.
-                return CTypeConversion.toCString("").get();
+                return emptyCString();
             }
 
             if (rs.next()) {
-                String csvRow = formatRowAsCsv(rs);
-                return CTypeConversion.toCString(csvRow).get();
+                String jsonRow = formatRowAsJson(rs);
+                try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString(jsonRow)) {
+                    return holder.get();
+                }
             } else {
-                return CTypeConversion.toCString("").get(); // End of result set
+                return emptyCString();
             }
         } catch (Exception e) {
             logAndSetError("Failed to fetch row", e);
-            // Return error message in the data channel as a fallback
-            return CTypeConversion.toCString("Error: " + e.getMessage()).get();
+            try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString("Error: " + e.getMessage())) {
+                return holder.get();
+            }
         }
     }
 
-    // --- Private Utility Method ---
-    /**
-     * Formats the current row of a ResultSet into a single CSV string.
-     * @param rs The ResultSet, positioned at the row to format.
-     * @return A CSV-formatted string.
-     * @throws SQLException If a database access error occurs.
-     */
-    private static String formatRowAsCsv(ResultSet rs) throws SQLException {
+    private static CCharPointer emptyCString() {
+        try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString("")) {
+            return holder.get();
+        }
+    }
+
+    private static String formatRowAsJson(ResultSet rs) throws SQLException {
         ResultSetMetaData meta = rs.getMetaData();
         int colCount = meta.getColumnCount();
         StringBuilder sb = new StringBuilder();
+        sb.append("{");
 
         for (int i = 1; i <= colCount; i++) {
-            String val = rs.getString(i);
-            if (val != null) {
-                // Efficiently check for characters that require quoting
-                if (val.indexOf(',') != -1 || val.indexOf('\n') != -1 || val.indexOf('"') != -1) {
-                    // Enclose in quotes and escape existing quotes
-                    sb.append('"').append(val.replace("\"", "\"\"")).append('"');
-                } else {
-                    sb.append(val);
-                }
+            String columnName = meta.getColumnLabel(i);
+            Object value = rs.getObject(i);
+
+            sb.append("\"").append(escapeJson(columnName)).append("\":");
+
+            if (value == null) {
+                sb.append("null");
+            } else if (value instanceof Number || value instanceof Boolean) {
+                sb.append(value.toString());
+            } else {
+                sb.append("\"").append(escapeJson(value.toString())).append("\"");
             }
-            if (i < colCount) {
-                sb.append(",");
-            }
+
+            if (i < colCount) sb.append(",");
         }
+
+        sb.append("}");
         return sb.toString();
     }
 
-    /**
-     * Logs an error to the Java logger and sets the thread-local error string
-     * so that native code can retrieve it.
-     *
-     * @param message   Custom error message
-     * @param throwable Optional exception to include
-     */
+    private static String escapeJson(String text) {
+        return text.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
+
+
     private static void logAndSetError(String message, Throwable throwable) {
         LOGGER.log(Level.SEVERE, message, throwable);
         lastError.set(message + (throwable != null ? ": " + throwable.getMessage() : ""));

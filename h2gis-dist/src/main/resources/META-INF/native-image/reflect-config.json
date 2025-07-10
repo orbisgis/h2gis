@@ -80,6 +80,7 @@
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
+
   {
     "name": "org.h2gis.postgis_jts.Driver",
     "allDeclaredConstructors": true,

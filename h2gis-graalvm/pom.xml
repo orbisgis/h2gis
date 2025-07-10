@@ -160,9 +160,7 @@
 
                         <!-- Initialize certain packages/classes at runtime -->
                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-                        -H:CEntryPointLibrary=h2gis
-                        --enable-native-access=ALL-UNNAMED
-                        --features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature
+                        <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
 
 
                     </buildArgs>
