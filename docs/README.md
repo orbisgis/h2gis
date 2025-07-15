@@ -74,6 +74,10 @@ In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bi
 
 Click Connect in the web interface
 
+#### Compiling in native code
+
+H2GIS uses graalvm to be compiled in native code. To compile h2gis in native code, you need to run 'maven clean install -P standalone'. This will build the native code for the OS you're running on the command.
+
 
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 

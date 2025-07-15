@@ -19,7 +19,8 @@
  */
 package org.h2gis.postgis_jts;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 

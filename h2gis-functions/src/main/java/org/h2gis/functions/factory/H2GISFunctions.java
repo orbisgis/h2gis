@@ -406,7 +406,6 @@ public class H2GISFunctions {
                         + " WHERE DATA_TYPE = 'GEOMETRY';");
         ResultSet rs = connection.getMetaData().getTables("", "PUBLIC", "SPATIAL_REF_SYS", null);
         if (!rs.next()) {
-
             InputStreamReader reader = new InputStreamReader(
                     H2GISFunctions.class.getResourceAsStream("spatial_ref_sys.sql"));
             RunScript.execute(connection, reader);

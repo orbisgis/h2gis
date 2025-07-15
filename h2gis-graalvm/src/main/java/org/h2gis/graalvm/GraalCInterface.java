@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * @author Maël PHILIPPE, CNRS
  * Native C interface to access H2GIS via GraalVM native-image.
  * Provides functions for connection management, query execution, result retrieval and cleanup.
  */
@@ -84,9 +85,6 @@ public class GraalCInterface {
                                     CCharPointer filePathPointer,
                                     CCharPointer usernamePointer,
                                     CCharPointer passwordPointer) {
-
-
-
 
         // Null pointer checks for safety
         if (filePathPointer.isNull() || usernamePointer.isNull() || passwordPointer.isNull()) {
@@ -148,8 +146,8 @@ public class GraalCInterface {
      * @param queryPointer    C string containing the SQL query
      * @return Non-zero handle to the result set, or 0 on failure
      */
-    @CEntryPoint(name = "h2gis_execute")
-    public static long h2gisExecute(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
+    @CEntryPoint(name = "h2gis_fetch")
+    public static long h2gisFetch(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
         if (queryPointer.isNull()) {
             logAndSetError("Null pointer received for query", null);
             return 0;
@@ -180,8 +178,8 @@ public class GraalCInterface {
      * Execute a SQL update (INSERT, UPDATE, DELETE).
      * @return number of affected rows, or -1 on failure
      */
-    @CEntryPoint(name = "h2gis_execute_update")
-    public static int h2gisExecuteUpdate(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
+    @CEntryPoint(name = "h2gis_execute")
+    public static int h2gisExecute(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
         if (queryPointer.isNull()) {
             logAndSetError("Null pointer received for update query", null);
             return -1;
@@ -267,26 +265,42 @@ public class GraalCInterface {
     @CEntryPoint(name = "h2gis_fetch_rows")
     public static CCharPointer h2gisFetchRows(IsolateThread thread, long queryHandle) {
         try {
-            ResultSet rs = results.get(queryHandle);
+            ResultSet rs = results.remove(queryHandle); // Consomme et ferme le ResultSet
+            Statement stmt = statements.remove(queryHandle);
             if (rs == null) {
                 return emptyCString();
             }
 
-            if (rs.next()) {
-                String jsonRow = formatRowAsJson(rs);
-                try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString(jsonRow)) {
-                    return holder.get();
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            boolean first = true;
+
+            while (rs.next()) {
+                if (!first) {
+                    sb.append(",");
+                } else {
+                    first = false;
                 }
-            } else {
-                return emptyCString();
+                String jsonRow = formatRowAsJson(rs);
+                sb.append(jsonRow);
             }
+            sb.append("]");
+
+            if (stmt != null) stmt.close();
+            rs.close();
+
+            try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString(sb.toString())) {
+                return holder.get();
+            }
+
         } catch (Exception e) {
-            logAndSetError("Failed to fetch row", e);
+            logAndSetError("Failed to fetch all rows", e);
             try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString("Error: " + e.getMessage())) {
                 return holder.get();
             }
         }
     }
+
 
     private static CCharPointer emptyCString() {
         try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString("")) {
