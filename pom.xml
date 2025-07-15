@@ -273,6 +273,36 @@
                 </pluginManagement>
             </build>
         </profile>
+
+        <!-- build native app with graalvm-->
+        <profile>
+            <id>native</id>
+            <modules>
+                <module>h2gis-dist</module>
+            </modules>
+            <properties>
+                <surefireArgLine>-agentlib:native-image-agent=config-output-dir=${project.build.directory}/native-image-config</surefireArgLine>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native.maven.plugin.version}</version>
+                            <configuration>
+                                <metadataRepository>
+                                    <enabled>true</enabled>
+                                </metadataRepository>
+                                <agent>
+                                    <enabled>true</enabled>
+                                </agent>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
         <profile>
             <id>integration</id>
             <modules>
@@ -330,6 +360,9 @@
             </build>
         </profile>
 
+
+
+
     </profiles>
 
     <build>
@@ -357,17 +390,15 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <!-- Test -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-version}</version>
                     <configuration>
-                        <argLine>
-                            -agentlib:native-image-agent=config-output-dir=${project.build.directory}/native-image-config
-                        </argLine>
                         <useSystemClassLoader>false</useSystemClassLoader>
+                        <argLine>${surefireArgLine}</argLine> <!-- This uses the property defined per profile -->
                     </configuration>
                 </plugin>
+
 
                 <!-- Package the project into a JAR file -->
                 <plugin>

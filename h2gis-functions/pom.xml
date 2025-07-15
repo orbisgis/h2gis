@@ -136,27 +136,7 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <version>${native.maven.plugin.version}</version>
-                <configuration>
-                    <metadataRepository>
-                        <enabled>true</enabled>
-                    </metadataRepository>
-                    <agent>
-                        <enabled>true</enabled>
-                    </agent>
-                    <buildArgs>
-                        <!-- Enable runtime reporting for missing elements -->
-                        <arg>--report-unsupported-elements-at-runtime</arg>
-                        <!-- Initialize certain packages/classes at runtime -->
-                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-                        <arg>-H:ResourceConfigurationFiles=h2gis-functions/src/main/resources/META-INF/native-image/resource-config.json</arg>
-                        <arg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</arg>
-                    </buildArgs>
-                </configuration>
-            </plugin>
+
         </plugins>
         <resources>
             <resource>
@@ -175,4 +155,6 @@
             </resource>
         </resources>
     </build>
+
+
 </project>

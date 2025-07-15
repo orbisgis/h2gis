@@ -91,20 +91,7 @@
 
     <!-- Build Settings -->
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.graalvm.buildtools</groupId>
-                    <artifactId>native-maven-plugin</artifactId>
-                    <version>${native.maven.plugin.version}</version>
-                    <configuration>
-                        <agent>
-                            <enabled>true</enabled>
-                        </agent>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+
         <plugins>
             <!-- Skip deployment on this module -->
             <plugin>
@@ -114,17 +101,29 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <version>${native.maven.plugin.version}</version>
-                <configuration>
-                    <agent>
-                    <enabled>true</enabled>
-                    </agent>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native.maven.plugin.version}</version>
+                            <configuration>
+                                <agent>
+                                    <enabled>true</enabled>
+                                </agent>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>f
 
 </project>
