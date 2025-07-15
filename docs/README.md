@@ -63,7 +63,7 @@ It include also file copy functions (import):
 ### Usage
 
 H2GIS requires Java 11. Run `maven clean install -P standalone` in the H2GIS's root directory.
-If you want to build the native version of H2GIs (lib and executable), you need [GraalVM 22.3.3](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.3), then run `maven clean install -P native` in the H2GIS's root directory.
+If you want to build the native version of H2GIs (lib and executable), you need [GraalVM 22.3.3](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.3). For more informations, open the [detailed documentation](./NATIVE-COMPILATION.md)
 
 In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`.Unzip the file then open `h2gis-dist-xxx.jar` It will open a browser based console application.
 
