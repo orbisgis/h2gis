@@ -2,11 +2,39 @@
 
 This document explains how H2GIS was compiled as a native binary using GraalVM and how a C interface is used to communicate with the database through a Python API.
 
+## Prerequisites
+### Linux
+On Linux, to manipulate the native compilation you need to install [graalvm 22.3.3](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.3).
+
+
+### Windows
+On windows, you need to install maven, [graalvm 22.3.3](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.3) and visual studio with c++ for desktop.
+Then, you need to add this to you path :
+```bash
+C:\Program Files\Microsoft Visual Studio\<vs_version>\Community\VC\Tools\MSVC\<vs_version>\bin\Hostx64\x64
+```
+
+
 ## Launch native compilation
-To launch the native compilation you can run at the project's root :
+
+### Linux
+To launch the native compilation you can run at the project's root:
 ```bash
 mvn clean install -P native
 ```
+
+### Windows
+To launch the native compilation, run this in a powershell terminal:
+```bash
+Import-Module "C:\Program Files\Microsoft Visual Studio\<vs_version>\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+Enter-VsDevShell -VsInstallPath "C:\Program Files\Microsoft Visual Studio\<vs_version>\Community" -DevCmdArguments '-arch=x64'
+```
+
+Then use `cd` to go to the project's root file, then run:
+```bash
+mvn clean install -P native
+```
+
 
 ## Goal
 
