@@ -2,6 +2,12 @@
 
 This document explains how H2GIS was compiled as a native binary using GraalVM and how a C interface is used to communicate with the database through a Python API.
 
+## Launch native compilation
+To launch the native compilation you can run at the project's root :
+```bash
+mvn clean install -P native
+```
+
 ## Goal
 
 - Compile **H2GIS** natively to enable integration in environments without a JVM.
@@ -16,7 +22,7 @@ This document explains how H2GIS was compiled as a native binary using GraalVM a
 
 The Maven project `H2GIS` was modified to include:
 
-- The `standalone` now builds the native lib, executable and a .deb if on linux.
+- The `native` profile now builds the native lib, executable and a .deb if on linux.
 - A new module `h2gis-graalvm` that contains a `GraalCInterface` class with methods annotated using `@CEntryPoint` to make them callable from C.
 
 ### 2. The `GraalCInterface` Class
@@ -53,14 +59,22 @@ The native binary is built using GraalVM’s `native-image`:
 ```bash
 native-image \
   --no-fallback \
+  --shared \ #(if lib mode, if executable mode, remove this)
+  --initialize-at-run-time=org.h2,org.h2gis \
+  --verbose \
   --report-unsupported-elements-at-runtime \
   --enable-url-protocols=http,https \
   --initialize-at-build-time \
   -H:Name=h2gis_native \
+  -H:+SourceLevelDebug \
   -H:+AllowVMInspection \
+  -H:+PrintAnalysisCallTree \
+  -H:GenerateDebugInfo=2 \
   -H:+ReportExceptionStackTraces \
   -H:IncludeResources=.*\.sql \
   -H:Class=h2gis.native.GraalCInterface \
+  -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json \
+  -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
 ```
 
 ---
@@ -74,6 +88,6 @@ native-image \
 
 ---
 
-## License and Distribution
+## License
 
-The project retains the original H2GIS license. The binary is published on GitHub Releases along with the Maven artifacts (JAR, POM, sources, javadoc, etc.).
+The project retains the original H2GIS license.
