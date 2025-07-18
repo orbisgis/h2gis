@@ -15,7 +15,9 @@ import sun.misc.Unsafe;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
-import java.util.*;
+import java.util.Base64;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -51,6 +53,11 @@ public class GraalCInterface {
     // Unsafe for manual memory management (allocate/free native buffers)
     private static final Unsafe unsafe = getUnsafe();
 
+    // Cached byte arrays for performance
+    private static final byte[] NULL_BYTES = "null".getBytes(StandardCharsets.UTF_8);
+
+
+
     // Register the H2 Driver statically once
     static {
         try {
@@ -68,7 +75,9 @@ public class GraalCInterface {
     public static CCharPointer h2gisGetLastError(IsolateThread thread) {
         String error = lastError.get();
         lastError.remove();
-        if (error == null) error = "";
+        if (error == null){
+            error = "";
+        }
         return toCString(error).get();
     }
 
@@ -199,12 +208,16 @@ public class GraalCInterface {
         ResultSet rs = results.remove(queryHandle);
         Statement stmt = statements.remove(queryHandle);
         try {
-            if (rs != null) rs.close();
+            if (rs != null){
+                rs.close();
+            }
         } catch (Exception e) {
             logAndSetError("Failed to close ResultSet", e);
         }
         try {
-            if (stmt != null) stmt.close();
+            if (stmt != null){
+                stmt.close();
+            }
         } catch (Exception e) {
             logAndSetError("Failed to close Statement", e);
         }
@@ -252,6 +265,7 @@ public class GraalCInterface {
         }
     }
 
+
     /**
      * Fetches all rows from a query handle’s ResultSet and serializes
      * them as a JSON-like buffer allocated off-heap.
@@ -274,53 +288,65 @@ public class GraalCInterface {
             int colCount = meta.getColumnCount();
 
             ByteBuffer buffer = ByteBuffer.allocate(8192);
-            buffer = putByte(buffer, (byte)'{');
+            buffer = putByte(buffer, (byte) '[');
+            buffer = putByte(buffer, (byte) '[');
 
             boolean firstColumn = true;
-
-            for (int col = 1; col <= colCount; col++) {
-                if (!firstColumn) buffer = putByte(buffer, (byte)',');
-                firstColumn = false;
-
-                // Write column name as key: 'colname':
-                buffer = putByte(buffer, (byte)'\'');
-                byte[] colNameBytes = meta.getColumnName(col).getBytes(StandardCharsets.UTF_8);
-                buffer = ensureCapacity(buffer, colNameBytes.length);
-                buffer.put(colNameBytes);
-                buffer = putBytes(buffer, new byte[]{(byte)'\'' , (byte)':' , (byte)'['});
-
-                String colType = meta.getColumnTypeName(col).toUpperCase();
-                boolean isGeometry = colType.startsWith("GEOMETRY");
-
-                boolean firstValue = true;
-                rs.beforeFirst();
-                while (rs.next()) {
-                    if (!firstValue) buffer = putByte(buffer, (byte)',');
-                    firstValue = false;
-
-                    buffer = putByte(buffer, (byte)'\'');
-
-                    Object value = rs.getObject(col);
-                    byte[] valBytes;
-
-                    if (value == null) {
-                        valBytes = new byte[0]; // empty string
-                    } else if (isGeometry) {
-                        valBytes = value.toString().getBytes(StandardCharsets.UTF_8);
-                    } else {
-                        valBytes = rs.getBytes(col);
-                        if (valBytes == null) valBytes = new byte[0];
-                    }
-
-                    buffer = ensureCapacity(buffer, valBytes.length + 1);
-                    buffer.put(valBytes);
-                    buffer = putByte(buffer, (byte)'\'');
+            for (int col = 1; col <= colCount; col++) {//we write the column array
+                if (!firstColumn) {
+                    buffer = putByte(buffer, (byte) ',');
                 }
-
-                buffer = putByte(buffer, (byte)']');
+                firstColumn = false;
+                // Write column name as JSON key (with quotes and escaping)
+                String colName = meta.getColumnName(col);
+                buffer = putJsonString(buffer, colName);
             }
 
-            buffer = putByte(buffer, (byte)'}');
+            buffer = putByte(buffer, (byte) ']');
+            rs.beforeFirst();
+
+            while (rs.next()) {//for each row
+                buffer = putByte(buffer, (byte) ',');
+                buffer = putByte(buffer, (byte) '[');
+
+                firstColumn = true;
+                for (int col = 1; col <= colCount; col++) {//parse the rows and write the values in the buffer
+                    if (!firstColumn) {
+                        buffer = putByte(buffer, (byte) ',');
+                    }
+                    firstColumn = false;
+                    // Write column name as JSON key (with quotes and escaping)
+                    String colType = meta.getColumnTypeName(col).toUpperCase();
+                    boolean isGeometry = colType.startsWith("GEOMETRY");
+
+                    Object value = rs.getObject(col);
+
+                    if (value == null) {
+                        // JSON null literal (no quotes)
+                        buffer = putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
+                    } else if (isGeometry) {
+                        // Geometry: encode as JSON string
+                        buffer = putJsonString(buffer, value.toString());
+                    } else if(value instanceof Number || value instanceof Boolean){
+                        putBytes(buffer, value.toString().getBytes(StandardCharsets.UTF_8));
+                    }else{
+                        // Binary data: encode as Base64 JSON string
+                        byte[] valBytes = rs.getBytes(col);
+                        if (valBytes == null) {
+                            buffer = putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
+                        } else {
+                            String base64 = Base64.getEncoder().encodeToString(valBytes);
+                            buffer = putJsonString(buffer, base64);
+                        }
+                    }
+                }
+
+                buffer = putByte(buffer, (byte) ']');
+            }
+
+            buffer = putByte(buffer, (byte) ']');
+
+
 
             buffer.flip();
             int len = buffer.limit();
@@ -344,6 +370,36 @@ public class GraalCInterface {
         }
     }
 
+
+
+
+
+    private static ByteBuffer putJsonString(ByteBuffer buffer, String s) {
+        buffer = putByte(buffer, (byte) '"');
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '"': buffer = putBytes(buffer, new byte[]{'\\', '"'}); break;
+                case '\\': buffer = putBytes(buffer, new byte[]{'\\', '\\'}); break;
+                case '\b': buffer = putBytes(buffer, new byte[]{'\\', 'b'}); break;
+                case '\f': buffer = putBytes(buffer, new byte[]{'\\', 'f'}); break;
+                case '\n': buffer = putBytes(buffer, new byte[]{'\\', 'n'}); break;
+                case '\r': buffer = putBytes(buffer, new byte[]{'\\', 'r'}); break;
+                case '\t': buffer = putBytes(buffer, new byte[]{'\\', 't'}); break;
+                default:
+                    if (c < 0x20 || c > 0x7E) {
+                        String unicode = String.format("\\u%04x", (int) c);
+                        buffer = putBytes(buffer, unicode.getBytes(StandardCharsets.UTF_8));
+                    } else {
+                        buffer = putByte(buffer, (byte) c);
+                    }
+            }
+        }
+        buffer = putByte(buffer, (byte) '"');
+        return buffer;
+    }
+
+
     /**
      * Frees a result buffer previously allocated by h2gis_fetch_rows.
      */
@@ -364,18 +420,6 @@ public class GraalCInterface {
         return buffer;
     }
 
-    private static ByteBuffer putString(ByteBuffer buffer, String str) {
-        byte[] utf8Bytes = str.getBytes(StandardCharsets.UTF_8);
-        for (byte b : utf8Bytes) {
-            // Escape backslash and single quote
-            if (b == '\\' || b == '\'') {
-                buffer = putByte(buffer, (byte) '\\');
-            }
-            buffer = putByte(buffer, b);
-        }
-        return buffer;
-    }
-
     private static ByteBuffer putBytes(ByteBuffer buffer, byte[] bytes) {
         for (byte b : bytes) {
             buffer = putByte(buffer, b);
@@ -383,12 +427,6 @@ public class GraalCInterface {
         return buffer;
     }
 
-    private static ByteBuffer ensureCapacity(ByteBuffer buffer, int extra) {
-        if (buffer.remaining() < extra) {
-            buffer = growBuffer(buffer);
-        }
-        return buffer;
-    }
 
     private static ByteBuffer growBuffer(ByteBuffer buffer) {
         int newCapacity = buffer.capacity() * 2;
