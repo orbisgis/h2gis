@@ -1,105 +1,96 @@
-/*
- * H2GIS is a library that brings spatial support to the H2 Database Engine
- * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
- * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
- *
- * This code is part of the H2GIS project. H2GIS is free software;
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
- *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
- *
- *
- * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
- * or contact directly: info_at_h2gis.org
- */
 package org.h2gis.graalvm;
 
 import org.graalvm.nativeimage.IsolateThread;
+import org.graalvm.nativeimage.ObjectHandles;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
+import org.graalvm.word.WordBase;
+import org.graalvm.word.WordFactory;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.JDBCUtilities;
+import sun.misc.Unsafe;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.graalvm.nativeimage.c.type.CTypeConversion.toCString;
+
 /**
- * @author Maël PHILIPPE, CNRS
- * Native C interface to access H2GIS via GraalVM native-image.
- * Provides functions for connection management, query execution, result retrieval and cleanup.
+ * GraalCInterface exposes C entry points to interact with H2GIS through
+ * JDBC connections inside a GraalVM native image.
+ *
+ * This class manages connections, statements, result sets, executes queries,
+ * and returns results as raw buffers to native code.
  */
 public class GraalCInterface {
 
     private static final Logger LOGGER = Logger.getLogger(GraalCInterface.class.getName());
+
+    // Maps to track handles for JDBC resources
     private static final Map<Long, Connection> connections = new ConcurrentHashMap<>();
     private static final Map<Long, Statement> statements = new ConcurrentHashMap<>();
     private static final Map<Long, ResultSet> results = new ConcurrentHashMap<>();
+
+    // Atomic handle generator
     private static final AtomicLong handleCounter = new AtomicLong(1);
+
+    // ThreadLocal to store the last error message per thread
     private static final ThreadLocal<String> lastError = new ThreadLocal<>();
 
+    // GraalVM object handles global singleton (used if needed)
+    public static final ObjectHandles handles = ObjectHandles.getGlobal();
+
+    // Unsafe for manual memory management (allocate/free native buffers)
+    private static final Unsafe unsafe = getUnsafe();
+
+    // Register the H2 Driver statically once
     static {
         try {
             DriverManager.registerDriver(new org.h2.Driver());
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Failed to register H2 Driver", e);
         }
     }
 
-
     /**
-     * Get last error as a C string. Cleared after read.
+     * Returns the last error message for the current thread as a C string.
+     * The returned pointer must be copied on the C side if needed.
      */
     @CEntryPoint(name = "h2gis_get_last_error")
     public static CCharPointer h2gisGetLastError(IsolateThread thread) {
         String error = lastError.get();
         lastError.remove();
         if (error == null) error = "";
-        try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString(error)) {
-            return holder.get();
-        }
+        return toCString(error).get();
     }
 
     /**
-     * Opens a JDBC connection to an H2 database.
-     *
-     * @param thread    Isolate thread (unused, but required by GraalVM)
-     * @param filePathPointer C string path to the H2 database file
-     * @param usernamePointer C string username
-     * @param passwordPointer C string password
-     * @return Non-zero handle if successful, 0 on failure
+     * Opens a connection to an H2 database wrapped with H2GIS spatial functions.
+     * Returns a handle (long) or 0 on error.
      */
     @CEntryPoint(name = "h2gis_connect")
     public static long h2gisConnect(IsolateThread thread,
                                     CCharPointer filePathPointer,
                                     CCharPointer usernamePointer,
                                     CCharPointer passwordPointer) {
-
-        // Null pointer checks for safety
         if (filePathPointer.isNull() || usernamePointer.isNull() || passwordPointer.isNull()) {
             logAndSetError("Null pointer received in connection parameters", null);
             return 0;
         }
 
-
         try {
-            // Convert C strings to Java strings
             String filePath = CTypeConversion.toJavaString(filePathPointer);
             String username = CTypeConversion.toJavaString(usernamePointer);
             String password = CTypeConversion.toJavaString(passwordPointer);
 
-            // Form JDBC connection
             String url = "jdbc:h2:" + filePath;
             Properties properties = new Properties();
             properties.setProperty("url", url);
@@ -119,17 +110,17 @@ public class GraalCInterface {
     }
 
     /**
-     * Load H2GIS spatial functions into the database connection.
-     * @return 1 on success, 0 on failure
+     * Loads H2GIS spatial functions into the database connection.
+     * Returns 1 on success, 0 on failure.
      */
     @CEntryPoint(name = "h2gis_load")
     public static long h2gisLoad(IsolateThread thread, long connectionHandle) {
+        Connection conn = connections.get(connectionHandle);
+        if (conn == null) {
+            logAndSetError("Invalid connection handle: " + connectionHandle, null);
+            return 0;
+        }
         try {
-            Connection conn = connections.get(connectionHandle);
-            if (conn == null) {
-                logAndSetError("Invalid connection handle: " + connectionHandle, null);
-                return 0;
-            }
             H2GISFunctions.load(conn);
             return 1;
         } catch (Exception e) {
@@ -139,12 +130,9 @@ public class GraalCInterface {
     }
 
     /**
-     * Executes a SQL query and stores the result.
-     *
-     * @param thread          Isolate thread
-     * @param connectionHandle Handle to a valid JDBC connection
-     * @param queryPointer    C string containing the SQL query
-     * @return Non-zero handle to the result set, or 0 on failure
+     * Executes a SQL query and returns a handle to the ResultSet.
+     * Also keeps the Statement alive.
+     * Returns 0 on failure.
      */
     @CEntryPoint(name = "h2gis_fetch")
     public static long h2gisFetch(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
@@ -153,20 +141,21 @@ public class GraalCInterface {
             return 0;
         }
 
+        Connection conn = connections.get(connectionHandle);
+        if (conn == null) {
+            logAndSetError("Invalid connection handle: " + connectionHandle, null);
+            return 0;
+        }
+
         try {
             String query = CTypeConversion.toJavaString(queryPointer);
-            Connection conn = connections.get(connectionHandle);
-            if (conn == null) {
-                logAndSetError("Invalid connection handle: " + connectionHandle, null);
-                return 0;
-            }
-
-            Statement stmt = conn.createStatement();
+            Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stmt.executeQuery(query);
 
             long handle = handleCounter.getAndIncrement();
             statements.put(handle, stmt);
             results.put(handle, rs);
+
             return handle;
         } catch (Exception e) {
             logAndSetError("Failed to execute query", e);
@@ -175,8 +164,8 @@ public class GraalCInterface {
     }
 
     /**
-     * Execute a SQL update (INSERT, UPDATE, DELETE).
-     * @return number of affected rows, or -1 on failure
+     * Executes an update SQL statement (INSERT/UPDATE/DELETE).
+     * Returns number of affected rows or -1 on failure.
      */
     @CEntryPoint(name = "h2gis_execute")
     public static int h2gisExecute(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
@@ -191,9 +180,11 @@ public class GraalCInterface {
             return -1;
         }
 
-        String query = CTypeConversion.toJavaString(queryPointer);
-        try (Statement stmt = conn.createStatement()) {
-            return stmt.executeUpdate(query);
+        try {
+            String query = CTypeConversion.toJavaString(queryPointer);
+            try (Statement stmt = conn.createStatement()) {
+                return stmt.executeUpdate(query);
+            }
         } catch (Exception e) {
             logAndSetError("Failed to execute update", e);
             return -1;
@@ -201,9 +192,7 @@ public class GraalCInterface {
     }
 
     /**
-     * Closes a resultset and its associated statement, identified by queryHandle.
-     * @param thread Isolate thread
-     * @param queryHandle Handle to the resultset
+     * Closes the statement and result set associated with a query handle.
      */
     @CEntryPoint(name = "h2gis_close_query")
     public static void h2gisCloseQuery(IsolateThread thread, long queryHandle) {
@@ -211,14 +200,18 @@ public class GraalCInterface {
         Statement stmt = statements.remove(queryHandle);
         try {
             if (rs != null) rs.close();
+        } catch (Exception e) {
+            logAndSetError("Failed to close ResultSet", e);
+        }
+        try {
             if (stmt != null) stmt.close();
         } catch (Exception e) {
-            logAndSetError("Failed to close query resources", e);
+            logAndSetError("Failed to close Statement", e);
         }
     }
 
     /**
-     * Close a database connection.
+     * Closes a database connection and removes it from the handle map.
      */
     @CEntryPoint(name = "h2gis_close_connection")
     public static void h2gisCloseConnection(IsolateThread thread, long connectionHandle) {
@@ -235,7 +228,8 @@ public class GraalCInterface {
     }
 
     /**
-     * Delete all objects and files of the database, then close it.
+     * Drops all objects in the database and deletes database files,
+     * then closes the connection.
      */
     @CEntryPoint(name = "h2gis_delete_database_and_close")
     public static void h2gisDeleteClose(IsolateThread thread, long connectionHandle) {
@@ -259,93 +253,174 @@ public class GraalCInterface {
     }
 
     /**
-     * Fetch the next row from a result set as a CSV string.
-     * Returns an empty string when all rows have been fetched.
+     * Fetches all rows from a query handle’s ResultSet and serializes
+     * them as a JSON-like buffer allocated off-heap.
+     *
+     * The length of the buffer is written to the pointer given by sizeOutPtr.
+     * Returns a native pointer to the allocated buffer.
      */
     @CEntryPoint(name = "h2gis_fetch_rows")
-    public static CCharPointer h2gisFetchRows(IsolateThread thread, long queryHandle) {
+    public static WordBase h2gisFetchRows(IsolateThread thread, long queryHandle, WordBase sizeOutPtr) {
         try {
-            ResultSet rs = results.remove(queryHandle); // Consomme et ferme le ResultSet
-            Statement stmt = statements.remove(queryHandle);
+            ResultSet rs = results.get(queryHandle);
             if (rs == null) {
-                return emptyCString();
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("[");
-            boolean first = true;
-
-            while (rs.next()) {
-                if (!first) {
-                    sb.append(",");
-                } else {
-                    first = false;
+                if (sizeOutPtr.rawValue() != 0L) {
+                    unsafe.putLong(sizeOutPtr.rawValue(), 0L);
                 }
-                String jsonRow = formatRowAsJson(rs);
-                sb.append(jsonRow);
+                return WordFactory.zero();
             }
-            sb.append("]");
 
-            if (stmt != null) stmt.close();
-            rs.close();
+            ResultSetMetaData meta = rs.getMetaData();
+            int colCount = meta.getColumnCount();
 
-            try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString(sb.toString())) {
-                return holder.get();
+            ByteBuffer buffer = ByteBuffer.allocate(8192);
+            buffer = putByte(buffer, (byte)'{');
+
+            boolean firstColumn = true;
+
+            for (int col = 1; col <= colCount; col++) {
+                if (!firstColumn) buffer = putByte(buffer, (byte)',');
+                firstColumn = false;
+
+                // Write column name as key: 'colname':
+                buffer = putByte(buffer, (byte)'\'');
+                byte[] colNameBytes = meta.getColumnName(col).getBytes(StandardCharsets.UTF_8);
+                buffer = ensureCapacity(buffer, colNameBytes.length);
+                buffer.put(colNameBytes);
+                buffer = putBytes(buffer, new byte[]{(byte)'\'' , (byte)':' , (byte)'['});
+
+                String colType = meta.getColumnTypeName(col).toUpperCase();
+                boolean isGeometry = colType.startsWith("GEOMETRY");
+
+                boolean firstValue = true;
+                rs.beforeFirst();
+                while (rs.next()) {
+                    if (!firstValue) buffer = putByte(buffer, (byte)',');
+                    firstValue = false;
+
+                    buffer = putByte(buffer, (byte)'\'');
+
+                    Object value = rs.getObject(col);
+                    byte[] valBytes;
+
+                    if (value == null) {
+                        valBytes = new byte[0]; // empty string
+                    } else if (isGeometry) {
+                        valBytes = value.toString().getBytes(StandardCharsets.UTF_8);
+                    } else {
+                        valBytes = rs.getBytes(col);
+                        if (valBytes == null) valBytes = new byte[0];
+                    }
+
+                    buffer = ensureCapacity(buffer, valBytes.length + 1);
+                    buffer.put(valBytes);
+                    buffer = putByte(buffer, (byte)'\'');
+                }
+
+                buffer = putByte(buffer, (byte)']');
             }
+
+            buffer = putByte(buffer, (byte)'}');
+
+            buffer.flip();
+            int len = buffer.limit();
+            long addr = unsafe.allocateMemory(len);
+            for (int i = 0; i < len; i++) {
+                unsafe.putByte(addr + i, buffer.get(i));
+            }
+
+            if (sizeOutPtr.rawValue() != 0L) {
+                unsafe.putLong(sizeOutPtr.rawValue(), len);
+            }
+
+            return WordFactory.pointer(addr);
 
         } catch (Exception e) {
-            logAndSetError("Failed to fetch all rows", e);
-            try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString("Error: " + e.getMessage())) {
-                return holder.get();
+            e.printStackTrace();
+            if (sizeOutPtr.rawValue() != 0L) {
+                unsafe.putLong(sizeOutPtr.rawValue(), 0L);
             }
+            return WordFactory.zero();
         }
     }
 
-
-    private static CCharPointer emptyCString() {
-        try (CTypeConversion.CCharPointerHolder holder = CTypeConversion.toCString("")) {
-            return holder.get();
+    /**
+     * Frees a result buffer previously allocated by h2gis_fetch_rows.
+     */
+    @CEntryPoint(name = "h2gis_free_result_buffer")
+    public static void freeResultBuffer(IsolateThread thread, WordBase ptr) {
+        if (ptr.rawValue() != 0L) {
+            unsafe.freeMemory(ptr.rawValue());
         }
     }
 
-    private static String formatRowAsJson(ResultSet rs) throws SQLException {
-        ResultSetMetaData meta = rs.getMetaData();
-        int colCount = meta.getColumnCount();
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
+    /* Helper methods for ByteBuffer manipulation */
 
-        for (int i = 1; i <= colCount; i++) {
-            String columnName = meta.getColumnLabel(i);
-            Object value = rs.getObject(i);
+    private static ByteBuffer putByte(ByteBuffer buffer, byte b) {
+        if (buffer.remaining() < 1) {
+            buffer = growBuffer(buffer);
+        }
+        buffer.put(b);
+        return buffer;
+    }
 
-            sb.append("\"").append(escapeJson(columnName)).append("\":");
-
-            if (value == null) {
-                sb.append("null");
-            } else if (value instanceof Number || value instanceof Boolean) {
-                sb.append(value.toString());
-            } else {
-                sb.append("\"").append(escapeJson(value.toString())).append("\"");
+    private static ByteBuffer putString(ByteBuffer buffer, String str) {
+        byte[] utf8Bytes = str.getBytes(StandardCharsets.UTF_8);
+        for (byte b : utf8Bytes) {
+            // Escape backslash and single quote
+            if (b == '\\' || b == '\'') {
+                buffer = putByte(buffer, (byte) '\\');
             }
-
-            if (i < colCount) sb.append(",");
+            buffer = putByte(buffer, b);
         }
-
-        sb.append("}");
-        return sb.toString();
+        return buffer;
     }
 
-    private static String escapeJson(String text) {
-        return text.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
+    private static ByteBuffer putBytes(ByteBuffer buffer, byte[] bytes) {
+        for (byte b : bytes) {
+            buffer = putByte(buffer, b);
+        }
+        return buffer;
     }
 
+    private static ByteBuffer ensureCapacity(ByteBuffer buffer, int extra) {
+        if (buffer.remaining() < extra) {
+            buffer = growBuffer(buffer);
+        }
+        return buffer;
+    }
 
-    private static void logAndSetError(String message, Throwable throwable) {
-        LOGGER.log(Level.SEVERE, message, throwable);
-        lastError.set(message + (throwable != null ? ": " + throwable.getMessage() : ""));
+    private static ByteBuffer growBuffer(ByteBuffer buffer) {
+        int newCapacity = buffer.capacity() * 2;
+        ByteBuffer newBuffer = ByteBuffer.allocate(newCapacity);
+        buffer.flip();
+        newBuffer.put(buffer);
+        return newBuffer;
+    }
+
+    /* Utility methods */
+
+    private static void logAndSetError(String message, Exception e) {
+        if (e != null) {
+            LOGGER.log(Level.SEVERE, message, e);
+            lastError.set(message + ": " + e.getMessage());
+        } else {
+            LOGGER.severe(message);
+            lastError.set(message);
+        }
+    }
+
+    /**
+     * Uses reflection hack to access the Unsafe instance.
+     * Unsafe is used to allocate and free off-heap memory.
+     */
+    private static Unsafe getUnsafe() {
+        try {
+            java.lang.reflect.Field f = Unsafe.class.getDeclaredField("theUnsafe");
+            f.setAccessible(true);
+            return (Unsafe) f.get(null);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to get Unsafe instance", e);
+        }
     }
 }
