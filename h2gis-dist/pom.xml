@@ -123,26 +123,26 @@
                 </configuration>
             </plugin>
             <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files -->
-            <?ignore <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> ?> <!-- this is used for inheritance merges -->
-            <!--  <phase>package</phase> bind to the packaging phase -->
-                       <?ignore <goals>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+                       <goals>
                             <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
                    <finalName>h2gis-standalone</finalName>
-                    <descriptors>?>
-            <!-- <descriptor>src/main/assembly/bin.xml</descriptor> Binary Zip-->
-            <!-- <descriptor>src/main/assembly/project.xml</descriptor> Sources -->
-                    <?ignore </descriptors>
+                    <descriptors>
+            <descriptor>src/main/assembly/bin.xml</descriptor> <!--  Binary Zip-->
+            <descriptor>src/main/assembly/project.xml</descriptor><!-- Sources -->
+                    </descriptors>
                 </configuration>
-            </plugin> ?>
+            </plugin>
 
 
 
@@ -179,7 +179,7 @@
                         <version>${native.maven.plugin.version}</version>
                         <executions>
                             <!-- Native executable -->
-                           <?ignore <execution>
+                           <execution>
                                 <id>build-native-exec</id>
                                 <phase>package</phase>
                                 <goals>
@@ -200,7 +200,7 @@
                                         <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
                                     </buildArgs>
                                 </configuration>
-                            </execution>?>
+                            </execution>
 
                             <!-- Native shared library -->
                             <execution>
