@@ -33,33 +33,38 @@ import static org.graalvm.nativeimage.c.type.CTypeConversion.toCString;
  */
 public class GraalCInterface {
 
+
+    /** Logger for internal error reporting */
     private static final Logger LOGGER = Logger.getLogger(GraalCInterface.class.getName());
 
-    // Maps to track handles for JDBC resources
+    /** Maps handle -> JDBC connection */
     private static final Map<Long, Connection> connections = new ConcurrentHashMap<>();
+
+    /** Maps handle -> JDBC statement */
     private static final Map<Long, Statement> statements = new ConcurrentHashMap<>();
+
+    /** Maps handle -> JDBC result set */
     private static final Map<Long, ResultSet> results = new ConcurrentHashMap<>();
 
-    // Atomic handle generator
+    /** Handle counter to assign unique IDs to each resource */
     private static final AtomicLong handleCounter = new AtomicLong(1);
 
-    // ThreadLocal to store the last error message per thread
+    /** Thread-local error message, retrieved by C with h2gis_get_last_error() */
     private static final ThreadLocal<String> lastError = new ThreadLocal<>();
 
-    // GraalVM object handles global singleton (used if needed)
+    /** GraalVM ObjectHandles (not used currently, but useful for future object passing) */
     public static final ObjectHandles handles = ObjectHandles.getGlobal();
 
-    // Unsafe for manual memory management (allocate/free native buffers)
+    /** Unsafe is used for direct memory allocation/free to pass buffers to native side */
     private static final Unsafe unsafe = getUnsafe();
 
-    // Cached byte arrays for performance
+    /** Cached "null" byte array for efficient reuse */
     private static final byte[] NULL_BYTES = "null".getBytes(StandardCharsets.UTF_8);
 
 
-
-    // Register the H2 Driver statically once
     static {
         try {
+            // Ensure H2 driver is registered exactly once
             DriverManager.registerDriver(new org.h2.Driver());
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Failed to register H2 Driver", e);
@@ -266,11 +271,34 @@ public class GraalCInterface {
 
 
     /**
-     * Fetches all rows from a query handle’s ResultSet and serializes
-     * them as a JSON-like buffer allocated off-heap.
+     * Native C entry point for fetching all remaining rows from a previously executed query,
+     * converting the result set to a JSON-formatted byte array allocated in native memory.
      *
-     * The length of the buffer is written to the pointer given by sizeOutPtr.
-     * Returns a native pointer to the allocated buffer.
+     * This method returns a JSON array of arrays in a bytebuffer, where:
+     * - The first element is an array of column names.
+     * - Each subsequent element is an array of row values.
+     *
+     * Data encoding follows JSON rules:
+     * - Null values are encoded as the literal null.
+     * - Strings and geometry values are escaped and quoted as JSON strings.
+     * - Numbers and booleans are encoded directly without quotes.
+     * - Binary values (fallback) are encoded as JSON strings.
+     *
+     * Example output:
+     * [["id","name","geom"], [1,"Park","POINT(1 2)"], [2,"Lake","POINT(3 4)"]]
+     *
+     * The resulting JSON is written into a freshly allocated native memory block
+     * whose pointer is returned. The size in bytes of the allocated buffer is
+     * written to the `sizeOutPtr` address (if not null).
+     *
+     * The caller is responsible for freeing the memory returned via the pointer.
+     *
+     * On failure, returns a null pointer (0) and sets size to 0.
+     *
+     * @param thread the current Graal isolate thread (required for native interoperability)
+     * @param queryHandle the unique handle identifying the ResultSet to read from
+     * @param sizeOutPtr pointer to a memory location where the result size in bytes will be written
+     * @return a native memory pointer to the encoded JSON result, or null (0) on error
      */
     @CEntryPoint(name = "h2gis_fetch_rows")
     public static WordBase h2gisFetchRows(IsolateThread thread, long queryHandle, WordBase sizeOutPtr) {
@@ -287,13 +315,13 @@ public class GraalCInterface {
             int colCount = meta.getColumnCount();
 
             ByteBuffer buffer = ByteBuffer.allocate(8192);
-            buffer = putByte(buffer, (byte) '[');
-            buffer = putByte(buffer, (byte) '[');
+            putByte(buffer, (byte) '[');
+            putByte(buffer, (byte) '[');
 
             boolean firstColumn = true;
             for (int col = 1; col <= colCount; col++) {//we write the column array
                 if (!firstColumn) {
-                    buffer = putByte(buffer, (byte) ',');
+                    putByte(buffer, (byte) ',');
                 }
                 firstColumn = false;
                 // Write column name as JSON key (with quotes and escaping)
@@ -301,16 +329,16 @@ public class GraalCInterface {
                 buffer = putJsonString(buffer, colName);
             }
 
-            buffer = putByte(buffer, (byte) ']');
+            putByte(buffer, (byte) ']');
 
             while (rs.next()) {//for each row
-                buffer = putByte(buffer, (byte) ',');
-                buffer = putByte(buffer, (byte) '[');
+                putByte(buffer, (byte) ',');
+                putByte(buffer, (byte) '[');
 
                 firstColumn = true;
                 for (int col = 1; col <= colCount; col++) {//parse the rows and write the values in the buffer
                     if (!firstColumn) {
-                        buffer = putByte(buffer, (byte) ',');
+                        putByte(buffer, (byte) ',');
                     }
                     firstColumn = false;
                     // Write column name as JSON key (with quotes and escaping)
@@ -321,7 +349,7 @@ public class GraalCInterface {
 
                     if (value == null) {
                         // JSON null literal (no quotes)
-                        buffer = putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
+                        putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
                     } else if (isGeometry || value instanceof String) {
                         // Geometry: encode as JSON string
                         buffer = putJsonString(buffer, value.toString());
@@ -330,17 +358,17 @@ public class GraalCInterface {
                     }else{
                         byte[] valBytes = rs.getBytes(col);
                         if (valBytes == null) {
-                            buffer = putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
+                            putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
                         } else {
                             buffer = putJsonString(buffer, value.toString());
                         }
                     }
                 }
 
-                buffer = putByte(buffer, (byte) ']');
+                putByte(buffer, (byte) ']');
             }
 
-            buffer = putByte(buffer, (byte) ']');
+            putByte(buffer, (byte) ']');
 
 
 
@@ -370,29 +398,48 @@ public class GraalCInterface {
 
 
 
-
+    /**
+     * Writes a JSON-formatted and escaped string into the given ByteBuffer.
+     *
+     * The string is wrapped in double quotes and escaped according to JSON rules.
+     * This includes:
+     * - Escaping special characters like double quotes (") and backslashes (\)
+     * - Replacing control characters such as newline, tab, etc. with their escaped equivalents
+     * - Encoding characters outside the ASCII printable range using Unicode escape sequences (e.g. \u00E9)
+     *
+     * This method assumes the ByteBuffer has enough remaining capacity to store
+     * the resulting escaped string. No buffer overflow checks are performed.
+     *
+     * Example:
+     * Input string: Hello\n"World"
+     * Output in buffer: "Hello\\n\\\"World\\\""
+     *
+     * @param buffer the ByteBuffer into which the JSON string will be written
+     * @param s the raw input string to format as a JSON string
+     * @return the same ByteBuffer, with the JSON string written into it
+     */
     private static ByteBuffer putJsonString(ByteBuffer buffer, String s) {
-        buffer = putByte(buffer, (byte) '"');
+        putByte(buffer, (byte) '"');
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             switch (c) {
-                case '"': buffer = putBytes(buffer, new byte[]{'\\', '"'}); break;
-                case '\\': buffer = putBytes(buffer, new byte[]{'\\', '\\'}); break;
-                case '\b': buffer = putBytes(buffer, new byte[]{'\\', 'b'}); break;
-                case '\f': buffer = putBytes(buffer, new byte[]{'\\', 'f'}); break;
-                case '\n': buffer = putBytes(buffer, new byte[]{'\\', 'n'}); break;
-                case '\r': buffer = putBytes(buffer, new byte[]{'\\', 'r'}); break;
-                case '\t': buffer = putBytes(buffer, new byte[]{'\\', 't'}); break;
+                case '"': putBytes(buffer, new byte[]{'\\', '"'}); break;
+                case '\\': putBytes(buffer, new byte[]{'\\', '\\'}); break;
+                case '\b': putBytes(buffer, new byte[]{'\\', 'b'}); break;
+                case '\f': putBytes(buffer, new byte[]{'\\', 'f'}); break;
+                case '\n': putBytes(buffer, new byte[]{'\\', 'n'}); break;
+                case '\r': putBytes(buffer, new byte[]{'\\', 'r'}); break;
+                case '\t': putBytes(buffer, new byte[]{'\\', 't'}); break;
                 default:
                     if (c < 0x20 || c > 0x7E) {
                         String unicode = String.format("\\u%04x", (int) c);
-                        buffer = putBytes(buffer, unicode.getBytes(StandardCharsets.UTF_8));
+                        putBytes(buffer, unicode.getBytes(StandardCharsets.UTF_8));
                     } else {
-                        buffer = putByte(buffer, (byte) c);
+                        putByte(buffer, (byte) c);
                     }
             }
         }
-        buffer = putByte(buffer, (byte) '"');
+        putByte(buffer, (byte) '"');
         return buffer;
     }
 
@@ -407,34 +454,13 @@ public class GraalCInterface {
         }
     }
 
-    /* Helper methods for ByteBuffer manipulation */
 
-    private static ByteBuffer putByte(ByteBuffer buffer, byte b) {
-        if (buffer.remaining() < 1) {
-            buffer = growBuffer(buffer);
-        }
-        buffer.put(b);
-        return buffer;
-    }
-
-    private static ByteBuffer putBytes(ByteBuffer buffer, byte[] bytes) {
-        for (byte b : bytes) {
-            buffer = putByte(buffer, b);
-        }
-        return buffer;
-    }
-
-
-    private static ByteBuffer growBuffer(ByteBuffer buffer) {
-        int newCapacity = buffer.capacity() * 2;
-        ByteBuffer newBuffer = ByteBuffer.allocate(newCapacity);
-        buffer.flip();
-        newBuffer.put(buffer);
-        return newBuffer;
-    }
 
     /* Utility methods */
 
+    /**
+     * Logs an error and sets it in the thread-local error variable.
+     */
     private static void logAndSetError(String message, Exception e) {
         if (e != null) {
             LOGGER.log(Level.SEVERE, message, e);
@@ -457,5 +483,45 @@ public class GraalCInterface {
         } catch (Exception e) {
             throw new RuntimeException("Unable to get Unsafe instance", e);
         }
+    }
+
+    /* Helper methods for ByteBuffer manipulation */
+
+    /**
+     * Write a bite in a given buffer, and increase the buffer size
+     * if it does not have any spalce anymore.
+     * @param buffer the buffer in which the byte will be written
+     * @param b the byte to write
+     */
+    private static void putByte(ByteBuffer buffer, byte b) {
+        if (buffer.remaining() < 1) {
+            buffer = growBuffer(buffer);
+        }
+        buffer.put(b);
+    }
+
+    /**
+     * Write abytes into a buffer
+     * @param buffer the buffer in which the bytes will be written
+     * @param bytes the bytes to write
+     */
+    private static void putBytes(ByteBuffer buffer, byte[] bytes) {
+        for (byte b : bytes) {
+            putByte(buffer, b);
+        }
+    }
+
+
+    /**
+     * Method that increase the size of a given buffer
+     * @param buffer the buffer who's size will be increased
+     * @return
+     */
+    private static ByteBuffer growBuffer(ByteBuffer buffer) {
+        int newCapacity = buffer.capacity() * 2;
+        ByteBuffer newBuffer = ByteBuffer.allocate(newCapacity);
+        buffer.flip();
+        newBuffer.put(buffer);
+        return newBuffer;
     }
 }

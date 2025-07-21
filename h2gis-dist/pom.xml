@@ -230,7 +230,19 @@
                             </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
 
+        <profile>
+            <id>strip-unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -250,18 +262,12 @@
                                             if [ -f "${project.build.directory}/${imageName}.so" ]; then strip "${project.build.directory}/${imageName}.so"; fi
                                         </argument>
                                     </arguments>
-                                    <skip>${os.name.startsWith("Windows")}</skip>
                                 </configuration>
                             </execution>
                         </executions>
                     </plugin>
-
-
-
                 </plugins>
             </build>
         </profile>
     </profiles>
-
-
 </project>
