@@ -1,5 +1,7 @@
 package org.h2gis.graalvm;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import org.graalvm.nativeimage.IsolateThread;
 import org.graalvm.nativeimage.ObjectHandles;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
@@ -305,142 +307,72 @@ public class GraalCInterface {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
-                if (sizeOutPtr.rawValue() != 0L) {
-                    unsafe.putLong(sizeOutPtr.rawValue(), 0L);
-                }
+                if (sizeOutPtr.rawValue() != 0L) unsafe.putLong(sizeOutPtr.rawValue(), 0L);
                 return WordFactory.zero();
             }
 
             ResultSetMetaData meta = rs.getMetaData();
             int colCount = meta.getColumnCount();
-
-            ByteBuffer buffer = ByteBuffer.allocate(8192);
-            putByte(buffer, (byte) '[');
-            putByte(buffer, (byte) '[');
-
-            boolean firstColumn = true;
-            for (int col = 1; col <= colCount; col++) {//we write the column array
-                if (!firstColumn) {
-                    putByte(buffer, (byte) ',');
-                }
-                firstColumn = false;
-                // Write column name as JSON key (with quotes and escaping)
-                String colName = meta.getColumnName(col);
-                buffer = putJsonString(buffer, colName);
+            String[] colNames = new String[colCount];
+            for (int i = 0; i < colCount; i++) {
+                colNames[i] = meta.getColumnName(i + 1);
             }
 
-            putByte(buffer, (byte) ']');
+            ByteBuffer buffer = ByteBuffer.allocate(32 * 1024);
+            ByteBufferBackedOutputStream out = new ByteBufferBackedOutputStream(buffer);
 
-            while (rs.next()) {//for each row
-                putByte(buffer, (byte) ',');
-                putByte(buffer, (byte) '[');
+            JsonFactory factory = new JsonFactory();
+            JsonGenerator gen = factory.createGenerator(out);
+            gen.writeStartArray(); // [
+            gen.writeStartArray(); // [
 
-                firstColumn = true;
-                for (int col = 1; col <= colCount; col++) {//parse the rows and write the values in the buffer
-                    if (!firstColumn) {
-                        putByte(buffer, (byte) ',');
-                    }
-                    firstColumn = false;
-                    // Write column name as JSON key (with quotes and escaping)
-                    String colType = meta.getColumnTypeName(col).toUpperCase();
-                    boolean isGeometry = colType.startsWith("GEOMETRY");
+            for (String name : colNames) {
+                gen.writeString(name);
+            }
 
+            gen.writeEndArray(); // ]
+
+            while (rs.next()) {
+                gen.writeStartArray();
+                for (int col = 1; col <= colCount; col++) {
                     Object value = rs.getObject(col);
-
                     if (value == null) {
-                        // JSON null literal (no quotes)
-                        putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
-                    } else if (isGeometry || value instanceof String) {
-                        // Geometry: encode as JSON string
-                        buffer = putJsonString(buffer, value.toString());
-                    } else if(value instanceof Number || value instanceof Boolean){ //TODO : rajouter les strings aussi
-                        putBytes(buffer, value.toString().getBytes(StandardCharsets.UTF_8));
-                    }else{
-                        byte[] valBytes = rs.getBytes(col);
-                        if (valBytes == null) {
-                            putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
-                        } else {
-                            buffer = putJsonString(buffer, value.toString());
-                        }
+                        gen.writeNull();
+                    } else if (value instanceof Number) {
+                        if (value instanceof Integer) gen.writeNumber((Integer) value);
+                        else if (value instanceof Long) gen.writeNumber((Long) value);
+                        else if (value instanceof Double) gen.writeNumber((Double) value);
+                        else if (value instanceof Float) gen.writeNumber((Float) value);
+                        else gen.writeNumber(((Number) value).doubleValue());
+                    } else if (value instanceof Boolean) {
+                        gen.writeBoolean((Boolean) value);
+                    } else {
+                        gen.writeString(value.toString()); // géométries, dates, strings
                     }
                 }
-
-                putByte(buffer, (byte) ']');
+                gen.writeEndArray();
             }
 
-            putByte(buffer, (byte) ']');
+            gen.writeEndArray(); // ]
+            gen.flush();
 
+            ByteBuffer resultBuffer = out.getBuffer();
+            resultBuffer.flip();
+            int len = resultBuffer.limit();
 
-
-            buffer.flip();
-            int len = buffer.limit();
             long addr = unsafe.allocateMemory(len);
             for (int i = 0; i < len; i++) {
-                unsafe.putByte(addr + i, buffer.get(i));
+                unsafe.putByte(addr + i, resultBuffer.get(i));
             }
 
-            if (sizeOutPtr.rawValue() != 0L) {
-                unsafe.putLong(sizeOutPtr.rawValue(), len);
-            }
-
+            if (sizeOutPtr.rawValue() != 0L) unsafe.putLong(sizeOutPtr.rawValue(), len);
             return WordFactory.pointer(addr);
 
         } catch (Exception e) {
             System.err.println("Error in h2gis_fetch_rows: " + e.getMessage());
-
-            if (sizeOutPtr.rawValue() != 0L) {
-                unsafe.putLong(sizeOutPtr.rawValue(), 0L);
-            }
+            if (sizeOutPtr.rawValue() != 0L) unsafe.putLong(sizeOutPtr.rawValue(), 0L);
             return WordFactory.zero();
         }
-    }
-
-
-
-
-    /**
-     * Writes a JSON-formatted and escaped string into the given ByteBuffer.
-     *
-     * The string is wrapped in double quotes and escaped according to JSON rules.
-     * This includes:
-     * - Escaping special characters like double quotes (") and backslashes (\)
-     * - Replacing control characters such as newline, tab, etc. with their escaped equivalents
-     * - Encoding characters outside the ASCII printable range using Unicode escape sequences (e.g. \u00E9)
-     *
-     * This method assumes the ByteBuffer has enough remaining capacity to store
-     * the resulting escaped string. No buffer overflow checks are performed.
-     *
-     * Example:
-     * Input string: Hello\n"World"
-     * Output in buffer: "Hello\\n\\\"World\\\""
-     *
-     * @param buffer the ByteBuffer into which the JSON string will be written
-     * @param s the raw input string to format as a JSON string
-     * @return the same ByteBuffer, with the JSON string written into it
-     */
-    private static ByteBuffer putJsonString(ByteBuffer buffer, String s) {
-        putByte(buffer, (byte) '"');
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '"': putBytes(buffer, new byte[]{'\\', '"'}); break;
-                case '\\': putBytes(buffer, new byte[]{'\\', '\\'}); break;
-                case '\b': putBytes(buffer, new byte[]{'\\', 'b'}); break;
-                case '\f': putBytes(buffer, new byte[]{'\\', 'f'}); break;
-                case '\n': putBytes(buffer, new byte[]{'\\', 'n'}); break;
-                case '\r': putBytes(buffer, new byte[]{'\\', 'r'}); break;
-                case '\t': putBytes(buffer, new byte[]{'\\', 't'}); break;
-                default:
-                    if (c < 0x20 || c > 0x7E) {
-                        String unicode = String.format("\\u%04x", (int) c);
-                        putBytes(buffer, unicode.getBytes(StandardCharsets.UTF_8));
-                    } else {
-                        putByte(buffer, (byte) c);
-                    }
-            }
-        }
-        putByte(buffer, (byte) '"');
-        return buffer;
     }
 
 
@@ -483,45 +415,5 @@ public class GraalCInterface {
         } catch (Exception e) {
             throw new RuntimeException("Unable to get Unsafe instance", e);
         }
-    }
-
-    /* Helper methods for ByteBuffer manipulation */
-
-    /**
-     * Write a bite in a given buffer, and increase the buffer size
-     * if it does not have any spalce anymore.
-     * @param buffer the buffer in which the byte will be written
-     * @param b the byte to write
-     */
-    private static void putByte(ByteBuffer buffer, byte b) {
-        if (buffer.remaining() < 1) {
-            buffer = growBuffer(buffer);
-        }
-        buffer.put(b);
-    }
-
-    /**
-     * Write abytes into a buffer
-     * @param buffer the buffer in which the bytes will be written
-     * @param bytes the bytes to write
-     */
-    private static void putBytes(ByteBuffer buffer, byte[] bytes) {
-        for (byte b : bytes) {
-            putByte(buffer, b);
-        }
-    }
-
-
-    /**
-     * Method that increase the size of a given buffer
-     * @param buffer the buffer who's size will be increased
-     * @return
-     */
-    private static ByteBuffer growBuffer(ByteBuffer buffer) {
-        int newCapacity = buffer.capacity() * 2;
-        ByteBuffer newBuffer = ByteBuffer.allocate(newCapacity);
-        buffer.flip();
-        newBuffer.put(buffer);
-        return newBuffer;
     }
 }
