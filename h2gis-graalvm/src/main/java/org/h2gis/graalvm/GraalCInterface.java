@@ -347,7 +347,7 @@ public class GraalCInterface {
                     } else if (value instanceof Boolean) {
                         gen.writeBoolean((Boolean) value);
                     } else {
-                        gen.writeString(value.toString()); // géométries, dates, strings
+                        gen.writeString(value.toString()); // geometries, dates, strings
                     }
                 }
                 gen.writeEndArray();
