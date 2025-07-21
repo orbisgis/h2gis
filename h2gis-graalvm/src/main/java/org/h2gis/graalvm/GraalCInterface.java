@@ -15,7 +15,6 @@ import sun.misc.Unsafe;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
-import java.util.Base64;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -303,7 +302,6 @@ public class GraalCInterface {
             }
 
             buffer = putByte(buffer, (byte) ']');
-            rs.beforeFirst();
 
             while (rs.next()) {//for each row
                 buffer = putByte(buffer, (byte) ',');
@@ -324,19 +322,17 @@ public class GraalCInterface {
                     if (value == null) {
                         // JSON null literal (no quotes)
                         buffer = putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
-                    } else if (isGeometry) {
+                    } else if (isGeometry || value instanceof String) {
                         // Geometry: encode as JSON string
                         buffer = putJsonString(buffer, value.toString());
-                    } else if(value instanceof Number || value instanceof Boolean){
+                    } else if(value instanceof Number || value instanceof Boolean){ //TODO : rajouter les strings aussi
                         putBytes(buffer, value.toString().getBytes(StandardCharsets.UTF_8));
                     }else{
-                        // Binary data: encode as Base64 JSON string
                         byte[] valBytes = rs.getBytes(col);
                         if (valBytes == null) {
                             buffer = putBytes(buffer, "null".getBytes(StandardCharsets.UTF_8));
                         } else {
-                            String base64 = Base64.getEncoder().encodeToString(valBytes);
-                            buffer = putJsonString(buffer, base64);
+                            buffer = putJsonString(buffer, value.toString());
                         }
                     }
                 }
@@ -362,7 +358,8 @@ public class GraalCInterface {
             return WordFactory.pointer(addr);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error in h2gis_fetch_rows: " + e.getMessage());
+
             if (sizeOutPtr.rawValue() != 0L) {
                 unsafe.putLong(sizeOutPtr.rawValue(), 0L);
             }
