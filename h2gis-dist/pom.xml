@@ -250,7 +250,7 @@
                         <executions>
                             <execution>
                                 <id>strip-native-binary</id>
-                                <phase>package</phase>
+                                <phase>install</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
