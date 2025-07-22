@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="198px" height="1440px" viewBox="0 0 198 1440" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>wave-1</title>
+    <g id="wave-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="wave" transform="translate(99.000000, 720.000000) scale(1, -1) rotate(90.000000) translate(-99.000000, -720.000000) translate(-621.000000, 621.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <path d="M0,192 L80,160 C160,128 320,64 480,74.7 C640,85 800,171 960,192 C1120,213 1280,171 1360,149.3 L1440,128 L1440,0 L1360,0 C1280,0 1120,0 960,0 C800,0 640,0 480,0 C320,0 160,0 80,0 L0,0 L0,192 Z" id="Path" transform="translate(720.000000, 98.859263) scale(1, -1) translate(-720.000000, -98.859263) "></path>
+        </g>
+    </g>
+</svg>
