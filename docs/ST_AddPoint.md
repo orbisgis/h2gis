@@ -55,7 +55,7 @@ SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 ![](./ST_AddPoint_3.png){align=center}
 
 ```sql
-CREATE TABLE input(poly POLYGON, p POINT);
+CREATE TABLE input(poly GEOMETRY(POLYGON), p GEOMETRY(POINT));
 INSERT INTO input VALUES ('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
                                    (2 2, 4 2, 4 4, 2 4, 2 2))',
                           'POINT(3 3)');
