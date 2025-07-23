@@ -15,10 +15,6 @@
 - ST_MAKEGRID and ST_MAKEGRIDPOINTS : add an option to order the cells starting from the upper left corner 
 - Change ST_Collect to scalar function
 - Upgrade the version of FlatGeoBuffer driver (update of guava, flatbuffer)
-- New readthedoc documentation
-
-  
-=======
 - Fix ST_MemSize typo
 - Fix doc for ST_SimplifyVW
 - Fix typo on FlatGeobuf driver
@@ -29,3 +25,4 @@
 - Fix write empty table in FGB file
 - Fix ST_FORCE2D to return 2D coordinates
 - Use central portal to publish snapshots
+- New readthedoc documentation
