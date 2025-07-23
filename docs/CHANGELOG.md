@@ -29,4 +29,3 @@
 - Fix write empty table in FGB file
 - Fix ST_FORCE2D to return 2D coordinates
 - Use central portal to publish snapshots
->>>>>>> ada74652f8193296d34d7f65d4a1a737ef9d43fd
