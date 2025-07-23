@@ -187,8 +187,7 @@ public class GeometryCoordinateDimension {
             Coordinate coord = cs.getCoordinate(i);
             switch (dimension) {
                 case 2:
-                    coord.z = Double.NaN;
-                    coords[i]=coord;
+                    coords[i]=new Coordinate(coord.x, coord.y);
                     break;
                 case 3: {
                     coord = new Coordinate(coord);

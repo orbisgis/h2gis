@@ -355,7 +355,8 @@ public class H2GISFunctions {
                 new FGBWrite(),
                 new ST_OverpassDownloader(),
                 new ST_EnvelopeAsText(),
-                new ST_AsOverpassBbox()
+                new ST_AsOverpassBbox(),
+                new ST_M()
         };
     }
 
