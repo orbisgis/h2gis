@@ -1,7 +1,5 @@
 # H2GIS
 [![GitHub](https://img.shields.io/github/license/orbisgis/h2gis.svg)](https://github.com/orbisgis/h2gis/blob/master/LICENSE.md) 
-[![codecov](https://img.shields.io/codecov/c/github/orbisgis/h2gis.svg)](https://codecov.io/gh/orbisgis/h2gis) 
-[![Codacy Badge](https://img.shields.io/codacy/grade/93899ea0675d43a2a3787ce5dd3c5595.svg)](https://www.codacy.com/app/orbisgis/h2gis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=orbisgis/h2gis&amp;utm_campaign=Badge_Grade) 
 
 ![](./images/banner/laptop_documentation.png)
 
@@ -156,6 +154,8 @@ H2GIS is based on amazing open source softwares. So we would like to thank:
 ## Team
 
 H2GIS is leaded by scientists and engineers in GIS and computer sciences from [CNRS](https://www.cnrs.fr/) within the French [Lab-STICC](https://labsticc.fr/fr) laboratory ([DECIDE](https://labsticc.fr/fr/equipes/decide) team of [Vannes](https://www.openstreetmap.org/relation/192306)).
+
+H2GIS is also actively supported by the french [UMRAE](https://www.umrae.fr/) laboratory, which contribute to code and the documentation. 
 
 You can contact the team through GitHub, or by email at `info` at `h2gis` dot `org`
 

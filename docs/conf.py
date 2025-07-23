@@ -77,6 +77,13 @@ language = 'en'
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'H2GIS doc'
 
+html_context = {
+    "display_github": True, # Add 'Edit on GitHub' link
+    "github_repo": "orbisgis/h2gis",
+    "github_version": "master",  # or "master" or any branch
+    "conf_py_path": "/docs/",  # Path in the repo to your docs root (with trailing slash)
+}
+
 
 myst_enable_extensions = [
     "attrs_inline", 

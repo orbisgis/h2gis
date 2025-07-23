@@ -73,14 +73,16 @@ If you get stuck or just have a question, please `fill an issue <http://github.c
 
 Authors
 --------------------------
-H2GIS is leaded by scientists and engineers in GIS and computer science from `CNRS <https://cnrs.fr/fr>`_ within the French `Lab-STICC <https://labsticc.fr/fr>`_ research laboratory (DECIDE team of `Vannes <https://www.openstreetmap.org/relation/192306>`_). 
+H2GIS is leaded by scientists and engineers in GIS and computer science from `CNRS <https://cnrs.fr/fr>`_ within the French `Lab-STICC <https://labsticc.fr/fr>`_ research laboratory (DECIDE team of `Vannes <https://www.openstreetmap.org/relation/192306>`_).
 H2GIS is funded by public research projects.
+
+H2GIS is also actively supported by the french `UMRAE <https://www.umrae.fr/>`_ laboratory, which contribute to code and the documentation. 
 
 Core team
 ^^^^^^^^^^^^^^^^^^^
-* `Erwan Bocher <https://github.com/ebocher>`_ : Project leader, dev & GIS guru
-* `Nicolas Fortin <https://github.com/nicolas-f>`_ : geo-contaminated dev expert
-* `Gwendall Petit <https://github.com/gpetit>`_ : GIS expert, in charge of user-side / documentation
+* `Erwan Bocher <https://github.com/ebocher>`_ : Project leader, dev & GIS guru (CNRS - Lab-STICC)
+* `Nicolas Fortin <https://github.com/nicolas-f>`_ : geo-contaminated dev expert (UGE - UMRAE)
+* `Gwendall Petit <https://github.com/gpetit>`_ : GIS expert, in charge of user-side / documentation (UGE - UMRAE)
 
 You can contact the team through `GitHub <https://github.com/orbisgis/h2gis/>`_, or by email at `info` at `h2gis` dot `org`
 
