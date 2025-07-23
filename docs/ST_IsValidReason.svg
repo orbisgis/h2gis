@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="ST_IsValidReason.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mend"
+       style="overflow:visible;">
+      <path
+         id="path3919"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) rotate(180) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path3895"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path3824"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;">
+      <path
+         id="path3845"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-5"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-1"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-7"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-5"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7071068"
+     inkscape:cx="186.28912"
+     inkscape:cy="80.301863"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer6"
+     showgrid="false"
+     inkscape:window-width="1440"
+     inkscape:window-height="824"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Fond"
+     style="display:inline">
+    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+       id="rect5041-6"
+       width="608.64923"
+       height="381.24829"
+       x="179.17538"
+       y="770.46594"
+       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_IsValidReason_2.png"
+       inkscape:export-xdpi="73.934219"
+       inkscape:export-ydpi="73.934219" />
+    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect5041"
+       width="633.64923"
+       height="322.79245"
+       x="-246.99744"
+       y="362.02557"
+       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_IsValidReason_1.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3870-7"
+       d="m 333.82369,781.78382 0,293.48028"
+       style="fill:none;stroke:#000000;stroke-width:1.89093041px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3872-6"
+       d="m 264.27859,1024.0947 411.64592,0"
+       style="fill:none;stroke:#000000;stroke-width:1.96091497px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:1.00464952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.01859816, 8.03719636;stroke-dashoffset:0;display:inline"
+       d="m 426.11359,800.28337 0,221.77653"
+       id="path3874-8"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:connector-curvature="0"
+       id="path3876-6"
+       d="m 518.41531,800.28337 0,221.77653"
+       style="fill:none;stroke:#000000;stroke-width:1.00464952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.01859816, 8.03719636;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:1.00464952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.01859816, 8.03719636;stroke-dashoffset:0;display:inline"
+       d="m 610.71694,800.28337 0,221.77653"
+       id="path3878-0"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:1.14815855;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.59263386, 9.18526775;stroke-dashoffset:0;display:inline"
+       d="m 334.13505,925.80215 345.24578,0"
+       id="path3880-0"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:connector-curvature="0"
+       id="path3882-5"
+       d="m 334.13505,827.52521 345.24578,0"
+       style="fill:none;stroke:#000000;stroke-width:1.14815855;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.59263386, 9.18526775;stroke-dashoffset:0;display:inline" />
+    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       transform="matrix(1.0130589,0,0,1.0130589,134.22071,383.57772)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot3886-4"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3888-5"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3890-1" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3892-4">x</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       xml:space="preserve"
+       id="flowRoot3894-2"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(1.0130589,0,0,1.0130589,-198.1734,166.20734)"><flowRegion
+         id="flowRegion3896-5"><rect
+           id="rect3898-0"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3900-6"
+         style="font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       xml:space="preserve"
+       id="flowRoot3902-8"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.60158373,0,0,0.640501,-11.125807,633.08791)"><flowRegion
+         id="flowRegion3904-0"><rect
+           id="rect3906-8"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3908-9"
+         style="font-style:italic">0,0</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path3918-3"
+       d="m 379.96888,800.28337 0,221.77653"
+       style="fill:none;stroke:#000000;stroke-width:1.00464952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.01859816, 8.03719636;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.00464952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.01859816, 8.03719636;stroke-dashoffset:0;display:inline"
+       d="m 472.27056,800.28337 0,221.77653"
+       id="path3920-0"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3922-2"
+       d="m 564.57223,800.28337 0,221.77653"
+       style="fill:none;stroke:#000000;stroke-width:1.00464952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.01859816, 8.03719636;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3929-3"
+       d="m 334.13505,974.95141 345.24578,0"
+       style="fill:none;stroke:#000000;stroke-width:1.14815855;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.59263386, 9.18526775;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.14815855;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.59263386, 9.18526775;stroke-dashoffset:0;display:inline"
+       d="m 334.13505,876.67446 345.24578,0"
+       id="path3931-1"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:1.00464952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.01859816, 8.03719636;stroke-dashoffset:0;display:inline"
+       d="m 656.89087,800.28337 0,221.77653"
+       id="path3997-4"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       transform="matrix(0.66698151,0,0,0.66698151,75.791752,639.235)"
+       style="font-size:26.9872551px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot3947-0"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3949-2"><rect
+           y="654.9682"
+           x="156.2706"
+           height="98.139641"
+           width="915.24963"
+           id="rect3951-4"
+           style="font-size:26.9872551px;text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         style="font-size:26.9872551px;font-style:italic;text-align:center;text-anchor:middle"
+         id="flowPara3088-7">OGC Geometry model: Ring Self-intersection at or near </flowPara><flowPara
+         style="font-size:26.9872551px;font-style:italic;text-align:center;text-anchor:middle"
+         id="flowPara3133">POINT(3.0, 0.0, NaN)</flowPara><flowPara
+         style="font-size:26.9872551px;font-style:italic;text-align:center;text-anchor:middle"
+         id="flowPara4061"> ESRI SDE Model: Valid Geometry</flowPara></flowRoot>    <path
+       style="opacity:0.7;fill:#aadcff;fill-opacity:1;stroke:#000000;stroke-width:2.37736011px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 333.87943,875.90044 472.35396,1023.3617 610.86382,877.66357 z m 91.60458,50.33567 94.08368,0.0284 -47.18687,97.11649 z"
+       id="path4038"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="112.95566"
+       y="390.36218"
+       id="text4219"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="112.95566"
+         y="390.36218"
+         id="tspan4223">POLYGON((1 1, 1 6, 5 1, 1 1), </tspan><tspan
+         sodipodi:role="line"
+         x="112.95566"
+         y="410.36218"
+         id="tspan4227">                (3 4, 3 5, 4 4, 3 4))</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       x="-230.03125"
+       y="400.36218"
+       id="text4219-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="-230.03125"
+         y="400.36218"
+         id="tspan4227-7">POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffaa21;fill-opacity:0.37647059;stroke:#ffaa21;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 6;stroke-dashoffset:0;display:inline"
+       id="path4255-9"
+       sodipodi:cx="-52.4375"
+       sodipodi:cy="562.79968"
+       sodipodi:rx="10.9375"
+       sodipodi:ry="10.9375"
+       d="m -41.5,562.79968 a 10.9375,10.9375 0 1 1 -21.875,0 10.9375,10.9375 0 1 1 21.875,0 z"
+       transform="matrix(1.5026178,0,0,1.5026178,551.29352,177.18936)" />
+    <path
+       style="fill:#aadcff;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1;opacity:0.69999999999999996"
+       d="m -198,561.86218 121,41 79.5,-141 1,100.5 z"
+       id="path4295"
+       inkscape:connector-curvature="0" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffaa21;fill-opacity:0.37647058999999999;stroke:#ffaa21;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6,6;stroke-dashoffset:0"
+       id="path4255"
+       sodipodi:cx="-52.4375"
+       sodipodi:cy="562.79968"
+       sodipodi:rx="10.9375"
+       sodipodi:ry="10.9375"
+       d="m -41.5,562.79968 a 10.9375,10.9375 0 1 1 -21.875,0 10.9375,10.9375 0 1 1 21.875,0 z"
+       transform="translate(-1.7677669,-0.70710678)" />
+  </g>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3870"
+       d="m -197.30453,423.96555 0,189.28306"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3872"
+       d="m -227.46423,562.61079 268.22526,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m -157.26696,431.19434 0,182.50318"
+       id="path3874"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:connector-curvature="0"
+       id="path3876"
+       d="m -117.26068,431.19434 0,182.50318"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m -77.25441,431.19434 0,182.50318"
+       id="path3878"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m -197.17369,522.52218 231.72917,0"
+       id="path3880"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:connector-curvature="0"
+       id="path3882"
+       d="m -197.17369,482.53709 231.72917,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m -197.17369,442.55201 231.72917,0"
+       id="path3884"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       transform="matrix(0.61674087,0,0,0.61674087,-253.5188,160.07324)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3886"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3888"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3890" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3892">x</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       xml:space="preserve"
+       id="flowRoot3894"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,-521.63817,24.911741)"><flowRegion
+         id="flowRegion3896"><rect
+           id="rect3898"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3900"
+         style="font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       xml:space="preserve"
+       id="flowRoot3902"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.26110367,0,0,0.26110367,-347.0848,403.21516)"><flowRegion
+         id="flowRegion3904"><rect
+           id="rect3906"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3908"
+         style="font-style:italic">0,0</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path3918"
+       d="m -177.26746,431.19434 0,182.50318"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m -137.26117,431.19434 0,182.50318"
+       id="path3920"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3922"
+       d="m -97.2549,431.19434 0,182.50318"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3929"
+       d="m -197.17369,542.51913 231.72917,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m -197.17369,502.53404 231.72917,0"
+       id="path3931"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:connector-curvature="0"
+       id="path3999"
+       d="m -17.23498,431.19434 0,182.50318"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3933"
+       d="m -197.17369,462.54897 231.72917,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3971"
+       d="m -197.17369,582.57686 231.72917,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m -197.17369,602.57381 231.72917,0"
+       id="path3977"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3991"
+       d="m -37.24076,431.19434 0,182.50318"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 2.7655103,431.19434 0,182.50318"
+       id="path3993"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m -57.24126,431.19434 0,182.50318"
+       id="path3997"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 22.77129,431.19434 0,182.50318"
+       id="path4001"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.19050586px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none"
+       d="m 158.59491,423.05199 0,213.13633"
+       id="path4113"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.95333916px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 120.51244,607.62532 212.66674,0"
+       id="path4115"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4117"
+       d="m 208.97402,432.42458 0,176.61201"
+       style="fill:none;stroke:#000000;stroke-width:0.66233003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.64932005, 5.2986401;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.66233003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.64932005, 5.2986401;stroke-dashoffset:0"
+       d="m 259.35017,432.42458 0,176.61201"
+       id="path4119"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4121"
+       d="m 309.72627,432.42458 0,176.61201"
+       style="fill:none;stroke:#000000;stroke-width:0.66233003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.64932005, 5.2986401;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4123"
+       d="m 158.68566,557.23685 163.43083,0"
+       style="fill:none;stroke:#000000;stroke-width:0.56565452;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.26261788, 4.52523578;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.56565452;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.26261788, 4.52523578;stroke-dashoffset:0"
+       d="m 158.68566,506.84681 163.43083,0"
+       id="path4125"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4127"
+       d="m 158.68566,456.45677 163.43083,0"
+       style="fill:none;stroke:#000000;stroke-width:0.56565452;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.26261788, 4.52523578;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4129"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,4.4812,215.07324)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997"><flowRegion
+         id="flowRegion4131"><rect
+           id="rect4133"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara4135"
+         style="font-style:italic">x</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,-167.63817,45.911741)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot4137"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997"><flowRegion
+         id="flowRegion4139"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4141" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4143">y</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.32855377,0,0,0.32855377,-29.856846,407.05283)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot4145"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-ydpi="84.949997"><flowRegion
+         id="flowRegion4147"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4149" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4151">0,0</flowPara></flowRoot>    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.66233003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.64932005, 5.2986401;stroke-dashoffset:0"
+       d="m 183.78929,432.42458 0,176.61201"
+       id="path4153"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:connector-curvature="0"
+       id="path4155"
+       d="m 234.16541,432.42458 0,176.61201"
+       style="fill:none;stroke:#000000;stroke-width:0.66233003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.64932005, 5.2986401;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.66233003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.64932005, 5.2986401;stroke-dashoffset:0"
+       d="m 284.54155,432.42458 0,176.61201"
+       id="path4157"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.56565452;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.26261788, 4.52523578;stroke-dashoffset:0"
+       d="m 158.68566,582.43744 163.43083,0"
+       id="path4159"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       inkscape:connector-curvature="0"
+       id="path4161"
+       d="m 158.68566,532.04739 163.43083,0"
+       style="fill:none;stroke:#000000;stroke-width:0.56565452;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.26261788, 4.52523578;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       style="fill:none;stroke:#000000;stroke-width:0.56565452;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.26261788, 4.52523578;stroke-dashoffset:0"
+       d="m 158.68566,481.65737 163.43083,0"
+       id="path4163"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Origine"
+     style="display:inline">
+    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       transform="matrix(0.66698151,0,0,0.66698151,-373.72956,197.5429)"
+       style="font-size:23.98867035px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3947"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3949"><rect
+           y="654.9682"
+           x="156.2706"
+           height="125.12686"
+           width="558.41809"
+           id="rect3951"
+           style="font-size:23.98867035px;text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         style="font-size:23.98867035px;font-style:italic;text-align:center;text-anchor:middle"
+         id="flowPara3088">Self-intersection at or near </flowPara><flowPara
+         style="font-size:23.98867035px;font-style:italic;text-align:center;text-anchor:middle"
+         id="flowPara3131">POINT(7.142857142857143, 0.0, NaN)</flowPara></flowRoot>    <path
+       style="opacity:0.7;fill:#aadcff;fill-opacity:1;stroke:#000000;stroke-width:1.25832689px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 183.53627,582.61714 284.20242,582.14527 183.53627,456.31258 z"
+       id="path4181"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       style="opacity:0.7;fill:#aadcff;fill-opacity:1;stroke:#000000;stroke-width:1.25832689px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 234.18392,481.47912 0.1573,25.32383 25.32382,-0.1573 z"
+       id="path4183"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <flowRoot
+       inkscape:export-ydpi="84.949997"
+       inkscape:export-xdpi="84.949997"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsValid.png"
+       transform="matrix(0.66698151,0,0,0.66698151,-31.086088,197.5429)"
+       style="font-size:23.98867035px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot3947-2"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3949-9"><rect
+           y="654.9682"
+           x="156.2706"
+           height="102.63751"
+           width="465.46204"
+           id="rect3951-8"
+           style="font-size:23.98867035px;text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         style="font-size:23.98867035px;font-style:italic;text-align:center;text-anchor:middle"
+         id="flowPara4217">Hole lies outside shell at or near POINT(3.0, 4.0, NaN)</flowPara></flowRoot>  </g>
+</svg>
