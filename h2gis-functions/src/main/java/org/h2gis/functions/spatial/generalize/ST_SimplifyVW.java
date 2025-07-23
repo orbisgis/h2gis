@@ -27,8 +27,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.simplify.VWSimplifier;
 
 /**
- * Returns a simplified version of the given geometry using the Douglas-Peuker
- * algorithm.
+ * Returns a simplified version of the given geometry using the Visvalingam-Whyatt algorithm.
  *
  * @author Maël PHILIPPE
  */
@@ -36,7 +35,7 @@ public class ST_SimplifyVW extends DeterministicScalarFunction {
 
     public ST_SimplifyVW() {
         addProperty(PROP_REMARKS,
-                "Returns a simplified version of the given geometry using the Douglas-Peuker algorithm.");
+                "Returns a simplified version of the given geometry using the Visvalingam-Whyatt algorithm.");
     }
 
     @Override
@@ -55,7 +54,6 @@ public class ST_SimplifyVW extends DeterministicScalarFunction {
         if (geom == null) {
             return null;
         }
-
         if (distanceTolerance < 0.0) {
             throw new IllegalArgumentException("Area must be non-negative");
         } else {
@@ -63,7 +61,6 @@ public class ST_SimplifyVW extends DeterministicScalarFunction {
             simp.setDistanceTolerance(Math.sqrt(distanceTolerance));
             return simp.getResultGeometry();
         }
-
     }
 
 }

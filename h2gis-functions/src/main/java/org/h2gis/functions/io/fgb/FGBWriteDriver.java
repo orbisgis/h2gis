@@ -130,10 +130,12 @@ public class FGBWriteDriver {
                     int recordCount = 0;
                     rs.last();
                     recordCount = rs.getRow();
-                    Object value = rs.getObject(spatialFieldNameAndIndex.second());
-                    if(value!=null){
-                        Geometry geom = (Geometry) value;
-                        srid = geom.getSRID();
+                    if(recordCount>0) {
+                        Object value = rs.getObject(spatialFieldNameAndIndex.second());
+                        if (value != null) {
+                            Geometry geom = (Geometry) value;
+                            srid = geom.getSRID();
+                        }
                     }
                     rs.beforeFirst();
                     ProgressVisitor copyProgress = progress.subProcess(recordCount);
@@ -152,7 +154,7 @@ public class FGBWriteDriver {
                 if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
                 } else if (fileName.exists()) {
-                    throw new IOException("The geojson file already exist.");
+                    throw new IOException("The flatgeobuffer file already exist.");
                 }
                 String filePath = fileName.getName();
                 final int dotIndex = filePath.lastIndexOf('.');
