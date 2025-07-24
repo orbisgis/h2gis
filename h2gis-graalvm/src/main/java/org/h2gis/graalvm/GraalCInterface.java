@@ -409,12 +409,10 @@ public class GraalCInterface {
             // On parcourt les résultats (attention : index de la colonne est fixé à 1 ici)
             while (rs.next()) {
                 int colIndex = 1;
-                Object val = rs.getObject(1); // tu peux changer la colonne si besoin
+                Object val = rs.getObject(1);
                 int colType =  rs.getMetaData().getColumnType(colIndex);
 
                 if (val == null) {
-                    // Si null, écrire une valeur par défaut (ici 0 pour numérique, "" pour string)
-                    // Ajuste selon ton type réel attendu
                     if (val instanceof Number) {
                         writeTypedValue(valueBuffer, 0, colType);
                     } else {
