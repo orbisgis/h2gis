@@ -66,7 +66,7 @@ public class GraalCInterface {
     /** Cached "null" byte array for efficient reuse */
     private static final byte[] NULL_BYTES = "null".getBytes(StandardCharsets.UTF_8);
 
-    static final Map<Long, Long> buffers = new ConcurrentHashMap<>();
+    private static ObjectHandles globalHandles = ObjectHandles.getGlobal();
 
 
     static {
@@ -387,6 +387,7 @@ public class GraalCInterface {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
+                // Si le pointeur sizeOutPtr est valide, écrire 0 dedans
                 if (sizeOutPtr.rawValue() != 0L) {
                     unsafe.putLong(sizeOutPtr.rawValue(), 0L);
                 }
@@ -395,65 +396,67 @@ public class GraalCInterface {
 
             ResultSetMetaData meta = rs.getMetaData();
             int colCount = meta.getColumnCount();
-            if (colCount < 1 || index < 0 || index >= colCount) {
+            if (colCount < 1) {
                 if (sizeOutPtr.rawValue() != 0L) {
                     unsafe.putLong(sizeOutPtr.rawValue(), 0L);
                 }
                 return WordFactory.zero();
             }
 
-            int colIndex = index + 1; // JDBC column indexes start at 1
             ByteArrayOutputStream valueBuffer = new ByteArrayOutputStream();
             int rowCount = 0;
 
+            // On parcourt les résultats (attention : index de la colonne est fixé à 1 ici)
             while (rs.next()) {
-                Object val = rs.getObject(colIndex);
-                int colType = meta.getColumnType(colIndex);
+                int colIndex = 1;
+                Object val = rs.getObject(1);
+                int colType =  rs.getMetaData().getColumnType(colIndex);
 
                 if (val == null) {
-                    if (colType == java.sql.Types.INTEGER || colType == java.sql.Types.BIGINT ||
-                            colType == java.sql.Types.FLOAT || colType == java.sql.Types.DOUBLE) {
+                    if (val instanceof Number) {
                         writeTypedValue(valueBuffer, 0, colType);
                     } else {
                         writeTypedValue(valueBuffer, "", colType);
                     }
                 } else {
+
                     writeTypedValue(valueBuffer, val, colType);
                 }
-
                 rowCount++;
             }
 
             byte[] arr = valueBuffer.toByteArray();
 
-            // Store the row count
+            // Écrire le nombre de lignes dans la mémoire pointée par sizeOutPtr, si valide
             if (sizeOutPtr.rawValue() != 0L) {
                 unsafe.putLong(sizeOutPtr.rawValue(), rowCount);
             }
 
-            // Allocate native memory and store content
+            // Allouer la mémoire native pour le buffer
             long addr = unsafe.allocateMemory(arr.length);
+            System.out.println("arr length : " + arr.length);
+            System.out.println("arr length / 8 : " + (arr.length/8));
+            System.out.println("rowcount : " + rowCount);
+
+
+            // Copier les données dans la mémoire native allouée
             for (int i = 0; i < arr.length; i++) {
                 unsafe.putByte(addr + i, arr[i]);
             }
 
-            // Register memory to allow safe free and optional buffer size query
-            buffers.put(addr, (long) arr.length); // static Map<Long, Integer>
-
-            System.out.println("arr length : " + arr.length);
-            System.out.println("rowcount : " + rowCount);
-
+            // Retourner un pointeur vers cette mémoire (WordBase)
             return WordFactory.pointer(addr);
 
         } catch (Exception e) {
             System.err.println("Error in h2gis_fetch_row: " + e.getMessage());
+
+            // En cas d'erreur, écrire 0 dans sizeOutPtr si valide
             if (sizeOutPtr.rawValue() != 0L) {
                 unsafe.putLong(sizeOutPtr.rawValue(), 0L);
             }
             return WordFactory.zero();
         }
     }
-
 
     @CEntryPoint(name = "h2gis_get_column_types")
     public static WordBase h2gisGetColumnTypes(IsolateThread thread, long queryHandle, WordBase colCountOut) {
@@ -615,14 +618,11 @@ public class GraalCInterface {
      * Frees a result buffer previously allocated by h2gis_fetch_rows.
      */
     @CEntryPoint(name = "h2gis_free_result_buffer")
-    public static void h2gisFreeResultBuffer(IsolateThread thread, WordBase ptr) {
-        long addr = ptr.rawValue();
-        if (addr != 0) {
-            unsafe.freeMemory(addr);
-            buffers.remove(addr);
+    public static void freeResultBuffer(IsolateThread thread, WordBase ptr) {
+        if (ptr.rawValue() != 0L) {
+            unsafe.freeMemory(ptr.rawValue());
         }
     }
-
 
 
 
