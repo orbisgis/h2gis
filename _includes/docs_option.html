@@ -1,8 +1,0 @@
-{% assign items = include.items %}
-
-{% for item in items %}
-  {% assign menu_tuple = item | split: ',' %}
-  {% assign version = page.url | replace_first:'/docs/','' | split:"/" | first %}
-  {% assign item_url = menu_tuple[0] | prepend:"/" | prepend:version | prepend:"/docs/" | append:"/" %}
-  <option value="{{ site.url }}{{ item_url }}">{{ menu_tuple[1] }}</option>
-{% endfor %}
