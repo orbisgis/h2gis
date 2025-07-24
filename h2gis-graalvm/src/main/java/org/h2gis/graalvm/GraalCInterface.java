@@ -14,7 +14,10 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.JDBCUtilities;
 import sun.misc.Unsafe;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Map;
@@ -62,6 +65,8 @@ public class GraalCInterface {
 
     /** Cached "null" byte array for efficient reuse */
     private static final byte[] NULL_BYTES = "null".getBytes(StandardCharsets.UTF_8);
+
+    private static ObjectHandles globalHandles = ObjectHandles.getGlobal();
 
 
     static {
@@ -151,6 +156,8 @@ public class GraalCInterface {
      */
     @CEntryPoint(name = "h2gis_fetch")
     public static long h2gisFetch(IsolateThread thread, long connectionHandle, CCharPointer queryPointer) {
+
+
         if (queryPointer.isNull()) {
             logAndSetError("Null pointer received for query", null);
             return 0;
@@ -372,6 +379,239 @@ public class GraalCInterface {
             System.err.println("Error in h2gis_fetch_rows: " + e.getMessage());
             if (sizeOutPtr.rawValue() != 0L) unsafe.putLong(sizeOutPtr.rawValue(), 0L);
             return WordFactory.zero();
+        }
+    }
+
+    @CEntryPoint(name = "h2gis_fetch_row")
+    public static WordBase h2gisFetchRow(IsolateThread thread, long queryHandle, int index, WordBase sizeOutPtr) {
+        try {
+            ResultSet rs = results.get(queryHandle);
+            if (rs == null) {
+                // Si le pointeur sizeOutPtr est valide, écrire 0 dedans
+                if (sizeOutPtr.rawValue() != 0L) {
+                    unsafe.putLong(sizeOutPtr.rawValue(), 0L);
+                }
+                return WordFactory.zero();
+            }
+
+            ResultSetMetaData meta = rs.getMetaData();
+            int colCount = meta.getColumnCount();
+            if (colCount < 1) {
+                if (sizeOutPtr.rawValue() != 0L) {
+                    unsafe.putLong(sizeOutPtr.rawValue(), 0L);
+                }
+                return WordFactory.zero();
+            }
+
+            ByteArrayOutputStream valueBuffer = new ByteArrayOutputStream();
+            int rowCount = 0;
+
+            // On parcourt les résultats (attention : index de la colonne est fixé à 1 ici)
+            while (rs.next()) {
+                int colIndex = 1;
+                Object val = rs.getObject(1); // tu peux changer la colonne si besoin
+                int colType =  rs.getMetaData().getColumnType(colIndex);
+
+                if (val == null) {
+                    // Si null, écrire une valeur par défaut (ici 0 pour numérique, "" pour string)
+                    // Ajuste selon ton type réel attendu
+                    if (val instanceof Number) {
+                        writeTypedValue(valueBuffer, 0, colType);
+                    } else {
+                        writeTypedValue(valueBuffer, "", colType);
+                    }
+                } else {
+
+                    writeTypedValue(valueBuffer, val, colType);
+                }
+                rowCount++;
+            }
+
+            byte[] arr = valueBuffer.toByteArray();
+
+            // Écrire le nombre de lignes dans la mémoire pointée par sizeOutPtr, si valide
+            if (sizeOutPtr.rawValue() != 0L) {
+                unsafe.putLong(sizeOutPtr.rawValue(), rowCount);
+            }
+
+            // Allouer la mémoire native pour le buffer
+            long addr = unsafe.allocateMemory(arr.length);
+            System.out.println("arr length : " + arr.length);
+            System.out.println("arr length / 8 : " + (arr.length/8));
+            System.out.println("rowcount : " + rowCount);
+
+
+            // Copier les données dans la mémoire native allouée
+            for (int i = 0; i < arr.length; i++) {
+                unsafe.putByte(addr + i, arr[i]);
+            }
+
+            // Retourner un pointeur vers cette mémoire (WordBase)
+            return WordFactory.pointer(addr);
+
+        } catch (Exception e) {
+            System.err.println("Error in h2gis_fetch_row: " + e.getMessage());
+
+            // En cas d'erreur, écrire 0 dans sizeOutPtr si valide
+            if (sizeOutPtr.rawValue() != 0L) {
+                unsafe.putLong(sizeOutPtr.rawValue(), 0L);
+            }
+            return WordFactory.zero();
+        }
+    }
+
+    @CEntryPoint(name = "h2gis_get_column_types")
+    public static WordBase h2gisGetColumnTypes(IsolateThread thread, long queryHandle, WordBase colCountOut) {
+        try {
+            ResultSet rs = results.get(queryHandle);
+            if (rs == null) {
+                // Si le pointeur sizeOutPtr est valide, écrire 0 dedans
+                if (colCountOut.rawValue() != 0L) {
+                    unsafe.putLong(colCountOut.rawValue(), 0L);
+                }
+                return WordFactory.zero();
+            }
+
+            ResultSetMetaData meta = rs.getMetaData();
+            int colCount = meta.getColumnCount();
+            if (colCount < 1) {
+                if (colCountOut.rawValue() != 0L) {
+                    unsafe.putLong(colCountOut.rawValue(), 0L);
+                }
+                return WordFactory.zero();
+            }
+
+            ByteBuffer buffer = ByteBuffer.allocate((colCount) * 4).order(ByteOrder.LITTLE_ENDIAN);
+
+
+            // Then: write each type code
+            for (int i = 1; i <= colCount; i++) {
+                String sqlTypeName = meta.getColumnTypeName(i);
+                int typeCode = meta.getColumnType(i);
+
+                switch (typeCode) {
+                    case Types.INTEGER:
+                    case Types.SMALLINT:
+                    case Types.TINYINT:
+                        typeCode = 1; // INT
+                        break;
+                    case Types.BIGINT:
+                        System.out.println("BIGINT detected");
+                        typeCode = 2; // LONG (add this line)
+                        break;
+                    case Types.FLOAT:
+                    case Types.REAL:
+                    case Types.DOUBLE:
+                    case Types.NUMERIC:
+                    case Types.DECIMAL:
+                        typeCode = 3; // FLOAT/DOUBLE
+                        break;
+                    case Types.BOOLEAN:
+                    case Types.BIT:
+                        typeCode = 4; // BOOL
+                        break;
+                    case Types.CHAR:
+                    case Types.VARCHAR:
+                    case Types.LONGVARCHAR:
+                        typeCode = 5; // STRING
+                        break;
+                    case Types.DATE:
+                        typeCode = 6;
+                        break;
+                    default:
+                        if(sqlTypeName.equals("GEOMETRY")) {
+                            typeCode = 7;
+                        }else{
+                            typeCode = 99;
+                        }
+                        break;
+                }
+
+                buffer.putInt(typeCode);
+            }
+
+            byte[] arr = buffer.array();
+
+            if (colCountOut.rawValue() != 0L) {
+                unsafe.putLong(colCountOut.rawValue(), colCount);
+            }
+
+            // Copy to native memory
+            long addr = unsafe.allocateMemory(arr.length);
+            for (int i = 0; i < arr.length; i++) {
+                unsafe.putByte(addr + i, arr[i]);
+            }
+
+            return WordFactory.pointer(addr);
+
+        } catch (Exception e) {
+            System.err.println("Error in h2gis_get_column_types: " + e.getMessage());
+            return WordFactory.zero();
+        }
+    }
+
+
+    private static void writeTypedValue(ByteArrayOutputStream out, Object val, int typeCode) throws IOException {
+        ByteBuffer bb4 = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer bb8 = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+
+        switch (typeCode) {
+            case Types.INTEGER:
+            case Types.SMALLINT:
+            case Types.TINYINT:
+                int intVal = (val == null) ? 0 : ((Number) val).intValue();
+                out.write(bb4.putInt(intVal).array());
+                bb4.clear();
+                break;
+
+            case Types.BIGINT:
+                long longVal = (val == null) ? 0L : ((Number) val).longValue();
+                out.write(bb8.putLong(longVal).array());
+                bb8.clear();
+                break;
+
+            case Types.FLOAT:
+            case Types.REAL:
+            case Types.DOUBLE:
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+                double doubleVal = (val == null) ? 0.0 : ((Number) val).doubleValue();
+                out.write(bb8.putDouble(doubleVal).array());
+                bb8.clear();
+                break;
+
+            case Types.BOOLEAN:
+            case Types.BIT:
+                boolean boolVal = (val != null) && ((Boolean) val);
+                out.write(boolVal ? 1 : 0);
+                break;
+
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.DATE:
+                // fallthrough
+            default:
+                String str = (val != null) ? val.toString() : "";
+                byte[] utf8 = str.getBytes(StandardCharsets.UTF_8);
+                out.write(bb4.putInt(utf8.length).array());
+                bb4.clear();
+                out.write(utf8);
+                break;
+        }
+    }
+
+
+
+
+    @CEntryPoint(name = "h2gis_free_result_set")
+    public static long freeResultResultSet(IsolateThread thread, long queryHandle) {
+        try {
+            results.get(queryHandle).close();
+            return 0;
+        } catch (SQLException e) {
+            System.err.println(e.toString());
+            return 1;
         }
     }
 

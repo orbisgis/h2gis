@@ -4,11 +4,20 @@ This document explains how H2GIS was compiled as a native binary using GraalVM a
 
 ## Prerequisites
 ### Linux
-On Linux, to manipulate the native compilation you need to install [graalvm 22.3.3](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.3).
+On Linux, to manipulate the native compilation you need to install [graalvm EE 22.3.3](https://download.oracle.com/otn/utilities_drivers/oracle-labs/graalvm-ee-java11-linux-amd64-22.3.3.tar.gz).
+Then you need to get a token with 
+```bash
+bash <(curl -sL https://get.graalvm.org/ee-token)
+```
+You will receive a mail to activate your token.
 
+Then run this to install the native-image graalvm plugin.
+```bash
+gu install native-image
+```
 
 ### Windows
-On windows, you need to install maven, [graalvm 22.3.3](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.3) and visual studio with c++ for desktop.
+On windows, you need to install maven, [graalvm EE 22.3.3]https://download.oracle.com/otn/utilities_drivers/oracle-labs/graalvm-ee-java11-windows-amd64-22.3.3.zip) and visual studio with c++ for desktop.
 Then, you need to add this to you path :
 ```bash
 C:\Program Files\Microsoft Visual Studio\<vs_version>\Community\VC\Tools\MSVC\<vs_version>\bin\Hostx64\x64

@@ -123,26 +123,26 @@
                 </configuration>
             </plugin>
             <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
+            <?ignore <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <executions>
                     <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-            <phase>package</phase> <!-- bind to the packaging phase -->
-                       <goals>
-                            <goal>single</goal>
-                        </goals>
+                    <id>make-assembly</id> ?> <!-- this is used for inheritance merges -->
+            <!--  <phase>package</phase> bind to the packaging phase -->
+            <?ignore <goals>
+                    <goal>single</goal>
+                    </goals>
                     </execution>
-                </executions>
-                <configuration>
-                   <finalName>h2gis-standalone</finalName>
-                    <descriptors>
-            <descriptor>src/main/assembly/bin.xml</descriptor> <!--  Binary Zip-->
-            <descriptor>src/main/assembly/project.xml</descriptor><!-- Sources -->
-                    </descriptors>
-                </configuration>
-            </plugin>
+                    </executions>
+                    <configuration>
+                    <finalName>h2gis-standalone</finalName>
+                    <descriptors>?>
+            <!-- <descriptor>src/main/assembly/bin.xml</descriptor> Binary Zip-->
+            <!-- <descriptor>src/main/assembly/project.xml</descriptor> Sources -->
+            <?ignore </descriptors>
+                    </configuration>
+                    </plugin> ?>
 
 
 
@@ -179,28 +179,32 @@
                         <version>${native.maven.plugin.version}</version>
                         <executions>
                             <!-- Native executable -->
-                           <execution>
-                                <id>build-native-exec</id>
-                                <phase>package</phase>
-                                <goals>
+                            <?ignore <execution>
+                                    <id>build-native-exec</id>
+                                    <phase>package</phase>
+                                    <goals>
                                     <goal>build</goal>
-                                </goals>
-                                <configuration>
+                                    </goals>
+                                    <configuration>
                                     <mainClass>org.h2.tools.Console</mainClass>
                                     <imageName>${imageName}</imageName>
                                     <fallback>false</fallback>
                                     <buildArgs>
-                                        <arg>-O3</arg>
-                                        <arg>-H:Optimize=2</arg>
-                                        <arg>--no-fallback</arg>
-                                        <arg>--report-unsupported-elements-at-runtime</arg>
-                                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-                                        <arg>-H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json</arg>
-                                        <arg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</arg>
-                                        <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
+                                    <arg>-O3</arg>
+                                    <arg>--gc=G1</arg>
+                                    <arg>--pgo-instrument</arg>
+                                    <arg>--enable-sbom</arg>
+                                    <arg>--enable-url-protocols=http,https,tcp</arg>
+                                    <arg>--install-exit-handlers</arg>
+                                    <arg>--no-fallback</arg>
+                                    <arg>--report-unsupported-elements-at-runtime</arg>
+                                    <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+                                    <arg>-H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json</arg>
+                                    <arg>-H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json</arg>
+                                    <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
                                     </buildArgs>
-                                </configuration>
-                            </execution>
+                                    </configuration>
+                                    </execution>?>
 
                             <!-- Native shared library -->
                             <execution>
@@ -216,9 +220,14 @@
                                     <buildArgs>
                                         <arg>--shared</arg>
                                         <arg>-O3</arg>
+                                        <arg>--gc=G1</arg>
+                                        <arg>--pgo-instrument</arg>
+                                        <arg>--enable-sbom</arg>
                                         <arg>--no-fallback</arg>
                                         <arg>--report-unsupported-elements-at-runtime</arg>
                                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+                                        <arg>--enable-url-protocols=http,https,tcp</arg>
+                                        <arg>--install-exit-handlers</arg>
                                         <arg>--verbose</arg>
                                         <arg>-H:+SourceLevelDebug</arg>
                                         <arg>-H:+PrintAnalysisCallTree</arg>
@@ -230,19 +239,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                </plugins>
-            </build>
-        </profile>
 
-        <profile>
-            <id>strip-unix</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -250,7 +247,7 @@
                         <executions>
                             <execution>
                                 <id>strip-native-binary</id>
-                                <phase>install</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -262,12 +259,18 @@
                                             if [ -f "${project.build.directory}/${imageName}.so" ]; then strip "${project.build.directory}/${imageName}.so"; fi
                                         </argument>
                                     </arguments>
+                                    <skip>${os.name.startsWith("Windows")}</skip>
                                 </configuration>
                             </execution>
                         </executions>
                     </plugin>
+
+
+
                 </plugins>
             </build>
         </profile>
     </profiles>
+
+
 </project>
