@@ -16,6 +16,7 @@ Currently supported:
 
 * [shapefile][wikishp] (`.shp`)
 * [dBase][wikidbf] file (`.dbf`)
+* [flatgeobuffer](https://flatgeobuf.org/) (`.fgb`)
 
 <div class="note warning">
   <h5>If the source file is moved or deleted, the special table will still
@@ -29,6 +30,7 @@ Currently supported:
 ```sql
 CALL FILE_TABLE('/home/user/myshapefile.shp', 'tableName');
 CALL FILE_TABLE('/home/user/dbase.dbf', 'tableName');
+CALL FILE_TABLE('/home/user/myflatgeobuffer.fgb', 'tableName');
 ```
 
 ### Auto detect
@@ -63,7 +65,7 @@ Answer:
 
 ## See also
 
-* [`SHPRead`](../SHPRead), [`DBFRead`](../DBFRead)
+* [`SHPRead`](../SHPRead), [`DBFRead`](../DBFRead), [`FGBRead`](../FGBRead)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/io/DriverManager.java" target="_blank">Source code</a>
 
 [wikidbf]: http://en.wikipedia.org/wiki/DBase
