@@ -1,5 +1,7 @@
 package org.h2gis.graalvm;
 
+import org.h2.value.ValueGeometry;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -12,6 +14,8 @@ import java.util.List;
  * A wrapper class for representing the content of a JDBC {@link ResultSet} in memory,
  * allowing for structured access to column data and metadata. Used for transferring
  * data from JDBC to native code via GraalVM.
+ *
+ * @author Maël PHILIPPE
  */
 public class ResultSetWrapper {
     private final List<ColumnWrapper> columns = new ArrayList<>();
@@ -56,8 +60,8 @@ public class ResultSetWrapper {
     /**
      * Adds a new column to the result set using its name and SQL type.
      *
-     * @param name the name of the column
-     * @param type the SQL type (from {@link java.sql.Types})
+     * @param name     the name of the column
+     * @param type     the SQL type (from {@link java.sql.Types})
      * @param typeName the name of the SQL type
      */
     public void addColumn(String name, int type, String typeName) {
@@ -94,26 +98,31 @@ public class ResultSetWrapper {
      * @return a new {@code ResultSetWrapper} containing the extracted data
      */
     public static ResultSetWrapper from(ResultSet rs) {
-        try{
-        ResultSetWrapper wrapper = new ResultSetWrapper();
-        ResultSetMetaData meta = rs.getMetaData();
-        int colCount = meta.getColumnCount();
+        try {
+            ResultSetWrapper wrapper = new ResultSetWrapper();
+            ResultSetMetaData meta = rs.getMetaData();
+            int colCount = meta.getColumnCount();
 
-        for (int i = 1; i <= colCount; i++) {
-            ColumnWrapper column = new ColumnWrapper(meta.getColumnName(i), meta.getColumnType(i), meta.getColumnTypeName(i));
-            wrapper.addColumn(column);
-        }
+            for (int i = 1; i <= colCount; i++) {
+                ColumnWrapper column = new ColumnWrapper(meta.getColumnName(i), meta.getColumnType(i), meta.getColumnTypeName(i).toLowerCase());
+                wrapper.addColumn(column);
+            }
 
-        int rowCounter = 0;
-        while (rs.next()) {
+            int rowCounter = 0;
+            while (rs.next()) {
 
                 for (int i = 1; i <= colCount; i++) {
-                    wrapper.columns.get(i - 1).addValue(rs.getObject(i));
+                    if (wrapper.columns.get(i - 1).getTypeName().startsWith("geometry")) {
+                        Object obj = rs.getObject(i);
+                        wrapper.columns.get(i - 1).addValue(ValueGeometry.getFromGeometry(obj).getBytes());
+                    } else {
+                        wrapper.columns.get(i - 1).addValue(rs.getObject(i));
+                    }
                 }
                 rowCounter++;
-        }
-        wrapper.setRowCount(rowCounter);
-        return wrapper;
+            }
+            wrapper.setRowCount(rowCounter);
+            return wrapper;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,7 +139,7 @@ public class ResultSetWrapper {
      * @return a new {@code ResultSetWrapper} containing the extracted data
      */
     public static ResultSetWrapper fromOne(ResultSet rs) {
-        try{
+        try {
             ResultSetWrapper wrapper = new ResultSetWrapper();
             ResultSetMetaData meta = rs.getMetaData();
             int colCount = meta.getColumnCount();

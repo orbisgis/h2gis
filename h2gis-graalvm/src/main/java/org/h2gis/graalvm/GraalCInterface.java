@@ -26,32 +26,48 @@ import static org.graalvm.nativeimage.c.type.CTypeConversion.toCString;
 /**
  * GraalCInterface exposes C entry points to interact with H2GIS through
  * JDBC connections inside a GraalVM native image.
- *
+ * <p>
  * This class manages connections, statements, result sets, executes queries,
  * and returns results as raw buffers to native code.
+ *
+ * @author Maël PHILIPPE
  */
 public class GraalCInterface {
 
 
-    /** Logger for internal error reporting */
+    /**
+     * Logger for internal error reporting
+     */
     private static final Logger LOGGER = Logger.getLogger(GraalCInterface.class.getName());
 
-    /** Maps handle -> JDBC connection */
+    /**
+     * Maps handle -> JDBC connection
+     */
     private static final Map<Long, Connection> connections = new ConcurrentHashMap<>();
 
-    /** Maps handle -> JDBC statement */
+    /**
+     * Maps handle -> JDBC statement
+     */
     private static final Map<Long, Statement> statements = new ConcurrentHashMap<>();
 
-    /** Maps handle -> JDBC result set */
+    /**
+     * Maps handle -> JDBC result set
+     */
     private static final Map<Long, ResultSet> results = new ConcurrentHashMap<>();
 
-    /** Handle counter to assign unique IDs to each resource */
+    /**
+     * Handle counter to assign unique IDs to each resource
+     */
     private static final AtomicLong handleCounter = new AtomicLong(1);
 
-    /** Thread-local error message, retrieved by C with h2gis_get_last_error() */
+    /**
+     * Thread-local error message, retrieved by C with h2gis_get_last_error()
+     */
     private static final ThreadLocal<String> lastError = new ThreadLocal<>();
 
-    /** Unsafe is used for direct memory allocation/free to pass buffers to native side */
+    /**
+     * Unsafe is used for direct memory allocation/free to pass buffers to native side
+     */
     private static final Unsafe unsafe = getUnsafe();
 
 
@@ -67,6 +83,7 @@ public class GraalCInterface {
     /**
      * Retrieves the last error message encountered by the current thread.
      * The message is cleared after retrieval.
+     *
      * @param thread the current Graal Isolate thread
      * @return C string pointer to the last error message or empty string if none
      */
@@ -74,7 +91,7 @@ public class GraalCInterface {
     public static CCharPointer h2gisGetLastError(IsolateThread thread) {
         String error = lastError.get();
         lastError.remove();
-        if (error == null){
+        if (error == null) {
             error = "";
         }
         return toCString(error).get();
@@ -82,7 +99,8 @@ public class GraalCInterface {
 
     /**
      * Opens a new connection to an H2GIS database.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread          the current Graal Isolate thread
      * @param filePathPointer C pointer to the database file path string
      * @param usernamePointer C pointer to the database username string
      * @param passwordPointer C pointer to the database password string
@@ -123,7 +141,8 @@ public class GraalCInterface {
 
     /**
      * Loads the H2GIS spatial functions into the connected database.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread           the current Graal Isolate thread
      * @param connectionHandle handle representing an active connection
      * @return 1 on success, 0 on error
      */
@@ -145,9 +164,10 @@ public class GraalCInterface {
 
     /**
      * Executes a SELECT SQL query and stores the resulting Statement and ResultSet.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread           the current Graal Isolate thread
      * @param connectionHandle handle representing an active connection
-     * @param queryPointer C pointer to the SQL SELECT query string
+     * @param queryPointer     C pointer to the SQL SELECT query string
      * @return a unique handle for the query result set, or 0 on failure
      */
     @CEntryPoint(name = "h2gis_fetch")
@@ -183,9 +203,10 @@ public class GraalCInterface {
 
     /**
      * Executes an UPDATE/INSERT/DELETE SQL query.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread           the current Graal Isolate thread
      * @param connectionHandle handle representing an active connection
-     * @param queryPointer C pointer to the SQL update query string
+     * @param queryPointer     C pointer to the SQL update query string
      * @return the number of rows affected, or -1 on failure
      */
     @CEntryPoint(name = "h2gis_execute")
@@ -214,7 +235,8 @@ public class GraalCInterface {
 
     /**
      * Closes a previously opened query result set and associated statement.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread      the current Graal Isolate thread
      * @param queryHandle handle representing the query to close
      */
     @CEntryPoint(name = "h2gis_close_query")
@@ -222,14 +244,14 @@ public class GraalCInterface {
         ResultSet rs = results.remove(queryHandle);
         Statement stmt = statements.remove(queryHandle);
         try {
-            if (rs != null){
+            if (rs != null) {
                 rs.close();
             }
         } catch (Exception e) {
             logAndSetError("Failed to close ResultSet", e);
         }
         try {
-            if (stmt != null){
+            if (stmt != null) {
                 stmt.close();
             }
         } catch (Exception e) {
@@ -240,7 +262,8 @@ public class GraalCInterface {
 
     /**
      * Closes a previously opened connection.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread           the current Graal Isolate thread
      * @param connectionHandle handle representing the connection to close
      */
     @CEntryPoint(name = "h2gis_close_connection")
@@ -259,7 +282,8 @@ public class GraalCInterface {
 
     /**
      * Deletes all objects in the database and closes the connection.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread           the current Graal Isolate thread
      * @param connectionHandle handle representing the connection to delete/close
      */
     @CEntryPoint(name = "h2gis_delete_database_and_close")
@@ -276,7 +300,7 @@ public class GraalCInterface {
                 if (rs.next()) {
                     String dbName = rs.getString(1);
                     stmt.executeUpdate("DROP DATABASE `" + dbName + "`");
-                }else{
+                } else {
                     throw new SQLException("Could not find database name");
                 }
                 rs.close();
@@ -294,9 +318,10 @@ public class GraalCInterface {
     /**
      * Fetches all remaining rows from the result set of a query and returns them
      * in a JSON-encoded native memory buffer.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread      the current Graal Isolate thread
      * @param queryHandle handle representing the query result set
-     * @param bufferSize pointer to store the size of the returned memory buffer
+     * @param bufferSize  pointer to store the size of the returned memory buffer
      * @return native memory pointer to the JSON buffer, or 0 on error
      */
     @CEntryPoint(name = "h2gis_fetch_all")
@@ -345,9 +370,10 @@ public class GraalCInterface {
     /**
      * Fetches the first row from the result set of a query and returns it
      * in an encoded native memory buffer.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread      the current Graal Isolate thread
      * @param queryHandle handle representing the query result set
-     * @param bufferSize pointer to store the size of the returned memory buffer
+     * @param bufferSize  pointer to store the size of the returned memory buffer
      * @return native memory pointer to the JSON buffer, or 0 on error
      */
     @CEntryPoint(name = "h2gis_fetch_one")
@@ -394,7 +420,8 @@ public class GraalCInterface {
      * Retrieves the type of each column in a query result set.
      * Types are returned as an array of integers encoded in native memory.
      * The encoding uses little-endian order with 4 bytes per type code.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread      the current Graal Isolate thread
      * @param queryHandle handle representing the query result set
      * @param colCountOut native pointer where the column count will be stored (can be 0)
      * @return a native memory pointer to an array of type codes, or 0 on error
@@ -497,7 +524,8 @@ public class GraalCInterface {
 
     /**
      * Frees a previously stored query result set, closing its resources.
-     * @param thread the current Graal Isolate thread
+     *
+     * @param thread      the current Graal Isolate thread
      * @param queryHandle handle representing the query result set to free
      * @return 0 on success, 1 on error
      */
@@ -515,8 +543,9 @@ public class GraalCInterface {
 
     /**
      * Frees a result buffer previously allocated by h2gis_fetch_rows or h2gis_get_column_types.
+     *
      * @param thread the current Graal Isolate thread
-     * @param ptr native pointer to the buffer to free
+     * @param ptr    native pointer to the buffer to free
      */
     @CEntryPoint(name = "h2gis_free_result_buffer")
     public static void freeResultBuffer(IsolateThread thread, WordBase ptr) {
@@ -528,8 +557,9 @@ public class GraalCInterface {
 
     /**
      * Logs an error and sets it in the thread-local error variable.
+     *
      * @param message the error message to log
-     * @param e the exception that was thrown, or null
+     * @param e       the exception that was thrown, or null
      */
     private static void logAndSetError(String message, Exception e) {
         if (e != null) {
@@ -544,6 +574,7 @@ public class GraalCInterface {
     /**
      * Uses reflection hack to access the Unsafe instance.
      * Unsafe is used to allocate and free off-heap memory.
+     *
      * @return the Unsafe instance
      */
     private static Unsafe getUnsafe() {

@@ -1,3 +1,22 @@
+/**
+ * H2GIS is a library that brings spatial support to the H2 Database Engine
+ * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
+ * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
+ * <p>
+ * This code is part of the H2GIS project. H2GIS is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU
+ * Lesser General Public License as published by the Free Software Foundation;
+ * version 3.0 of the License.
+ * <p>
+ * H2GIS is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details <http://www.gnu.org/licenses/>.
+ * <p>
+ * <p>
+ * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
+ * or contact directly: info_at_h2gis.org
+ */
 package org.h2gis.graalvm;
 
 import java.io.ByteArrayOutputStream;
@@ -13,6 +32,8 @@ import java.util.List;
  * SQL type, and all values for that column. Provides serialization into a native-friendly
  * binary format using little-endian encoding, suitable for communication with native code
  * (e.g., via GraalVM).
+ *
+ * @author Maël PHILIPPE
  */
 public class ColumnWrapper {
     private final String name;
@@ -25,13 +46,13 @@ public class ColumnWrapper {
     /**
      * Constructs a {@code ColumnWrapper} with the given name and SQL type.
      *
-     * @param name the name of the column
+     * @param name     the name of the column
      * @param typeCode the SQL type (as defined in {@link java.sql.Types})
      * @param typeName the name of the SQL type
      */
     public ColumnWrapper(String name, int typeCode, String typeName) {
         this.name = name;
-        this.typeName = typeName;
+        this.typeName = typeName.toLowerCase();
         this.values = new ArrayList<>();
 
         switch (typeCode) {
@@ -76,6 +97,8 @@ public class ColumnWrapper {
                 }
                 break;
         }
+
+
     }
 
     /**
@@ -109,13 +132,23 @@ public class ColumnWrapper {
     }
 
     /**
-     * Returns the SQL type of the column.
+     * Returns the type of the column.
      *
-     * @return SQL type (see {@link java.sql.Types})
+     * @return SQL type
      */
     public int getType() {
         return this.typeCode;
     }
+
+    /**
+     * Returns the SQL type name of the column.
+     *
+     * @return SQL type (see {@link java.sql.Types})
+     */
+    public String getTypeName() {
+        return this.typeName;
+    }
+
 
     /**
      * Returns the list of values contained in this column.
@@ -150,9 +183,11 @@ public class ColumnWrapper {
         ByteBuffer bb8 = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
 
         byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
-        out.write(bb4.putInt(nameBytes.length).array()); bb4.clear();
+        out.write(bb4.putInt(nameBytes.length).array());
+        bb4.clear();
         out.write(nameBytes);
-        out.write(bb4.putInt(this.typeCode).array()); bb4.clear();
+        out.write(bb4.putInt(this.typeCode).array());
+        bb4.clear();
 
         ByteArrayOutputStream data = new ByteArrayOutputStream();
 
@@ -175,8 +210,11 @@ public class ColumnWrapper {
                     bb8.clear();
                     break;
                 case 5:
-                    data.write(val != null && ((Boolean) val) ? 1 : 0); break;
-                case 6: case 7: case 99:
+                    data.write(val != null && ((Boolean) val) ? 1 : 0);
+                    break;
+                case 6:
+                case 7:
+                case 99:
                     byte[] str = (val == null) ? new byte[0]
                             : val.toString().getBytes(StandardCharsets.UTF_8);
                     data.write(bb4.putInt(str.length).array());

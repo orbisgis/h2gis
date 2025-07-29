@@ -24,8 +24,8 @@ import org.graalvm.nativeimage.hosted.Feature;
 /**
  * @author Maël PHILIPPE
  * Class needed to expose the C API as it is not used in any other class.
-*/
-public class GraalCInterfaceEntryPointFeature implements  Feature{
+ */
+public class GraalCInterfaceEntryPointFeature implements Feature {
     @Override
     public void beforeAnalysis(Feature.BeforeAnalysisAccess access) {
         access.findClassByName("org.h2gis.graalvm.GraalCInterface");
