@@ -34,7 +34,7 @@ import java.util.List;
  * (e.g., via GraalVM).
  *
  * @author Maël PHILIPPE, CNRS
- * @author Erwan BOCHER, cnrs
+ * @author Erwan BOCHER, CNRS
  */
 public class ColumnWrapper {
     private final String name;
