@@ -1,0 +1,1614 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448"
+   height="1052.3622"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="ST_RingSideBuffer.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend"
+       style="overflow:visible">
+      <path
+         id="path3919"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path3895"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path3824"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         id="path3845"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-8"
+       style="overflow:visible">
+      <path
+         id="path3845-6"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-4"
+       style="overflow:visible">
+      <path
+         id="path3824-2"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <filter
+       inkscape:collect="always"
+       id="filter4314">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="6.3574953"
+         id="feGaussianBlur4316" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4318">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="6.3574953"
+         id="feGaussianBlur4320" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4322">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="6.3574953"
+         id="feGaussianBlur4324" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4326">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="6.3574953"
+         id="feGaussianBlur4328" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4330">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="6.3574953"
+         id="feGaussianBlur4332" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4334">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="6.3574953"
+         id="feGaussianBlur4336" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="-183.61027"
+     inkscape:cy="495.98879"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer5"
+     showgrid="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="974"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="back"
+     sodipodi:insensitive="true"
+     style="display:none">
+    <rect
+       style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.991;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3249"
+       width="745"
+       height="1056"
+       x="0"
+       y="-0.63781738" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Fond"
+     style="display:inline">
+    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+       id="rect4484"
+       width="390.85275"
+       height="416.10745"
+       x="164.48317"
+       y="527.55145"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4445"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="translate(67.29357,85.146461)"><flowRegion
+         id="flowRegion4447"><rect
+           id="rect4449"
+           width="77.074638"
+           height="35.355339"
+           x="12.020815"
+           y="-45.774605"
+           style="font-size:20px" /></flowRegion><flowPara
+         id="flowPara4451">case 1</flowPara></flowRoot>    <rect
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_1.png"
+       y="42.314884"
+       x="164.48317"
+       height="168.09398"
+       width="173.06387"
+       id="rect4164"
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
+    <flowRoot
+       transform="translate(67.29357,337.14646)"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4211"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4213"><rect
+           style="font-size:20px"
+           y="-45.774605"
+           x="12.020815"
+           height="35.355339"
+           width="77.074638"
+           id="rect4215" /></flowRegion><flowPara
+         id="flowPara4217">case 2</flowPara></flowRoot>    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+       id="rect4219"
+       width="173.06387"
+       height="184.35744"
+       x="164.48317"
+       y="278.05142"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4402"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="translate(67.29357,337.14646)"><flowRegion
+         id="flowRegion4404"><rect
+           id="rect4406"
+           width="77.074638"
+           height="35.355339"
+           x="12.020815"
+           y="-45.774605"
+           style="font-size:20px" /></flowRegion><flowPara
+         id="flowPara4408">case 2</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4466"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="translate(67.29357,586.64646)"><flowRegion
+         id="flowRegion4468"><rect
+           id="rect4470"
+           width="77.074638"
+           height="35.355339"
+           x="12.020815"
+           y="-45.774605"
+           style="font-size:20px" /></flowRegion><flowPara
+         id="flowPara4472">case 3</flowPara></flowRoot>  </g>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <path
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 432.85618,712.88587 20.96002,21.14594 c 21.1531,-21.07787 60.43938,-59.85973 60.06055,-60.07845 l 0.0204,1.375 0.0946,38.74464 30.46918,0.0472 0.41037,-111.89011 z"
+       id="path4856"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path4486"
+       d="m 193.73929,647.42998 20.96002,21.14594 c 21.1531,-21.07787 60.43938,-59.85973 60.06055,-60.07845 l 0.0204,1.375 0.0946,38.74464 30.46918,0.0472 0.41037,-111.89011 z"
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001000000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path4413"
+       d="m 193.73929,397.92998 20.96002,21.14594 c 21.1531,-21.07787 60.43938,-59.85973 60.06055,-60.07845 l 0.0204,1.375 0.0946,38.74464 30.46918,0.0472 0.41037,-111.89011 z"
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001000000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <path
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 200.9063,405.17771 13.8125,13.875 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 20.125,0.0312 0.0754,-40.03125 -0.16622,-47.22155 z"
+       id="path4415"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_1.png"
+       sodipodi:nodetypes="cccccccccccssc"
+       inkscape:connector-curvature="0"
+       id="path3358"
+       d="m 273.26636,78.139837 c -6.94492,0.227887 -13.79514,2.815988 -19.25614,7.759229 l -0.0473,-0.04723 -0.66236,0.709683 -59.56127,59.368431 20.96002,21.14594 c 21.1531,-21.07787 60.43938,-59.85973 60.06055,-60.07845 l 0.0204,1.375 0.0946,38.74464 30.46918,0.0472 c 0,0 -0.15157,-23.1189 0.11422,-39.92745 -0.29617,-7.966825 -4.70381,-15.510005 -10.52295,-20.959376 -6.09352,-5.706343 -13.93625,-8.39146 -21.66906,-8.137728 z"
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001000000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <path
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001000000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 273.65625,87.89641 c -4.58715,0.15052 -9.11174,1.85997 -12.71875,5.125 l -0.0312,-0.0312 -0.4375,0.46875 -59.5625,59.71875 13.8125,13.875 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 20.125,0.0312 c 0,0 -0.10011,-28.92914 0.0754,-40.03125 -0.19561,-5.26212 -3.10688,-10.24442 -6.95044,-13.84375 -4.0248,-3.76906 -9.20495,-5.54259 -14.3125,-5.375 z"
+       id="path4192"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="scccccccccccss"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_1.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="ccc"
+       inkscape:connector-curvature="0"
+       id="path4492"
+       d="m 214.7588,668.48489 60.0675,-60.10479 0,40.08943"
+       style="fill:none;stroke:#0000ff;stroke-width:0.99074346px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;display:inline" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="cccccccccc"
+       inkscape:connector-curvature="0"
+       id="path4496"
+       d="m 200.9063,654.67771 13.8125,13.875 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 20.125,0.0312 0.0754,-40.03125 -0.16622,-47.22155 z"
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <path
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62370711999999995;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 207.52438,661.31788 7.19442,7.23483 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 10.22551,0.0312 c 0,0 0.10091,-42.75572 0.21195,-64.13344 z"
+       id="path4498"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       style="fill:none;stroke:#0000ff;stroke-width:0.99074346px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;display:inline"
+       d="m 214.7588,668.48489 60.0675,-60.10479 0,40.08943"
+       id="path4500"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_1.png"
+       sodipodi:nodetypes="ccccccccccc"
+       inkscape:connector-curvature="0"
+       id="path3356"
+       d="m 262.54593,104.68428 -55.02155,55.1336 7.19442,7.23483 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 10.22551,0.0312 c 0,0 -0.10011,-26.74164 0.0754,-37.84375 0.1875,-4.39078 -1.81821,-12.479027 -11.36345,-12.479027 -4.60594,0.295364 -7.27381,4.259627 -11.11028,7.860697 z"
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62370711999999995;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <path
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62370711999999995;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 207.52438,411.81788 7.19442,7.23483 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 10.22551,0.0312 c 0,0 0.10091,-42.75572 0.21195,-64.13344 z"
+       id="path4226"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       style="fill:none;stroke:#0000ff;stroke-width:0.99074346px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;display:inline"
+       d="m 214.7588,418.98489 60.0675,-60.10479 0,40.08943"
+       id="path4228"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       sodipodi:nodetypes="ccc"
+       inkscape:connector-curvature="0"
+       id="path4419"
+       d="m 214.7588,418.98489 60.0675,-60.10479 0,40.08943"
+       style="fill:none;stroke:#0000ff;stroke-width:0.99074346px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;display:inline" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_1.png"
+       sodipodi:nodetypes="ccc"
+       inkscape:connector-curvature="0"
+       id="path4577"
+       d="m 214.7588,166.98489 60.0675,-60.10479 0,40.08943"
+       style="fill:none;stroke:#0000ff;stroke-width:0.99074346px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;display:inline" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="ccccccccc"
+       inkscape:connector-curvature="0"
+       id="path4858"
+       d="m 351.29035,613.57901 7.19442,7.23483 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 10.22551,0.0312 c 0,0 0.10091,-42.75572 0.21195,-64.13344 z"
+       style="opacity:0.8;fill:#ffc66a;fill-opacity:0.99607843;stroke:#000000;stroke-width:0.62370712;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <path
+       style="opacity:0.65;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 384.70041,659.63152 13.8125,13.875 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 20.125,0.0312 0.0754,-40.03125 -0.16622,-47.22155 z"
+       id="path4862"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path5058"
+       d="m 336.66726,648.42078 26.33274,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
+       d="m 336.66726,867.63369 26.33274,0"
+       id="path5060"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Origine"
+     style="display:inline">
+    <g
+       transform="translate(-14,-300.66609)"
+       id="g4521"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_1.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111">
+      <path
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4523"
+         d="m 208.76634,349.01456 0,156.02683"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
+      <path
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4525"
+         d="m 186.46639,487.61733 156.26942,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline" />
+      <path
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         d="m 248.76048,361.9981 0,125.64022"
+         id="path4527"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         inkscape:connector-curvature="0"
+         id="path4529"
+         d="m 288.80473,361.9981 0,125.64022"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
+      <path
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         d="m 328.84896,361.9981 0,125.64022"
+         id="path4531"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         d="m 208.75264,447.59092 125.44901,0"
+         id="path4533"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         inkscape:connector-curvature="0"
+         id="path4535"
+         d="m 208.75264,407.56247 125.44901,0"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
+      <path
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         d="m 208.75264,367.53403 125.44901,0"
+         id="path4537"
+         inkscape:connector-curvature="0" />
+      <flowRoot
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         transform="matrix(0.61674087,0,0,0.61674087,19.3641,97.929017)"
+         style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+         id="flowRoot4539"
+         xml:space="preserve"><flowRegion
+           id="flowRegion4541"><rect
+             y="626.07782"
+             x="487.39859"
+             height="48.487324"
+             width="121.21831"
+             id="rect4543"
+             style="font-size:32.42853165px" /></flowRegion><flowPara
+           style="font-size:32.42853165px;font-style:italic"
+           id="flowPara4545">x</flowPara></flowRoot>      <flowRoot
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         xml:space="preserve"
+         id="flowRoot4547"
+         style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+         transform="matrix(0.61674087,0,0,0.61674087,-107.58875,-30.01749)"><flowRegion
+           id="flowRegion4549"><rect
+             id="rect4551"
+             width="121.21831"
+             height="48.487324"
+             x="487.39859"
+             y="626.07782"
+             style="font-size:32.42853165px" /></flowRegion><flowPara
+           id="flowPara4553"
+           style="font-size:32.42853165px;font-style:italic">y</flowPara></flowRoot>      <flowRoot
+         inkscape:export-ydpi="111.6843"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         xml:space="preserve"
+         id="flowRoot4555"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+         transform="matrix(0.26110367,0,0,0.26110367,58.96461,328.22169)"><flowRegion
+           id="flowRegion4557"><rect
+             id="rect4559"
+             width="121.21831"
+             height="48.487324"
+             x="487.39859"
+             y="626.07782" /></flowRegion><flowPara
+           id="flowPara4561"
+           style="font-style:italic">0,0</flowPara></flowRoot>      <path
+         inkscape:connector-curvature="0"
+         id="path4563"
+         d="m 228.741,361.9981 0,125.64022"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-ydpi="111.6843" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         d="m 268.78524,361.9981 0,125.64022"
+         id="path4565"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-ydpi="111.6843" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4567"
+         d="m 308.82949,361.9981 0,125.64022"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-ydpi="111.6843" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4569"
+         d="m 208.75264,467.60956 125.44901,0"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-ydpi="111.6843" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         d="m 208.75264,427.58111 125.44901,0"
+         id="path4571"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-ydpi="111.6843" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4573"
+         d="m 208.75264,387.55267 125.44901,0"
+         style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+         inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+         inkscape:export-xdpi="111.6843"
+         inkscape:export-ydpi="111.6843" />
+    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4825"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion4827"><rect
+           id="rect4829"
+           width="206.47517"
+           height="107.48023"
+           x="1038.7399"
+           y="-76.180244" /></flowRegion><flowPara
+         id="flowPara4831" /></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4399"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.90099824,0,0,0.90099824,155.94876,337.79826)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111"><flowRegion
+         id="flowRegion4401"><rect
+           id="rect4403"
+           width="179"
+           height="85.5"
+           x="65"
+           y="411.36218" /></flowRegion><flowPara
+         id="flowPara4405"
+         style="font-size:11.09880066px">Difference = 0</flowPara></flowRoot>    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4232"
+       d="m 194.76634,284.08501 0,172.29029"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4234"
+       d="m 172.46639,438.95124 156.26942,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4330)"
+       d="m 234.77341,284.71573 0,154.23495"
+       id="path4236"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:connector-curvature="0"
+       id="path4238"
+       d="m 274.80042,284.71573 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4322)" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4314)"
+       d="m 314.82741,284.71573 0,154.23495"
+       id="path4240"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,398.92483 125.44901,0"
+       id="path4242"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:connector-curvature="0"
+       id="path4244"
+       d="m 194.75264,358.89638 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,318.86794 125.44901,0"
+       id="path4247"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       transform="matrix(0.61674087,0,0,0.61674087,5.3641,49.262927)"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4250"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4252"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4254"
+           style="font-size:32.42853165px" /></flowRegion><flowPara
+         style="font-size:32.42853165px;font-style:italic"
+         id="flowPara4256">x</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       xml:space="preserve"
+       id="flowRoot4258"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,-121.58875,-111.9176)"><flowRegion
+         id="flowRegion4260"><rect
+           id="rect4262"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782"
+           style="font-size:32.42853165px" /></flowRegion><flowPara
+         id="flowPara4264"
+         style="font-size:32.42853165px;font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       xml:space="preserve"
+       id="flowRoot4266"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.26110367,0,0,0.26110367,44.96461,279.5556)"><flowRegion
+         id="flowRegion4268"><rect
+           id="rect4270"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara4272"
+         style="font-style:italic">0,0</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path4274"
+       d="m 214.76255,284.71573 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4334)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4326)"
+       d="m 254.78955,284.71573 0,154.23495"
+       id="path4276"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4278"
+       d="m 294.81656,284.71573 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4318)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4280"
+       d="m 194.75264,418.94347 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,378.91502 125.44901,0"
+       id="path4282"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4284"
+       d="m 194.75264,338.88658 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,298.88658 125.44901,0"
+       id="path4312"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline"
+       d="m 194.76634,284.08501 0,172.29029"
+       id="path4421"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline"
+       d="m 172.46639,438.95124 156.26942,0"
+       id="path4423"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4427"
+       d="m 194.75264,398.92483 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,358.89638 125.44901,0"
+       id="path4430"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4432"
+       d="m 194.75264,318.86794 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4434"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,5.3641,49.262927)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4436"><rect
+           style="font-size:32.42853165px"
+           id="rect4438"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara4440"
+         style="font-size:32.42853165px;font-style:italic">x</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,-121.58875,-111.9176)"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4442"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4444"><rect
+           style="font-size:32.42853165px"
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4446" /></flowRegion><flowPara
+         style="font-size:32.42853165px;font-style:italic"
+         id="flowPara4448">y</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.26110367,0,0,0.26110367,44.96461,279.5556)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4450"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4452"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4454" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4456">0,0</flowPara></flowRoot>    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,418.94347 125.44901,0"
+       id="path4458"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:connector-curvature="0"
+       id="path4460"
+       d="m 194.75264,378.91502 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,338.88658 125.44901,0"
+       id="path4462"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4464"
+       d="m 194.75264,298.88658 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_2.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline"
+       d="m 194.76634,533.58501 0,172.29029"
+       id="path4502"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline"
+       d="m 172.46639,688.45124 156.26942,0"
+       id="path4504"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4506"
+       d="m 234.77341,534.21573 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4330)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4322)"
+       d="m 274.80042,534.21573 0,154.23495"
+       id="path4508"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4510"
+       d="m 314.82741,534.21573 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4314)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4512"
+       d="m 194.75264,648.42483 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,608.39638 125.44901,0"
+       id="path4514"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4516"
+       d="m 194.75264,568.36794 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4518"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,5.3641,298.76293)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4520"><rect
+           style="font-size:32.42853165px"
+           id="rect4522"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara4524"
+         style="font-size:32.42853165px;font-style:italic">x</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,-121.58875,137.5824)"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4526"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4528"><rect
+           style="font-size:32.42853165px"
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4530" /></flowRegion><flowPara
+         style="font-size:32.42853165px;font-style:italic"
+         id="flowPara4532">y</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.26110367,0,0,0.26110367,44.96461,529.0556)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4534"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4536"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4538" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4540">0,0</flowPara></flowRoot>    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4334)"
+       d="m 214.76255,534.21573 0,154.23495"
+       id="path4542"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:connector-curvature="0"
+       id="path4544"
+       d="m 254.78955,534.21573 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4326)" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4318)"
+       d="m 294.81656,534.21573 0,154.23495"
+       id="path4546"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,668.44347 125.44901,0"
+       id="path4548"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:connector-curvature="0"
+       id="path4550"
+       d="m 194.75264,628.41502 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,588.38658 125.44901,0"
+       id="path4552"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4554"
+       d="m 194.75264,548.38658 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4556"
+       d="m 194.76634,533.58501 0,172.29029"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4558"
+       d="m 172.46639,688.45124 156.26942,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,648.42483 125.44901,0"
+       id="path4560"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:connector-curvature="0"
+       id="path4562"
+       d="m 194.75264,608.39638 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,568.36794 125.44901,0"
+       id="path4564"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       transform="matrix(0.61674087,0,0,0.61674087,5.3641,298.76293)"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4566"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4568"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4570"
+           style="font-size:32.42853165px" /></flowRegion><flowPara
+         style="font-size:32.42853165px;font-style:italic"
+         id="flowPara4572">x</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       xml:space="preserve"
+       id="flowRoot4574"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,-121.58875,137.5824)"><flowRegion
+         id="flowRegion4576"><rect
+           id="rect4578"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782"
+           style="font-size:32.42853165px" /></flowRegion><flowPara
+         id="flowPara4580"
+         style="font-size:32.42853165px;font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       xml:space="preserve"
+       id="flowRoot4582"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.26110367,0,0,0.26110367,44.96461,529.0556)"><flowRegion
+         id="flowRegion4584"><rect
+           id="rect4586"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara4588"
+         style="font-style:italic">0,0</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path4590"
+       d="m 194.75264,668.44347 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,628.41502 125.44901,0"
+       id="path4592"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4594"
+       d="m 194.75264,588.38658 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75264,548.38658 125.44901,0"
+       id="path4596"
+       inkscape:connector-curvature="0" />
+    <path
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 294.74998,780.60935 -93.84375,93.28125 6.625,6.625 77.625,-76.8125 c -0.11104,21.37772 -0.21875,64.15625 -0.21875,64.15625 l 9.90625,0 0.0625,-40.03125 -0.15625,-47.21875 z"
+       id="path4604"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       style="opacity:0.50000000000000000;fill:#aede8f;fill-opacity:1;stroke:#000000;stroke-width:0.62370711999999995;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 207.52436,880.52098 7.19442,7.23483 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 10.22551,0.0312 c 0,0 0.10091,-42.75572 0.21195,-64.13344 z"
+       id="path4606"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       style="fill:none;stroke:#0000ff;stroke-width:0.99074346px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;display:inline"
+       d="m 214.75878,887.68799 60.0675,-60.10479 0,40.08943"
+       id="path4608"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       style="opacity:0.50000000000000000;fill:#ff8080;fill-opacity:1;stroke:#000000;stroke-width:0.62400001000000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 305.74998,755.98435 -112,110.65625 7.15625,7.25 93.84375,-93.28125 0.15625,47.21875 -0.0625,40.03125 10.5,0 z"
+       id="path4610"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="ccc"
+       inkscape:connector-curvature="0"
+       id="path4616"
+       d="m 214.75878,887.68799 60.0675,-60.10479 0,40.08943"
+       style="fill:none;stroke:#0000ff;stroke-width:0.99074346px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4618"
+       d="m 194.76632,752.78811 0,172.29029"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4620"
+       d="m 172.46637,907.65434 156.26942,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4330)"
+       d="m 234.77339,753.41883 0,154.23495"
+       id="path4623"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:connector-curvature="0"
+       id="path4625"
+       d="m 274.8004,753.41883 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4322)" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4314)"
+       d="m 314.82739,753.41883 0,154.23495"
+       id="path4627"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75262,867.62793 125.44901,0"
+       id="path4629"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:connector-curvature="0"
+       id="path4631"
+       d="m 194.75262,827.59948 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75262,787.57104 125.44901,0"
+       id="path4633"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       transform="matrix(0.61674087,0,0,0.61674087,5.36408,517.96603)"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4635"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4637"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4639"
+           style="font-size:32.42853165px" /></flowRegion><flowPara
+         style="font-size:32.42853165px;font-style:italic"
+         id="flowPara4641">x</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       xml:space="preserve"
+       id="flowRoot4643"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,-121.58877,356.7855)"><flowRegion
+         id="flowRegion4645"><rect
+           id="rect4647"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782"
+           style="font-size:32.42853165px" /></flowRegion><flowPara
+         id="flowPara4649"
+         style="font-size:32.42853165px;font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       xml:space="preserve"
+       id="flowRoot4651"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.26110367,0,0,0.26110367,44.96459,748.2587)"><flowRegion
+         id="flowRegion4653"><rect
+           id="rect4655"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara4657"
+         style="font-style:italic">0,0</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path4659"
+       d="m 214.76253,753.41883 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4334)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4326)"
+       d="m 254.78953,753.41883 0,154.23495"
+       id="path4661"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4663"
+       d="m 294.81654,753.41883 0,154.23495"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline;filter:url(#filter4318)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4665"
+       d="m 194.75262,887.64657 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75262,847.61812 125.44901,0"
+       id="path4667"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4669"
+       d="m 194.75262,807.58968 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75262,767.58968 125.44901,0"
+       id="path4671"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline"
+       d="m 194.76632,752.78811 0,172.29029"
+       id="path4673"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline"
+       d="m 172.46637,907.65434 156.26942,0"
+       id="path4675"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4677"
+       d="m 194.75262,867.62793 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75262,827.59948 125.44901,0"
+       id="path4679"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4681"
+       d="m 194.75262,787.57104 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4683"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,5.36408,517.96603)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4685"><rect
+           style="font-size:32.42853165px"
+           id="rect4687"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara4689"
+         style="font-size:32.42853165px;font-style:italic">x</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,-121.58877,356.7855)"
+       style="font-size:32.42853165px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4691"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4693"><rect
+           style="font-size:32.42853165px"
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4695" /></flowRegion><flowPara
+         style="font-size:32.42853165px;font-style:italic"
+         id="flowPara4697">y</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.26110367,0,0,0.26110367,44.96459,748.2587)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4699"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4701"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4703" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4705">0,0</flowPara></flowRoot>    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75262,887.64657 125.44901,0"
+       id="path4707"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:connector-curvature="0"
+       id="path4709"
+       d="m 194.75262,847.61812 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       d="m 194.75262,807.58968 125.44901,0"
+       id="path4711"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4713"
+       d="m 194.75262,767.58968 125.44901,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       transform="matrix(0.90099824,0,0,0.90099824,155.94876,557.00136)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot4842"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4844"><rect
+           y="411.36218"
+           x="65"
+           height="85.5"
+           width="179"
+           id="rect4846" /></flowRegion><flowPara
+         style="font-size:11.09880066px"
+         id="flowPara4848">Difference = 1</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path4850"
+       d="m 478.54416,782.85843 -93.84375,93.28125 6.625,6.625 77.625,-76.8125 c -0.11104,21.37772 -0.21875,64.15625 -0.21875,64.15625 l 9.90625,0 0.0625,-40.03125 -0.15625,-47.21875 z"
+       style="opacity:0.5;fill:#ffbd55;fill-opacity:1;stroke:#000000;stroke-width:0.62400001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+    <path
+       inkscape:export-ydpi="111"
+       inkscape:export-xdpi="111"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       sodipodi:nodetypes="ccccccccc"
+       inkscape:connector-curvature="0"
+       id="path4852"
+       d="m 351.29035,832.78916 7.19442,7.23483 59.2812,-59.4688 0.3125,0.28125 0.34375,0 0.0625,39.25 10.22551,0.0312 c 0,0 0.10091,-42.75572 0.21195,-64.13344 z"
+       style="opacity:0.5;fill:#d6efc8;fill-opacity:0.99215686;stroke:#000000;stroke-width:0.62370712;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <path
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path4854"
+       d="m 544.8713,817.9427 -112,110.65625 7.15625,7.25 93.84375,-93.28125 0.15625,47.21875 -0.0625,40.03125 10.5,0 z"
+       style="opacity:0.5;fill:#fec0c0;fill-opacity:0.99215686;stroke:#000000;stroke-width:0.62400001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS_tmp_gwen/ST_RingSideBuffer_3.png"
+       inkscape:export-xdpi="111"
+       inkscape:export-ydpi="111" />
+  </g>
+</svg>
