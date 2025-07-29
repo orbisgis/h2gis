@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1052.3622"
+   height="744.09448"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="ST_SymDifference.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend"
+       style="overflow:visible">
+      <path
+         id="path3919"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path3895"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path3824"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         id="path3845"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="685.61212"
+     inkscape:cy="339.7608"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer5"
+     showgrid="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="974"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Fond"
+     style="display:inline"
+     transform="translate(0,-308.2677)">
+    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect5041"
+       width="526.74109"
+       height="244.97623"
+       x="111.60054"
+       y="557.02557"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+  </g>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline"
+     transform="translate(0,-308.2677)">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none"
+       d="m 147.29346,568.98636 0,215.3681"
+       id="path2985"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 125.32615,766.61079 216.76941,0"
+       id="path2987"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2989"
+       d="m 187.31848,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 227.33993,578.60309 0,187.99077"
+       id="path2991"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2993"
+       d="m 267.36138,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2999"
+       d="m 147.33761,726.56255 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 147.33761,686.56321 187.60161,0"
+       id="path3001"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3003"
+       d="m 147.33761,646.56388 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3804"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,28.723858,378.92248)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion3806"><rect
+           id="rect3808"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3810"
+         style="font-style:italic">x</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,-177.04018,169.93255)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3812"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion3814"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3816" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3818">y</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.26110367,0,0,0.26110367,-2.4868126,607.21516)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot4814"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion4816"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4818" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4820">0,0</flowPara></flowRoot>    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 307.36429,578.60309 0,187.99077"
+       id="path3055"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:connector-curvature="0"
+       id="path3063"
+       d="m 147.33761,606.61577 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 167.31039,578.60309 0,187.99077"
+       id="path3888"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:connector-curvature="0"
+       id="path3890"
+       d="m 207.33184,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 247.3533,578.60309 0,187.99077"
+       id="path3892"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3894"
+       d="m 287.3562,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 327.35912,578.60309 0,187.99077"
+       id="path3896"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 147.33761,746.56663 187.60161,0"
+       id="path3898"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:connector-curvature="0"
+       id="path3900"
+       d="m 147.33761,706.56729 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 147.33761,666.56796 187.60161,0"
+       id="path3902"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 147.33761,626.61986 187.60161,0"
+       id="path3904"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3906"
+       d="m 147.33761,586.62052 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3118"
+       d="m 431.29346,568.98636 0,215.3681"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3120"
+       d="m 409.32615,766.61079 216.76941,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 471.31848,578.60309 0,187.99077"
+       id="path3122"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:connector-curvature="0"
+       id="path3124"
+       d="m 511.33993,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 551.36138,578.60309 0,187.99077"
+       id="path3126"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 431.33761,726.56255 187.60161,0"
+       id="path3128"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:connector-curvature="0"
+       id="path3130"
+       d="m 431.33761,686.56321 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 431.33761,646.56388 187.60161,0"
+       id="path3132"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       transform="matrix(0.61674087,0,0,0.61674087,312.72386,378.92248)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3134"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3136"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3138" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3140">x</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       xml:space="preserve"
+       id="flowRoot3142"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,106.95982,169.93255)"><flowRegion
+         id="flowRegion3144"><rect
+           id="rect3146"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3148"
+         style="font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       xml:space="preserve"
+       id="flowRoot3150"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.26110367,0,0,0.26110367,281.51319,607.21516)"><flowRegion
+         id="flowRegion3152"><rect
+           id="rect3154"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3156"
+         style="font-style:italic">0,0</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path3158"
+       d="m 591.36429,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 431.33761,606.61577 187.60161,0"
+       id="path3160"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3162"
+       d="m 451.31039,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 491.33184,578.60309 0,187.99077"
+       id="path3164"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3166"
+       d="m 531.3533,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 571.3562,578.60309 0,187.99077"
+       id="path3168"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3170"
+       d="m 611.35912,578.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3172"
+       d="m 431.33761,746.56663 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 431.33761,706.56729 187.60161,0"
+       id="path3174"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3176"
+       d="m 431.33761,666.56796 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:connector-curvature="0"
+       id="path3178"
+       d="m 431.33761,626.61986 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 431.33761,586.62052 187.60161,0"
+       id="path3180"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Origine"
+     style="display:inline"
+     transform="translate(0,-308.2677)">
+    <rect
+       style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.78062785;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3910"
+       width="119.8173"
+       height="100.08952"
+       x="167.43094"
+       y="646.3526"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <rect
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       y="606.40009"
+       x="207.52196"
+       height="119.97833"
+       width="99.702545"
+       id="rect3074"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:0.77964067;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       xml:space="preserve"
+       id="flowRoot3876"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.37668729,0,0,0.37668729,-11.735813,491.00603)"><flowRegion
+         id="flowRegion3878"><rect
+           id="rect3880"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3882"
+         style="font-style:italic">A</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.37668729,0,0,0.37668729,108.26418,371.50603)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot3911"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843"><flowRegion
+         id="flowRegion3913"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3915" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3917">B</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
+       d="m 359.15641,672.18287 35.35534,0"
+       id="path4108"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="opacity:0.7;fill:#ffaaaa;fill-opacity:1;stroke:#000000;stroke-width:0.78062785;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       d="m 491.53125,606.3927 0,39.96875 79.71875,0 0,80.03125 19.96875,0 0,-120 -99.6875,0 z m 79.71875,120 -79.71875,0 0,-80.03125 -40.09375,0 0,100.09375 119.8125,0 0,-20.0625 z"
+       id="rect3182"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_SymDifference.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+  </g>
+</svg>

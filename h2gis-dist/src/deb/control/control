@@ -1,6 +1,0 @@
-Package: h2gis
-Version: 0.0.0.1
-Section: libs
-Priority: optional
-Architecture: amd64
-Description: Librairie native libexample compilée avec Maven

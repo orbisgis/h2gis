@@ -4,7 +4,7 @@ This document explains how H2GIS was compiled as a native binary using GraalVM a
 
 ## Prerequisites
 ### Linux
-On Linux, to manipulate the native compilation you need to install [graalvm EE 22.3.3](https://download.oracle.com/otn/utilities_drivers/oracle-labs/graalvm-ee-java11-linux-amd64-22.3.3.tar.gz).
+On Linux, to manipulate the native compilation you need to install [graalvm EE Core 22.3.5 for java 11](https://www.oracle.com/downloads/graalvm-downloads.html).
 Then you need to get a token with 
 ```bash
 bash <(curl -sL https://get.graalvm.org/ee-token)
@@ -17,12 +17,15 @@ gu install native-image
 ```
 
 ### Windows
-On windows, you need to install maven, [graalvm EE 22.3.3]https://download.oracle.com/otn/utilities_drivers/oracle-labs/graalvm-ee-java11-windows-amd64-22.3.3.zip) and visual studio with c++ for desktop.
+On windows, you need to install maven, [graalvm EE Core 22.3.5 for java 11](https://www.oracle.com/downloads/graalvm-downloads.html) and visual studio with c++ for desktop.
 Then, you need to add this to you path :
 ```bash
 C:\Program Files\Microsoft Visual Studio\<vs_version>\Community\VC\Tools\MSVC\<vs_version>\bin\Hostx64\x64
 ```
-
+Then run this to install the native-image graalvm plugin.
+```bash
+path\to\your\graalvm\install\gu install native-image
+```
 
 ## Launch native compilation
 
@@ -63,6 +66,19 @@ The Maven project `H2GIS` was modified to include:
 
 - The `native` profile now builds the native lib, executable and a .deb if on linux.
 - A new module `h2gis-graalvm` that contains a `GraalCInterface` class with methods annotated using `@CEntryPoint` to make them callable from C.
+
+### 2. Config files
+
+To ensure H2GIS runs correctly in native mode with GraalVM, any new class added to the codebase must also be registered for reflection. This is done by updating the reflection configuration file located at `h2gis-dist/src/main/resources/META-INF/native-image/reflect-config.json`
+Add an entry for each new class to make sure it is detected and included in the native executable or library during the build process. Below is an example entry for a newly added class:
+```json
+  {
+    "name": "com.package.ClassnNme",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+```
 
 ### 2. The `GraalCInterface` Class
 

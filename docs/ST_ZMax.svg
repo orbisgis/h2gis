@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="ST_ZMax.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path3824"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;">
+      <path
+         id="path3845"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="388.39001"
+     inkscape:cy="597.73398"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="974"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Fond">
+    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;stroke:none"
+       id="rect5041"
+       width="453.95712"
+       height="412.30847"
+       x="147.93872"
+       y="280.84906"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+  </g>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none"
+       d="m 348.69548,292.85374 0,288.85516"
+       id="path2985"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 328.12693,565.61079 259.37065,0"
+       id="path2987"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2989"
+       d="m 388.7071,298.03355 0,267.56562"
+       style="fill:none;stroke:#000000;stroke-width:0.42324239;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.69296948, 3.38593897;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.42324239;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.69296948, 3.38593897;stroke-dashoffset:0"
+       d="m 428.70129,298.03355 0,267.56562"
+       id="path2991"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2993"
+       d="m 468.69548,298.03355 0,267.56562"
+       style="fill:none;stroke:#000000;stroke-width:0.42324239;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.69296948, 3.38593897;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.42324239;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.69296948, 3.38593897;stroke-dashoffset:0"
+       d="m 508.68967,298.03355 0,267.56562"
+       id="path2995"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2997"
+       d="m 548.68386,298.03355 0,267.56562"
+       style="fill:none;stroke:#000000;stroke-width:0.42324239;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.69296948, 3.38593897;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2999"
+       d="m 348.69548,525.61079 229.02518,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 348.69548,485.61079 229.02518,0"
+       id="path3001"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3003"
+       d="m 348.69548,445.61079 229.02518,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 348.69548,405.61079 229.02518,0"
+       id="path3005"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3007"
+       d="m 348.69548,365.61079 229.02518,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3804"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,274.12588,177.92248)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669"><flowRegion
+         id="flowRegion3806"><rect
+           id="rect3808"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3810"
+         style="font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,24.361835,-105.70006)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3812"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669"><flowRegion
+         id="flowRegion3814"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3816" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3818">z</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.12933254,0,0,0.12933254,287.24059,485.61984)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot4814"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669"><flowRegion
+         id="flowRegion4816"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4818" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4820">0,0,0</flowPara></flowRoot>    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3021"
+       d="M 364.21774,556.89831 186.26521,659.71358"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
+    <flowRoot
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       xml:space="preserve"
+       id="flowRoot3803"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,-137.63816,265.93255)"><flowRegion
+         id="flowRegion3805"><rect
+           id="rect3807"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3809"
+         style="font-style:italic">x</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       d="m 388.74978,565.47198 -162.48457,94.2416"
+       id="path3811"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3997"
+       d="m 428.74978,565.47198 -162.48457,94.2416"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3999"
+       d="m 468.74978,565.47198 -162.48457,94.2416"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       d="m 508.74978,565.47198 -162.48457,94.2416"
+       id="path4001"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4003"
+       d="m 548.74978,565.47198 -162.48457,94.2416"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 348.69548,325.61079 229.02518,0"
+       id="path4005"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4007"
+       d="m 318.77175,306.84333 c 0,0 0,264.8098 0,275.85516"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-start:none;marker-end:none" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-start:none;marker-end:none"
+       d="m 290.77175,323.47288 c 0,0 0,264.8098 0,275.85516"
+       id="path4193"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4197"
+       d="m 262.77175,339.47288 c 0,0 0,264.8098 0,275.85516"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-start:none;marker-end:none" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4201"
+       d="m 234.77175,355.47288 c 0,0 0,264.8098 0,275.85516"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-start:none;marker-end:none" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-start:none;marker-end:none"
+       d="m 206.77175,371.47288 c 0,0 0,264.8098 0,275.85516"
+       id="path4203"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       d="M 348.78024,525.71081 186.26521,619.71358"
+       id="path4207"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4393"
+       d="M 348.78024,485.71081 186.26521,579.71358"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       d="M 348.78024,445.71081 186.26521,539.71358"
+       id="path4395"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4397"
+       d="M 348.78024,405.71081 186.26521,499.71358"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       d="M 348.78024,365.71081 186.26521,459.71358"
+       id="path4399"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4401"
+       d="M 348.78024,325.71081 186.26521,419.71358"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4403"
+       d="m 318.50558,583.06392 240.89749,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       d="m 291.22433,599.06392 240.89749,0"
+       id="path4589"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4591"
+       d="m 263.22433,615.31392 240.89749,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       d="m 234.97433,631.81392 240.89749,0"
+       id="path4593"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669" />
+    <path
+       inkscape:export-ydpi="99.89669"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4595"
+       d="m 206.72433,647.93892 240.89749,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Trace">
+    <path
+       inkscape:connector-curvature="0"
+       id="path4626"
+       d="m 348.73335,565.58162 0,-239.76473"
+       style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4624"
+       d="m 548.48055,565.64344 -199.41995,-0.009 -113.9217,65.89947"
+       style="fill:none;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       style="fill:none;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       d="m 428.46093,565.64344 -79.39843,0 -30.23161,17.49593"
+       id="path4597"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       style="fill:#ffb100;fill-opacity:1;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 348.73335,565.58162 0,-119.86005"
+       id="path4618"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4620"
+       d="m 397.95888,583.06042 0,-119.86005"
+       style="fill:#ffb100;fill-opacity:1;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       sodipodi:nodetypes="cc"
+       style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 434.72844,631.65191 0,-239.93046"
+       id="path4628"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 398.46729,462.25394 35.53212,-70.18035"
+       id="path4632"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffb100;fill-opacity:1;stroke:#ffb100;stroke-width:1.10000002;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path4622"
+       sodipodi:cx="150.87891"
+       sodipodi:cy="514.69586"
+       sodipodi:rx="1.0606601"
+       sodipodi:ry="1.0606601"
+       d="m 151.93957,514.69586 a 1.0606601,1.0606601 0 1 1 -2.12132,0 1.0606601,1.0606601 0 1 1 2.12132,0 z"
+       transform="matrix(1.4171426,0,0,1.4171426,184.16213,-266.20347)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       transform="matrix(1.4171426,0,0,1.4171426,220.85088,-337.42785)"
+       d="m 151.93957,514.69586 a 1.0606601,1.0606601 0 1 1 -2.12132,0 1.0606601,1.0606601 0 1 1 2.12132,0 z"
+       sodipodi:ry="1.0606601"
+       sodipodi:rx="1.0606601"
+       sodipodi:cy="514.69586"
+       sodipodi:cx="150.87891"
+       id="path4630"
+       style="fill:#24a300;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       sodipodi:type="arc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4652"
+       d="m 434.88311,631.75135 113.58977,-66.0532"
+       style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4654"
+       d="M 434.86579,631.7624 235.15433,631.55218"
+       style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       style="fill:#ffb100;fill-opacity:1;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 398.14243,583.08252 318.8396,583.1986"
+       id="path4656"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+    <path
+       style="fill:#ffb100;fill-opacity:1;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 398.151,583.08774 30.29552,-17.37095"
+       id="path4658"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Zmax"
+     style="display:inline">
+    <g
+       style="display:inline"
+       id="g4928-0-6"
+       transform="matrix(0,1,-1,0,967.02196,159.29924)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669">
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path2995-5-6-6-9"
+         d="m 232.62406,531.91802 -66.07028,86.33904"
+         style="fill:none;stroke:#fe0000;stroke-width:1.20000005;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <path
+         transform="matrix(0.58881578,0,0,0.58881578,39.786881,295.69346)"
+         d="m 331.07143,401.82648 c 0,1.97244 -1.59898,3.57143 -3.57143,3.57143 -1.97245,0 -3.57143,-1.59899 -3.57143,-3.57143 0,-1.97245 1.59898,-3.57143 3.57143,-3.57143 1.97245,0 3.57143,1.59898 3.57143,3.57143 z"
+         sodipodi:ry="3.5714285"
+         sodipodi:rx="3.5714285"
+         sodipodi:cy="401.82648"
+         sodipodi:cx="327.5"
+         id="path4841-8-1-3"
+         style="fill:#fe0000;fill-opacity:1;fill-rule:nonzero;stroke:#fe0000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+    </g>
+    <flowRoot
+       transform="matrix(0.21464122,0,0,0.21464122,288.78575,179.30686)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       id="flowRoot4859-7-1"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="99.89669"><flowRegion
+         id="flowRegion4861-2-4"><rect
+           y="627.84558"
+           x="304.81354"
+           height="51.012703"
+           width="135.61298"
+           id="rect4863-1-2" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4865-2-9">Zmax</flowPara></flowRoot>  </g>
+</svg>
