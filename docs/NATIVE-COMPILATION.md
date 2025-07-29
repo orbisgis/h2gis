@@ -1,10 +1,10 @@
 # Native Compilation of H2GIS with GraalVM and C Interface
 
-This document explains how H2GIS was compiled as a native binary using GraalVM and how a C interface is used to communicate with the database through a Python API.
+This document explains how to compile H2GIS as a native binary using GraalVM and how a C interface is used to communicate with the database.
 
 ## Prerequisites
 ### Linux
-On Linux, to manipulate the native compilation you need to install [graalvm EE Core 22.3.5 for java 11](https://www.oracle.com/downloads/graalvm-downloads.html).
+On Linux, to compile H2GIS natively you need to install maven, [graalvm EE Core 22.3.5 for java 11 or 17](https://www.oracle.com/downloads/graalvm-downloads.html).
 Then you need to get a token with 
 ```bash
 bash <(curl -sL https://get.graalvm.org/ee-token)
@@ -17,7 +17,7 @@ gu install native-image
 ```
 
 ### Windows
-On windows, you need to install maven, [graalvm EE Core 22.3.5 for java 11](https://www.oracle.com/downloads/graalvm-downloads.html) and visual studio with c++ for desktop.
+On windows,  to compile H2GIS natively, you need to install maven, [graalvm EE Core 22.3.5 for java 11 or 17](https://www.oracle.com/downloads/graalvm-downloads.html) and visual studio with c++ for desktop.
 Then, you need to add this to you path :
 ```bash
 C:\Program Files\Microsoft Visual Studio\<vs_version>\Community\VC\Tools\MSVC\<vs_version>\bin\Hostx64\x64
@@ -136,10 +136,10 @@ native-image \
 
 ## Limitations and Future Improvements
 
-- Currently, only the Linux version is compiled in github actions. Cross-compilation for Windows/macOS is possible.
+- Currently, only the Linux version is compiled in github actions. Cross-compilation for Windows/macOS is possible and will be done in the future.
 - Support for complex return types could be improved using a shared C struct.
 - Currently, the performances of GraalVm are not very good (x2 time taken to do the same computations as the java version)
-- Currently, we use Java 11 with graalvm which limits the version of GraalVM to the 22.3.3, so we cannot use recent functionnalities. 
+- Currently, we use Java 11 (ot 17) with graalvm which limits the version of GraalVM to the 22.3.5, so we cannot use recent functionnalities. 
 
 ---
 

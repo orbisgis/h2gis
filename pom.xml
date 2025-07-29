@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Maven Coordinates -->
@@ -95,7 +96,6 @@
         <cts-version>1.7.1</cts-version>
         <geographiclib-version>2.0</geographiclib-version>
         <slf4j-version>2.0.16</slf4j-version>
-
         <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>
         <maven-assembly-version>3.6.0</maven-assembly-version>
@@ -281,7 +281,9 @@
                 <module>h2gis-dist</module>
             </modules>
             <properties>
-                <surefireArgLine>-agentlib:native-image-agent=config-output-dir=${project.build.directory}/native-image-config</surefireArgLine>
+                <surefireArgLine>
+                    -agentlib:native-image-agent=config-output-dir=${project.build.directory}/native-image-config
+                </surefireArgLine>
             </properties>
             <build>
                 <pluginManagement>
@@ -359,8 +361,6 @@
                 </pluginManagement>
             </build>
         </profile>
-
-
 
 
     </profiles>

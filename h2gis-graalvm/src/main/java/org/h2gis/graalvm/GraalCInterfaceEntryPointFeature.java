@@ -22,7 +22,7 @@ package org.h2gis.graalvm;
 import org.graalvm.nativeimage.hosted.Feature;
 
 /**
- * @author Maël PHILIPPE
+ * @author Maël PHILIPPE, CNRS
  * Class needed to expose the C API as it is not used in any other class.
  */
 public class GraalCInterfaceEntryPointFeature implements Feature {

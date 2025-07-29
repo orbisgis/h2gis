@@ -30,7 +30,8 @@ import static org.graalvm.nativeimage.c.type.CTypeConversion.toCString;
  * This class manages connections, statements, result sets, executes queries,
  * and returns results as raw buffers to native code.
  *
- * @author Maël PHILIPPE
+ * @author Maël PHILIPPE, CNRS
+ * @author Erwan BOCHER, cnrs
  */
 public class GraalCInterface {
 

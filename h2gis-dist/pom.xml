@@ -242,13 +242,14 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- Strip plugin (Linux only) -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>3.1.0</version>
                         <executions>
                             <execution>
-                                <id>strip-native-binary</id>
+                                <id>strip-native</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -258,11 +259,9 @@
                                     <arguments>
                                         <argument>-c</argument>
                                         <argument>
-                                            if [ -f "${project.build.directory}/${imageName}.so" ]; then strip
-                                            "${project.build.directory}/${imageName}.so"; fi
+                                            if [ &quot;$(uname)&quot; = &quot;Linux&quot; ]; then strip ${project.build.directory}/${imageName}.so; fi
                                         </argument>
                                     </arguments>
-                                    <skip>${os.name.startsWith("Windows")}</skip>
                                 </configuration>
                             </execution>
                         </executions>
@@ -270,5 +269,6 @@
                 </plugins>
             </build>
         </profile>
+
     </profiles>
 </project>

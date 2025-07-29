@@ -33,7 +33,8 @@ import java.util.List;
  * binary format using little-endian encoding, suitable for communication with native code
  * (e.g., via GraalVM).
  *
- * @author Maël PHILIPPE
+ * @author Maël PHILIPPE, CNRS
+ * @author Erwan BOCHER, cnrs
  */
 public class ColumnWrapper {
     private final String name;

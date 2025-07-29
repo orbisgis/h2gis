@@ -15,7 +15,8 @@ import java.util.List;
  * allowing for structured access to column data and metadata. Used for transferring
  * data from JDBC to native code via GraalVM.
  *
- * @author Maël PHILIPPE
+ * @author Maël PHILIPPE, CNRS
+ * @author Erwan BOCHER, cnrs
  */
 public class ResultSetWrapper {
     private final List<ColumnWrapper> columns = new ArrayList<>();
@@ -100,17 +101,13 @@ public class ResultSetWrapper {
     public static ResultSetWrapper from(ResultSet rs) {
         try {
             ResultSetWrapper wrapper = new ResultSetWrapper();
-            ResultSetMetaData meta = rs.getMetaData();
-            int colCount = meta.getColumnCount();
+            ResultSetMetaData rsm = rs.getMetaData();
+            int colCount = rsm.getColumnCount();
 
-            for (int i = 1; i <= colCount; i++) {
-                ColumnWrapper column = new ColumnWrapper(meta.getColumnName(i), meta.getColumnType(i), meta.getColumnTypeName(i).toLowerCase());
-                wrapper.addColumn(column);
-            }
+            createColumns(wrapper, rsm, colCount);
 
             int rowCounter = 0;
             while (rs.next()) {
-
                 for (int i = 1; i <= colCount; i++) {
                     if (wrapper.columns.get(i - 1).getTypeName().startsWith("geometry")) {
                         Object obj = rs.getObject(i);
@@ -128,6 +125,13 @@ public class ResultSetWrapper {
             e.printStackTrace();
             return null;
 
+        }
+    }
+
+    public static void createColumns(ResultSetWrapper wrapper, ResultSetMetaData rsm, int colCount) throws Exception{
+        for (int i = 1; i <= colCount; i++) {
+            ColumnWrapper column = new ColumnWrapper(rsm.getColumnName(i), rsm.getColumnType(i), rsm.getColumnTypeName(i).toLowerCase());
+            wrapper.addColumn(column);
         }
     }
 
@@ -151,7 +155,6 @@ public class ResultSetWrapper {
 
             int rowCounter = 0;
             if (rs.next()) {
-
                 for (int i = 1; i <= colCount; i++) {
                     wrapper.columns.get(i - 1).addValue(rs.getObject(i));
                 }
@@ -166,6 +169,7 @@ public class ResultSetWrapper {
 
         }
     }
+
 
     /**
      * Serializes the full result set into a flat byte buffer.
