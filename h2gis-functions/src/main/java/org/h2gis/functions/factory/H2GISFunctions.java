@@ -41,7 +41,6 @@ import org.h2gis.functions.io.kml.ST_AsKml;
 import org.h2gis.functions.io.osm.OSMRead;
 import org.h2gis.functions.io.osm.ST_OSMDownloader;
 import org.h2gis.functions.io.overpass.ST_AsOverpassBbox;
-import org.h2gis.functions.spatial.others.ST_EnvelopeAsText;
 import org.h2gis.functions.io.overpass.ST_OverpassDownloader;
 import org.h2gis.functions.io.shp.SHPRead;
 import org.h2gis.functions.io.shp.SHPWrite;
@@ -65,19 +64,17 @@ import org.h2gis.functions.spatial.earth.ST_Isovist;
 import org.h2gis.functions.spatial.earth.ST_SunPosition;
 import org.h2gis.functions.spatial.earth.ST_Svf;
 import org.h2gis.functions.spatial.edit.*;
-import org.h2gis.functions.spatial.generalize.ST_PrecisionReducer;
-import org.h2gis.functions.spatial.generalize.ST_Simplify;
-import org.h2gis.functions.spatial.generalize.ST_SimplifyVW;
-import org.h2gis.functions.spatial.generalize.ST_SimplifyPreserveTopology;
-import org.h2gis.functions.spatial.generalize.ST_SnapToGrid;
+import org.h2gis.functions.spatial.generalize.*;
 import org.h2gis.functions.spatial.linear_referencing.ST_LineInterpolatePoint;
 import org.h2gis.functions.spatial.linear_referencing.ST_LineSubstring;
 import org.h2gis.functions.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.functions.spatial.mesh.ST_Delaunay;
 import org.h2gis.functions.spatial.mesh.ST_Tessellate;
 import org.h2gis.functions.spatial.mesh.ST_Voronoi;
+import org.h2gis.functions.spatial.metadata.FindGeometryMetadata;
 import org.h2gis.functions.spatial.operators.*;
 import org.h2gis.functions.spatial.others.ST_Clip;
+import org.h2gis.functions.spatial.others.ST_EnvelopeAsText;
 import org.h2gis.functions.spatial.predicates.*;
 import org.h2gis.functions.spatial.properties.*;
 import org.h2gis.functions.spatial.snap.ST_Project;
@@ -95,15 +92,13 @@ import org.h2gis.functions.string.HexToVarBinary;
 import org.h2gis.functions.system.DoubleRange;
 import org.h2gis.functions.system.H2GISversion;
 import org.h2gis.functions.system.IntegerRange;
+import org.h2gis.functions.system.JTSVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
-
-import org.h2gis.functions.spatial.metadata.FindGeometryMetadata;
-import org.h2gis.functions.system.JTSVersion;
 
 /**
  * Add H2GIS features to an H2 database

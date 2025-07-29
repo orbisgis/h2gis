@@ -26,3 +26,5 @@
 - Fix ST_FORCE2D to return 2D coordinates
 - Use central portal to publish snapshots
 - New readthedoc documentation
+- Add native compilation using graalvm (creates lib and executable)
+- Exposes C API using graalvm to allow the lib to communicate with other programs 

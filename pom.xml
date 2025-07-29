@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Maven Coordinates -->
@@ -24,6 +25,7 @@
         <module>h2gis-functions-osgi</module>
         <module>postgis-jts</module>
         <module>postgis-jts-osgi</module>
+        <module>h2gis-graalvm</module>
     </modules>
 
     <organization>
@@ -94,7 +96,6 @@
         <cts-version>1.7.1</cts-version>
         <geographiclib-version>2.0</geographiclib-version>
         <slf4j-version>2.0.16</slf4j-version>
-      
         <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>
         <maven-assembly-version>3.6.0</maven-assembly-version>
@@ -107,6 +108,8 @@
         <maven-source-version>3.2.1</maven-source-version>
         <maven-surefire-version>3.2.2</maven-surefire-version>
         <version-maven-version>2.16.0</version-maven-version>
+        <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
+
     </properties>
 
     <!-- Dependencies -->
@@ -243,31 +246,123 @@
     </distributionManagement>
 
     <!-- Build Settings -->
-
     <profiles>
         <profile>
             <id>standalone</id>
             <modules>
                 <module>h2gis-dist</module>
             </modules>
+            <build>
+                <pluginManagement>
+
+                    <plugins>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native.maven.plugin.version}</version>
+                            <configuration>
+                                <metadataRepository>
+                                    <enabled>true</enabled>
+                                </metadataRepository>
+                                <agent>
+                                    <enabled>true</enabled>
+                                </agent>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+        <!-- build native app with graalvm-->
+        <profile>
+            <id>native</id>
+            <modules>
+                <module>h2gis-dist</module>
+            </modules>
+            <properties>
+                <surefireArgLine>
+                    -agentlib:native-image-agent=config-output-dir=${project.build.directory}/native-image-config
+                </surefireArgLine>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native.maven.plugin.version}</version>
+                            <configuration>
+                                <metadataRepository>
+                                    <enabled>true</enabled>
+                                </metadataRepository>
+                                <agent>
+                                    <enabled>true</enabled>
+                                </agent>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
         </profile>
         <profile>
             <id>integration</id>
             <modules>
                 <module>h2gis-tests</module>
             </modules>
+            <build>
+                <pluginManagement>
+
+                    <plugins>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native.maven.plugin.version}</version>
+                            <configuration>
+                                <metadataRepository>
+                                    <enabled>true</enabled>
+                                </metadataRepository>
+                                <agent>
+                                    <enabled>true</enabled>
+                                </agent>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
         </profile>
         <profile>
             <id>deploy</id>
             <build>
                 <plugins>
+                    <!-- Sign -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                     </plugin>
                 </plugins>
+                <pluginManagement>
+
+                    <plugins>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native.maven.plugin.version}</version>
+                            <configuration>
+                                <metadataRepository>
+                                    <enabled>true</enabled>
+                                </metadataRepository>
+                                <agent>
+                                    <enabled>true</enabled>
+                                </agent>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
             </build>
         </profile>
+
+
     </profiles>
 
     <build>
@@ -294,15 +389,17 @@
                         </execution>
                     </executions>
                 </plugin>
-                <!-- Test -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-version}</version>
                     <configuration>
                         <useSystemClassLoader>false</useSystemClassLoader>
+                        <argLine>${surefireArgLine}</argLine> <!-- This uses the property defined per profile -->
                     </configuration>
                 </plugin>
+
+
                 <!-- Package the project into a JAR file -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -417,6 +514,20 @@
                         <tagNameFormat>v@{project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.graalvm.buildtools</groupId>
+                    <artifactId>native-maven-plugin</artifactId>
+                    <version>${native.maven.plugin.version}</version>
+                    <configuration>
+                        <metadataRepository>
+                            <enabled>true</enabled>
+                        </metadataRepository>
+                        <agent>
+                            <enabled>true</enabled>
+                        </agent>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -428,6 +539,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
             </plugin>
 
             <plugin>

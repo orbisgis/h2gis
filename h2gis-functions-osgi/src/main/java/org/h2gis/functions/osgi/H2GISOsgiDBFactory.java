@@ -91,7 +91,7 @@ public class H2GISOsgiDBFactory {
     }
 
      /**
-     * Create a database, init spatial funcyion and return a DataSource
+     * Create a database, init spatial function and return a DataSource
      * @param properties for the opening of the DataBase.
      * @return a DataSource
      */

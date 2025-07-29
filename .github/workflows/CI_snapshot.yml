@@ -39,6 +39,14 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      
+      #Setup graalvm
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.3'
+          java-version: '11'
+          components: 'native-image'
+          set-java-home: true
 
       # Setup postgis test DB
       - uses: SPalominos/PostGIS-Installer-Action@v1.0.1

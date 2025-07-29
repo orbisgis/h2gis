@@ -91,6 +91,7 @@
 
     <!-- Build Settings -->
     <build>
+
         <plugins>
             <!-- Skip deployment on this module -->
             <plugin>
@@ -102,5 +103,27 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native.maven.plugin.version}</version>
+                            <configuration>
+                                <agent>
+                                    <enabled>true</enabled>
+                                </agent>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>f
 
 </project>

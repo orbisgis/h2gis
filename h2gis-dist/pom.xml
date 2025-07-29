@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,6 +14,10 @@
     <artifactId>h2gis-dist</artifactId>
 
     <!-- Project Information -->
+    <properties>
+        <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
+        <imageName>h2gis</imageName>
+    </properties>
     <name>h2gis-dist</name>
     <description>Generate a jar file containing the whole H2GIS project.</description>
     <organization>
@@ -46,6 +51,11 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis-graalvm</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
             <version>${project.parent.version}</version>
             <exclusions>
@@ -63,6 +73,14 @@
 
     <!-- Build Settings -->
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>META-INF/native-image/**</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <!-- Plugin for test running -->
             <plugin>
@@ -82,7 +100,7 @@
                     <workingDirectory>target/</workingDirectory>
                     <arguments>
                         <argument>-classpath</argument>
-                        <classpath />
+                        <classpath/>
                         <argument>org.h2.tools.Console</argument>
                     </arguments>
                 </configuration>
@@ -101,14 +119,14 @@
                     </archive>
                 </configuration>
             </plugin>
-            <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files  -->
+            <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>make-assembly</id><!-- this is used for inheritance merges -->
+                        <phase>package</phase><!--  bind to the packaging phase -->
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -117,8 +135,8 @@
                 <configuration>
                     <finalName>h2gis-standalone</finalName>
                     <descriptors>
-                        <descriptor>src/main/assembly/bin.xml</descriptor>     <!-- Binary Zip-->
-                        <descriptor>src/main/assembly/project.xml</descriptor> <!-- Sources   -->
+                        <descriptor>src/main/assembly/bin.xml</descriptor><!-- Binary Zip-->
+                        <descriptor>src/main/assembly/project.xml</descriptor><!-- Sources -->
                     </descriptors>
                 </configuration>
             </plugin>
@@ -130,6 +148,127 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
+
+    <!-- Graalvm native lib and executable build -->
+    <profiles>
+        <profile>
+            <id>native</id>
+            <!-- Build Settings -->
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>META-INF/native-image/**</include>
+                        </includes>
+                    </resource>
+                </resources>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <executions>
+                            <!-- Native executable -->
+                            <execution>
+                                <id>build-native-exec</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.h2.tools.Console</mainClass>
+                                    <imageName>${imageName}</imageName>
+                                    <fallback>false</fallback>
+                                    <buildArgs>
+                                        <arg>-O3</arg>
+                                        <arg>--gc=G1</arg>
+                                        <arg>--pgo-instrument</arg>
+                                        <arg>--enable-sbom</arg>
+                                        <arg>--enable-url-protocols=http,https,tcp</arg>
+                                        <arg>--install-exit-handlers</arg>
+                                        <arg>--no-fallback</arg>
+                                        <arg>--report-unsupported-elements-at-runtime</arg>
+                                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+                                        <arg>
+                                            -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json
+                                        </arg>
+                                        <arg>
+                                            -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
+                                        </arg>
+                                        <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
+                                    </buildArgs>
+                                </configuration>
+                            </execution>
+
+                            <!-- Native shared library -->
+                            <execution>
+                                <id>build-native-shared</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.h2.tools.Console</mainClass>
+                                    <imageName>${imageName}</imageName>
+                                    <fallback>false</fallback>
+                                    <buildArgs>
+                                        <arg>--shared</arg>
+                                        <arg>-O3</arg>
+                                        <arg>--gc=G1</arg>
+                                        <arg>--pgo-instrument</arg>
+                                        <arg>--enable-sbom</arg>
+                                        <arg>--no-fallback</arg>
+                                        <arg>--report-unsupported-elements-at-runtime</arg>
+                                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
+                                        <arg>--enable-url-protocols=http,https,tcp</arg>
+                                        <arg>--install-exit-handlers</arg>
+                                        <arg>--verbose</arg>
+                                        <arg>-H:+SourceLevelDebug</arg>
+                                        <arg>-H:+PrintAnalysisCallTree</arg>
+                                        <arg>-H:GenerateDebugInfo=2</arg>
+                                        <arg>
+                                            -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json
+                                        </arg>
+                                        <arg>
+                                            -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
+                                        </arg>
+                                    </buildArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Strip plugin (Linux only) -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>strip-native</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>bash</executable>
+                                    <arguments>
+                                        <argument>-c</argument>
+                                        <argument>
+                                            if [ &quot;$(uname)&quot; = &quot;Linux&quot; ]; then strip ${project.build.directory}/${imageName}.so; fi
+                                        </argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 </project>

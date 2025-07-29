@@ -64,6 +64,7 @@ It include also file copy functions (import):
 ## Usage
 
 H2GIS requires Java 11. Run `maven clean install -P standalone` in the H2GIS's root directory.
+If you want to build the native version of H2GIs (lib and executable), you need [GraalVM 22.3.5](https://www.oracle.com/downloads/graalvm-downloads.html#license-lightbox). For more informations, open the [detailed documentation](./NATIVE-COMPILATION.md)
 
 In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`. Unzip the file and then open `h2gis-dist-xxx.jar`. It will open a browser based console application.
 
@@ -75,6 +76,11 @@ In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bi
 Click `Connect` in the web interface.
 
 You can now [create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
+
+#### Compiling in native code
+
+H2GIS uses graalvm to be compiled in native code. To compile h2gis in native code, you need to run 'maven clean install -P native'. This will build the native version of H2GIS for the OS you're currently running.
+
 
 ### Initialize the H2GIS extension
 

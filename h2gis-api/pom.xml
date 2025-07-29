@@ -52,6 +52,16 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>${native.maven.plugin.version}</version>
+                <configuration>
+                    <agent>
+                        <enabled>true</enabled>
+                    </agent>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
