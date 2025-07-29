@@ -147,9 +147,15 @@ public class ResultSetWrapper {
         }
     }
 
-    public static void createColumns(ResultSetWrapper wrapper, ResultSetMetaData rsm, int colCount) throws Exception{
+    /**
+     * Instantiate the ColumnsWrappers for a ResultsetWrapper given a resultset metadata and a column number.
+     * @param wrapper  the resultset to which the columns will be added
+     * @param rsm      the ResultsetMetadata that will be used to know the columns to add
+     * @param colCount the number of columns to add.
+     **/
+    public static void createColumns(ResultSetWrapper wrapper, ResultSetMetaData rsm, int colCount) throws Exception {
         for (int i = 1; i <= colCount; i++) {
-            ColumnWrapper column = new ColumnWrapper(rsm.getColumnName(i), rsm.getColumnType(i), rsm.getColumnTypeName(i).toLowerCase());
+            ColumnWrapper column = new ColumnWrapper(rsm.getColumnLabel(i), rsm.getColumnType(i), rsm.getColumnTypeName(i).toLowerCase());
             wrapper.addColumn(column);
         }
     }
@@ -164,13 +170,10 @@ public class ResultSetWrapper {
     public static ResultSetWrapper fromOne(ResultSet rs) {
         try {
             ResultSetWrapper wrapper = new ResultSetWrapper();
-            ResultSetMetaData meta = rs.getMetaData();
-            int colCount = meta.getColumnCount();
+            ResultSetMetaData rsm = rs.getMetaData();
+            int colCount = rsm.getColumnCount();
 
-            for (int i = 1; i <= colCount; i++) {
-                ColumnWrapper column = new ColumnWrapper(meta.getColumnName(i), meta.getColumnType(i), meta.getColumnTypeName(i));
-                wrapper.addColumn(column);
-            }
+            createColumns(wrapper, rsm, colCount);
 
             int rowCounter = 0;
             if (rs.next()) {

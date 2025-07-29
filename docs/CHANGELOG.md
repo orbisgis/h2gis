@@ -28,3 +28,4 @@
 - New readthedoc documentation
 - Add native compilation using graalvm (creates lib and executable)
 - Exposes C API using graalvm to allow the lib to communicate with other programs 
+- Fix an error for C API fetch_rows
