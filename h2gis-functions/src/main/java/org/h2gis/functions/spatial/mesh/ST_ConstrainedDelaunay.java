@@ -72,7 +72,7 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
             delaunayData.put(geometry, DelaunayData.MODE.CONSTRAINED);
             delaunayData.triangulate();
             if (flag == 0) {
-                return delaunayData.getTriangles();
+                return delaunayData.getTrianglesAsMultiPolygon();
             } else if (flag == 1) {
                 return delaunayData.getTrianglesSides();
             } else {

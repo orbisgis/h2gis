@@ -51,7 +51,7 @@ public class ST_Tessellate extends DeterministicScalarFunction {
         delaunayData.put(polygon, DelaunayData.MODE.TESSELLATION);
         // Do triangulation
         delaunayData.triangulate();
-        return delaunayData.getTriangles();
+        return delaunayData.getTrianglesAsMultiPolygon();
     }
 
     public static MultiPolygon tessellate(Geometry geometry) throws IllegalArgumentException {

@@ -52,10 +52,6 @@
             <artifactId>jts-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>poly2tri</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wololo</groupId>
             <artifactId>flatgeobuf</artifactId>
         </dependency>
