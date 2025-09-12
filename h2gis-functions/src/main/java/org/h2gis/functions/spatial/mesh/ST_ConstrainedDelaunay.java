@@ -21,10 +21,16 @@
 package org.h2gis.functions.spatial.mesh;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
+import org.h2gis.functions.spatial.split.ST_LineIntersector;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.SegmentString;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Returns polygons or lines that represent a Delaunay triangulation constructed

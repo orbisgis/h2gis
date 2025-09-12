@@ -129,7 +129,7 @@ public class ST_Voronoi extends DeterministicScalarFunction {
             Coordinate a = triEdges[0].orig().getCoordinate();
             Coordinate b = triEdges[1].orig().getCoordinate();
             Coordinate c = triEdges[2].orig().getCoordinate();
-            circumCenters.add(Triangle.circumcentre(a, b, c));
+            circumCenters.add(org.locationtech.jts.geom.Triangle.circumcentre(a, b, c));
         }
     }
 

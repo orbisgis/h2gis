@@ -21,6 +21,7 @@
 package org.h2gis.functions.spatial.mesh;
 
 
+import org.h2gis.utilities.GeometryMetaData;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.index.quadtree.Quadtree;
@@ -30,10 +31,7 @@ import org.tinfour.common.*;
 import org.tinfour.standard.IncrementalTin;
 import org.tinfour.utils.TriangleCollector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is used to collect all data used to compute a mesh based on a
@@ -46,6 +44,7 @@ public class DelaunayData {
     private static final Logger LOGGER = LoggerFactory.getLogger(DelaunayData.class);
     public enum MODE {DELAUNAY, CONSTRAINED, TESSELLATION}
     private GeometryFactory gf;
+    private boolean isInput2D;
 
     /**
      * merge of Vertex instances below this distance
@@ -70,7 +69,6 @@ public class DelaunayData {
     // Output data
     private List<Coordinate> vertices = new ArrayList<Coordinate>();
     private List<Triangle> triangles = new ArrayList<Triangle>();
-    private List<Triangle> neighbors = new ArrayList<Triangle>(); // The first neighbor triangle is opposite the first corner of triangle  i
 
     /**
      * Create a mesh data structure to collect points and edges that will be
@@ -93,6 +91,8 @@ public class DelaunayData {
         if(mode == MODE.TESSELLATION && !(geom instanceof Polygon || geom instanceof MultiPolygon)) {
             throw new IllegalArgumentException("Only Polygon(s) are accepted for tessellation");
         } else {
+            int dim = GeometryMetaData.getMetaData(geom).dimension;
+            isInput2D = dim == 2;
             addGeometry(geom, 1);
         }
     }
@@ -164,12 +164,12 @@ public class DelaunayData {
      * @param hCoordinates
      */
     private void fillVerticesList(int attribute, Coordinate[] hCoordinates) {
-        List<Vertex> vertexList = new ArrayList<>(hCoordinates.length);
-        for(int vId = 0; vId < hCoordinates.length - 1 ; vId++) {
-            vertexList.add(addCoordinate(hCoordinates[vId], attribute));
-        }
         // Polygons start with the same coordinate as the last coordinate
         if(hCoordinates.length > 1 && hCoordinates[0].equals2D(hCoordinates[hCoordinates.length - 1])) {
+            List<Vertex> vertexList = new ArrayList<>(hCoordinates.length - 1);
+            for(int vId = 0; vId < hCoordinates.length - 1 ; vId++) {
+                vertexList.add(addCoordinate(hCoordinates[vId], attribute));
+            }
             PolygonConstraint polygonConstraint = new PolygonConstraint(vertexList);
             polygonConstraint.complete();
             if(polygonConstraint.isValid()) {
@@ -177,6 +177,10 @@ public class DelaunayData {
                 constraintIndex.add(attribute);
             }
         } else {
+            List<Vertex> vertexList = new ArrayList<>(hCoordinates.length);
+            for (Coordinate hCoordinate : hCoordinates) {
+                vertexList.add(addCoordinate(hCoordinate, attribute));
+            }
             LinearConstraint linearConstraint = new LinearConstraint(vertexList);
             linearConstraint.complete();
             if(linearConstraint.isValid()) {
@@ -213,8 +217,12 @@ public class DelaunayData {
         return triangles;
     }
 
-    private static Coordinate toCoordinate(Vertex v) {
-        return new Coordinate(v.getX(), v.getY(), v.getZ());
+    private static Coordinate toCoordinate(Vertex v, boolean isInput2D) {
+        if(isInput2D) {
+            return new Coordinate(v.getX(), v.getY());
+        } else {
+            return new Coordinate(v.getX(), v.getY(), v.getZ());
+        }
     }
 
     public void triangulate() {
@@ -237,7 +245,7 @@ public class DelaunayData {
         Map<Vertex, Integer> vertIndex = new HashMap<>();
         for(Vertex v : verts) {
             vertIndex.put(v, vertices.size());
-            vertices.add(toCoordinate(v));
+            vertices.add(toCoordinate(v, isInput2D));
         }
         Map<Integer, Integer> edgeIndexToTriangleIndex = new HashMap<>();
         for(SimpleTriangle t : simpleTriangles) {
@@ -255,7 +263,18 @@ public class DelaunayData {
     }
 
     public MultiPolygon getTrianglesAsMultiPolygon() {
-
+        if(!triangles.isEmpty()) {
+            // Convert into multi polygon
+            Polygon[] polygons = new Polygon[triangles.size()];
+            for (int idTriangle = 0; idTriangle < polygons.length; idTriangle++) {
+                final Triangle triangle = triangles.get(idTriangle);
+                polygons[idTriangle] = gf.createPolygon(new Coordinate[]{vertices.get(triangle.getA()),
+                        vertices.get(triangle.getB()), vertices.get(triangle.getC()), vertices.get(triangle.getA())});
+            }
+            return gf.createMultiPolygon(polygons);
+        } else {
+            return gf.createMultiPolygon(new Polygon[0]);
+        }
     }
 
     /**
@@ -263,7 +282,12 @@ public class DelaunayData {
      * @return the area of the triangles in 3D
      */
     public double get3DArea(){
-
+        double cumulatedArea = 0;
+        for (final Triangle triangle : triangles) {
+            cumulatedArea += computeTriangleArea3D(vertices.get(triangle.getA()),
+                    vertices.get(triangle.getB()), vertices.get(triangle.getC()));
+        }
+        return cumulatedArea;
     }
 
     /**
@@ -301,10 +325,34 @@ public class DelaunayData {
     }
 
     /**
-     * @return Unique triangles edges
+     * Populate hashmap with provided segment
+     * @param segmentHashMap
+     * @param a Start point
+     * @param b End point
+     */
+    private void addSegment(Set<LineSegment> segmentHashMap, Coordinate a, Coordinate b) {
+        LineSegment lineSegment = new LineSegment(a, b);
+        lineSegment.normalize();
+        segmentHashMap.add(lineSegment);
+    }
+
+    /**
+     * @return Unique triangles edges as a MultiLineString
      */
     public MultiLineString getTrianglesSides() {
-
+        // Remove duplicates edges thanks to this hash map of normalized line segments
+        Set<LineSegment> segmentHashMap = new HashSet<LineSegment>(triangles.size());
+        for(Triangle triangle : triangles) {
+            addSegment(segmentHashMap, vertices.get(triangle.getA()), vertices.get(triangle.getB()));
+            addSegment(segmentHashMap, vertices.get(triangle.getB()),vertices.get(triangle.getC()));
+            addSegment(segmentHashMap, vertices.get(triangle.getC()),vertices.get(triangle.getA()));
+        }
+        LineString[] lineStrings = new LineString[segmentHashMap.size()];
+        int i = 0;
+        for(LineSegment lineSegment : segmentHashMap) {
+            lineStrings[i++] = lineSegment.toGeometry(gf);
+        }
+        return gf.createMultiLineString(lineStrings);
     }
 
 }
