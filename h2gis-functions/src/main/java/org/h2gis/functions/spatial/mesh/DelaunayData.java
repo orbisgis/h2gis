@@ -63,9 +63,6 @@ public class DelaunayData {
     List<IConstraint> constraints = new ArrayList<>();
     List<Integer> constraintIndex = new ArrayList<>();
 
-    private boolean computeNeighbors = false;
-
-
     // Output data
     private List<Coordinate> vertices = new ArrayList<Coordinate>();
     private List<Triangle> triangles = new ArrayList<Triangle>();
