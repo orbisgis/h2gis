@@ -88,9 +88,9 @@
         <osgi-compendium-version>5.0.0</osgi-compendium-version>
         <osgi-core-version>6.0.0</osgi-core-version>
         <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
-        <poly2tri-version>0.7.0</poly2tri-version>
         <postgis-jdbc-version>2021.1.0</postgis-jdbc-version>
         <flatgeobuf-version>[3.27, 4)</flatgeobuf-version>
+        <tinfour-version>[2.1.8, 3)</tinfour-version>
         <postgresql-version>42.6.0</postgresql-version>
         <jna-version>0.5.0</jna-version>
         <cts-version>1.7.1</cts-version>
@@ -136,9 +136,9 @@
                 <version>${flatgeobuf-version}</version>
             </dependency>
             <dependency>
-                <groupId>org.orbisgis</groupId>
-                <artifactId>poly2tri</artifactId>
-                <version>${poly2tri-version}</version>
+                <groupId>org.tinfour</groupId>
+                <artifactId>TinfourCore</artifactId>
+                <version>${tinfour-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>

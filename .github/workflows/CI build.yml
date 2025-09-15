@@ -1,6 +1,8 @@
 name: CI build
 
 on:
+  push:
+    branches: [ '**' ]
   pull_request:
     branches: [ '**' ]
   workflow_run:
@@ -15,6 +17,18 @@ jobs:
     # Main build job used to
     name: Build
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          # must specify password for PG Docker container image, see: https://registry.hub.docker.com/_/postgres?tab=description&page=1&name=10
+          POSTGRES_USER: orbisgis
+          POSTGRES_PASSWORD: orbisgis
+          POSTGRES_DB: orbisgis_db
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       # Checkout the source code of the project
       - name: Checkout
@@ -26,16 +40,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-
-      # Setup postgis test DB
-      - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
-        with:
-          psql_version: '9.6'
-          pgis_version: '2.5'
-          docker_image: 'postgis/postgis'
-          db_password: 'orbisgis'
-          db_user: 'orbisgis'
-          db_name: 'orbisgis_db'
 
       #Setup graalvm
       - uses: graalvm/setup-graalvm@v1

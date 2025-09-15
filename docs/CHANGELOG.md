@@ -29,3 +29,4 @@
 - Add native compilation using graalvm (creates lib and executable)
 - Exposes C API using graalvm to allow the lib to communicate with other programs 
 - Fix an error for C API fetch_rows
+- Replace Poly2Tri by Tinfour library, signature of ST_ConstrainedDelaunay now have a minDistancePoint parameter for merging input coordinates

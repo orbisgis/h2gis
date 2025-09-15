@@ -5,7 +5,7 @@
 ```sql
 GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom)
 GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom, INTEGER flag)
-GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom, INTEGER flag, DOUBLE quality)
+GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom, INTEGER flag, DOUBLE minDistancePoint)
 ```
 
 ## Description
@@ -15,10 +15,10 @@ Returns a `MULTIPOLYGON` (or a `MULTILINESTRING`) that represent a Constrained D
 If `flag=0` *(default value)*, the output is a collection of `POLYGON`. 
 If `flag=1`, a `MULTILINESTRING` is returned. 
 
-The last argument can be set to improve the `quality` of the triangulation. The value must be comprised between 0 and 1. If `quality > 0.6`, we assume that the triangle's quality is acceptable.
+The last argument can be set to improve the robustness of the triangulation by merging input points that are close together. The default value is 1e-12.
 
 ### Remark
-If the input geometry does not contain any lines, a [Delaunay triangulation](../ST_Delaunay) will be computed.
+If the input geometry does not contain any lines or polygons, a [Delaunay triangulation](../ST_Delaunay) will be computed.
 
 ## Examples
 

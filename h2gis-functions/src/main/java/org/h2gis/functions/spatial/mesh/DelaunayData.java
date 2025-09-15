@@ -20,26 +20,18 @@
 
 package org.h2gis.functions.spatial.mesh;
 
-import org.h2gis.functions.spatial.aggregate.ST_Accum;
-import org.h2gis.functions.spatial.convert.ST_ToMultiLine;
+
 import org.h2gis.utilities.GeometryMetaData;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
-import org.poly2tri.Poly2Tri;
-import org.poly2tri.geometry.polygon.PolygonPoint;
-import org.poly2tri.triangulation.Triangulatable;
-import org.poly2tri.triangulation.TriangulationAlgorithm;
-import org.poly2tri.triangulation.TriangulationPoint;
-import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
-import org.poly2tri.triangulation.point.TPoint;
-import org.poly2tri.triangulation.sets.ConstrainedPointSet;
+import org.locationtech.jts.index.quadtree.Quadtree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tinfour.common.*;
+import org.tinfour.standard.IncrementalTin;
+import org.tinfour.utils.TriangleCollector;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class is used to collect all data used to compute a mesh based on a
@@ -51,11 +43,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DelaunayData {
     private static final Logger LOGGER = LoggerFactory.getLogger(DelaunayData.class);
     public enum MODE {DELAUNAY, CONSTRAINED, TESSELLATION}
-    private boolean isInput2D;
     private GeometryFactory gf;
-    private Triangulatable convertedInput = null;
-    // Precision
-    private MathContext mathContext = MathContext.DECIMAL64;
+    private boolean isInput2D;
+
+    // double type gives from 15 to 17 significant decimal digits precision
+    public static double DEFAULT_EPSILON = 1e-12;
+    /**
+     * merge of Vertex instances below this distance
+     */
+    private double epsilon = DEFAULT_EPSILON;
+
+    /**
+     * Accelerating structure to merge input points
+     */
+    Quadtree ptsIndex = new Quadtree();
+
+    /**
+     * Input data for Tinfour
+     */
+
+    List<IConstraint> constraints = new ArrayList<>();
+    List<Integer> constraintIndex = new ArrayList<>();
+
+    // Output data
+    private List<Coordinate> vertices = new ArrayList<Coordinate>();
+    private List<Triangle> triangles = new ArrayList<Triangle>();
+
+    private MODE mode = MODE.DELAUNAY;
 
     /**
      * Create a mesh data structure to collect points and edges that will be
@@ -64,46 +78,6 @@ public class DelaunayData {
     public DelaunayData() {
     }
 
-
-    private double r(double v) {
-        return new BigDecimal(v).round(mathContext).doubleValue();
-    }
-
-    private org.poly2tri.geometry.polygon.Polygon makePolygon(LineString lineString) {
-        PolygonPoint[] points = new PolygonPoint[lineString.getNumPoints() - 1];
-        for(int idPoint=0; idPoint < points.length; idPoint++) {
-            Coordinate point = lineString.getCoordinateN(idPoint);
-            points[idPoint] = new PolygonPoint(r(point.x), r(point.y), Double.isNaN(point.getZ()) ? 0 : r(point.getZ()));
-        }
-        return new org.poly2tri.geometry.polygon.Polygon(points);
-    }
-
-    private org.poly2tri.geometry.polygon.Polygon makePolygon(Polygon polygon) {
-        org.poly2tri.geometry.polygon.Polygon poly = makePolygon(polygon.getExteriorRing());
-        // Add holes
-        for(int idHole = 0; idHole < polygon.getNumInteriorRing(); idHole++) {
-            poly.addHole(makePolygon(polygon.getInteriorRingN(idHole)));
-        }
-        return poly;
-    }
-
-    private static Coordinate toJts(boolean is2d, org.poly2tri.geometry.primitives.Point pt) {
-        if(is2d) {
-            return new Coordinate(pt.getX(), pt.getY());
-        } else {
-            return new Coordinate(pt.getX(), pt.getY(), pt.getZ());
-        }
-    }
-    private int getMinDimension(GeometryCollection geometries) {
-        int dimension = Integer.MAX_VALUE;
-        for (int i = 0; i < geometries.getNumGeometries(); i++) {
-            dimension = Math.min(dimension, geometries.getGeometryN(i).getDimension());
-        }
-        if(dimension == Integer.MAX_VALUE) {
-            dimension = -1;
-        }
-        return dimension;
-    }
     /**
      * Put a geometry into the data array. Set true to populate the list of
      * points and edges, needed for the ContrainedDelaunayTriangulation. Set
@@ -114,129 +88,228 @@ public class DelaunayData {
      * @param mode Delaunay mode
      */
     public void put(Geometry geom, MODE mode) throws IllegalArgumentException {
+        this.mode = mode;
         gf = geom.getFactory();
-        convertedInput = null;
-        // Does not use instanceof here as we must not match for overload of GeometryCollection
-        int dimension;
-        if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
-            dimension = getMinDimension((GeometryCollection)geom);
+        if(mode == MODE.TESSELLATION && !(geom instanceof Polygon || geom instanceof MultiPolygon)) {
+            throw new IllegalArgumentException("Only Polygon(s) are accepted for tessellation");
         } else {
-            dimension = geom.getDimension();
+            int dim = GeometryMetaData.getMetaData(geom).dimension;
+            isInput2D = dim == 2;
+            addGeometry(geom, 1);
         }
-        // Workaround for issue 105 "Poly2Tri does not make a valid convexHull for points and linestrings delaunay
-        // https://code.google.com/p/poly2tri/issues/detail?id=105
-        if(mode != MODE.TESSELLATION) {
-            Geometry convexHull = new FullConvexHull(geom).getConvexHull();
-            if(convexHull instanceof Polygon && convexHull.isValid()) {
-                // Does not use instanceof here as we must not match for overload of GeometryCollection
-                if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
-                    if(dimension > 0) {
-                        // Mixed geometry, try to unify sub-types
-                        try {
-                            geom = ST_ToMultiLine.execute(geom).union();
-                        } catch (SQLException ex) {
-                            throw new IllegalArgumentException(ex);
-                        }
-                        if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
-                            throw new IllegalArgumentException("Delaunay does not support mixed geometry type");
-                        }
-                    }
+    }
+
+    /**
+     *
+     * @param coordinate
+     * @param index
+     * @return
+     */
+    private Vertex addCoordinate(Coordinate coordinate, int index) {
+        final Envelope env = new Envelope(coordinate);
+        env.expandBy(epsilon);
+        List result = ptsIndex.query(env);
+        Vertex found = null;
+        for(Object vertex : result) {
+            if(vertex instanceof Vertex) {
+                if(((Vertex) vertex).getDistance(coordinate.x, coordinate.y) < epsilon) {
+                    found = (Vertex) vertex;
+                    break;
                 }
-                if(dimension > 0) {
-                    geom = ((Polygon) convexHull).getExteriorRing().union(geom);
-                } else {
-                    ST_Accum accum = new ST_Accum();
-                    try {
-                        accum.add(geom);
-                        accum.add(convexHull);
-                        geom = accum.getResult();
-                    } catch (SQLException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(), ex);
-                    }
-                }
-            } else {
-                return;
             }
         }
-        // end workaround
-        int dim = GeometryMetaData.getMetaData(geom).dimension;
-        isInput2D = dim == 2;
-        convertedInput = null;
-        if(mode == MODE.TESSELLATION) {
-            if(geom instanceof Polygon) {
-                convertedInput = makePolygon((Polygon) geom);
-            } else {
-                throw new IllegalArgumentException("Only Polygon are accepted for tessellation");
+        if(found == null) {
+            found = new Vertex(coordinate.x, coordinate.y, Double.isNaN(coordinate.z) ? 0 : coordinate.z, index);
+            ptsIndex.insert(new Envelope(coordinate),  found);
+        }
+        return found;
+    }
+
+    /**
+     * Append a polygon into the triangulation
+     *
+     * @param newPoly Polygon to append into the mesh, internal rings willb be inserted as holes.
+     * @param attribute Polygon attribute. {@link Triangle#getAttribute()}
+     */
+    public void addPolygon(Polygon newPoly, int attribute) {
+        final Coordinate[] coordinates = newPoly.getExteriorRing().getCoordinates();
+        // Exterior ring must be CCW
+        if(!Orientation.isCCW(coordinates)) {
+            CoordinateArrays.reverse(coordinates);
+        }
+        if (coordinates.length >= 4) {
+            fillVerticesList(attribute, coordinates);
+        }
+        // Append holes
+        final int holeCount = newPoly.getNumInteriorRing();
+        for (int holeIndex = 0; holeIndex < holeCount; holeIndex++) {
+            LineString holeLine = newPoly.getInteriorRingN(holeIndex);
+            final Coordinate[] hCoordinates = holeLine.getCoordinates();
+            // Holes must be CW
+            if(Orientation.isCCW(hCoordinates)) {
+                CoordinateArrays.reverse(hCoordinates);
+            }
+            fillVerticesList(attribute, hCoordinates);
+        }
+    }
+
+    /**
+     * @param epsilon Merge vertices with this distance between
+     */
+    public void setEpsilon(double epsilon) {
+        this.epsilon = epsilon;
+    }
+
+    /**
+     * Add vertices to internal vertices structure (remove duplicates)
+     * @param attribute
+     * @param hCoordinates
+     */
+    private void fillVerticesList(int attribute, Coordinate[] hCoordinates) {
+        // Polygons start with the same coordinate as the last coordinate
+        if(hCoordinates.length > 1 && hCoordinates[0].equals2D(hCoordinates[hCoordinates.length - 1])) {
+            List<Vertex> vertexList = new ArrayList<>(hCoordinates.length - 1);
+            for(int vId = 0; vId < hCoordinates.length - 1 ; vId++) {
+                vertexList.add(addCoordinate(hCoordinates[vId], attribute));
+            }
+            PolygonConstraint polygonConstraint = new PolygonConstraint(vertexList);
+            polygonConstraint.complete();
+            if(polygonConstraint.isValid()) {
+                constraints.add(polygonConstraint);
+                constraintIndex.add(attribute);
             }
         } else {
-            // Constraint delaunay of segments
-            addGeometry(geom);
+            List<Vertex> vertexList = new ArrayList<>(hCoordinates.length);
+            for (Coordinate hCoordinate : hCoordinates) {
+                vertexList.add(addCoordinate(hCoordinate, attribute));
+            }
+            LinearConstraint linearConstraint = new LinearConstraint(vertexList);
+            linearConstraint.complete();
+            if(linearConstraint.isValid()) {
+                constraints.add(linearConstraint);
+                constraintIndex.add(attribute);
+            }
+        }
+    }
+
+    private void addLineString(LineString geom, int attribute) {
+        fillVerticesList(attribute, geom.getCoordinates());
+    }
+
+    private void addGeometry(Geometry geom, int attribute) {
+        if (geom instanceof GeometryCollection) {
+            // Manage multi polygon, multi linestring and multi point
+            for (int j = 0; j < geom.getNumGeometries(); j++) {
+                Geometry subGeom = geom.getGeometryN(j);
+                addGeometry(subGeom, attribute);
+            }
+        } else if(geom instanceof Polygon && !geom.isEmpty()) {
+            addPolygon((Polygon) geom, attribute);
+        } else if(geom instanceof LineString && !geom.isEmpty()) {
+            addLineString((LineString) geom, attribute);
+        } else if(geom instanceof Point) {
+            addCoordinate(geom.getCoordinate(), attribute);
+        }
+    }
+
+    private List<SimpleTriangle> computeTriangles(IncrementalTin incrementalTin) {
+        ArrayList<SimpleTriangle> triangles = new ArrayList<>(incrementalTin.countTriangles().getCount());
+        Triangle.TriangleBuilder triangleBuilder = new Triangle.TriangleBuilder(triangles);
+        TriangleCollector.visitSimpleTriangles(incrementalTin, triangleBuilder);
+        return triangles;
+    }
+
+    private static Coordinate toCoordinate(Vertex v, boolean isInput2D) {
+        if(isInput2D) {
+            return new Coordinate(v.getX(), v.getY());
+        } else {
+            return new Coordinate(v.getX(), v.getY(), v.getZ());
         }
     }
 
     public void triangulate() {
-        if(convertedInput != null) {
-            Poly2Tri.triangulate(TriangulationAlgorithm.DTSweep, convertedInput);
+        triangles.clear();
+        vertices.clear();
+
+        List<Vertex> meshPoints = ptsIndex.queryAll();
+
+        List<SimpleTriangle> simpleTriangles = new ArrayList<>();
+        IncrementalTin tin = new IncrementalTin(epsilon);
+
+        // Add points
+        tin.add(meshPoints, null);
+        // Add constraints
+        tin.addConstraints(constraints, false);
+
+        simpleTriangles = computeTriangles(tin);
+        List<Vertex> verts = tin.getVertices();
+        vertices = new ArrayList<>(verts.size());
+        Map<Vertex, Integer> vertIndex = new HashMap<>();
+        for(Vertex v : verts) {
+            vertIndex.put(v, vertices.size());
+            vertices.add(toCoordinate(v, isInput2D));
+        }
+        for(SimpleTriangle t : simpleTriangles) {
+            int triangleAttribute = 0;
+            if(t.getContainingRegion() != null) {
+                if(t.getContainingRegion().getConstraintIndex() < constraintIndex.size()) {
+                    triangleAttribute = constraintIndex.get(t.getContainingRegion().getConstraintIndex());
+                }
+            }
+            if(mode != MODE.TESSELLATION || triangleAttribute == 1) {
+                // With tesselation mode, only triangles in the domain of constraints polygons are kept
+                triangles.add(new Triangle(vertIndex.get(t.getVertexA()), vertIndex.get(t.getVertexB()),vertIndex.get(t.getVertexC()), triangleAttribute));
+            }
         }
     }
 
-    public MultiPolygon getTriangles() {
-        if(convertedInput != null) {
-            List<DelaunayTriangle> delaunayTriangle = convertedInput.getTriangles();
+    public MultiPolygon getTrianglesAsMultiPolygon() {
+        if(!triangles.isEmpty()) {
             // Convert into multi polygon
-            Polygon[] polygons = new Polygon[delaunayTriangle.size()];
+            Polygon[] polygons = new Polygon[triangles.size()];
             for (int idTriangle = 0; idTriangle < polygons.length; idTriangle++) {
-                TriangulationPoint[] pts = delaunayTriangle.get(idTriangle).points;
-                polygons[idTriangle] = gf.createPolygon(new Coordinate[]{toJts(isInput2D, pts[0]), toJts(isInput2D, pts[1]), toJts(isInput2D, pts[2]), toJts(isInput2D, pts[0])});
+                final Triangle triangle = triangles.get(idTriangle);
+                polygons[idTriangle] = gf.createPolygon(new Coordinate[]{vertices.get(triangle.getA()),
+                        vertices.get(triangle.getB()), vertices.get(triangle.getC()), vertices.get(triangle.getA())});
             }
             return gf.createMultiPolygon(polygons);
         } else {
             return gf.createMultiPolygon(new Polygon[0]);
         }
     }
-    
-    
+
     /**
      * Return the 3D area of all triangles
      * @return the area of the triangles in 3D
      */
     public double get3DArea(){
-        if(convertedInput != null) {
-            List<DelaunayTriangle> delaunayTriangle = convertedInput.getTriangles();
-            double sum = 0;
-            for (DelaunayTriangle triangle : delaunayTriangle) {
-                sum += computeTriangleArea3D(triangle);                
-            }
-            return sum;
-        } else {
-            return 0;
+        double cumulatedArea = 0;
+        for (final Triangle triangle : triangles) {
+            cumulatedArea += computeTriangleArea3D(vertices.get(triangle.getA()),
+                    vertices.get(triangle.getB()), vertices.get(triangle.getC()));
         }
+        return cumulatedArea;
     }
-    
+
     /**
      * Computes the 3D area of a triangle.
-     *
-     * @param triangle {@link DelaunayTriangle}
+     * Uses the formula 1/2 * | u x v | where u,v are the side vectors of
+     * the triangle x is the vector cross-product
+     * @param p1 First vertex
+     * @param p2 Second vertex
+     * @param p3 Third vertex
      * @return triangle area
      */
-    private double computeTriangleArea3D(DelaunayTriangle triangle) {
-        TriangulationPoint[] points = triangle.points;       
-        TriangulationPoint p1 = points[0];
-        TriangulationPoint p2 = points[1];
-        TriangulationPoint p3 = points[2];        
-        /**
-         * Uses the formula 1/2 * | u x v | where u,v are the side vectors of
-         * the triangle x is the vector cross-product
-         */
+    public static double computeTriangleArea3D(Coordinate p1, Coordinate p2, Coordinate p3) {
         // side vectors u and v
         double ux = p2.getX() - p1.getX();
         double uy = p2.getY() - p1.getY();
-        double uz = p2.getZ() - p1.getZ();
+        double uz = Double.isNaN(p1.z) || Double.isNaN(p2.z) ? 0 : p2.getZ() - p1.getZ();
 
         double vx = p3.getX() - p1.getX();
         double vy = p3.getY() - p1.getY();
-        double vz = p3.getZ() - p1.getZ();
-        
+        double vz = Double.isNaN(p1.z) || Double.isNaN(p3.z) ? 0 : p3.getZ() - p1.getZ();
+
         if (Double.isNaN(uz) || Double.isNaN(vz)) {
             uz=1;
             vz=1;
@@ -252,24 +325,28 @@ public class DelaunayData {
         return Math.sqrt(absSq) / 2;
     }
 
-    private void addSegment(Set<LineSegment> segmentHashMap, TriangulationPoint a, TriangulationPoint b) {
-        LineSegment lineSegment = new LineSegment(toJts(isInput2D, a), toJts(isInput2D, b));
+    /**
+     * Populate hashmap with provided segment
+     * @param segmentHashMap
+     * @param a Start point
+     * @param b End point
+     */
+    private void addSegment(Set<LineSegment> segmentHashMap, Coordinate a, Coordinate b) {
+        LineSegment lineSegment = new LineSegment(a, b);
         lineSegment.normalize();
         segmentHashMap.add(lineSegment);
     }
 
     /**
-     * @return Unique triangles edges
+     * @return Unique triangles edges as a MultiLineString
      */
     public MultiLineString getTrianglesSides() {
-        List<DelaunayTriangle> delaunayTriangle = convertedInput.getTriangles();
         // Remove duplicates edges thanks to this hash map of normalized line segments
-        Set<LineSegment> segmentHashMap = new HashSet<LineSegment>(delaunayTriangle.size());
-        for(DelaunayTriangle triangle : delaunayTriangle) {
-            TriangulationPoint[] pts = triangle.points;
-            addSegment(segmentHashMap, pts[0], pts[1]);
-            addSegment(segmentHashMap, pts[1], pts[2]);
-            addSegment(segmentHashMap, pts[2], pts[0]);
+        Set<LineSegment> segmentHashMap = new HashSet<LineSegment>(triangles.size());
+        for(Triangle triangle : triangles) {
+            addSegment(segmentHashMap, vertices.get(triangle.getA()), vertices.get(triangle.getB()));
+            addSegment(segmentHashMap, vertices.get(triangle.getB()),vertices.get(triangle.getC()));
+            addSegment(segmentHashMap, vertices.get(triangle.getC()),vertices.get(triangle.getA()));
         }
         LineString[] lineStrings = new LineString[segmentHashMap.size()];
         int i = 0;
@@ -279,113 +356,4 @@ public class DelaunayData {
         return gf.createMultiLineString(lineStrings);
     }
 
-    /**
-     * Add a geometry to the list of points and edges used by the triangulation.
-     * @param geom Any geometry
-     */
-    private void addGeometry(Geometry geom) throws IllegalArgumentException {
-        if(!geom.isValid()) {
-            throw new IllegalArgumentException("Provided geometry is not valid !");
-        }
-        if(geom instanceof GeometryCollection) {
-            Map<TriangulationPoint, Integer> pts = new HashMap<TriangulationPoint, Integer>(geom.getNumPoints());
-            List<Integer> segments = new ArrayList<Integer>(pts.size());
-            AtomicInteger pointsCount = new AtomicInteger(0);
-            PointHandler pointHandler = new PointHandler(this, pts, pointsCount);
-            LineStringHandler lineStringHandler = new LineStringHandler(this, pts, pointsCount, segments);
-            for(int geomId = 0; geomId < geom.getNumGeometries(); geomId++) {
-                addSimpleGeometry(geom.getGeometryN(geomId), pointHandler, lineStringHandler);
-            }
-            int[] index = new int[segments.size()];
-            for(int i = 0; i < index.length; i++) {
-                index[i] = segments.get(i);
-            }
-            // Construct final points array by reversing key,value of hash map
-            TriangulationPoint[] ptsArray = new TriangulationPoint[pointsCount.get()];
-            for(Map.Entry<TriangulationPoint, Integer> entry : pts.entrySet()) {
-                ptsArray[entry.getValue()] = entry.getKey();
-            }
-            pts.clear();
-            convertedInput = new ConstrainedPointSet(Arrays.asList(ptsArray), index);
-        } else {
-            addGeometry(geom.getFactory().createGeometryCollection(new Geometry[]{geom}));
-        }
-    }
-
-    private void addSimpleGeometry(Geometry geom, PointHandler pointHandler, LineStringHandler lineStringHandler) throws IllegalArgumentException {
-        if(geom instanceof Point) {
-            geom.apply(pointHandler);
-        } else if(geom instanceof LineString) {
-            lineStringHandler.reset();
-            geom.apply(lineStringHandler);
-        } else if(geom instanceof Polygon) {
-            Polygon polygon = (Polygon) geom;
-            lineStringHandler.reset();
-            polygon.getExteriorRing().apply(lineStringHandler);
-            for(int idHole = 0; idHole < polygon.getNumInteriorRing(); idHole++) {
-                lineStringHandler.reset();
-                polygon.getInteriorRingN(idHole).apply(lineStringHandler);
-            }
-        }
-    }
-
-    private static class PointHandler implements CoordinateFilter {
-        private DelaunayData delaunayData;
-        private Map<TriangulationPoint, Integer> pts;
-        private AtomicInteger maxIndex;
-
-        public PointHandler(DelaunayData delaunayData, Map<TriangulationPoint, Integer> pts, AtomicInteger maxIndex) {
-            this.delaunayData = delaunayData;
-            this.pts = pts;
-            this.maxIndex = maxIndex;
-        }
-
-        protected int addPt(Coordinate coordinate) {
-            TPoint pt = new TPoint(delaunayData.r(coordinate.x), delaunayData.r(coordinate.y),
-                    Double.isNaN(coordinate.getZ()) ? 0 : delaunayData.r(coordinate.getZ()));
-            Integer index = pts.get(pt);
-            if(index == null) {
-                index = maxIndex.getAndAdd(1);
-                pts.put(pt, index);
-            }
-            return index;
-        }
-
-        @Override
-        public void filter(Coordinate pt) {
-            addPt(pt);
-        }
-    }
-
-    private static class LineStringHandler extends PointHandler {
-        private List<Integer> segments;
-        private int firstPtIndex = -1;
-
-        public LineStringHandler(DelaunayData delaunayData, Map<TriangulationPoint, Integer> pts,
-                                 AtomicInteger maxIndex, List<Integer> segments) {
-            super(delaunayData, pts, maxIndex);
-            this.segments = segments;
-        }
-
-        /**
-         * New line string
-         */
-        public void reset() {
-            firstPtIndex = -1;
-        }
-
-        @Override
-        public void filter(Coordinate pt) {
-            if (firstPtIndex == -1) {
-                firstPtIndex = addPt(pt);
-            } else {
-                int secondPt = addPt(pt);
-                if (secondPt != firstPtIndex) {
-                    segments.add(firstPtIndex);
-                    segments.add(secondPt);
-                    firstPtIndex = secondPt;
-                }
-            }
-        }
-    }
 }
