@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 /**
  * A triangle built from the combination of the 3 vertices index.
  * 
- * @author Nicolas Fortin
+ * @author Nicolas Fortin, UMRAE, Université Gustave Eiffel - Cerema
  */
 public class Triangle {
 	private int a = 0;
@@ -36,10 +36,18 @@ public class Triangle {
 	private int c = 0;
 	private int attribute =-1;
 
+    /**
+     * @return Vertex A index
+     */
 	public int getA() {
 		return a;
 	}
 
+    /**
+     * Get vertex index
+     * @param id Vertex number [0-2]
+     * @return vertex index
+     */
 	public int get(int id) {
 		switch (id) {
 		case 0:
@@ -50,11 +58,20 @@ public class Triangle {
 			return c;
 		}
 	}
-        public int getAttribute(){
-                return this.attribute;
-        }
-        
 
+    /**
+     * @return Attribute associated with the triangle
+     * Currently 0 if the triangle is not bound to a polygonal constraint, 1 otherwise
+     */
+    public int getAttribute(){
+            return this.attribute;
+    }
+
+    /**
+     * Set the vertex index for one of the vertex of the triangle
+     * @param id Triangle vertex [0-2]
+     * @param index Vertex index to set (from the array of coordinates)
+     */
 	public void set(int id,int index) {
 		switch (id) {
 		case 0:
@@ -68,26 +85,51 @@ public class Triangle {
 		}
 	}
 
+    /**
+     * Set the vertex index for one of the vertex of the triangle
+     * @param a Vertex index to set (from the array of coordinates)
+     */
 	public void setA(int a) {
 		this.a = a;
 	}
 
+    /**
+     * @return Vertex B index
+     */
 	public int getB() {
 		return b;
 	}
 
+    /**
+     * Set the vertex index for one of the vertex of the triangle
+     * @param b Vertex index to set (from the array of coordinates)
+     */
 	public void setB(int b) {
 		this.b = b;
 	}
 
+    /**
+     * @return Vertex C index
+     */
 	public int getC() {
 		return c;
 	}
 
+    /**
+     * Set the vertex index for one of the vertex of the triangle
+     * @param c Vertex index to set (from the array of coordinates)
+     */
 	public void setC(int c) {
 		this.c = c;
 	}
 
+    /**
+     * Constructor
+     * @param a Vertex index of the first vertex
+     * @param b Vertex index of the second vertex
+     * @param c Vertex index of the third vertex
+     * @param attribute Attribute of the triangle
+     */
 	public Triangle(int a, int b, int c, int attribute) {
 		super();
 		this.a = a;
@@ -95,15 +137,23 @@ public class Triangle {
 		this.c = c;
                 this.attribute = attribute;
 	}
-        
-        public Triangle(int a, int b, int c) {
+
+    /**
+     * Constructor
+     * @param a Vertex index of the first vertex
+     * @param b Vertex index of the second vertex
+     * @param c Vertex index of the third vertex
+     */
+    public Triangle(int a, int b, int c) {
 		super();
 		this.a = a;
 		this.b = b;
 		this.c = c;
-             
 	}
 
+    /**
+     * Generate a triangle from Tinfour structure
+     */
 	public static class TriangleBuilder implements Consumer<SimpleTriangle> {
 		ArrayList<SimpleTriangle> triangles;
 

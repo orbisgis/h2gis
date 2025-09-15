@@ -85,7 +85,7 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     public static GeometryCollection createCDT(Geometry geometry, int flag, double minPointSpacing) throws SQLException {
         if (geometry != null) {
             DelaunayData delaunayData = new DelaunayData();
-            delaunayData.setEpsilon(minPointSpacing);
+            delaunayData.setEpsilon(Math.max(0, minPointSpacing));
             delaunayData.put(OverlayNGRobust.union(geometry), DelaunayData.MODE.CONSTRAINED);
             delaunayData.triangulate();
             if (flag == 0) {
