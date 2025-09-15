@@ -40,7 +40,8 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     public ST_ConstrainedDelaunay() {
         addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry.\n"
                 + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1.\n"
-                + "If the input geometry does not contain any lines, a delaunay triangulation will be computed.\n");
+                + "If the input geometry does not contain any lines or polygons, a delaunay triangulation will be computed." +
+                " The minPointSpacing is the merge distance between provided points, by default this value is 1e-12\n");
     }
 
     @Override
@@ -65,11 +66,26 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      *
      * @param geometry Geometry
      * @param flag 0 = polygon, 1 = lines
-     * @return a set of geometries (triangles)
+     * @return a set of geometries (flag 0 = polygon, flag 1 = lines)
      */
     public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException {
+        return createCDT(geometry, flag, DelaunayData.DEFAULT_EPSILON);
+    }
+
+
+    /**
+     * Build a constrained delaunay triangulation based on a geometry
+     * (point, line, polygon)
+     *
+     * @param geometry Geometry
+     * @param flag 0 = polygon, 1 = lines
+     * @param minPointSpacing Will merge points if the distance is inferior between this parameter
+     * @return a set of geometries (flag 0 = polygon, flag 1 = lines)
+     */
+    public static GeometryCollection createCDT(Geometry geometry, int flag, double minPointSpacing) throws SQLException {
         if (geometry != null) {
             DelaunayData delaunayData = new DelaunayData();
+            delaunayData.setEpsilon(minPointSpacing);
             delaunayData.put(OverlayNGRobust.union(geometry), DelaunayData.MODE.CONSTRAINED);
             delaunayData.triangulate();
             if (flag == 0) {

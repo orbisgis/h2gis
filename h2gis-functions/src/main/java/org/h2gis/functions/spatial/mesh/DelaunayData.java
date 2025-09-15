@@ -46,10 +46,12 @@ public class DelaunayData {
     private GeometryFactory gf;
     private boolean isInput2D;
 
+    // double type gives from 15 to 17 significant decimal digits precision
+    public static double DEFAULT_EPSILON = 1e-12;
     /**
      * merge of Vertex instances below this distance
      */
-    private double epsilon = 1e-5;
+    private double epsilon = DEFAULT_EPSILON;
 
     /**
      * Accelerating structure to merge input points
@@ -232,7 +234,7 @@ public class DelaunayData {
         List<Vertex> meshPoints = ptsIndex.queryAll();
 
         List<SimpleTriangle> simpleTriangles = new ArrayList<>();
-        IncrementalTin tin = new IncrementalTin();
+        IncrementalTin tin = new IncrementalTin(epsilon);
 
         // Add points
         tin.add(meshPoints, null);
