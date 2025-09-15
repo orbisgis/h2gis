@@ -27,7 +27,7 @@ jobs:
         env:
           GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
           GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
-        if: ${{(secrets.GPG_PUBLIC_KEY != null)}}
+        if: ${{(env.GPG_PUBLIC_KEY != null)}}
 
       # Setup the jdk using version 11 of Adoptium Temurin
       - name: Setup java 11 using Adoptium Temurin
@@ -66,7 +66,7 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.MVN_CENTRAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MVN_CENTRAL_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        if: ${{(secrets.MVN_CENTRAL_USERNAME != null)}}
+        if: ${{(env.MAVEN_USERNAME != null)}}
 
       # Build distribution artifact
       - name: Distribution
