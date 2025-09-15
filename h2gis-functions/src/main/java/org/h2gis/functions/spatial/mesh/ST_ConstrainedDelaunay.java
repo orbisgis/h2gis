@@ -21,18 +21,11 @@
 package org.h2gis.functions.spatial.mesh;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.functions.spatial.split.ST_LineIntersector;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.noding.IntersectionAdder;
-import org.locationtech.jts.noding.MCIndexNoder;
-import org.locationtech.jts.noding.SegmentString;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
-import org.locationtech.jts.operation.valid.IsSimpleOp;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Returns polygons or lines that represent a Delaunay triangulation constructed
@@ -76,14 +69,8 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      */
     public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException {
         if (geometry != null) {
-            IsSimpleOp op = new IsSimpleOp(geometry);
-            Coordinate pt = op.getNonSimpleLocation();
-            if(pt != null) {
-                // There is self intersection
-                geometry = OverlayNGRobust.union(geometry);
-            }
             DelaunayData delaunayData = new DelaunayData();
-            delaunayData.put(geometry, DelaunayData.MODE.CONSTRAINED);
+            delaunayData.put(OverlayNGRobust.union(geometry), DelaunayData.MODE.CONSTRAINED);
             delaunayData.triangulate();
             if (flag == 0) {
                 return delaunayData.getTrianglesAsMultiPolygon();

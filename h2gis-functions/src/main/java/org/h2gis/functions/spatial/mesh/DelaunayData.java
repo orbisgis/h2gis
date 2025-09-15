@@ -67,6 +67,8 @@ public class DelaunayData {
     private List<Coordinate> vertices = new ArrayList<Coordinate>();
     private List<Triangle> triangles = new ArrayList<Triangle>();
 
+    private MODE mode = MODE.DELAUNAY;
+
     /**
      * Create a mesh data structure to collect points and edges that will be
      * used by the Delaunay Triangulation
@@ -84,6 +86,7 @@ public class DelaunayData {
      * @param mode Delaunay mode
      */
     public void put(Geometry geom, MODE mode) throws IllegalArgumentException {
+        this.mode = mode;
         gf = geom.getFactory();
         if(mode == MODE.TESSELLATION && !(geom instanceof Polygon || geom instanceof MultiPolygon)) {
             throw new IllegalArgumentException("Only Polygon(s) are accepted for tessellation");
@@ -244,7 +247,6 @@ public class DelaunayData {
             vertIndex.put(v, vertices.size());
             vertices.add(toCoordinate(v, isInput2D));
         }
-        Map<Integer, Integer> edgeIndexToTriangleIndex = new HashMap<>();
         for(SimpleTriangle t : simpleTriangles) {
             int triangleAttribute = 0;
             if(t.getContainingRegion() != null) {
@@ -252,10 +254,10 @@ public class DelaunayData {
                     triangleAttribute = constraintIndex.get(t.getContainingRegion().getConstraintIndex());
                 }
             }
-            triangles.add(new Triangle(vertIndex.get(t.getVertexA()), vertIndex.get(t.getVertexB()),vertIndex.get(t.getVertexC()), triangleAttribute));
-            edgeIndexToTriangleIndex.put(t.getEdgeA().getIndex(), triangles.size() - 1);
-            edgeIndexToTriangleIndex.put(t.getEdgeB().getIndex(), triangles.size() - 1);
-            edgeIndexToTriangleIndex.put(t.getEdgeC().getIndex(), triangles.size() - 1);
+            if(mode != MODE.TESSELLATION || triangleAttribute == 1) {
+                // With tesselation mode, only triangles in the domain of constraints polygons are kept
+                triangles.add(new Triangle(vertIndex.get(t.getVertexA()), vertIndex.get(t.getVertexB()),vertIndex.get(t.getVertexC()), triangleAttribute));
+            }
         }
     }
 
