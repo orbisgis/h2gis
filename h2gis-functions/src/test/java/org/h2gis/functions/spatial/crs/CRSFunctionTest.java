@@ -118,6 +118,12 @@ public class CRSFunctionTest {
     }
 
     @Test
+    public void test_ST_Transform27700To4326() throws Exception {
+        checkProjectedGeom("SRID=27700;POINT(489581 -55232)",
+                "SRID=4326;POINT(-0.7667563514593325 49.396886444795)", 10E-3);
+    }
+
+    @Test
     public void testST_TransformProjectThenProjectBack() throws Exception {
         final String inGeom = "SRID=4326;MULTILINESTRINGZ ((0 0 0, 1 0 0))";
         final int inOutProj = 4326;
