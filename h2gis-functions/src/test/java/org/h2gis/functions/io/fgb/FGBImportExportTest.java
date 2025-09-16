@@ -10,6 +10,7 @@ import org.h2gis.utilities.URIUtilities;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.wololo.flatgeobuf.ColumnMeta;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -389,6 +391,42 @@ public class FGBImportExportTest {
             assertEquals(2, columns.size());
             assertTrue(columns.contains("THE_GEOM"));
             assertTrue(columns.contains("ID"));
+            assertFalse(rs.next());
+        }
+    }
+
+    @Test
+    public void testWriteReadFGBPointBoolean(@TempDir Path tempDir) throws Exception {
+        File file = Path.of(tempDir.toString(), "points.fgb").toFile();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), area float, " +
+                    "perimeter double precision, name varchar, smallint_col smallint, int_col integer, " +
+                    "numeric_col NUMERIC(10, 1),  real_col real, float_precision_col float(1), bigint_col bigint, boolean_col BOOLEAN DEFAULT FALSE )");
+            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 12.10, 156.12345678, 'OrbisGIS', 1, 1,10.5,12.1234, 12.8, 1000000, true)");
+            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 10.25,  156.12345678, 'NoiseModelling', null, 1,10.5,12.1234, 12.8, null, false)");
+            stat.execute(String.format("CALL FGBWrite('%s', 'TABLE_POINTS', true);", file));
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute(String.format("CALL FGBRead('%s', 'TABLE_POINTS', true);", file));
+
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
+            assertEquals("POINT (140 260)", rs.getString("THE_GEOM"));
+            assertEquals(12.1, rs.getFloat("area"), 10-2);
+            assertEquals("OrbisGIS", rs.getString("name"));
+            assertEquals(1, rs.getObject("smallint_col"));
+            assertEquals(1, rs.getObject("int_col"));
+            assertEquals(10.5, rs.getObject("numeric_col"));
+            assertEquals(12.1234 , rs.getFloat("real_col"), 10-3);
+            assertEquals(12.8, rs.getFloat("float_precision_col"), 10-1);
+            assertEquals(1000000L, rs.getObject("bigint_col"));
+            assertTrue(rs.getBoolean("boolean_col"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("ID"));
+            assertEquals("POINT (150 290)", rs.getString("THE_GEOM"));
+            assertEquals(10.25, rs.getFloat("area"), 10-2);
+            assertFalse(rs.getBoolean("boolean_col"));
             assertFalse(rs.next());
         }
     }
