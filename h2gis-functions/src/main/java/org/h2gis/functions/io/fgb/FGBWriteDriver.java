@@ -120,7 +120,7 @@ public class FGBWriteDriver {
                     if (deleteFiles) {
                         Files.deleteIfExists(fileName.toPath());
                     } else if (fileName.exists()) {
-                        throw new IOException("The json file already exist.");
+                        throw new IOException("The fgb file already exist.");
                     }
                     PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     JDBCUtilities.attachCancelResultSet(ps, progress);
@@ -246,10 +246,10 @@ public class FGBWriteDriver {
                         byte type = column.type;
                         switch (type) {
                             case ColumnType.Bool:
-                                bufferManager.putShort((byte) ((boolean) value ? 1 : 0));
+                                bufferManager.put((byte) ((boolean) value ? 1 : 0));
                                 break;
                             case ColumnType.Byte:
-                                bufferManager.putShort((byte) value);
+                                bufferManager.put((byte) value);
                                 break;
                             case ColumnType.Short:
                                 bufferManager.putShort(((Integer) value).shortValue());
