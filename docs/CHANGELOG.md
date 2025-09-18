@@ -32,3 +32,4 @@
 - Replace Poly2Tri by Tinfour library, signature of ST_ConstrainedDelaunay now have a minDistancePoint parameter for merging input coordinates
 - Fix storage of Boolean and Byte type of the Flat GeoBuffer storage driver issue #1437
 - Fix transformation from 27700 to 4326
+- Update to CTS 1.7.2-SNAPSHOT
