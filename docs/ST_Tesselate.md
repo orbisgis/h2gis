@@ -29,7 +29,7 @@ GEOMETRYCOLLECTION (POLYGON ((1 5, 3 5, 3 4, 1 5)),
                      POLYGON ((2 4, 2 3, 1 1, 2 4)))
 ```
 
-![](./ST_TESSELATE_1.png){align=center}
+![](./ST_Tesselate_1.png){align=center}
 
 ### Case with `MULTIPOLYGON`
 
@@ -49,7 +49,7 @@ GEOMETRYCOLLECTION (POLYGON ((1 1, 1 3, 2 4, 1 1)),
                     POLYGON ((4 2, 4 3, 5 4, 4 2)))
 ```
 
-![](./ST_TESSELATE_2.png){align=center}
+![](./ST_Tesselate_2.png){align=center}
 
 ### Application with real data
 
@@ -61,7 +61,7 @@ SELECT ST_TESSELATE(THE_GEOM) as THE_GEOM FROM PLOTS;
 
 The resulting triangles are displayed in pink.
 
-![](./ST_TESSELATE_3.png){align=center}
+![](./ST_Tesselate_3.png){align=center}
 
 ## See also
 
