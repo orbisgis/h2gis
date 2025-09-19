@@ -1618,7 +1618,13 @@
     "allDeclaredFields": true
   },
   {
-    "name": "org.h2gis.functions.spatial.mesh.ST_TESSELATE",
+    "name": "org.h2gis.functions.spatial.mesh.ST_Tesselate",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.h2gis.functions.spatial.mesh.ST_TriangulatePolygon",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
