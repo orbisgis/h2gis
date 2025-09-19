@@ -834,7 +834,7 @@
       "allPublicMethods": true
     },
     {
-      "name": "org.h2gis.functions.spatial.operators.ST_Tessellate",
+      "name": "org.h2gis.functions.spatial.operators.ST_TESSELATE",
       "allDeclaredConstructors": true,
       "allPublicMethods": true
     },

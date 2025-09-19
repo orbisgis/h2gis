@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="ST_Tessellate.svg">
+   sodipodi:docname="ST_TESSELATE.svg">
   <defs
      id="defs4">
     <marker
@@ -151,7 +151,7 @@
     <rect
        inkscape:export-ydpi="951.32001"
        inkscape:export-xdpi="951.32001"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_3.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_3.png"
        y="772.79425"
        x="271.61819"
        height="124.03751"
@@ -165,13 +165,13 @@
        height="193.35744"
        x="39.60054"
        y="70.230156"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <rect
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_2.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_2.png"
        y="386.23016"
        x="39.60054"
        height="193.35744"
@@ -190,7 +190,7 @@
        id="path2985"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <path
@@ -199,7 +199,7 @@
        id="path2987"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <path
@@ -207,7 +207,7 @@
        id="path2989"
        d="m 115.30022,104.14552 0,125.48486"
        style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,3.2;stroke-dashoffset:0"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <path
@@ -215,7 +215,7 @@
        d="m 155.35819,104.14552 0,125.48486"
        id="path2991"
        inkscape:connector-curvature="0"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <path
@@ -223,7 +223,7 @@
        id="path2999"
        d="m 75.289287,189.59154 107.795193,0"
        style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,3.2;stroke-dashoffset:0"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <path
@@ -231,7 +231,7 @@
        d="m 75.289287,149.55354 107.795193,0"
        id="path3001"
        inkscape:connector-curvature="0"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <path
@@ -239,7 +239,7 @@
        id="path3003"
        d="m 75.289287,109.51556 107.795193,0"
        style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,3.2;stroke-dashoffset:0"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <flowRoot
@@ -247,7 +247,7 @@
        id="flowRoot3804"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        transform="matrix(0.61674087,0,0,0.61674087,-112.21905,-158.07752)"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843"><flowRegion
          id="flowRegion3806"><rect
@@ -262,7 +262,7 @@
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        id="flowRoot3812"
        xml:space="preserve"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843"><flowRegion
          id="flowRegion3814"><rect
@@ -277,7 +277,7 @@
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        id="flowRoot4814"
        xml:space="preserve"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843"><flowRegion
          id="flowRegion4816"><rect
@@ -290,7 +290,7 @@
          id="flowPara4820">0,0</flowPara></flowRoot>    <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,3.2;stroke-dashoffset:0"
        d="m 95.273867,104.14552 0,125.48486"
        id="path3888"
@@ -298,7 +298,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:connector-curvature="0"
        id="path3890"
        d="m 135.33184,104.14552 0,125.48486"
@@ -306,7 +306,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,3.2;stroke-dashoffset:0"
        d="m 175.38982,104.14552 0,125.48486"
        id="path3892"
@@ -314,7 +314,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,3.2;stroke-dashoffset:0"
        d="m 75.289287,209.61495 107.795193,0"
        id="path3898"
@@ -322,7 +322,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:connector-curvature="0"
        id="path3900"
        d="m 75.289287,169.57696 107.795193,0"
@@ -330,7 +330,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,3.2;stroke-dashoffset:0"
        d="m 75.289287,129.53897 107.795193,0"
        id="path3902"
@@ -338,7 +338,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4316"
@@ -347,7 +347,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4318"
@@ -356,7 +356,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
        d="m 355.71653,104.14552 0,125.48486"
        id="path4320"
@@ -364,7 +364,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:connector-curvature="0"
        id="path4322"
        d="m 395.7745,104.14552 0,125.48486"
@@ -372,7 +372,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
        d="m 315.70559,189.59154 107.7952,0"
        id="path4324"
@@ -380,7 +380,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        inkscape:connector-curvature="0"
        id="path4326"
        d="m 315.70559,149.55354 107.7952,0"
@@ -388,7 +388,7 @@
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
        d="m 315.70559,109.51556 107.7952,0"
        id="path4328"
@@ -396,7 +396,7 @@
     <flowRoot
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        transform="matrix(0.61674087,0,0,0.61674087,128.19726,-158.07752)"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        id="flowRoot4330"
@@ -411,7 +411,7 @@
          id="flowPara4336">x</flowPara></flowRoot>    <flowRoot
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
-       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_Tessellate_1.png"
+       inkscape:export-filename="/home/gpetit/Documents/OrbisGIS/H2GIS_WEBSITE/docs/dev/ST_TESSELATE_1.png"
        xml:space="preserve"
        id="flowRoot4338"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
