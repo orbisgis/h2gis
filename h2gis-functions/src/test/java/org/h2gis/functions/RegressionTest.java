@@ -120,8 +120,6 @@ public class RegressionTest {
         });
     }
 
-
-
     @Test
     public void testGeometryType() throws SQLException {
         Statement stat = connection.createStatement();

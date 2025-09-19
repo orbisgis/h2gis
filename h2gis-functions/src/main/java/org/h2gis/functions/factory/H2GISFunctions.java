@@ -67,10 +67,7 @@ import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.*;
 import org.h2gis.functions.spatial.linear_referencing.ST_LineInterpolatePoint;
 import org.h2gis.functions.spatial.linear_referencing.ST_LineSubstring;
-import org.h2gis.functions.spatial.mesh.ST_ConstrainedDelaunay;
-import org.h2gis.functions.spatial.mesh.ST_Delaunay;
-import org.h2gis.functions.spatial.mesh.ST_Tessellate;
-import org.h2gis.functions.spatial.mesh.ST_Voronoi;
+import org.h2gis.functions.spatial.mesh.*;
 import org.h2gis.functions.spatial.metadata.FindGeometryMetadata;
 import org.h2gis.functions.spatial.operators.*;
 import org.h2gis.functions.spatial.others.ST_Clip;
@@ -284,7 +281,7 @@ public class H2GISFunctions {
                 new ST_SunPosition(),
                 new ST_GeometryShadow(),
                 new ST_Voronoi(),
-                new ST_Tessellate(),
+                new ST_Tesselate(),
                 new ST_LineMerge(),
                 new ST_FlipCoordinates(),
                 new ST_MaxDistance(),
@@ -351,7 +348,8 @@ public class H2GISFunctions {
                 new ST_OverpassDownloader(),
                 new ST_EnvelopeAsText(),
                 new ST_AsOverpassBbox(),
-                new ST_M()
+                new ST_M(),
+                new ST_TriangulatePolygon()
         };
     }
 

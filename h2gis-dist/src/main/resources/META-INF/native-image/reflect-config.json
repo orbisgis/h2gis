@@ -1618,7 +1618,7 @@
     "allDeclaredFields": true
   },
   {
-    "name": "org.h2gis.functions.spatial.mesh.ST_Tessellate",
+    "name": "org.h2gis.functions.spatial.mesh.ST_TESSELATE",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true

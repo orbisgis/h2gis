@@ -13,7 +13,7 @@ The following triangulation functions are available:
      - Compute a constrained Delaunay triangulation based on a geometry
    * - :doc:`ST_Delaunay`
      - Compute a Delaunay triangulation based on points
-   * - :doc:`ST_Tessellate`
+   * - :doc:`ST_TESSELATE`
      - Tessellate a set of Polygon with adaptive triangles
 
 .. toctree::
@@ -21,7 +21,7 @@ The following triangulation functions are available:
     
     ST_ConstrainedDelaunay
     ST_Delaunay
-    ST_Tessellate
+    ST_TESSELATE
 
 
 
