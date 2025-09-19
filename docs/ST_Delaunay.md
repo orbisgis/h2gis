@@ -79,6 +79,6 @@ MULTILINESTRING ((0 4, 1 1), (0 4, 1 8), (0 4, 3 2), (1 1, 3 2),
 
 ## See also
 
-* [`ST_ConstrainedDelaunay`](../ST_ConstrainedDelaunay), [`ST_Tesselate`](../ST_TESSELATE)
+* [`ST_ConstrainedDelaunay`](../ST_ConstrainedDelaunay), [`ST_Tesselate`](../ST_Tesselate)
 
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/mesh/ST_Delaunay.java" target="_blank">Source code</a>
