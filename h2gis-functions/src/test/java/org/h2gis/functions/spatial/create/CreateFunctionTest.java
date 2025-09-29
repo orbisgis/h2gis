@@ -1182,4 +1182,20 @@ public class CreateFunctionTest {
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
+
+    @Test
+    public void test_ST_MaximumInscribedCircleRadius1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaximumInscribedCircleRadius('SRID=4326;POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
+        rs.next();
+        assertEquals(95.34, rs.getDouble(1), 0.01);
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_MaximumInscribedCircleRadius2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaximumInscribedCircleRadius('MULTILINESTRING ((79.5 364, 183.5 280),  (70 220, 166 333), (130.5 242.5, 193.5 243))'::GEOMETRY);");
+        rs.next();
+        assertEquals(49.70, rs.getDouble(1), 0.01);
+        rs.close();
+    }
 }

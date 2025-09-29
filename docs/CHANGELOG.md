@@ -36,3 +36,4 @@
 - Rename ST_TESSELLATE to ST_Tesselate
 - Use JTS algorithm in ST_Tesselate
 - Add ST_TriangulatePolygon
+- Add ST_MaximumInscribedCircleRadius
