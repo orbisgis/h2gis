@@ -1079,6 +1079,11 @@
       "allPublicMethods": true
     },
     {
+    "name": "org.h2gis.functions.spatial.creation.ST_MaximumInscribedCircleRadius",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
+    },
+    {
       "name": "org.h2gis.functions.spatial.operators.ST_Clip",
       "allDeclaredConstructors": true,
       "allPublicMethods": true
