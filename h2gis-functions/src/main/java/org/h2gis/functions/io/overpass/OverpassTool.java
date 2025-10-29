@@ -52,7 +52,7 @@ public class OverpassTool {
      * @param overpassQuery overpass query
      * @return HttpURLConnection
      */
-    public HttpURLConnection prepareConnection(String overpassQuery) throws Exception {
+    public synchronized HttpURLConnection prepareConnection(String overpassQuery) throws Exception {
         Matcher timeoutMatcher = Pattern.compile("\\[timeout:(\\d+)\\]").matcher(overpassQuery);
         int timeout;
         if (timeoutMatcher.find()) {
