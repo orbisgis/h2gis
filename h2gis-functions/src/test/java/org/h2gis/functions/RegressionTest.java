@@ -188,4 +188,4 @@ public class RegressionTest {
         BufferOp bufOp  = new BufferOp(geom, new BufferParameters(2));
         System.out.println(bufOp.getResultGeometry(50));
     }
-}
+   }

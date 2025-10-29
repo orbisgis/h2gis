@@ -52,7 +52,7 @@ public class OverpassTool {
      * @param overpassQuery overpass query
      * @return HttpURLConnection
      */
-    public HttpURLConnection prepareConnection(String overpassQuery) throws Exception {
+    public synchronized HttpURLConnection prepareConnection(String overpassQuery) throws Exception {
         Matcher timeoutMatcher = Pattern.compile("\\[timeout:(\\d+)\\]").matcher(overpassQuery);
         int timeout;
         if (timeoutMatcher.find()) {
@@ -85,13 +85,15 @@ public class OverpassTool {
         if (overpassQuery == null || overpassQuery.isEmpty()) {
             throw new IllegalArgumentException("The overpass query cannot be null or empty");
         }
-        HttpURLConnection connection = prepareConnection("[out:json][timeout:25];\n" + overpassQuery + "\nout geom;");
+        HttpURLConnection connection = prepareConnection("[out:json][timeout:60];\n" + overpassQuery + "\nout geom;");
         connection.connect();
         switch (connection.getResponseCode()) {
             case 400:
                 throw new IOException("Error : Cannot execute the Overpass query " + connection.getURL());
             case 509:
                 throw new IOException("Error: You have downloaded too much data. Please try again later");
+            case 504:
+                throw new IOException("Error: Overpass timeout. Try to increase it.");
             default:
                 return connection.getInputStream();
         }
@@ -125,6 +127,8 @@ public class OverpassTool {
         switch (connection.getResponseCode()) {
             case 400:
                 throw new IOException("Error : Cannot execute the Overpass query " + connection.getURL());
+            case 504:
+                throw new IOException("Error: Overpass timeout. Try to increase it.");
             case 509:
                 throw new IOException("Error: You have downloaded too much data. Please try again later");
             default:
