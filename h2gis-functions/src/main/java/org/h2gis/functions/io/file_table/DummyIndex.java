@@ -68,7 +68,7 @@ public class DummyIndex extends Index {
     }
 
     @Override
-    public double getCost(SessionLocal session, int[] ints, TableFilter[] tableFilters, int i, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan) {
+    public double getCost(SessionLocal session, int[] ints, TableFilter[] tableFilters, int i, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan,boolean isSelectCommand) {
         return 0;
     }
 

@@ -29,6 +29,7 @@ import org.h2.index.Cursor;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.message.DbException;
+import org.h2.mvstore.MVStoreException;
 import org.h2.result.Row;
 import org.h2.result.SearchRow;
 import org.h2.result.SortOrder;
@@ -130,13 +131,15 @@ public class H2TableIndex extends Index {
     }
 
     @Override
-    public double getCost(SessionLocal session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan) {
-        // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L210
+    public double getCost(SessionLocal session, int[] masks,
+                          TableFilter[] filters, int filter, SortOrder sortOrder,
+                          AllColumnsForPlan allColumnsSet, boolean isSelectCommand) {
+        // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java
         // Must kept sync with this
         try {
             return 10 * getCostRangeIndex(masks, driver.getRowCount(),
-                    tableFilters, filter, sortOrder, true, allColumnsForPlan);
-        } catch (IllegalStateException e) {
+                    filters, filter, sortOrder, true, allColumnsSet, isSelectCommand);
+        } catch (MVStoreException e) {
             throw DbException.get(ErrorCode.OBJECT_CLOSED, e);
         }
     }
