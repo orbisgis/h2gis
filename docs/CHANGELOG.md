@@ -37,3 +37,4 @@
 - Use JTS algorithm in ST_Tesselate
 - Add ST_TriangulatePolygon
 - Add ST_MaximumInscribedCircleRadius
+- Add ST_SimplifyPolygonHull

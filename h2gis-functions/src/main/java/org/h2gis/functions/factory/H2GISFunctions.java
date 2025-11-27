@@ -350,7 +350,8 @@ public class H2GISFunctions {
                 new ST_AsOverpassBbox(),
                 new ST_M(),
                 new ST_TriangulatePolygon(),
-                new ST_MaximumInscribedCircleRadius()
+                new ST_MaximumInscribedCircleRadius(),
+                new ST_SimplifyPolygonHull()
         };
     }
 
