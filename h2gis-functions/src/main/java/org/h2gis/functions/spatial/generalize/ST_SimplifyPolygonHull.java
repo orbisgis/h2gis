@@ -4,6 +4,10 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.simplify.PolygonHullSimplifier;
 
+/**
+ * Computes a simplified topology-preserving outer or inner hull of a polygonal geometry
+ * @author Erwan Bocher, CNRS
+ */
 public class ST_SimplifyPolygonHull extends DeterministicScalarFunction {
 
     public ST_SimplifyPolygonHull() {
