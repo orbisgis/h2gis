@@ -37,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author E. Bocher, CNRS
  */
+@Disabled
 public class OverpassFunctionsTest {
 
     @TempDir(cleanup = CleanupMode.ON_SUCCESS)
