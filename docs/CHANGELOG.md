@@ -38,3 +38,4 @@
 - Add ST_TriangulatePolygon
 - Add ST_MaximumInscribedCircleRadius
 - Add ST_SimplifyPolygonHull
+- Use RelateNG instead of Relate algorithm

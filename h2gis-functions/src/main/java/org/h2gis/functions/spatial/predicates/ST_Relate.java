@@ -23,6 +23,7 @@ package org.h2gis.functions.spatial.predicates;
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.relateng.RelateNG;
 
 
 /**
@@ -66,7 +67,8 @@ public class ST_Relate extends DeterministicScalarFunction {
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return a.relate(b).toString();
+
+        return RelateNG.relate(a, b).toString();
     }
 
     /**
@@ -79,6 +81,6 @@ public class ST_Relate extends DeterministicScalarFunction {
         if(a==null || b==null || iMatrix==null) {
             return null;
         }
-        return a.relate(b,iMatrix);
+        return RelateNG.relate(a,b,iMatrix);
     }
 }
