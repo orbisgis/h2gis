@@ -93,11 +93,13 @@ public class DataSourceWrapper implements DataSource {
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        throw new SQLException("Unsupported operation");
+        if(iface.isInstance(this)) {
+            return iface.cast(this);
+        }
+        return pgDataSource.unwrap(iface);
     }
 
-    @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return false;
+        return iface.isInstance(this) || pgDataSource.isWrapperFor(iface);
     }
 }
