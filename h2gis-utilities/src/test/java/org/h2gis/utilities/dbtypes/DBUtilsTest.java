@@ -19,6 +19,7 @@
  */
 package org.h2gis.utilities.dbtypes;
 
+import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
@@ -44,8 +45,7 @@ public class DBUtilsTest {
 
     private static Connection h2Conn;
     private static Connection postConn;
-    private static Statement h2St;
-    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
+    private Statement h2St;
 
     @BeforeAll
     public static void init() throws Exception {
@@ -54,7 +54,9 @@ public class DBUtilsTest {
         File dbFile = new File(dataBaseLocation + ".mv.db");
         Class.forName("org.h2.Driver");
         if (dbFile.exists()) {
-            dbFile.delete();
+            if(!dbFile.delete()) {
+                dbFile.deleteOnExit();
+            }
         }
         // Keep a connection alive to not close the DataBase on each unit test
         h2Conn = DriverManager.getConnection(databasePath,
@@ -66,7 +68,7 @@ public class DBUtilsTest {
         props.setProperty("password", "orbisgis");
         props.setProperty("url", url);
 
-        DataSource ds = dataSourceFactory.createDataSource(props);
+        DataSource ds = PostGISDBFactory.createDataSource(props);
         try {
             postConn = ds.getConnection();
         } catch (SQLException ignored) {}
@@ -94,9 +96,20 @@ public class DBUtilsTest {
     }
 
     @Test
+    public void getDBTypeFromH2ConnectionWrapper() throws SQLException {
+        assertEquals(DBTypes.H2, DBUtils.getDBType(new org.h2gis.utilities.wrapper.ConnectionWrapper(h2Conn)));
+    }
+
+    @Test
     @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void getDBTypeFromConnection2() throws SQLException {
         assertEquals(DBTypes.POSTGIS, DBUtils.getDBType(postConn));
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
+    public void getDBTypeFromConnectionWrapper() throws SQLException {
+        assertEquals(DBTypes.POSTGIS, DBUtils.getDBType(new ConnectionWrapper(postConn)));
     }
 
     @Test
