@@ -32,7 +32,7 @@ jobs:
     steps:
       # Checkout the source code of the project
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Setup the jdk using version 11 of Adoptium Temurin
       - name: Setup java 11 using Adoptium Temurin
@@ -56,6 +56,22 @@ jobs:
       #   - test : Perform the tests.
       - name: Build
         run: mvn -ntp clean validate compile test javadoc:test-javadoc javadoc:jar
+
+      # Fetch other repository where the default branch use snapshot version of H2GIS
+      - name: Checkout orbisdata
+        uses: actions/checkout@v6
+        with:
+          repository: 'orbisgis/orbisdata'
+          path: 'orbisdata'
+
+      # Build the project using
+      #   - clean : clean up the workspace
+      #   - validate : perform different check like the dependency and plugin version update
+      #   - compile : compile the source code.
+      #   - test : Perform the tests.
+      - name: Build
+        run: mvn -ntp clean validate compile test
+        working-directory: 'orbisdata'
 
       # Check changelog update
       - name: Check changelog update

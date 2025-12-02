@@ -69,18 +69,6 @@ public abstract class Constants {
         DB_NAME_TYPE_MAP.put(POSTGRESQL_JDBC_NAME, POSTGRESQL);
     }
 
-    /**
-     * Map used to convert URI scheme to DBType
-     */
-    public static final Map<String, DBTypes> driverDBTypeMap = new HashMap<>();
-
-    static {
-        driverDBTypeMap.put("org.h2.jdbc.JdbcConnection", H2);
-        driverDBTypeMap.put("org.h2gis.utilities.wrapper.ConnectionWrapper", H2GIS);
-        driverDBTypeMap.put("org.h2gis.postgis_jts.ConnectionWrapper", POSTGIS);
-        driverDBTypeMap.put("org.postgresql.PGConnection", POSTGRESQL);
-    }
-
     public static final Pattern H2_SPECIAL_NAME_PATTERN = Pattern.compile("^[A-Z]{1,1}[A-Z0-9_]*$");
     public static final Pattern POSTGRESQL_SPECIAL_NAME_PATTERN = Pattern.compile("^[a-z]{1,1}[a-z0-9_]*$");
 

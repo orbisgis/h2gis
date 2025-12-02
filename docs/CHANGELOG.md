@@ -39,3 +39,5 @@
 - Add ST_MaximumInscribedCircleRadius
 - Add ST_SimplifyPolygonHull
 - Use RelateNG instead of Relate algorithm
+- Add missing implementation on PostGIS datasource wrapper (unwrap and iswrapper)
+- Use connection isWrapperFor instead of static class package search for checking if connection is H2 or POSTGIS

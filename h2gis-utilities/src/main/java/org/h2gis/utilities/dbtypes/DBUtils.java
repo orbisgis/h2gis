@@ -67,10 +67,9 @@ public class DBUtils {
      * @return The database {@link DBTypes}.
      */
     public static DBTypes getDBType(Connection connection) throws SQLException {
-         DBTypes type = Constants.driverDBTypeMap.get(connection.getClass().getName());
-         if(type == null) {
-             type = Constants.DB_NAME_TYPE_MAP.get(connection.getMetaData().getDriverName());
-         }
-         return type;
+        if(connection.isWrapperFor(org.h2.jdbc.JdbcConnection.class)) {
+            return DBTypes.H2;
+        }
+        return DBTypes.POSTGIS;
     }
 }
