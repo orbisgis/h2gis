@@ -135,7 +135,7 @@ To do so, contributors just have to **add the following statement in the descrip
 
 You can include H2GIS in your project thanks to Maven repositories.
 
-From maven central, check https://search.maven.org/artifact/org.orbisgis/h2gis/2.2.1/bundle
+From maven central, check https://search.maven.org/artifact/org.orbisgis/h2gis/2.2.3/bundle
 
 To use the current snapshot, just add the following lines in your `pom.xml` file
 
