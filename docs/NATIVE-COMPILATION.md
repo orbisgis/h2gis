@@ -3,8 +3,8 @@
 This document explains how to compile H2GIS as a native binary using GraalVM and how a C interface is used to communicate with the database.
 
 ## Prerequisites
-### Linux
-On Linux, to compile H2GIS natively you need to install maven, [graalvm EE Core 22.3.5 for java 11 or 17](https://www.oracle.com/downloads/graalvm-downloads.html).
+### Linux / MacOS
+On Linux and MacOS, to compile H2GIS natively you need to install maven, [graalvm EE Core 22.3.5 for java 11 or 17](https://www.oracle.com/downloads/graalvm-downloads.html).
 Then you need to get a token with 
 ```bash
 bash <(curl -sL https://get.graalvm.org/ee-token)
@@ -29,7 +29,7 @@ path\to\your\graalvm\install\gu install native-image
 
 ## Launch native compilation
 
-### Linux
+### Linux / MacOS
 To launch the native compilation you can run at the project's root:
 ```bash
 mvn clean install -P native
@@ -130,6 +130,28 @@ native-image \
   -H:Class=h2gis.native.GraalCInterface \
   -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json \
   -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
+```
+
+#### Note MacOS
+
+```bash
+native-image \
+  --shared \
+  --no-fallback \
+  --initialize-at-run-time=org.h2,org.h2gis \
+  --verbose \
+  --report-unsupported-elements-at-runtime \
+  --enable-url-protocols=http,https \
+  --initialize-at-build-time \
+  -cp h2gis-graalvm/target/classes \
+  -H:Name=h2gis_native \
+  -H:+SourceLevelDebug \
+  -H:+PrintAnalysisCallTree \
+  -H:GenerateDebugInfo=2 \
+  -H:+ReportExceptionStackTraces \
+  -H:IncludeResources='.*\.sql'
+  -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json \
+  -H:ReflectionConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/reflect-config.json
 ```
 
 ---
