@@ -21,6 +21,7 @@ package org.h2gis.functions.io.fgb;
 
 import com.google.common.collect.Lists;
 import com.google.flatbuffers.FlatBufferBuilder;
+import org.h2.util.JSR310Utils;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.fgb.fileTable.GeometryConversions;
 import org.h2gis.utilities.*;
@@ -48,18 +49,10 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -284,10 +277,13 @@ public class FGBWriteDriver {
                                 break;
                             case ColumnType.DateTime:
                                 if (value instanceof ZonedDateTime) {
-                                    // ISO 8601
-                                    String iso8601Date = ((ZonedDateTime) value).format(DateTimeFormatter.ISO_INSTANT);
-                                    writeString(iso8601Date, bufferManager);
-                                } else {
+                                    writeString(JSR310Utils.zonedDateTimeToValue((ZonedDateTime) value).getISOString(), bufferManager);
+                                }else if(value instanceof Timestamp){
+                                    writeString(JSR310Utils.localDateTimeToValue(((Timestamp) value).toLocalDateTime()).getISOString(), bufferManager);
+                                }else if(value instanceof Date){
+                                    writeString(JSR310Utils.zonedDateTimeToValue(((Date) value).toLocalDate().atStartOfDay(ZoneId.systemDefault())).getISOString(), bufferManager);
+                                }
+                                else {
                                     throw new RuntimeException(
                                             "Cannot handle type " + value.getClass().getName()+ " with "
                                                     + ColumnType.names[column.type]);
@@ -428,6 +424,7 @@ public class FGBWriteDriver {
             case Types.BIT:
             case Types.BOOLEAN:
                 return ColumnType.Bool;
+            case Types.TIMESTAMP:
             case Types.DATE:
                 return ColumnType.DateTime;
             case Types.NUMERIC:

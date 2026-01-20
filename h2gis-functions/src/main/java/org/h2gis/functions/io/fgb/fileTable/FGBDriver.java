@@ -27,7 +27,6 @@ import org.h2.result.SearchRow;
 import org.h2.value.*;
 import org.h2gis.api.FileDriver;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.io.WKTReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wololo.flatgeobuf.ColumnMeta;
@@ -230,7 +229,7 @@ public class FGBDriver implements FileDriver {
                         values[propertyIndex] = ValueDouble.get(propertiesBB.getDouble());
                         break;
                     case ColumnType.DateTime:
-                        values[propertyIndex] = ValueDate.parse(readString(propertiesBB));
+                        values[propertyIndex] = ValueTimestampTimeZone.parse(readString(propertiesBB), null);
                         break;
                     case ColumnType.String:
                         values[propertyIndex] = ValueVarchar.get(readString(propertiesBB));
@@ -273,8 +272,9 @@ public class FGBDriver implements FileDriver {
             if (rowIdPrevious + 1 == rowId) {
                 // Read the current row from the input stream
                 rowIdPrevious = rowId;
-                currentRow = getFieldsFromFileLocation(fileChannel,fileChannel.position()-featuresOffset,
-                        featuresOffset, headerMeta, geometryFieldIndex);
+                currentRow = getFieldsFromFileLocation(fileChannel, fileChannel.position() - featuresOffset,
+                            featuresOffset, headerMeta, geometryFieldIndex);
+
                 if(cacheRowAddress) {
                     rowIndexToFileLocation.put((int) rowId + 1, fileChannel.position());
                 }
