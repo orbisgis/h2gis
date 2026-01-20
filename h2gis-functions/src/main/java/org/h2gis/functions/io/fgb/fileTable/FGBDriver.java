@@ -62,7 +62,7 @@ public class FGBDriver implements FileDriver {
     private FileInputStream fis;
     private FileChannel fileChannel;
     private Value[] currentRow = new Value[0];
-    private long rowIdPrevious = -1;
+    private long rowIdPrevious = Long.MIN_VALUE;
 
     private boolean cacheRowAddress = true;
 
@@ -245,10 +245,7 @@ public class FGBDriver implements FileDriver {
     @Override
     public Value getField(long rowId, int columnId) throws IOException {
         try {
-            if(rowId == 0) {
-                fileChannel.position(featuresOffset);
-                rowIdPrevious = -1;
-            } else if (rowId > rowIdPrevious + 1 || rowId < rowIdPrevious) {
+            if (rowId > rowIdPrevious + 1 || rowId < rowIdPrevious) {
                 // We have to seek to the desired location
                 Integer lowerKey = rowIndexToFileLocation.floorKey((int)rowId);
                 if(lowerKey == null) {

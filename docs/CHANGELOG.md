@@ -43,3 +43,4 @@
 - Use connection isWrapperFor instead of static class package search for checking if connection is H2 or POSTGIS
 - Fix timestamp and data IO with FlatGeoBuffer
 - Fix writing varchar with FlatGeoBuffer
+- Fix FlatGeoBuffer driver, do not read the first row multiple times
