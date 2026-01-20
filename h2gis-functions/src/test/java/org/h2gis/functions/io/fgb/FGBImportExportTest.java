@@ -63,14 +63,15 @@ public class FGBImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), area float, " +
                     "perimeter double precision, name varchar, smallint_col smallint, int_col integer, " +
-                    "numeric_col NUMERIC(10, 1),  real_col real, float_precision_col float(1), bigint_col bigint )");
-            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 12.10, 156.12345678, 'OrbisGIS', 1, 1,10.5,12.1234, 12.8, 1000000)");
-            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 10.25,  156.12345678, 'NoiseModelling', null, 1,10.5,12.1234, 12.8, null)");
+                    "numeric_col NUMERIC(10, 1),  real_col real, float_precision_col float(1), bigint_col bigint," +
+                    "timestamp_col TIMESTAMP, date_col DATE )");
+            stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 12.10, 156.12345678, 'OrbisGIS', 1, 1,10.5,12.1234, 12.8, 1000000, CAST('2026-01-19 10:00' AS TIMESTAMP), '2026-01-19')");
+            stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 10.25,  156.12345678, 'NoiseModelling', null, 1,10.5,12.1234, 12.8, null, CAST('2026-01-18 12:00' AS TIMESTAMP), '2026-01-18')");
             stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
 
-            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS order by  ID");
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("ID"));
             assertEquals("POINT (140 260)", rs.getString("THE_GEOM"));
@@ -82,10 +83,14 @@ public class FGBImportExportTest {
             assertEquals(12.1234 , rs.getFloat("real_col"), 10-3);
             assertEquals(12.8, rs.getFloat("float_precision_col"), 10-1);
             assertEquals(1000000L, rs.getObject("bigint_col"));
+            assertEquals("2026-01-19 10:00:00.0", rs.getTimestamp("timestamp_col").toString());
+            assertEquals("2026-01-19 00:00:00.0", rs.getTimestamp("date_col").toString());
             assertTrue(rs.next());
             assertEquals(2, rs.getInt("ID"));
             assertEquals("POINT (150 290)", rs.getString("THE_GEOM"));
             assertEquals(10.25, rs.getFloat("area"), 10-2);
+            assertEquals("2026-01-18 12:00:00.0", rs.getTimestamp("timestamp_col").toString());
+            assertEquals("2026-01-18 00:00:00.0", rs.getTimestamp("date_col").toString());
             assertFalse(rs.next());
         }
     }

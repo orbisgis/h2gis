@@ -20,6 +20,7 @@
 package org.h2gis.functions.io.fgb;
 
 import org.h2.command.ddl.CreateTableData;
+import org.h2.engine.Constants;
 import org.h2.table.Column;
 import org.h2.value.ExtTypeInfo;
 import org.h2.value.ExtTypeInfoGeometry;
@@ -159,9 +160,13 @@ public class FGBEngine extends FileEngine<FGBDriver> {
             case ColumnType.Bool:
                 return TypeInfo.TYPE_BOOLEAN;
             case ColumnType.String:
-                return TypeInfo.getTypeInfo(Value.VARCHAR, columnMeta.width, 0, null);
+                int width = columnMeta.width;
+                if(width==0){
+                    width = Constants.MAX_STRING_LENGTH;
+                }
+                return TypeInfo.getTypeInfo(Value.VARCHAR, width, 0, null);
             case ColumnType.DateTime:
-                return TypeInfo.TYPE_DATE;
+                return TypeInfo.TYPE_TIMESTAMP;
             case ColumnType.Byte:
             case ColumnType.Short :
             case ColumnType.UShort:
