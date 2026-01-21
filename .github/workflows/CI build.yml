@@ -41,13 +41,6 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      #Setup graalvm
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          version: '22.3.3'
-          java-version: '11'
-          components: 'native-image'
-          set-java-home: true
 
       # Build the project using
       #   - clean : clean up the workspace

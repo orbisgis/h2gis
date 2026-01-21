@@ -50,14 +50,6 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      #Setup graalvm
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          version: '22.3.3'
-          java-version: '11'
-          components: 'native-image'
-          set-java-home: true
-
       # Configure git user in order to sign release with OrbisGIS user.
       - name: Configure Git User
         run: |
@@ -130,41 +122,3 @@ jobs:
             git commit -a -m "Set next version."
             git push -u origin "$BRANCH"
           fi
-
-
-  # native-windows:
-  #   name: Build native binary (Windows)
-  #   runs-on: windows-latest
-  #   needs: build
-  #   defaults:
-  #     run:
-  #       shell: pwsh
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - uses: graalvm/setup-graalvm@v1
-  #       with:
-  #         version: '22.3.3'
-  #         java-version: '11'
-  #         components: 'native-image'
-  #         set-java-home: true
-
-  #     - name: Build native image with Visual Studio shell
-  #       run: |
-  #         $vsPath = "C:\Program Files\Microsoft Visual Studio\2022\Community"
-  #         $devShellModule = "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
-  #         Import-Module $devShellModule
-  #         Enter-VsDevShell -VsInstallPath $vsPath -DevCmdArguments '-arch=x64'
-
-  #         java -version
-  #         native-image --version
-
-  #         mvn -ntp clean package -Pnative
-
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: h2gis-native-windows
-  #         path: |
-  #           **/target/*.exe
-  #           **/target/*.bin
-  #           **/target/*.zip
