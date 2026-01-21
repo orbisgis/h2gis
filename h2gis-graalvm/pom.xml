@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Maven Coordinates -->
@@ -107,7 +108,7 @@
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
             <artifactId>nativeimage</artifactId>
-            <version>24.2.1</version>
+            <version>25.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -119,7 +120,7 @@
         <dependency>
             <groupId>org.graalvm.compiler</groupId>
             <artifactId>compiler</artifactId>
-            <version>24.2.1</version>
+            <version>25.0.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -160,15 +161,11 @@
                     </agent>
 
                     <buildArgs>
-
                         <!-- Enable runtime reporting for missing elements -->
                         <arg>--report-unsupported-elements-at-runtime</arg>
-
                         <!-- Initialize certain packages/classes at runtime -->
                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
                         <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
-
-
                     </buildArgs>
 
                 </configuration>

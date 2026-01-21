@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
             <artifactId>nativeimage</artifactId>
-            <version>24.2.1</version>
+            <version>25.0.1</version>
             <scope>compile</scope>
         </dependency>
 
