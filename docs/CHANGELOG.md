@@ -44,3 +44,4 @@
 - Fix timestamp and data IO with FlatGeoBuffer
 - Fix writing varchar with FlatGeoBuffer
 - Fix FlatGeoBuffer driver, do not read the first row multiple times
+- Prepare H2GIS 2.2.4 release
