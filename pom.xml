@@ -5,7 +5,7 @@
     <!-- Maven Coordinates -->
     <groupId>org.orbisgis</groupId>
     <artifactId>h2gis-parent</artifactId>
-    <version>2.2.4-SNAPSHOT</version>
+    <version>2.2.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
