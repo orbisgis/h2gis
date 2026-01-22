@@ -120,6 +120,5 @@
                 </pluginManagement>
             </build>
         </profile>
-    </profiles>f
-
+    </profiles>
 </project>
