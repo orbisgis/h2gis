@@ -1,3 +1,3 @@
 ## Changelog for v2.2.5
 
-- Exclude graalvm compiler in the builds
+- exclude graalvm native image during the build
