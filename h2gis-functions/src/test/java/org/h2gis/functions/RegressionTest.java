@@ -189,11 +189,4 @@ public class RegressionTest {
         BufferOp bufOp  = new BufferOp(geom, new BufferParameters(2));
         System.out.println(bufOp.getResultGeometry(50));
     }
-
-
-    @Test
-    public void TEST() throws SQLException {
-        Statement stat = connection.createStatement();
-        stat.execute("SELECT ST_Transform(ST_GeomFromText('POINT(-38048.66 389405.66)', 31256), 4326) FROM dual ");
-    }
 }
