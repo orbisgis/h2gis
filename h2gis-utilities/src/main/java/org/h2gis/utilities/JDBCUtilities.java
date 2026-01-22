@@ -1016,7 +1016,7 @@ public class JDBCUtilities {
         DBTypes dbTypes = table.getDbTypes();
         columnName = TableLocation.capsIdentifier(columnName, dbTypes);
         DatabaseMetaData md = connection.getMetaData();
-        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(null), table.getTable(), false, true);
         while (indexInfo.next()) {
             if (columnName.equals(indexInfo.getString("COLUMN_NAME"))) {
                 return true;
@@ -1144,10 +1144,10 @@ public class JDBCUtilities {
         if (dbTypes == H2GIS || dbTypes == POSTGIS || dbTypes == H2 || dbTypes == POSTGRESQL) {
             if (dbTypes == H2 || dbTypes == H2GIS) {
                 connection.createStatement().execute("CREATE SPATIAL INDEX IF NOT EXISTS idx_" + table.getTable() + "_" + columnName
-                        + " ON " + table.toString() + " (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
+                        + " ON " + table + " (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
             } else {
                 connection.createStatement().execute("CREATE INDEX IF NOT EXISTS idx_" + table.getTable() + "_" + columnName
-                        + " ON " + table.toString() + " USING GIST (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
+                        + " ON " + table + " USING GIST (" + TableLocation.capsIdentifier(columnName, dbTypes) + ")");
             }
             return true;
         }
@@ -1246,7 +1246,7 @@ public class JDBCUtilities {
         columnName = TableLocation.capsIdentifier(columnName, dbTypes);
         DatabaseMetaData md = connection.getMetaData();
         ArrayList<String> indexes = new ArrayList<>();
-        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(), table.getTable(), false, true);
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), table.getSchema(null), table.getTable(), false, true);
         while (indexInfo.next()) {
             if (columnName.equals(indexInfo.getString("COLUMN_NAME"))) {
                 indexes.add(indexInfo.getString("INDEX_NAME"));
