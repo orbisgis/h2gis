@@ -563,13 +563,13 @@ public class JDBCUtilitiesTest {
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
                 "(2, 'SRID=4326;POINT(1 1)'::GEOMETRY)");
         TableLocation table = TableLocation.parse("orbisgis", DBTypes.POSTGIS);
-        assertTrue(JDBCUtilities.createSpatialIndex(connection, table, "the_geom"));
-        assertTrue(JDBCUtilities.isSpatialIndexed(connection, table, "the_geom"));
-        JDBCUtilities.dropIndex(connection, table, "the_geom");
-        assertFalse(JDBCUtilities.isSpatialIndexed(connection, table, "the_geom"));
-        assertTrue(JDBCUtilities.createIndex(connection, table, "id"));
-        assertTrue(JDBCUtilities.isIndexed(connection, table, "id"));
-        JDBCUtilities.dropIndex(connection, table, "id");
-        assertFalse(JDBCUtilities.isIndexed(connection, table, "id"));
+        assertTrue(JDBCUtilities.createSpatialIndex(postConn, table, "the_geom"));
+        assertTrue(JDBCUtilities.isSpatialIndexed(postConn, table, "the_geom"));
+        JDBCUtilities.dropIndex(postConn, table, "the_geom");
+        assertFalse(JDBCUtilities.isSpatialIndexed(postConn, table, "the_geom"));
+        assertTrue(JDBCUtilities.createIndex(postConn, table, "id"));
+        assertTrue(JDBCUtilities.isIndexed(postConn, table, "id"));
+        JDBCUtilities.dropIndex(postConn, table, "id");
+        assertFalse(JDBCUtilities.isIndexed(postConn, table, "id"));
     }
 }
