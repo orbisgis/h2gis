@@ -342,6 +342,7 @@ public class TableLocation {
         String[] values = parts.toArray(new String[0]);
         switch (values.length) {
             case 1:
+                schema=capsIdentifier("public", dbTypes);
                 table = unFormat(values[0].trim(), dbTypes);
                 break;
             case 2:

@@ -361,8 +361,6 @@
                 </pluginManagement>
             </build>
         </profile>
-
-
     </profiles>
 
     <build>
