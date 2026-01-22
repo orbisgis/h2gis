@@ -21,6 +21,7 @@ package org.h2gis.utilities;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.dbtypes.DBUtils;
 import org.junit.jupiter.api.*;
@@ -29,10 +30,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.PrintWriter;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.h2gis.utilities.JDBCUtilities.TABLE_TYPE;
@@ -551,4 +549,27 @@ public class JDBCUtilitiesTest {
         }
     }
 
+    @Test
+    public void testWithPostGIS() throws SQLException {
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", "jdbc:postgresql://localhost:5432/orbisgis_db");
+        DataSource ds = PostGISDBFactory.createDataSource(props);
+        Connection postConn = ds.getConnection();
+        Statement st = postConn.createStatement();
+        st.execute("DROP TABLE IF EXISTS orbisgis;"+
+                "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));"+
+                "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
+                "(2, 'SRID=4326;POINT(1 1)'::GEOMETRY)");
+        TableLocation table = TableLocation.parse("orbisgis", DBTypes.POSTGIS);
+        assertTrue(JDBCUtilities.createSpatialIndex(postConn, table, "the_geom"));
+        assertTrue(JDBCUtilities.isSpatialIndexed(postConn, table, "the_geom"));
+        JDBCUtilities.dropIndex(postConn, table, "the_geom");
+        assertFalse(JDBCUtilities.isSpatialIndexed(postConn, table, "the_geom"));
+        assertTrue(JDBCUtilities.createIndex(postConn, table, "id"));
+        assertTrue(JDBCUtilities.isIndexed(postConn, table, "id"));
+        JDBCUtilities.dropIndex(postConn, table, "id");
+        assertFalse(JDBCUtilities.isIndexed(postConn, table, "id"));
+    }
 }

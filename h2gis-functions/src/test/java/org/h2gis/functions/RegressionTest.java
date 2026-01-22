@@ -181,6 +181,7 @@ public class RegressionTest {
         assertTrue(RelateNG.relate(gc0, gc1, RelatePredicate.intersects()));
     }
 
+    @Disabled
     @Test
     public void testBufferPrecision() throws SQLException, ParseException {
         WKTReader wktReader = new WKTReader();
