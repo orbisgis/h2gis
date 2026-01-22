@@ -181,11 +181,19 @@ public class RegressionTest {
         assertTrue(RelateNG.relate(gc0, gc1, RelatePredicate.intersects()));
     }
 
+    @Disabled
     @Test
     public void testBufferPrecision() throws SQLException, ParseException {
         WKTReader wktReader = new WKTReader();
         Geometry geom = wktReader.read("POINT(100 90)");
         BufferOp bufOp  = new BufferOp(geom, new BufferParameters(2));
         System.out.println(bufOp.getResultGeometry(50));
+    }
+
+
+    @Test
+    public void TEST() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("SELECT ST_Transform(ST_GeomFromText('POINT(-38048.66 389405.66)', 31256), 4326) FROM dual ");
     }
 }

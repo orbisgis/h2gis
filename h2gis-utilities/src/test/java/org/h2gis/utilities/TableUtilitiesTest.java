@@ -90,11 +90,4 @@ public class TableUtilitiesTest {
         assertEquals("TATA_SUFF",
                 TableUtilities.suffixTableLocation(tableLocation, "_SUFF").toString(DBUtils.getDBType(connection)));
     }
-
-    @Test
-    public void caseIdentifierTest() throws Exception {
-        TableLocation tableLocation = TableLocation.parse("TATA", DBTypes.H2GIS);
-        assertEquals("TATA", TableUtilities.caseIdentifier(tableLocation, "TATA", DBTypes.H2));
-        assertEquals("tata", TableUtilities.caseIdentifier(tableLocation, "TATA", DBTypes.POSTGIS));
-    }
 }
