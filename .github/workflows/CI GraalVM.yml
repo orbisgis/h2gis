@@ -3,6 +3,18 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          # must specify password for PG Docker container image, see: https://registry.hub.docker.com/_/postgres?tab=description&page=1&name=10
+          POSTGRES_USER: orbisgis
+          POSTGRES_PASSWORD: orbisgis
+          POSTGRES_DB: orbisgis_db
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
