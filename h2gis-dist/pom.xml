@@ -167,44 +167,18 @@
                     </resource>
                 </resources>
                 <plugins>
-
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
                         <version>${native.maven.plugin.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.h2gis</groupId>
+                                <artifactId>h2gis-graalvm</artifactId>
+                                <version>${project.version}</version>
+                            </dependency>
+                        </dependencies>
                         <executions>
-                            <!-- Native executable -->
-                            <execution>
-                                <id>build-native-exec</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <configuration>
-                                    <mainClass>org.h2.tools.Console</mainClass>
-                                    <imageName>${imageName}</imageName>
-                                    <fallback>false</fallback>
-                                    <buildArgs>
-                                        <arg>-O3</arg>
-                                        <arg>--gc=G1</arg>
-                                        <arg>--pgo-instrument</arg>
-                                        <arg>--enable-sbom</arg>
-                                        <arg>--enable-url-protocols=http,https,tcp</arg>
-                                        <arg>--install-exit-handlers</arg>
-                                        <arg>--no-fallback</arg>
-                                        <arg>--report-unsupported-elements-at-runtime</arg>
-                                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-                                        <arg>
-                                            -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json
-                                        </arg>
-                                        <arg>
-                                            -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
-                                        </arg>
-                                        <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
-                                    </buildArgs>
-                                </configuration>
-                            </execution>
-
                             <!-- Native shared library -->
                             <execution>
                                 <id>build-native-shared</id>
@@ -218,24 +192,23 @@
                                     <fallback>false</fallback>
                                     <buildArgs>
                                         <arg>--shared</arg>
-                                        <arg>-O3</arg>
-                                        <arg>--gc=G1</arg>
-                                        <arg>--pgo-instrument</arg>
-                                        <arg>--enable-sbom</arg>
+                                        <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
                                         <arg>--no-fallback</arg>
-                                        <arg>--report-unsupported-elements-at-runtime</arg>
                                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
                                         <arg>--enable-url-protocols=http,https,tcp</arg>
-                                        <arg>--install-exit-handlers</arg>
+                                        <arg>--initialize-at-build-time</arg>
+
                                         <arg>--verbose</arg>
+                                        <arg>-H:Name=h2gis_native</arg>
                                         <arg>-H:+SourceLevelDebug</arg>
                                         <arg>-H:+PrintAnalysisCallTree</arg>
                                         <arg>-H:GenerateDebugInfo=2</arg>
+                                        <arg>-H:IncludeResources='.*\.sql'</arg>
                                         <arg>
                                             -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json
                                         </arg>
                                         <arg>
-                                            -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
+                                            -H:ReflectionConfigurationResources=h2gis-dist/src/main/resources/META-INF/native-image/reflect-config.json
                                         </arg>
                                     </buildArgs>
                                 </configuration>

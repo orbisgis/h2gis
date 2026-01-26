@@ -158,7 +158,6 @@
                     <agent>
                         <enabled>true</enabled>
                     </agent>
-
                     <buildArgs>
                         <!-- Enable runtime reporting for missing elements -->
                         <arg>--report-unsupported-elements-at-runtime</arg>
@@ -166,7 +165,6 @@
                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
                         <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
                     </buildArgs>
-
                 </configuration>
             </plugin>
         </plugins>
