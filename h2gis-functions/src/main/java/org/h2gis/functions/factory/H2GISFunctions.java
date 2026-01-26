@@ -487,9 +487,14 @@ public class H2GISFunctions {
             // Set comment
             String functionRemarks = getStringProperty(function, Function.PROP_REMARKS);
             if(!functionRemarks.isEmpty()) {
-                PreparedStatement ps = st.getConnection().prepareStatement("COMMENT ON ALIAS "+functionAlias+" IS ?");
-                ps.setString(1, functionRemarks);
-                ps.execute();
+                try {
+                    PreparedStatement ps = st.getConnection().prepareStatement("COMMENT ON ALIAS "+functionAlias+" IS ?");
+                    ps.setString(1, functionRemarks);
+                    ps.execute();
+                } catch (SQLException ex) {
+                    // Ignore comment errors (e.g. if alias creation failed or alias vs aggregate conflict)
+                    LOGGER.debug("Could not set comment for " + functionAlias + ": " + ex.getMessage());
+                }
             }
         } else if(function instanceof Aggregate) {
                 if(dropAlias) {
