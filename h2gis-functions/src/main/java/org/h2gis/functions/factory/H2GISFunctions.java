@@ -486,15 +486,10 @@ public class H2GISFunctions {
             st.execute("CREATE FORCE ALIAS IF NOT EXISTS " + functionAlias + deterministic + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
             // Set comment
             String functionRemarks = getStringProperty(function, Function.PROP_REMARKS);
-            if(!functionRemarks.isEmpty()) {
-                try {
-                    PreparedStatement ps = st.getConnection().prepareStatement("COMMENT ON ALIAS "+functionAlias+" IS ?");
-                    ps.setString(1, functionRemarks);
-                    ps.execute();
-                } catch (SQLException ex) {
-                    // Ignore comment errors (e.g. if alias creation failed or alias vs aggregate conflict)
-                    LOGGER.debug("Could not set comment for " + functionAlias + ": " + ex.getMessage());
-                }
+            if(!functionRemarks.isEmpty()) {                
+                PreparedStatement ps = st.getConnection().prepareStatement("COMMENT ON ALIAS "+functionAlias+" IS ?");
+                ps.setString(1, functionRemarks);
+                ps.execute();              
             }
         } else if(function instanceof Aggregate) {
                 if(dropAlias) {
