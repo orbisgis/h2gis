@@ -52,6 +52,7 @@
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-graalvm</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
