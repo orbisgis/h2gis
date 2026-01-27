@@ -195,7 +195,7 @@
                                         <arg>--report-unsupported-elements-at-runtime</arg>
                                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
                                         <arg>
-                                            -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json
+                                            -H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json
                                         </arg>
                                         <arg>
                                             -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
@@ -232,7 +232,7 @@
                                         <arg>-H:+PrintAnalysisCallTree</arg>
                                         <arg>-H:GenerateDebugInfo=2</arg>
                                         <arg>
-                                            -H:ResourceConfigurationFiles=h2gis-dist/src/main/resources/META-INF/native-image/resource-config.json
+                                            -H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json
                                         </arg>
                                         <arg>
                                             -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
