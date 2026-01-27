@@ -159,7 +159,7 @@
                         <enabled>true</enabled>
                     </agent>
                     <buildArgs>
-                        <arg>--gc=G1</arg>
+                        <!-- TODO create a profil for linux <arg>&#45;&#45;gc=G1</arg>-->
                         <arg>-march=native</arg>
                         <arg>--enable-url-protocols=http,https,tcp</arg>
                         <!-- Enable runtime reporting for missing elements -->
