@@ -2,19 +2,11 @@ name: CI GraalVM
 on: [push, pull_request]
 jobs:
   build:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgis/postgis:16-3.4
-        env:
-          # must specify password for PG Docker container image, see: https://registry.hub.docker.com/_/postgres?tab=description&page=1&name=10
-          POSTGRES_USER: orbisgis
-          POSTGRES_PASSWORD: orbisgis
-          POSTGRES_DB: orbisgis_db
-        ports:
-          - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    name: H2GIS on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -22,6 +14,8 @@ jobs:
           java-version: '25'      # See 'Options' for more details
           distribution: 'graalvm' # See 'Supported distributions' for available options
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+
       - name: H2GIS build
         run: |
           echo "GRAALVM_HOME: $GRAALVM_HOME"
