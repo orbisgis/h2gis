@@ -159,6 +159,8 @@
                         <enabled>true</enabled>
                     </agent>
                     <buildArgs>
+                        <arg>--gc=G1</arg>
+                        <arg>--enable-url-protocols=http,https,tcp</arg>
                         <!-- Enable runtime reporting for missing elements -->
                         <arg>--report-unsupported-elements-at-runtime</arg>
                         <!-- Initialize certain packages/classes at runtime -->
