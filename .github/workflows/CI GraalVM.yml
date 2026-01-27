@@ -1,5 +1,9 @@
 name: CI GraalVM
-on: [push, pull_request]
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*.*.*"]
+  workflow_dispatch:
 jobs:
   build:
     name: H2GIS on ${{ matrix.os }}
