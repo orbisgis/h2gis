@@ -120,7 +120,7 @@
             <groupId>org.graalvm.compiler</groupId>
             <artifactId>compiler</artifactId>
             <version>25.0.1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -164,6 +164,7 @@
                         <!-- Initialize certain packages/classes at runtime -->
                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
                         <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
+                        <arg>--shared</arg>
                     </buildArgs>
                 </configuration>
             </plugin>

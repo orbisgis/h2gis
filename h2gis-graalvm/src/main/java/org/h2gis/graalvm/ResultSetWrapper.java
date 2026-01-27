@@ -178,7 +178,55 @@ public class ResultSetWrapper {
             int rowCounter = 0;
             if (rs.next()) {
                 for (int i = 1; i <= colCount; i++) {
-                    wrapper.columns.get(i - 1).addValue(rs.getObject(i));
+                    if (wrapper.columns.get(i - 1).getTypeName().startsWith("geometry")) {
+                        Object obj = rs.getObject(i);
+                        if (obj == null) {
+                            wrapper.columns.get(i - 1).addValue(null);
+                        } else {
+                            wrapper.columns.get(i - 1).addValue(ValueGeometry.getFromGeometry(obj).getBytes());
+                        }
+                    } else {
+                        wrapper.columns.get(i - 1).addValue(rs.getObject(i));
+                    }
+                }
+                rowCounter++;
+            }
+            wrapper.setRowCount(rowCounter);
+            return wrapper;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+
+        }
+    }
+
+    /**
+     * Creates a {@code ResultSetWrapper} instance from a JDBC {@link ResultSet}.
+     * Reads all column metadata and a batch of rows eagerly into memory.
+     *
+     * @param rs the {@link ResultSet} to wrap
+     * @param batchSize the maximum number of rows to fetch
+     * @return a new {@code ResultSetWrapper} containing the extracted data
+     */
+    public static ResultSetWrapper fromBatch(ResultSet rs, int batchSize) {
+        try {
+            ResultSetWrapper wrapper = new ResultSetWrapper();
+            ResultSetMetaData rsm = rs.getMetaData();
+            int colCount = rsm.getColumnCount();
+
+            createColumns(wrapper, rsm, colCount);
+
+            int rowCounter = 0;
+            // Fetch rows up to batchSize
+            while (rowCounter < batchSize && rs.next()) {
+                for (int i = 1; i <= colCount; i++) {
+                    if (wrapper.columns.get(i - 1).getTypeName().startsWith("geometry")) {
+                        Object obj = rs.getObject(i);
+                        wrapper.columns.get(i - 1).addValue(ValueGeometry.getFromGeometry(obj).getBytes());
+                    } else {
+                        wrapper.columns.get(i - 1).addValue(rs.getObject(i));
+                    }
                 }
                 rowCounter++;
             }

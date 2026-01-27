@@ -88,6 +88,11 @@ public class GraalCInterface {
      */
     private static final Unsafe unsafe = getUnsafe();
 
+    /**
+     * Lock for connection synchronization
+     */
+    private static final Object connectLock = new Object();
+
 
     static {
         try {
@@ -145,7 +150,10 @@ public class GraalCInterface {
             properties.setProperty("user", username);
             properties.setProperty("password", password);
 
-            Connection connection = JDBCUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(properties)).getConnection();
+            Connection connection;
+            synchronized (connectLock) {
+                connection = JDBCUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(properties)).getConnection();
+            }
 
             long handle = handleCounter.getAndIncrement();
             connections.put(handle, connection);
@@ -249,6 +257,131 @@ public class GraalCInterface {
             logAndSetError("Failed to execute update", e);
             return -1;
         }
+    }
+
+    /**
+     * Prepares a SQL statement.
+     */
+    @CEntryPoint(name = "h2gis_prepare")
+    public static long h2gisPrepare(IsolateThread thread, long connectionHandle, CCharPointer sqlPointer) {
+        if (sqlPointer.isNull()) {
+            logAndSetError("Null pointer for SQL", null);
+            return 0;
+        }
+        Connection conn = connections.get(connectionHandle);
+        if (conn == null) return 0;
+        
+        try {
+            String sql = CTypeConversion.toJavaString(sqlPointer);
+            PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            long handle = handleCounter.getAndIncrement();
+            statements.put(handle, pstmt);
+            return handle;
+        } catch(Exception e) {
+            logAndSetError("Prepare failed", e);
+            return 0;
+        }
+    }
+
+    @CEntryPoint(name = "h2gis_bind_double")
+    public static void h2gisBindDouble(IsolateThread thread, long stmtHandle, int index, double value) {
+         Statement s = statements.get(stmtHandle);
+         if (s instanceof PreparedStatement) {
+             try {
+                 ((PreparedStatement)s).setDouble(index, value);
+             } catch(SQLException e) {
+                 logAndSetError("Bind double failed", e);
+             }
+         }
+    }
+
+    @CEntryPoint(name = "h2gis_bind_int")
+    public static void h2gisBindInt(IsolateThread thread, long stmtHandle, int index, int value) {
+         Statement s = statements.get(stmtHandle);
+         if (s instanceof PreparedStatement) {
+             try {
+                 ((PreparedStatement)s).setInt(index, value);
+             } catch(SQLException e) {
+                 logAndSetError("Bind int failed", e);
+             }
+         }
+    }
+
+    @CEntryPoint(name = "h2gis_bind_long")
+    public static void h2gisBindLong(IsolateThread thread, long stmtHandle, int index, long value) {
+         Statement s = statements.get(stmtHandle);
+         if (s instanceof PreparedStatement) {
+             try {
+                 ((PreparedStatement)s).setLong(index, value);
+             } catch(SQLException e) {
+                 logAndSetError("Bind long failed", e);
+             }
+         }
+    }
+
+    @CEntryPoint(name = "h2gis_bind_string")
+    public static void h2gisBindString(IsolateThread thread, long stmtHandle, int index, CCharPointer value) {
+         Statement s = statements.get(stmtHandle);
+         if (s instanceof PreparedStatement) {
+             try {
+                 String str = CTypeConversion.toJavaString(value);
+                 ((PreparedStatement)s).setString(index, str);
+             } catch(SQLException e) {
+                 logAndSetError("Bind string failed", e);
+             }
+         }
+    }
+
+    @CEntryPoint(name = "h2gis_bind_blob")
+    public static void h2gisBindBlob(IsolateThread thread, long stmtHandle, int index, CCharPointer value, int len) {
+         Statement s = statements.get(stmtHandle);
+         if (s instanceof PreparedStatement) {
+             try {
+                 // Copy native bytes to Java byte array
+                 byte[] bytes = new byte[len];
+                 for(int i=0; i<len; i++) {
+                     bytes[i] = value.read(i);
+                 }
+                 ((PreparedStatement)s).setBytes(index, bytes);
+             } catch(SQLException e) {
+                 logAndSetError("Bind blob failed", e);
+             }
+         }
+    }
+
+    @CEntryPoint(name = "h2gis_execute_prepared_update")
+    public static int h2gisExecutePreparedUpdate(IsolateThread thread, long stmtHandle) {
+         Statement s = statements.get(stmtHandle);
+         if (s instanceof PreparedStatement) {
+             try {
+                 return ((PreparedStatement)s).executeUpdate();
+             } catch(SQLException e) {
+                 logAndSetError("Execute prepared update failed", e);
+                 return -1;
+             }
+         }
+         return -1;
+    }
+
+    @CEntryPoint(name = "h2gis_execute_prepared")
+    public static long h2gisExecutePrepared(IsolateThread thread, long stmtHandle) {
+         Statement s = statements.get(stmtHandle);
+         if (s instanceof PreparedStatement) {
+             try {
+                 ResultSet rs = ((PreparedStatement)s).executeQuery();
+                 long rsHandle = handleCounter.getAndIncrement();
+                 // We do NOT put the statement in 'statements' again, it is already there.
+                 // We just track the Result Set.
+                 // WARNING: Our cleanup logic might need to know which statement owns which RS? 
+                 // For now, simple mapping.
+                 results.put(rsHandle, rs);
+                 return rsHandle;
+             } catch(SQLException e) {
+                 logAndSetError("Execute prepared failed", e);
+                 return 0;
+             }
+         }
+         return 0;
     }
 
     /**
@@ -435,6 +568,62 @@ public class GraalCInterface {
     }
 
     /**
+     * Fetches a batch of rows from the result set of a query and returns them
+     * in an encoded native memory buffer.
+     *
+     * @param thread      the current Graal Isolate thread
+     * @param queryHandle handle representing the query result set
+     * @param batchSize   the maximum number of rows to fetch
+     * @param bufferSize  pointer to store the size of the returned memory buffer
+     * @return native memory pointer to the JSON buffer, or 0 on error
+     */
+    @CEntryPoint(name = "h2gis_fetch_batch")
+    public static WordBase h2gisFetchBatch(IsolateThread thread, long queryHandle, int batchSize, WordBase bufferSize) {
+        try {
+            ResultSet rs = results.get(queryHandle);
+            if (rs == null) {
+
+                if (bufferSize.rawValue() != 0L) {
+                    unsafe.putLong(bufferSize.rawValue(), 0L);
+                }
+                return WordFactory.zero();
+            }
+            ResultSetWrapper resultSetWrapper = ResultSetWrapper.fromBatch(rs, batchSize);
+
+            byte[] arr = resultSetWrapper.serialize();
+
+            // Write the buffer size
+            if (bufferSize.rawValue() != 0L) {
+                unsafe.putLong(bufferSize.rawValue(), arr.length);
+            }
+
+            // Allocate memory for the buffer
+            long addr = unsafe.allocateMemory(arr.length);
+
+            // Copy data in newly allocated memory
+            for (int i = 0; i < arr.length; i++) {
+                unsafe.putByte(addr + i, arr[i]);
+            }
+
+            // If no more rows, close the result set
+            // Wait, standard practice in iterators: only close if explicitly asked or if we know we are done.
+            // But we don't know if we are done just because we fetched < batchSize (maybe last batch was exactly batchSize).
+            // Safer to check rs.isAfterLast() or let the user close it.
+            // Checking: resultSetWrapper.getRowCount() < batchSize implies end of stream.
+            // But let's leave explicit close to h2gis_close_query.
+
+            return WordFactory.pointer(addr);
+
+        } catch (Exception e) {
+            System.err.println("Error in h2gis_fetch_batch: " + e.getMessage());
+            if (bufferSize.rawValue() != 0L) {
+                unsafe.putLong(bufferSize.rawValue(), 0L);
+            }
+            return WordFactory.zero();
+        }
+    }
+
+    /**
      * Retrieves the type of each column in a query result set.
      * Types are returned as an array of integers encoded in native memory.
      * The encoding uses little-endian order with 4 bytes per type code.
@@ -537,6 +726,54 @@ public class GraalCInterface {
             System.err.println("Error in h2gis_get_column_types: " + e.getMessage());
             return WordFactory.zero();
         }
+    }
+
+    @CEntryPoint(name = "h2gis_get_metadata_json")
+    public static CCharPointer h2gisGetMetadataJson(IsolateThread thread, long queryHandle) {
+         try {
+             ResultSet rs = results.get(queryHandle);
+             if (rs == null) return CTypeConversion.toCString("[]").get();
+             
+             ResultSetMetaData meta = rs.getMetaData();
+             int colCount = meta.getColumnCount();
+             
+             // Build JSON: [{"name":"COL1","type":1,"typeName":"INTEGER"}, ...]
+             StringBuilder json = new StringBuilder("[");
+             for(int i=1; i<=colCount; i++) {
+                 if(i > 1) json.append(",");
+                 json.append("{");
+                 json.append("\"name\":\"").append(meta.getColumnName(i)).append("\",");
+                 json.append("\"typeName\":\"").append(meta.getColumnTypeName(i)).append("\",");
+                 
+                 int jdbcType = meta.getColumnType(i);
+                 int typeCode = 99; // Default
+                 String sqlTypeName = meta.getColumnTypeName(i).toLowerCase();
+                 
+                 // Same switch case as above (simplified for brevity here, should factor out)
+                 switch (jdbcType) {
+                    case Types.INTEGER: case Types.SMALLINT: case Types.TINYINT: typeCode = 1; break;
+                    case Types.BIGINT: typeCode = 2; break;
+                    case Types.FLOAT: case Types.REAL: typeCode = 3; break;
+                    case Types.DOUBLE: case Types.NUMERIC: case Types.DECIMAL: typeCode = 4; break;
+                    case Types.BOOLEAN: case Types.BIT: typeCode = 5; break;
+                    case Types.CHAR: case Types.VARCHAR: case Types.LONGVARCHAR: typeCode = 6; break;
+                    case Types.DATE: case Types.TIME: case Types.TIMESTAMP: typeCode = 7; break;
+                    default:
+                        if (sqlTypeName.startsWith("geometry")) typeCode = 8;
+                        else typeCode = 99;
+                        break;
+                 }
+                 json.append("\"type\":").append(typeCode);
+                 json.append("}");
+             }
+             json.append("]");
+             
+             return CTypeConversion.toCString(json.toString()).get();
+             
+         } catch(Exception e) {
+             logAndSetError("Failed to get metadata json", e);
+             return CTypeConversion.toCString("[]").get();
+         }
     }
 
 
