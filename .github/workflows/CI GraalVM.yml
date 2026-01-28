@@ -31,7 +31,7 @@ jobs:
       - name: H2GIS maven build
         run: mvn clean package -DskipTests && mvn native:compile -Pnative -pl h2gis-graalvm -DskipTests
 
-      # Nouveau : Identifier le système d'exploitation pour le nom du fichier
+      # Find OS
       - name: Set OS name
         id: os-name
         shell: bash
