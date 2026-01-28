@@ -50,12 +50,6 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>h2gis-graalvm</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
             <version>${project.parent.version}</version>
             <exclusions>
@@ -73,14 +67,6 @@
 
     <!-- Build Settings -->
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>META-INF/native-image/**</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <!-- Plugin for test running -->
             <plugin>
@@ -151,124 +137,4 @@
 
         </plugins>
     </build>
-
-    <!-- Graalvm native lib and executable build -->
-    <profiles>
-        <profile>
-            <id>native</id>
-            <!-- Build Settings -->
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <includes>
-                            <include>META-INF/native-image/**</include>
-                        </includes>
-                    </resource>
-                </resources>
-                <plugins>
-
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <version>${native.maven.plugin.version}</version>
-                        <executions>
-                            <!-- Native executable -->
-                            <execution>
-                                <id>build-native-exec</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <configuration>
-                                    <mainClass>org.h2.tools.Console</mainClass>
-                                    <imageName>${imageName}</imageName>
-                                    <fallback>false</fallback>
-                                    <buildArgs>
-                                        <arg>-O3</arg>
-                                        <arg>--gc=G1</arg>
-                                        <arg>--pgo-instrument</arg>
-                                        <arg>--enable-sbom</arg>
-                                        <arg>--enable-url-protocols=http,https,tcp</arg>
-                                        <arg>--install-exit-handlers</arg>
-                                        <arg>--no-fallback</arg>
-                                        <arg>--report-unsupported-elements-at-runtime</arg>
-                                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-                                        <arg>
-                                            -H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json
-                                        </arg>
-                                        <arg>
-                                            -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
-                                        </arg>
-                                        <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
-                                    </buildArgs>
-                                </configuration>
-                            </execution>
-
-                            <!-- Native shared library -->
-                            <execution>
-                                <id>build-native-shared</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <configuration>
-                                    <mainClass>org.h2.tools.Console</mainClass>
-                                    <imageName>${imageName}</imageName>
-                                    <fallback>false</fallback>
-                                    <buildArgs>
-                                        <arg>--shared</arg>
-                                        <arg>-O3</arg>
-                                        <arg>--gc=G1</arg>
-                                        <arg>--pgo-instrument</arg>
-                                        <arg>--enable-sbom</arg>
-                                        <arg>--no-fallback</arg>
-                                        <arg>--report-unsupported-elements-at-runtime</arg>
-                                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-                                        <arg>--enable-url-protocols=http,https,tcp</arg>
-                                        <arg>--install-exit-handlers</arg>
-                                        <arg>--verbose</arg>
-                                        <arg>-H:+SourceLevelDebug</arg>
-                                        <arg>-H:+PrintAnalysisCallTree</arg>
-                                        <arg>-H:GenerateDebugInfo=2</arg>
-                                        <arg>
-                                            -H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json
-                                        </arg>
-                                        <arg>
-                                            -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
-                                        </arg>
-                                    </buildArgs>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Strip plugin (Linux only) -->
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>strip-native</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>bash</executable>
-                                    <arguments>
-                                        <argument>-c</argument>
-                                        <argument>
-                                            if [ "$(uname)" = "Linux" ]; then strip ${project.build.directory}/${imageName}.so; fi
-                                        </argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-    </profiles>
 </project>

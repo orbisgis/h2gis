@@ -102,7 +102,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
@@ -158,15 +157,24 @@
                     <agent>
                         <enabled>true</enabled>
                     </agent>
+                    <imageName>h2gis</imageName>
                     <buildArgs>
+                        <!-- TODO create a profil for linux <arg>&#45;&#45;gc=G1</arg>-->
+                        <arg>-march=native</arg>
+                        <arg>--enable-url-protocols=http,https,tcp</arg>
                         <!-- Enable runtime reporting for missing elements -->
                         <arg>--report-unsupported-elements-at-runtime</arg>
                         <!-- Initialize certain packages/classes at runtime -->
                         <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
                         <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
                         <arg>--shared</arg>
+                        <arg>
+                            -H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json
+                        </arg>
+                        <arg>
+                            -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
+                        </arg>
                     </buildArgs>
-
                 </configuration>
             </plugin>
         </plugins>

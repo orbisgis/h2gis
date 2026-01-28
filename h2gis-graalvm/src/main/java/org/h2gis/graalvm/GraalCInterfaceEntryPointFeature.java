@@ -31,5 +31,4 @@ public class GraalCInterfaceEntryPointFeature implements Feature {
     public void beforeAnalysis(Feature.BeforeAnalysisAccess access) {
         access.findClassByName("org.h2gis.graalvm.GraalCInterface");
     }
-
 }

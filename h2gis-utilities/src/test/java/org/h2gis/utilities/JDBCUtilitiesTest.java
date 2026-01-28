@@ -212,7 +212,7 @@ public class JDBCUtilitiesTest {
         ProgressVisitor progressVisitor = new EmptyProgressVisitor();
         Statement statement = connection.createStatement();
         PropertyChangeListener listener = JDBCUtilities.attachCancelResultSet(statement, progressVisitor);
-        statement.execute("CREATE ALIAS SLEEP FOR \"java.lang.Thread.sleep\"");
+        statement.execute("CREATE ALIAS SLEEP FOR \"java.lang.Thread.sleep(long)\"");
         CancelThread cancelThread = new CancelThread(progressVisitor);
         cancelThread.start();
         try {

@@ -4,7 +4,6 @@ import platform
 import json
 
 
-
 # --- Opaque struct placeholders for GraalVM native API ---
 class GraalIsolate(ctypes.Structure):
     _fields_ = []
@@ -22,7 +21,7 @@ GraalIsolate_p = ctypes.POINTER(GraalIsolate)
 GraalIsolateThread_p = ctypes.POINTER(GraalIsolateThread)
 
 
-class H2GIS:
+class H2GIS_DEMO:
     """
     Python wrapper for the native H2GIS library compiled with GraalVM.
 
@@ -31,11 +30,10 @@ class H2GIS:
 
     Typical usage:
 
-        h2 = H2GIS()
-        h2.connect("mydb.mv.db")
-        h2.execute("CREATE TABLE test(id INT PRIMARY KEY);")
-        rows = h2.fetch("SELECT * FROM test;")
-        h2.close()
+        h2gis = H2GIS()
+        h2gis.execute("CREATE TABLE test(id INT PRIMARY KEY);")
+        rows = h2gis.fetch("SELECT * FROM test;")
+        h2gis.close()
 
     Attributes:
         lib (CDLL): The loaded native shared library.
@@ -131,11 +129,11 @@ class H2GIS:
         ]
         self.lib.h2gis_fetch.restype = ctypes.c_long
 
-        self.lib.h2gis_fetch_rows.argtypes = [
+        self.lib.h2gis_fetch_all.argtypes = [
             GraalIsolateThread_p,
             ctypes.c_long,
         ]
-        self.lib.h2gis_fetch_rows.restype = ctypes.c_char_p
+        self.lib.h2gis_fetch_all.restype = ctypes.c_char_p
 
         self.lib.h2gis_close_query.argtypes = [
             GraalIsolateThread_p,
@@ -248,7 +246,7 @@ class H2GIS:
         all_rows = []
 
         while True:
-            result = self.lib.h2gis_fetch_rows(self.thread, handle)
+            result = self.lib.h2gis_fetch_all(self.thread, handle)
             if not result:
                 break
             decoded = result.decode("utf-8").strip()
@@ -266,9 +264,6 @@ class H2GIS:
 
         self.lib.h2gis_close_query(self.thread, handle)
         return all_rows
-
-
-
 
 
 

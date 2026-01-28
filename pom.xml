@@ -256,7 +256,6 @@
             </modules>
             <build>
                 <pluginManagement>
-
                     <plugins>
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
