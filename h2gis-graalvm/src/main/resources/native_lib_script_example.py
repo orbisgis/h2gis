@@ -19,7 +19,7 @@ GraalIsolate_p = ctypes.POINTER(GraalIsolate)
 GraalIsolateThread_p = ctypes.POINTER(GraalIsolateThread)
 
 # Loading .so lib
-lib = ctypes.CDLL("/home/mael/Documents/programmes/h2gis-python/h2gis/lib/h2gis.so");
+lib = ctypes.CDLL("/home/ebocher/Autres/codes/h2gis-python/build/lib/h2gis/lib/h2gis.so");
 
 # Define methods signatures
 elf.lib.graal_create_isolate.argtypes = [
