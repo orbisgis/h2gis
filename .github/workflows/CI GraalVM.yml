@@ -1,108 +1,98 @@
-  name: CI GraalVM
-  on:
-    push:
-      branches: ["master"]
-      tags: ["v*.*.*"]
-    workflow_dispatch:
-  jobs:
-    build:
-      name: H2GIS on ${{ matrix.os }}
-      runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          os: [ macos-latest, windows-latest, ubuntu-latest ]
-      steps:
-        - uses: actions/checkout@v4
+name: CI GraalVM
+on:
+  push:
+    branches: ["master"]
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+jobs:
+  build:
+    name: H2GIS on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
 
-        - uses: graalvm/setup-graalvm@v1
-          with:
-            java-version: '25'
-            distribution: 'graalvm'
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            native-image-job-reports: 'true'
+      - name: H2GIS build
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          native-image --version
+          
+      - name: H2GIS maven build
+        run: mvn clean package -DskipTests && mvn native:compile -Pnative -pl h2gis-graalvm -DskipTests
+      
+      - name: Set OS name
+        id: os-name
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            echo "os=linux" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            echo "os=macos" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+            echo "os=windows" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Copy compiled libraries
+        shell: bash
+        run: |
+          mkdir -p upload-libs
+          find h2gis-graalvm/target -type f \( -name "*.so" -o -name "*.dylib" -o -name "*.dll" \) -exec cp {} upload-libs/ \; 2>/dev/null || true
+          echo "Libraries found for ${{ steps.os-name.outputs.os }}:"
+          ls -lh upload-libs/
+      
+      - name: Upload libraries for combining
+        uses: actions/upload-artifact@v4
+        with:
+          name: libs-${{ steps.os-name.outputs.os }}
+          path: upload-libs/
+          retention-days: 1
 
-        - name: H2GIS build
-          run: |
-            echo "GRAALVM_HOME: $GRAALVM_HOME"
-            echo "JAVA_HOME: $JAVA_HOME"
-            java --version
-            native-image --version
-
-        - name: H2GIS maven build
-          run: mvn clean package -DskipTests && mvn native:compile -Pnative -pl h2gis-graalvm -DskipTests
-
-        - name: Set OS name
-          id: os-name
-          shell: bash
-          run: |
-            if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-              echo "os=linux" >> $GITHUB_OUTPUT
-            elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-              echo "os=macos" >> $GITHUB_OUTPUT
-            elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-              echo "os=windows" >> $GITHUB_OUTPUT
-            fi
-
-        - name: Copy compiled libraries
-          shell: bash
-          run: |
-            mkdir -p upload-libs
-            find h2gis-graalvm/target -type f \( -name "*.so" -o -name "*.dylib" -o -name "*.dll" \) -exec cp {} upload-libs/ \; 2>/dev/null || true
-            echo "Libraries found for ${{ steps.os-name.outputs.os }}:"
-            ls -lh upload-libs/
-
-        - name: Cache libraries
-          uses: actions/cache/save@v4
-          with:
-            path: upload-libs/
-            key: libraries-${{ github.run_id }}-${{ steps.os-name.outputs.os }}
-
-    create_combined_archive:
-      name: Create combined libraries archive
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - name: Restore Linux libraries from cache
-          uses: actions/cache/restore@v4
-          with:
-            path: all-libraries/linux/
-            key: libraries-${{ github.run_id }}-linux
-            fail-on-cache-miss: true
-
-        - name: Restore macOS libraries from cache
-          uses: actions/cache/restore@v4
-          with:
-            path: all-libraries/macos/
-            key: libraries-${{ github.run_id }}-macos
-            fail-on-cache-miss: true
-
-        - name: Restore Windows libraries from cache
-          uses: actions/cache/restore@v4
-          with:
-            path: all-libraries/windows/
-            key: libraries-${{ github.run_id }}-windows
-            fail-on-cache-miss: true
-
-        - name: Flatten directory structure
-          run: |
-            mkdir -p flattened-libs
-            find all-libraries -type f \( -name "*.so" -o -name "*.dylib" -o -name "*.dll" \) -exec cp {} flattened-libs/ \;
-            echo "Flattened libraries:"
-            ls -lh flattened-libs/
-
-        - name: Create combined zip
-          run: |
-            cd flattened-libs
-            zip -r ../h2gis-graalvm-all-platforms.zip .
-            cd ..
-            echo "Archive created:"
-            ls -lh h2gis-graalvm-all-platforms.zip
-            echo "Archive contents:"
-            unzip -l h2gis-graalvm-all-platforms.zip
-
-        - name: Upload combined archive
-          uses: actions/upload-artifact@v4
-          with:
-            name: h2gis-graalvm-all-platforms
-            path: h2gis-graalvm-all-platforms.zip
-            retention-days: 90
+  create_combined_archive:
+    name: Create combined libraries archive
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all library artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: libs-*
+          path: all-libraries
+          merge-multiple: true
+      
+      - name: List downloaded libraries
+        run: |
+          echo "All libraries downloaded:"
+          ls -lh all-libraries/
+      
+      - name: Create combined zip
+        run: |
+          cd all-libraries
+          zip -r ../h2gis-graalvm-all-platforms.zip *.so *.dll *.dylib 2>/dev/null || zip -r ../h2gis-graalvm-all-platforms.zip .
+          cd ..
+          echo "Archive created:"
+          ls -lh h2gis-graalvm-all-platforms.zip
+          echo "Archive contents:"
+          unzip -l h2gis-graalvm-all-platforms.zip
+      
+      - name: Upload combined archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2gis-graalvm-all-platforms
+          path: h2gis-graalvm-all-platforms.zip
+          retention-days: 90
+      
+      - name: Delete temporary library artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: libs-*
