@@ -473,14 +473,14 @@ public class GraalCInterface {
      * @return native memory pointer to the JSON buffer, or 0 on error
      */
     @CEntryPoint(name = "h2gis_fetch_all")
-    public static CCharPointer h2gisFetchAll(IsolateThread thread, long queryHandle, WordBase bufferSize) {
+    public static WordBase h2gisFetchAll(IsolateThread thread, long queryHandle, WordBase bufferSize) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
                 if (bufferSize.rawValue() != 0L) {
                     writeToNativeMemory(bufferSize.rawValue(), 0L);
                 }
-                return WordFactory.nullPointer();
+                return WordFactory.zero();
             }
             ResultSetWrapper resultSetWrapper = ResultSetWrapper.from(rs);
 
@@ -507,7 +507,7 @@ public class GraalCInterface {
             if (bufferSize.rawValue() != 0L) {
                 writeToNativeMemory(bufferSize.rawValue(), 0L);
             }
-            return WordFactory.nullPointer();
+            return WordFactory.zero();
         }
     }
 
@@ -522,14 +522,14 @@ public class GraalCInterface {
      * @return native memory pointer to the JSON buffer, or 0 on error
      */
     @CEntryPoint(name = "h2gis_fetch_one")
-    public static CCharPointer h2gisFetchOne(IsolateThread thread, long queryHandle, WordBase bufferSize) {
+    public static WordBase h2gisFetchOne(IsolateThread thread, long queryHandle, WordBase bufferSize) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
                 if (bufferSize.rawValue() != 0L) {
                     writeToNativeMemory(bufferSize.rawValue(), 0L);
                 }
-                return WordFactory.nullPointer();
+                return WordFactory.zero();
             }
             ResultSetWrapper resultSetWrapper = ResultSetWrapper.fromOne(rs);
 
@@ -554,7 +554,7 @@ public class GraalCInterface {
             if (bufferSize.rawValue() != 0L) {
                 writeToNativeMemory(bufferSize.rawValue(), 0L);
             }
-            return WordFactory.nullPointer();
+            return WordFactory.zero();
         }
     }
 
@@ -569,14 +569,14 @@ public class GraalCInterface {
      * @return native memory pointer to the JSON buffer, or 0 on error
      */
     @CEntryPoint(name = "h2gis_fetch_batch")
-    public static CCharPointer h2gisFetchBatch(IsolateThread thread, long queryHandle, int batchSize, WordBase bufferSize) {
+    public static WordBase h2gisFetchBatch(IsolateThread thread, long queryHandle, int batchSize, WordBase bufferSize) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
                 if (bufferSize.rawValue() != 0L) {
                     writeToNativeMemory(bufferSize.rawValue(), 0L);
                 }
-                return WordFactory.nullPointer();
+                return WordFactory.zero();
             }
             ResultSetWrapper resultSetWrapper = ResultSetWrapper.fromBatch(rs, batchSize);
 
@@ -606,7 +606,7 @@ public class GraalCInterface {
             if (bufferSize.rawValue() != 0L) {
                 writeToNativeMemory(bufferSize.rawValue(), 0L);
             }
-            return WordFactory.nullPointer();
+            return WordFactory.zero();
         }
     }
 
@@ -621,14 +621,14 @@ public class GraalCInterface {
      * @return a native memory pointer to an array of type codes, or 0 on error
      */
     @CEntryPoint(name = "h2gis_get_column_types")
-    public static CCharPointer h2gisGetColumnTypes(IsolateThread thread, long queryHandle, WordBase colCountOut) {
+    public static WordBase h2gisGetColumnTypes(IsolateThread thread, long queryHandle, WordBase colCountOut) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
                 if (colCountOut.rawValue() != 0L) {
                     writeToNativeMemory(colCountOut.rawValue(), 0L);
                 }
-                return WordFactory.nullPointer();
+                return WordFactory.zero();
             }
 
             ResultSetMetaData meta = rs.getMetaData();
@@ -637,7 +637,7 @@ public class GraalCInterface {
                 if (colCountOut.rawValue() != 0L) {
                     writeToNativeMemory(colCountOut.rawValue(), 0L);
                 }
-                return WordFactory.nullPointer();
+                return WordFactory.zero();
             }
 
             ByteBuffer buffer = ByteBuffer.allocate((colCount) * 4).order(ByteOrder.LITTLE_ENDIAN);
@@ -709,7 +709,7 @@ public class GraalCInterface {
 
         } catch (Exception e) {
             System.err.println("Error in h2gis_get_column_types: " + e.getMessage());
-            return WordFactory.nullPointer();
+            return WordFactory.zero();
         }
     }
 
