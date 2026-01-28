@@ -65,7 +65,7 @@ jobs:
           key: graalvm-${{ github.run_id }}-${{ steps.os-name.outputs.os }}
 
     # Combine all libs
-    create-combined-archive:
+    create_combined_archive:
       name: Create combined libraries archive
       needs: build
       runs-on: ubuntu-latest
