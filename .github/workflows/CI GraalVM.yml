@@ -47,7 +47,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p upload-libs
-          find h2gis-graalvm/target -type f \( -name "*.so" -o -name "*.dylib" -o -name "*.dll" \) -exec cp {} upload-libs/ \; 2>/dev/null || true
+          # Copier UNIQUEMENT les fichiers h2gis.so, h2gis.dll, h2gis.dylib
+          find h2gis-graalvm/target -type f \( -name "h2gis.so" -o -name "h2gis.dylib" -o -name "h2gis.dll" \) -exec cp {} upload-libs/ \; 2>/dev/null || true
           echo "Libraries found for ${{ steps.os-name.outputs.os }}:"
           ls -lh upload-libs/
       
@@ -77,8 +78,9 @@ jobs:
       
       - name: Create combined zip
         run: |
+          # Créer le zip directement avec les fichiers (pas de répertoire parent)
           cd all-libraries
-          zip -r ../h2gis-graalvm-all-platforms.zip *.so *.dll *.dylib 2>/dev/null || zip -r ../h2gis-graalvm-all-platforms.zip .
+          zip ../h2gis-graalvm-all-platforms.zip h2gis.so h2gis.dll h2gis.dylib 2>/dev/null || true
           cd ..
           echo "Archive created:"
           ls -lh h2gis-graalvm-all-platforms.zip
