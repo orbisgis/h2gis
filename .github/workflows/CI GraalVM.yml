@@ -57,12 +57,65 @@ jobs:
           echo "Libraries found for ${{ steps.os-name.outputs.os }}:"
           ls -lh graalvm-libs/
 
-      # Upload the libs
-      - name: Upload libraries
-        uses: actions/upload-artifact@v4
+      # Save libs for next le job
+      - name: Cache libraries
+        uses: actions/cache/save@v4
         with:
-          name: libraries-${{ steps.os-name.outputs.os }}
           path: graalvm-libs/
-          retention-days: 30
-          if-no-files-found: warn
+          key: graalvm-${{ github.run_id }}-${{ steps.os-name.outputs.os }}
 
+    # Combine all libs
+    create-combined-archive:
+      name: Create combined libraries archive
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - name: Restore Linux libraries from cache
+          uses: actions/cache/restore@v4
+          with:
+            path: all-libraries/linux/
+            key: graalvm-${{ github.run_id }}-linux
+            fail-on-cache-miss: true
+
+        - name: Restore macOS libraries from cache
+          uses: actions/cache/restore@v4
+          with:
+            path: all-libraries/macos/
+            key: graalvm-${{ github.run_id }}-macos
+            fail-on-cache-miss: true
+
+        - name: Restore Windows libraries from cache
+          uses: actions/cache/restore@v4
+          with:
+            path: all-libraries/windows/
+            key: graalvm-${{ github.run_id }}-windows
+            fail-on-cache-miss: true
+
+        - name: Flatten directory structure
+          run: |
+            # Create a folder to store libs
+            mkdir -p flattened-libs
+
+            # Copy libs
+            find all-libraries -type f \( -name "*.so" -o -name "*.dylib" -o -name "*.dll" \) -exec cp {} flattened-libs/ \;
+
+            echo "Flattened libraries:"
+            ls -lh flattened-libs/
+
+        - name: Create combined zip
+          run: |
+            cd flattened-libs
+            zip -r ../h2gis-graalvm-all-platforms.zip .
+            cd ..
+            echo "Archive created:"
+            ls -lh h2gis-graalvm-all-platforms.zip
+
+            echo "Archive contents:"
+            unzip -l h2gis-graalvm-all-platforms.zip
+
+        - name: Upload combined archive
+          uses: actions/upload-artifact@v4
+          with:
+            name: h2gis-graalvm-all-platforms
+            path: h2gis-graalvm-all-platforms.zip
+            retention-days: 90
