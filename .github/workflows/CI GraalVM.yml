@@ -13,6 +13,7 @@ jobs:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
       - uses: actions/checkout@v4
+
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: '25'      # See 'Options' for more details
@@ -26,5 +27,42 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
           native-image --version
+
       - name: H2GIS maven build
-        run:  mvn clean package -DskipTests && mvn native:compile -Pnative -pl h2gis-graalvm -DskipTests
+        run: mvn clean package -DskipTests && mvn native:compile -Pnative -pl h2gis-graalvm -DskipTests
+
+      # Nouveau : Identifier le système d'exploitation pour le nom du fichier
+      - name: Set OS name
+        id: os-name
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            echo "os=linux" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            echo "os=macos" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+            echo "os=windows" >> $GITHUB_OUTPUT
+          fi
+
+      # Nouveau : Copier les bibliothèques compilées vers un répertoire temporaire
+      - name: Copy compiled libraries
+        shell: bash
+        run: |
+          # Create a folder
+          mkdir -p graalvm-libs
+          
+          # Copy files
+          find h2gis-graalvm/target -type f \( -name "*.so" -o -name "*.dylib" -o -name "*.dll" \) -exec cp {} graalvm-libs/ \; 2>/dev/null || true          
+          # List
+          echo "Libraries found for ${{ steps.os-name.outputs.os }}:"
+          ls -lh graalvm-libs/
+
+      # Upload the libs
+      - name: Upload libraries
+        uses: actions/upload-artifact@v4
+        with:
+          name: libraries-${{ steps.os-name.outputs.os }}
+          path: graalvm-libs/
+          retention-days: 30
+          if-no-files-found: warn
+
