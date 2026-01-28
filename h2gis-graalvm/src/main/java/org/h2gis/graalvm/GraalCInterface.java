@@ -444,17 +444,8 @@ public class GraalCInterface {
             }
 
             try (Statement stmt = conn.createStatement()) {
-                ResultSet rs = stmt.executeQuery("SELECT DATABASE()");
-                if (rs.next()) {
-                    String dbName = rs.getString(1);
-                    stmt.executeUpdate("DROP DATABASE `" + dbName + "`");
-                } else {
-                    throw new SQLException("Could not find database name");
-                }
-                rs.close();
-
+                stmt.execute("drop all objects delete files");
             }
-
             conn.close();
             connections.remove(connectionHandle);
         } catch (Exception e) {

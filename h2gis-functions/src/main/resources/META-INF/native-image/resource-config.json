@@ -1,8 +1,0 @@
-{
-  "resources": [
-    {
-      "pattern": "org/h2gis/functions/factory/spatial_ref_sys\\.sql"
-    }
-  ]
-}
-
