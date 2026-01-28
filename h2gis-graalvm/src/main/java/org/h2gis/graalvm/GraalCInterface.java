@@ -20,6 +20,7 @@
 package org.h2gis.graalvm;
 
 import org.graalvm.nativeimage.IsolateThread;
+import org.graalvm.nativeimage.UnmanagedMemory;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
@@ -28,7 +29,7 @@ import org.graalvm.word.WordFactory;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.JDBCUtilities;
-import sun.misc.Unsafe;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.sql.*;
@@ -47,11 +48,12 @@ import static org.graalvm.nativeimage.c.type.CTypeConversion.toCString;
  * This class manages connections, statements, result sets, executes queries,
  * and returns results as raw buffers to native code.
  *
- * @author Maël PHILIPPE, CNRS
- * @author Erwan BOCHER, CNRS
+ * @author Maël PHILIPPE, CNRS (2025)
+ * @author Erwan BOCHER, CNRS (2025-2026)
  */
 public class GraalCInterface {
 
+    private static final int BUFFER_SIZE = 1024 * 128;
 
     /**
      * Logger for internal error reporting
@@ -82,11 +84,6 @@ public class GraalCInterface {
      * Thread-local error message, retrieved by C with h2gis_get_last_error()
      */
     private static final ThreadLocal<String> lastError = new ThreadLocal<>();
-
-    /**
-     * Unsafe is used for direct memory allocation/free to pass buffers to native side
-     */
-    private static final Unsafe unsafe = getUnsafe();
 
     /**
      * Lock for connection synchronization
@@ -476,44 +473,41 @@ public class GraalCInterface {
      * @return native memory pointer to the JSON buffer, or 0 on error
      */
     @CEntryPoint(name = "h2gis_fetch_all")
-    public static WordBase h2gisFetchAll(IsolateThread thread, long queryHandle, WordBase bufferSize) {
+    public static CCharPointer h2gisFetchAll(IsolateThread thread, long queryHandle, WordBase bufferSize) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
-
                 if (bufferSize.rawValue() != 0L) {
-                    unsafe.putLong(bufferSize.rawValue(), 0L);
+                    writeToNativeMemory(bufferSize.rawValue(), 0L);
                 }
-                return WordFactory.zero();
+                return WordFactory.nullPointer();
             }
             ResultSetWrapper resultSetWrapper = ResultSetWrapper.from(rs);
 
             byte[] arr = resultSetWrapper.serialize();
 
-            // Écrire le nombre de lignes dans la mémoire pointée par rowNum, si valide
+            // Write the buffer size to native memory
             if (bufferSize.rawValue() != 0L) {
-                unsafe.putLong(bufferSize.rawValue(), arr.length);
+                writeToNativeMemory(bufferSize.rawValue(), arr.length);
             }
 
-            // Allouer la mémoire native pour le buffer
-            long addr = unsafe.allocateMemory(arr.length);
+            // Allocate native memory for the buffer
+            CCharPointer addr = UnmanagedMemory.malloc(arr.length);
 
-            // Copier les données dans la mémoire native allouée
-            for (int i = 0; i < arr.length; i++) {
-                unsafe.putByte(addr + i, arr[i]);
-            }
+            // Copy data to native memory
+            copyToNativeMemory(addr.rawValue(), arr);
 
             rs.close();
 
-            // Retourner un pointeur vers cette mémoire (WordBase)
-            return WordFactory.pointer(addr);
+            // Return a pointer to this memory (WordBase)
+            return addr;
 
         } catch (Exception e) {
             System.err.println("Error in h2gis_fetch_all: " + e.getMessage());
             if (bufferSize.rawValue() != 0L) {
-                unsafe.putLong(bufferSize.rawValue(), 0L);
+                writeToNativeMemory(bufferSize.rawValue(), 0L);
             }
-            return WordFactory.zero();
+            return WordFactory.nullPointer();
         }
     }
 
@@ -528,15 +522,14 @@ public class GraalCInterface {
      * @return native memory pointer to the JSON buffer, or 0 on error
      */
     @CEntryPoint(name = "h2gis_fetch_one")
-    public static WordBase h2gisFetchOne(IsolateThread thread, long queryHandle, WordBase bufferSize) {
+    public static CCharPointer h2gisFetchOne(IsolateThread thread, long queryHandle, WordBase bufferSize) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
-
                 if (bufferSize.rawValue() != 0L) {
-                    unsafe.putLong(bufferSize.rawValue(), 0L);
+                    writeToNativeMemory(bufferSize.rawValue(), 0L);
                 }
-                return WordFactory.zero();
+                return WordFactory.nullPointer();
             }
             ResultSetWrapper resultSetWrapper = ResultSetWrapper.fromOne(rs);
 
@@ -544,26 +537,24 @@ public class GraalCInterface {
 
             // Write the buffer size
             if (bufferSize.rawValue() != 0L) {
-                unsafe.putLong(bufferSize.rawValue(), arr.length);
+                writeToNativeMemory(bufferSize.rawValue(), arr.length);
             }
 
             // Allocate memory for the buffer
-            long addr = unsafe.allocateMemory(arr.length);
+            CCharPointer addr = UnmanagedMemory.malloc(arr.length);
 
-            // Copy data in newly allocated memory
-            for (int i = 0; i < arr.length; i++) {
-                unsafe.putByte(addr + i, arr[i]);
-            }
+            // Copy data to newly allocated memory
+            copyToNativeMemory(addr.rawValue(), arr);
 
             // return a pointer on this buffer-dedicated memory
-            return WordFactory.pointer(addr);
+            return addr;
 
         } catch (Exception e) {
-            System.err.println("Error in h2gis_fetch_all: " + e.getMessage());
+            System.err.println("Error in h2gis_fetch_one: " + e.getMessage());
             if (bufferSize.rawValue() != 0L) {
-                unsafe.putLong(bufferSize.rawValue(), 0L);
+                writeToNativeMemory(bufferSize.rawValue(), 0L);
             }
-            return WordFactory.zero();
+            return WordFactory.nullPointer();
         }
     }
 
@@ -578,15 +569,14 @@ public class GraalCInterface {
      * @return native memory pointer to the JSON buffer, or 0 on error
      */
     @CEntryPoint(name = "h2gis_fetch_batch")
-    public static WordBase h2gisFetchBatch(IsolateThread thread, long queryHandle, int batchSize, WordBase bufferSize) {
+    public static CCharPointer h2gisFetchBatch(IsolateThread thread, long queryHandle, int batchSize, WordBase bufferSize) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
-
                 if (bufferSize.rawValue() != 0L) {
-                    unsafe.putLong(bufferSize.rawValue(), 0L);
+                    writeToNativeMemory(bufferSize.rawValue(), 0L);
                 }
-                return WordFactory.zero();
+                return WordFactory.nullPointer();
             }
             ResultSetWrapper resultSetWrapper = ResultSetWrapper.fromBatch(rs, batchSize);
 
@@ -594,17 +584,14 @@ public class GraalCInterface {
 
             // Write the buffer size
             if (bufferSize.rawValue() != 0L) {
-                unsafe.putLong(bufferSize.rawValue(), arr.length);
+                writeToNativeMemory(bufferSize.rawValue(), arr.length);
             }
 
             // Allocate memory for the buffer
-            long addr = unsafe.allocateMemory(arr.length);
+            CCharPointer addr = UnmanagedMemory.malloc(arr.length);
 
-            // Copy data in newly allocated memory
-            for (int i = 0; i < arr.length; i++) {
-                unsafe.putByte(addr + i, arr[i]);
-            }
-
+            // Copy data to newly allocated memory
+            copyToNativeMemory(addr.rawValue(), arr);
             // If no more rows, close the result set
             // Wait, standard practice in iterators: only close if explicitly asked or if we know we are done.
             // But we don't know if we are done just because we fetched < batchSize (maybe last batch was exactly batchSize).
@@ -612,14 +599,14 @@ public class GraalCInterface {
             // Checking: resultSetWrapper.getRowCount() < batchSize implies end of stream.
             // But let's leave explicit close to h2gis_close_query.
 
-            return WordFactory.pointer(addr);
+            return addr;
 
         } catch (Exception e) {
             System.err.println("Error in h2gis_fetch_batch: " + e.getMessage());
             if (bufferSize.rawValue() != 0L) {
-                unsafe.putLong(bufferSize.rawValue(), 0L);
+                writeToNativeMemory(bufferSize.rawValue(), 0L);
             }
-            return WordFactory.zero();
+            return WordFactory.nullPointer();
         }
     }
 
@@ -634,23 +621,23 @@ public class GraalCInterface {
      * @return a native memory pointer to an array of type codes, or 0 on error
      */
     @CEntryPoint(name = "h2gis_get_column_types")
-    public static WordBase h2gisGetColumnTypes(IsolateThread thread, long queryHandle, WordBase colCountOut) {
+    public static CCharPointer h2gisGetColumnTypes(IsolateThread thread, long queryHandle, WordBase colCountOut) {
         try {
             ResultSet rs = results.get(queryHandle);
             if (rs == null) {
                 if (colCountOut.rawValue() != 0L) {
-                    unsafe.putLong(colCountOut.rawValue(), 0L);
+                    writeToNativeMemory(colCountOut.rawValue(), 0L);
                 }
-                return WordFactory.zero();
+                return WordFactory.nullPointer();
             }
 
             ResultSetMetaData meta = rs.getMetaData();
             int colCount = meta.getColumnCount();
             if (colCount < 1) {
                 if (colCountOut.rawValue() != 0L) {
-                    unsafe.putLong(colCountOut.rawValue(), 0L);
+                    writeToNativeMemory(colCountOut.rawValue(), 0L);
                 }
-                return WordFactory.zero();
+                return WordFactory.nullPointer();
             }
 
             ByteBuffer buffer = ByteBuffer.allocate((colCount) * 4).order(ByteOrder.LITTLE_ENDIAN);
@@ -711,20 +698,18 @@ public class GraalCInterface {
             byte[] arr = buffer.array();
 
             if (colCountOut.rawValue() != 0L) {
-                unsafe.putLong(colCountOut.rawValue(), colCount);
+                writeToNativeMemory(colCountOut.rawValue(), colCount);
             }
 
             // Copy to native memory
-            long addr = unsafe.allocateMemory(arr.length);
-            for (int i = 0; i < arr.length; i++) {
-                unsafe.putByte(addr + i, arr[i]);
-            }
+            CCharPointer addr = UnmanagedMemory.malloc(arr.length);
+            copyToNativeMemory(addr.rawValue(), arr);
 
-            return WordFactory.pointer(addr);
+            return addr;
 
         } catch (Exception e) {
             System.err.println("Error in h2gis_get_column_types: " + e.getMessage());
-            return WordFactory.zero();
+            return WordFactory.nullPointer();
         }
     }
 
@@ -805,7 +790,7 @@ public class GraalCInterface {
     @CEntryPoint(name = "h2gis_free_result_buffer")
     public static void freeResultBuffer(IsolateThread thread, WordBase ptr) {
         if (ptr.rawValue() != 0L) {
-            unsafe.freeMemory(ptr.rawValue());
+            UnmanagedMemory.free((CCharPointer) ptr);
         }
     }
 
@@ -827,18 +812,34 @@ public class GraalCInterface {
     }
 
     /**
-     * Uses reflection hack to access the Unsafe instance.
-     * Unsafe is used to allocate and free off-heap memory.
+     * Helper method to write a long value to native memory at given address.
+     * Uses pointer arithmetic to write bytes directly to native memory.
      *
-     * @return the Unsafe instance
+     * @param address the native memory address
+     * @param value the long value to write
      */
-    private static Unsafe getUnsafe() {
-        try {
-            java.lang.reflect.Field f = Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            return (Unsafe) f.get(null);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to get Unsafe instance", e);
+    private static void writeToNativeMemory(long address, long value) {
+        ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.nativeOrder());
+        buffer.putLong(value);
+        byte[] bytes = buffer.array();
+
+        CCharPointer ptr = WordFactory.pointer(address);
+        for (int i = 0; i < bytes.length; i++) {
+            ptr.write(i, bytes[i]);
+        }
+    }
+
+    /**
+     * Helper method to copy byte array to native memory.
+     * Uses pointer arithmetic to write bytes directly to native memory.
+     *
+     * @param address the native memory address
+     * @param data the byte array to copy
+     */
+    private static void copyToNativeMemory(long address, byte[] data) {
+        CCharPointer ptr = WordFactory.pointer(address);
+        for (int i = 0; i < data.length; i++) {
+            ptr.write(i, data[i]);
         }
     }
 }
