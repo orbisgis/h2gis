@@ -44,7 +44,7 @@ jobs:
             echo "os=windows" >> $GITHUB_OUTPUT
           fi
 
-      # Nouveau : Copier les bibliothèques compilées vers un répertoire temporaire
+      # Copy the libs
       - name: Copy compiled libraries
         shell: bash
         run: |
