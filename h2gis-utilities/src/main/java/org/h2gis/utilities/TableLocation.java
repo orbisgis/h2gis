@@ -236,7 +236,7 @@ public class TableLocation {
      * Convert catalog.schema.table, schema.table or table into a TableLocation
      * instance. Non-specified schema or catalogs are converted to the empty
      * string.
-     *
+     * @deprecated This method uses H2 as default db type and should be avoided. Use {@link #parse(String, DBTypes)} instead.
      * @param concatenatedTableLocation Table location [[Catalog.]Schema.]Table
      * @return Java beans for table location
      */

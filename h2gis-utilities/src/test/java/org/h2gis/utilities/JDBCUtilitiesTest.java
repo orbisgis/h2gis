@@ -550,7 +550,7 @@ public class JDBCUtilitiesTest {
     }
 
     @Test
-    public void testWithPostGIS() throws SQLException {
+    public void testSpatialIndexWithPostGIS() throws SQLException {
         Properties props = new Properties();
         props.setProperty("user", "orbisgis");
         props.setProperty("password", "orbisgis");
@@ -571,5 +571,29 @@ public class JDBCUtilitiesTest {
         assertTrue(JDBCUtilities.isIndexed(postConn, table, "id"));
         JDBCUtilities.dropIndex(postConn, table, "id");
         assertFalse(JDBCUtilities.isIndexed(postConn, table, "id"));
+    }
+
+    /**
+     *  Regression test for distinct field values retrieval on PostGIS (was using {@link TableLocation#parse(String)}
+     *  without specifying DBType, and it defaults to H2GIS).
+      * @throws SQLException Error
+     */
+    @Test
+    public void testDistinctFieldsWithPostGIS() throws SQLException {
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", "jdbc:postgresql://localhost:5432/orbisgis_db");
+        DataSource ds = PostGISDBFactory.createDataSource(props);
+        Connection postConn = ds.getConnection();
+        Statement st = postConn.createStatement();
+        st.execute("DROP TABLE IF EXISTS TESTVALUES;"+
+                "CREATE TABLE TESTVALUES (id int, avalue VARCHAR);"+
+                "INSERT INTO TESTVALUES VALUES (1, 'ALPHA'), (2, 'BETA'), (3, 'GAMMA');");
+        TableLocation table = TableLocation.parse("TESTVALUES", DBTypes.POSTGIS);
+        Set<String> distinctValues = new HashSet<>(JDBCUtilities.getUniqueFieldValues(postConn, table, "avalue"));
+        // Expected values
+        Set<String> expectedValues = new HashSet<>(Arrays.asList("ALPHA", "BETA", "GAMMA"));
+        assertEquals(expectedValues, distinctValues);
     }
 }
