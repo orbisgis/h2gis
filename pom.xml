@@ -88,7 +88,7 @@
         <osgi-core-version>6.0.0</osgi-core-version>
         <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
         <postgis-jdbc-version>2025.1.1</postgis-jdbc-version>
-        <flatgeobuf-version>[3.28.2, 4)</flatgeobuf-version>
+        <flatgeobuf-version>[3.29.0, 4)</flatgeobuf-version>
         <tinfour-version>[2.1.8, 3)</tinfour-version>
         <postgresql-version>42.7.9</postgresql-version>
         <jna-version>0.5.0</jna-version>
