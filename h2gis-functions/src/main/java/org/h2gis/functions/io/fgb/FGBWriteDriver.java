@@ -132,7 +132,7 @@ public class FGBWriteDriver {
                     }
                     rs.beforeFirst();
                     ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                    doExport(progress, rs,  spatialFieldNameAndIndex.first(), "GEOMETRY",srid, recordCount, new FileOutputStream(fileName), null);
+                    doExport(progress, rs,  spatialFieldNameAndIndex.first(), recordCount, new FileOutputStream(fileName), null);
                     copyProgress.endOfProgress();
                     return fileName.getAbsolutePath();
                 } else {
@@ -179,9 +179,8 @@ public class FGBWriteDriver {
                       Statement st = connection.createStatement()) {
                     Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, parse);
                     String geomCol = geomMetadata.first();
-                    geomMetadata.second();
                     ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
-                    doExport(progress, rs, geomCol, geomMetadata.second().sfs_geometryType, geomMetadata.second().SRID, recordCount, outputStream, fileNameWithoutExt);
+                    doExport(progress, rs, geomCol, recordCount, outputStream, fileNameWithoutExt);
                 }
 
         } finally {
@@ -195,12 +194,12 @@ public class FGBWriteDriver {
         }
     }
 
-    private String doExport(ProgressVisitor progress, ResultSet rs, String geometryColumn, String geometryType, int srid,  int recordCount, FileOutputStream outputStream, String fileName) throws SQLException, IOException {
+    private String doExport(ProgressVisitor progress, ResultSet rs, String geometryColumn,  int recordCount, FileOutputStream outputStream, String fileName) throws SQLException, IOException {
 
         FlatBufferBuilder bufferBuilder = new FlatBufferBuilder();
 
         //Write the header
-        HeaderMeta header = writeHeader(outputStream, fileName, bufferBuilder, recordCount, geometryType, srid, rs.getMetaData());
+        HeaderMeta header = writeHeader(outputStream, fileName, bufferBuilder, recordCount, geometryColumn, rs.getMetaData());
 
         long endHeaderPosition = outputStream.getChannel().position();
         //Columns numbers
@@ -357,19 +356,26 @@ public class FGBWriteDriver {
      * @param outputStream output file
      * @param fileName name of the file
      * @param rowCount number of rows
-     * @param geometryType type of geometry
-     * @param srid table srid
      * @param metadata flatbuffer metadata
      * @return flatbuffer header object
      */
-    private HeaderMeta writeHeader(FileOutputStream outputStream, String fileName, FlatBufferBuilder bufferBuilder, long rowCount, String geometryType, int srid, ResultSetMetaData metadata) throws SQLException, IOException {
+    private HeaderMeta writeHeader(FileOutputStream outputStream, String fileName, FlatBufferBuilder bufferBuilder, long rowCount, String geometryColumn, ResultSetMetaData metadata) throws SQLException, IOException {
         outputStream.write(Constants.MAGIC_BYTES);
+        HeaderMeta headerMeta = new HeaderMeta();
         //Get the column information
         List<ColumnMeta> columns = new ArrayList<>();
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
             String typeName = metadata.getColumnTypeName(i);
             if (metadata.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
+                if(metadata.getColumnName(i).equals(geometryColumn)) {
+                    // this geometry column will be exported
+                    GeometryMetaData geomMeta = GeometryMetaData.getMetaDataFromTablePattern(typeName);
+                    headerMeta.hasZ = geomMeta.hasZ;
+                    headerMeta.hasM = geomMeta.hasM;
+                    headerMeta.geometryType = geometryType(geomMeta.geometryType);
+                    headerMeta.srid = geomMeta.SRID;
+                }
                 continue;
             }
             ColumnMeta column = new ColumnMeta();
@@ -380,12 +386,9 @@ public class FGBWriteDriver {
             column.precision=metadata.getPrecision(i);
             columns.add(column);
         }
-        HeaderMeta headerMeta = new HeaderMeta();
         headerMeta.name=fileName;
         headerMeta.featuresCount = rowCount;
-        headerMeta.geometryType = geometryType(geometryType);
         headerMeta.columns = columns;
-        headerMeta.srid = srid;
         if(createIndex) {
             headerMeta.indexNodeSize = packedRTreeNodeSize;
         } else {
@@ -397,26 +400,24 @@ public class FGBWriteDriver {
     }
 
     private byte geometryType(String geometryTypeName) throws SQLException {
-        switch (geometryTypeName) {
-            case "POINT":
-                return GeometryType.Point;
-            case "LINESTRING":
-                return GeometryType.LineString;
-            case "POLYGON":
-                return GeometryType.Polygon;
-            case "MULTIPOINT":
-                return GeometryType.MultiPoint;
-            case "MULTILINESTRING":
-                return GeometryType.MultiLineString;
-            case "MULTIPOLYGON":
-                return GeometryType.MultiPolygon;
-            case "GEOMETRYCOLLECTION":
-                return GeometryType.GeometryCollection;
-            case "GEOMETRY":
-                return GeometryType.Unknown;
-            default:
-                throw new RuntimeException("SQL type not supported : " + geometryTypeName);
+        if (geometryTypeName.startsWith("POINT")) {
+            return GeometryType.Point;
+        } else if (geometryTypeName.startsWith("LINESTRING")) {
+            return GeometryType.LineString;
+        } else if (geometryTypeName.startsWith("POLYGON")) {
+            return GeometryType.Polygon;
+        } else if (geometryTypeName.startsWith("MULTIPOINT")) {
+            return GeometryType.MultiPoint;
+        } else if (geometryTypeName.startsWith("MULTILINESTRING")) {
+            return GeometryType.MultiLineString;
+        } else if (geometryTypeName.startsWith("MULTIPOLYGON")) {
+            return GeometryType.MultiPolygon;
+        } else if (geometryTypeName.startsWith("GEOMETRYCOLLECTION")) {
+            return GeometryType.GeometryCollection;
+        } else if (geometryTypeName.equals("GEOMETRY")) {
+            return GeometryType.Unknown;
         }
+        throw new RuntimeException("SQL type not supported : " + geometryTypeName);
     }
 
     private byte columnType(int sqlTypeId, String sqlType) throws SQLException {

@@ -56,8 +56,8 @@ public class FGBImportExportTest {
     }
 
     @Test
-    public void testWriteReadFGBPoint() throws Exception {
-        File file = new File("target/points.fgb");
+    public void testWriteReadFGBPoint(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "points.fgb");
         file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
@@ -67,9 +67,9 @@ public class FGBImportExportTest {
                     "timestamp_col TIMESTAMP, date_col DATE )");
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 12.10, 156.12345678, 'OrbisGIS', 1, 1,10.5,12.1234, 12.8, 1000000, CAST('2026-01-19 10:00' AS TIMESTAMP), '2026-01-19')");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 10.25,  156.12345678, 'NoiseModelling', null, 1,10.5,12.1234, 12.8, null, CAST('2026-01-18 12:00' AS TIMESTAMP), '2026-01-18')");
-            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_POINTS', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
 
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS order by  ID");
             assertTrue(rs.next());
@@ -96,17 +96,17 @@ public class FGBImportExportTest {
     }
 
     @Test
-    public void testFGBEngine() throws Exception {
+    public void testFGBEngine(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "points.fgb");
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), land varchar)");
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 'corn')");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 'grass')");
-            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_POINTS', true);");
 
-            File fgbFile = new File("target/points.fgb");
             FGBDriver fgbDriver = new FGBDriver();
-            fgbDriver.initDriverFromFile(fgbFile);
+            fgbDriver.initDriverFromFile(file);
             assertEquals(3, fgbDriver.getFieldCount());
             assertEquals(2, fgbDriver.getRowCount());
 
@@ -121,16 +121,16 @@ public class FGBImportExportTest {
     }
 
     @Test
-    public void testFGBFileTable() throws Exception {
-        File file = new File("target/points.fgb");
+    public void testFGBFileTable(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "points.fgb");
         file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT), land varchar)");
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 'corn')");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 'grass')");
-            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
-            stat.execute("CALL FILE_TABLE('target/points.fgb', 'points');");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_POINTS', true);");
+            stat.execute("CALL FILE_TABLE('"+file+"', 'points');");
 
             ResultSet rs = stat.executeQuery("SELECT * FROM points");
             assertTrue(rs.next());
@@ -250,14 +250,13 @@ public class FGBImportExportTest {
 
 
     @Test
-    public void testReadWriteSpatialIndex() throws Exception {
-        File tempOutputFile = new File("target/countries_exported.fgb");
-        tempOutputFile.deleteOnExit();
+    public void testReadWriteSpatialIndex(@TempDir File temporaryDirectory) throws Exception {
+        File tempOutputFile = new File(temporaryDirectory, "countries_exported.fgb");
         try (Statement stat = connection.createStatement()) {
             stat.execute("CALL FGBRead('" + FGBImportExportTest.class.getResource("countries.fgb") + "', 'COUNTRIES_FGB', true);");
             stat.execute("DROP TABLE IF EXISTS COUNTRIES");
             stat.execute("CREATE TABLE COUNTRIES AS SELECT * FROM COUNTRIES_FGB ORDER BY ID");
-            stat.execute("CALL FGBWrite('target/countries_exported.fgb', 'COUNTRIES', true, 'createIndex=true');");
+            stat.execute("CALL FGBWrite('"+tempOutputFile+"', 'COUNTRIES', true, 'createIndex=true');");
         }
         FGBDriver fgbDriver = new FGBDriver();
         fgbDriver.initDriverFromFile(tempOutputFile);
@@ -285,17 +284,17 @@ public class FGBImportExportTest {
     }
 
     @Test
-    public void testWriteReadFGBGeometry() throws Exception {
-        File file = new File("target/points.fgb");
+    public void testWriteReadFGBGeometry(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "points.fgb");
         file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY)");
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)')");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)')");
-            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_POINTS', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
 
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
             assertTrue(rs.next());
@@ -308,18 +307,131 @@ public class FGBImportExportTest {
         }
     }
 
+    /**
+     * Test Read Write PointZ geometries
+     * @throws Exception
+     */
     @Test
-    public void testWriteReadFGBPointSrid() throws Exception {
-        File file = new File("target/points.fgb");
+    public void testWriteReadFGBPointZSrid(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "pointsz.fgb");
+        file.deleteOnExit();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINTZ, 4326))");
+            stat.execute("insert into TABLE_POINTS values(1, 'SRID=4326;POINT Z (140 260 3)')");
+            stat.execute("insert into TABLE_POINTS values(2, 'SRID=4326;POINT Z (150 290 3)')");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_POINTS', true);");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
+
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
+            assertEquals("SRID=4326;POINT Z (140 260 3)", rs.getString("THE_GEOM"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("ID"));
+            assertEquals("SRID=4326;POINT Z (150 290 3)", rs.getString("THE_GEOM"));
+            assertFalse(rs.next());
+        }
+    }
+
+    /**
+     * Test Read Write PointZM geometries
+     * @throws Exception
+     */
+    @Test
+    public void testWriteReadFGBPointZMSrid(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "pointsz.fgb");
+        file.deleteOnExit();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINTZM, 4326))");
+            stat.execute("insert into TABLE_POINTS values(1, 'SRID=4326;POINT ZM (140 260 3 5)')");
+            stat.execute("insert into TABLE_POINTS values(2, 'SRID=4326;POINT ZM (150 290 3 10)')");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_POINTS', true);");
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
+
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
+            assertEquals("SRID=4326;POINT ZM (140 260 3 5)", rs.getString("THE_GEOM"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("ID"));
+            assertEquals("SRID=4326;POINT ZM (150 290 3 10)", rs.getString("THE_GEOM"));
+            assertFalse(rs.next());
+        }
+    }
+
+
+    /**
+     * Test Read Write LineStringZ geometries
+     * @throws Exception
+     */
+    @Test
+    public void testWriteReadFGBLineStringZSrid(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "linestringz.fgb");
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRING");
+            stat.execute("create table TABLE_LINESTRING(id int, the_geom GEOMETRY(LINESTRINGZ, 4326))");
+            stat.execute("insert into TABLE_LINESTRING values(1, 'SRID=4326;LINESTRING Z (-2.75686 47.6546 55.1,-2.7559 47.655 55.1,-2.7555 47.65511 51.1)')");
+            stat.execute("insert into TABLE_LINESTRING values(2, 'SRID=4326;LINESTRING Z (-2.75696 47.6846 58.1,-2.7559 47.66 65.1,-2.7555 47.65511 65.1)')");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_LINESTRING', true);");
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRING");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_LINESTRING', true);");
+
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_LINESTRING");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
+            assertEquals("SRID=4326;LINESTRING Z (-2.75686 47.6546 55.1, -2.7559 47.655 55.1, -2.7555 47.65511 51.1)", rs.getString("THE_GEOM"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("ID"));
+            assertEquals("SRID=4326;LINESTRING Z (-2.75696 47.6846 58.1, -2.7559 47.66 65.1, -2.7555 47.65511 65.1)", rs.getString("THE_GEOM"));
+            assertFalse(rs.next());
+        }
+    }
+
+    /**
+     * Test Read Write PointZM geometries
+     * @throws Exception
+     */
+    @Test
+    public void testWriteReadFGBLineZMSrid(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "linestringzm.fgb");
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRING");
+            stat.execute("create table TABLE_LINESTRING(id int, the_geom GEOMETRY(LINESTRINGZM, 4326))");
+            stat.execute("insert into TABLE_LINESTRING values(1, 'SRID=4326;LINESTRING ZM (-2.75686 47.6546 55.1 5,-2.7559 47.655 55.1 5,-2.7555 47.65511 51.1 6)')");
+            stat.execute("insert into TABLE_LINESTRING values(2, 'SRID=4326;LINESTRING ZM (-2.75696 47.6846 58.1 8,-2.7559 47.66 65.1 8,-2.7555 47.65511 65.1 1)')");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_LINESTRING', true);");
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRING");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_LINESTRING', true);");
+
+            ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_LINESTRING");
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("ID"));
+            assertEquals("SRID=4326;LINESTRING ZM (-2.75686 47.6546 55.1 5, -2.7559 47.655 55.1 5, -2.7555 47.65511 51.1 6)", rs.getString("THE_GEOM"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("ID"));
+            assertEquals("SRID=4326;LINESTRING ZM (-2.75696 47.6846 58.1 8, -2.7559 47.66 65.1 8, -2.7555 47.65511 65.1 1)", rs.getString("THE_GEOM"));
+            assertFalse(rs.next());
+        }
+    }
+
+
+
+    @Test
+    public void testWriteReadFGBPointSrid(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "points.fgb");
         file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT, 4326))");
             stat.execute("insert into TABLE_POINTS values(1, 'SRID=4326;POINT (140 260)')");
             stat.execute("insert into TABLE_POINTS values(2, 'SRID=4326;POINT (150 290)')");
-            stat.execute("CALL FGBWrite('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_POINTS', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
 
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
             assertTrue(rs.next());
@@ -333,8 +445,8 @@ public class FGBImportExportTest {
     }
 
     @Test
-    public void testWriteSelectReadFGBPoint() throws Exception {
-        File file = new File("target/points.fgb");
+    public void testWriteSelectReadFGBPoint(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "points.fgb");
         file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
@@ -343,9 +455,9 @@ public class FGBImportExportTest {
                     "numeric_col NUMERIC(10, 1),  real_col real, float_precision_col float(1), bigint_col bigint )");
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 12.10, 156.12345678, 'OrbisGIS', 1, 1,10.5,12.1234, 12.8, 1000000)");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 10.25,  156.12345678, 'NoiseModelling', null, 1,10.5,12.1234, 12.8, null)");
-            stat.execute("CALL FGBWrite('target/points.fgb', '(SELECT * FROM TABLE_POINTS WHERE ID=1)', true);");
+            stat.execute("CALL FGBWrite('"+file+"', '(SELECT * FROM TABLE_POINTS WHERE ID=1)', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("CALL FGBRead('target/points.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("ID"));
@@ -362,15 +474,15 @@ public class FGBImportExportTest {
         }
     }
     @Test
-    public void testWriteReadEmptyFGB() throws Exception {
-        File file = new File("target/empty_file.fgb");
+    public void testWriteReadEmptyFGB(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "empty_file.fgb");
         file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT, 4326))");
-            stat.execute("CALL FGBWrite('target/empty_file.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBWrite('"+file+"', 'TABLE_POINTS', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("CALL FGBRead('target/empty_file.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
             List<String> columns = JDBCUtilities.getColumnNames(rs.getMetaData());
             assertEquals(2, columns.size());
@@ -381,16 +493,16 @@ public class FGBImportExportTest {
     }
 
     @Test
-    public void testWriteReadEmptyFGB2() throws Exception {
-        File file = new File("target/empty_file.fgb");
+    public void testWriteReadEmptyFGB2(@TempDir File temporaryDirectory) throws Exception {
+        File file = new File(temporaryDirectory, "empty_file.fgb");
         file.deleteOnExit();
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
             stat.execute("create table TABLE_POINTS(id int, the_geom GEOMETRY(POINT, 4326))");
             stat.execute("INSERT INTO TABLE_POINTS VALUES(1, 'SRID=4326;POINT(2 2)')");
-            stat.execute("CALL FGBWrite('target/empty_file.fgb', '(SELECT * FROM TABLE_POINTS WHERE the_geom && ST_BUFFER(''POINT(-1 -1)''::GEOMETRY, 0.001))', true);");
+            stat.execute("CALL FGBWrite('"+file+"', '(SELECT * FROM TABLE_POINTS WHERE the_geom && ST_BUFFER(''POINT(-1 -1)''::GEOMETRY, 0.001))', true);");
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute("CALL FGBRead('target/empty_file.fgb', 'TABLE_POINTS', true);");
+            stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
             List<String> columns = JDBCUtilities.getColumnNames(rs.getMetaData());
             assertEquals(2, columns.size());
