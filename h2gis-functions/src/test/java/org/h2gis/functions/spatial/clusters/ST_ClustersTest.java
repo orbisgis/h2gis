@@ -23,6 +23,7 @@ package org.h2gis.functions.spatial.clusters;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
 
@@ -100,5 +101,54 @@ public class ST_ClustersTest {
         assertThrows(SQLException.class, () ->  st.execute("SELECT * FROM ST_ClusterDBSCAN('sample_points', 'the_geom', 'id', 0.05, 0))"));
     }
 
+    @Test
+    public void st_ClusterIntersecting1() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS sample_geoms;" +
+                "CREATE TABLE sample_geoms (id INT ," +
+                " the_geom  GEOMETRY(GEOMETRY, 2154));" +
+                "INSERT INTO sample_geoms VALUES" +
+                "    (1,  ST_GeomFromText('POLYGON ((151 255, 200 255, 200 200, 151 200, 151 255))', 2154))," +
+                "    (2,  ST_GeomFromText('POLYGON((200 260, 250 260, 250 200, 200 200, 200 260))', 2154))," +
+                "    (3,  ST_GeomFromText('POLYGON((125 407, 190 407, 190 350, 125 350, 125 407))', 2154))," +
+                "    (4,  ST_GeomFromText('POLYGON((388 125, 457 125, 457 75, 388 75, 388 125))', 2154))," +
+                "    (5,  ST_GeomFromText('POINT (160 390)', 2154))," +
+                "    (6,  ST_GeomFromText('POINT (430 350)', 2154));");
 
+        st.execute("DROP TABLE IF EXISTS CLUSTERS;" +
+                "CREATE TABLE CLUSTERS AS SELECT * FROM ST_ClusterIntersecting('sample_geoms', 'the_geom', 'id')");
+
+
+        ResultSet res = st.executeQuery("SELECT * FROM CLUSTERS WHERE ID IN(1,2)");
+        while (res.next()) {
+            assertEquals(1, res.getObject("CLUSTER_ID"));
+            assertEquals(2, res.getObject("CLUSTER_SIZE"));
+        }
+        res = st.executeQuery("SELECT * FROM CLUSTERS WHERE ID IN(3,5)");
+        while (res.next()) {
+            assertEquals(2, res.getObject("CLUSTER_ID"));
+            assertEquals(2, res.getObject("CLUSTER_SIZE"));
+        }
+        res = st.executeQuery("SELECT * FROM CLUSTERS WHERE ID IN(4)");
+        while (res.next()) {
+            assertEquals(3, res.getObject("CLUSTER_ID"));
+            assertEquals(1, res.getObject("CLUSTER_SIZE"));
+        }
+        res = st.executeQuery("SELECT * FROM CLUSTERS WHERE ID IN(6)");
+        while (res.next()) {
+            assertEquals(4, res.getObject("CLUSTER_ID"));
+            assertEquals(1, res.getObject("CLUSTER_SIZE"));
+        }
+        st.execute("DROP TABLE IF EXISTS sample_points, clusters");
+    }
+
+    @Disabled
+    @Test
+    public void st_ClusterTest() throws SQLException {
+        st.execute("CALL GEOJSONREAD('/home/ebocher/Autres/data/geoclimate/uhi_lcz/Dijon/osm_47.23165_4.8946776_47.38684_5.170579/building.geojson', 'building', true);");
+
+        st.execute("DROP TABLE IF EXISTS CLUSTERS;" +
+                "CREATE TABLE CLUSTERS AS SELECT * FROM ST_ClusterIntersecting('building', 'the_geom', 'id_build')");
+
+        st.execute("CALL fgbWRITE('/tmp/clusters_building.fgb','CLUSTERS',true)");
+    }
 }

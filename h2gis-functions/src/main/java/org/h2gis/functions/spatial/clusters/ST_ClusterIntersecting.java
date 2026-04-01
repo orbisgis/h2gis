@@ -29,13 +29,13 @@ import java.sql.SQLException;
 
 /**
  *  @author Erwan Bocher (CNRS)
- *  Table function to run DBScan on geometries
+ *  Table function to find cluster on geometries
  */
-public class ST_ClusterDBScan extends AbstractFunction implements ScalarFunction {
+public class ST_ClusterIntersecting extends AbstractFunction implements ScalarFunction {
 
-    public ST_ClusterDBScan(){
-        addProperty(PROP_REMARKS, "A table function that returns a cluster number for each input geometry.\n" +
-                "e.g : ST_ClusterDBSCAN('sample_points', 'the_geom', 'id', 50.0, 2)");
+    public ST_ClusterIntersecting() {
+        addProperty(PROP_REMARKS, "A table function that returns a cluster number for each input geometry " +
+                "based on intersection. Example: ST_ClusterIntersecting('sample_points', 'the_geom', 'id')");
     }
 
     @Override
@@ -44,19 +44,18 @@ public class ST_ClusterDBScan extends AbstractFunction implements ScalarFunction
     }
 
     /**
-     * Constructs a new ClusterDBSCAN instance.
+     * Executes the ST_ClusterIntersecting function.
      *
-     * @param connection The database connection.
-     * @param tableName The name of the table containing the geometries.
-     * @param geomColumn The name of the geometry column.
-     * @param idColumn The name of the ID column.
-     * @param eps The maximum distance between two points to be considered in the same neighborhood (must be greater than 0).
-     * @param minPoints The minimum number of points required to form a cluster (must be greater of equal than 1).
+     * @param connection Database connection.
+     * @param tableName   Name of the table containing geometries.
+     * @param geomColumn  Name of the geometry column.
+     * @param idColumn    Name of the ID column.
+     * @return ResultSet with clustered geometries.
      */
     public static ResultSet execute(Connection connection, String tableName, String geomColumn,
-                                    String idColumn, Double eps, Integer minPoints) throws SQLException {
-        ClusterDBSCAN clusterDBSCAN =  new ClusterDBSCAN(connection,  tableName,  geomColumn,
-             idColumn,  eps,  minPoints);
-        return clusterDBSCAN.getResultSet();
+                                    String idColumn) throws SQLException {
+        ClusterIntersecting clusterIntersecting = new ClusterIntersecting(
+                connection, tableName, geomColumn, idColumn);
+        return clusterIntersecting.getResultSet();
     }
 }

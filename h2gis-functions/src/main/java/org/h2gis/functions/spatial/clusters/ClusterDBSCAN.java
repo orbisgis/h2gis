@@ -61,8 +61,8 @@ public class ClusterDBSCAN  implements SimpleRowSource {
      * @param tableName The name of the table containing the geometries.
      * @param geomColumn The name of the geometry column.
      * @param idColumn The name of the ID column.
-     * @param eps The maximum distance between two points to be considered in the same neighborhood (must be > 0).
-     * @param minPoints The minimum number of points required to form a cluster (must be >= 1).
+     * @param eps The maximum distance between two points to be considered in the same neighborhood (must be greater than 0).
+     * @param minPoints The minimum number of points required to form a cluster (must be greater or equal than 1).
      */
     public  ClusterDBSCAN(Connection connection, String tableName, String geomColumn,  String  idColumn,
                           double     eps,
