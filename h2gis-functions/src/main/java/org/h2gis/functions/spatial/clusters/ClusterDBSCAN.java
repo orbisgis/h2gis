@@ -63,12 +63,10 @@ public class ClusterDBSCAN  implements SimpleRowSource {
      * @param idColumn The name of the ID column.
      * @param eps The maximum distance between two points to be considered in the same neighborhood (must be > 0).
      * @param minPoints The minimum number of points required to form a cluster (must be >= 1).
-     * @throws SQLException If eps is less than or equal to 0, or if minPoints is less than 1.
      */
     public  ClusterDBSCAN(Connection connection, String tableName, String geomColumn,  String  idColumn,
                           double     eps,
                           int        minPoints) throws SQLException {
-        // Validation des paramètres
         if (eps <= 0) {
             throw new SQLException("eps must be greater than 0");
         }

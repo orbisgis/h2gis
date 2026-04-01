@@ -52,7 +52,6 @@ public class ST_ClusterDBScan extends AbstractFunction implements ScalarFunction
      * @param idColumn The name of the ID column.
      * @param eps The maximum distance between two points to be considered in the same neighborhood (must be > 0).
      * @param minPoints The minimum number of points required to form a cluster (must be >= 1).
-     * @throws SQLException If eps is less than or equal to 0, or if minPoints is less than 1.
      */
     public static ResultSet execute(Connection connection, String tableName, String geomColumn,
                                     String idColumn, Double eps, Integer minPoints) throws SQLException {
