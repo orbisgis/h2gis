@@ -5,3 +5,5 @@
 - Fix JDBCUtilities.getUniqueFieldValues was using TableLocation.parse(string) instead of TableLocation.parse(string, dbType)
 - Update flatgeobuffer library, fix missing hasZ hasM in read/write .fgb files
 - Add ST_ClusterDBScan function
+- Add ST_ClusterIntersecting function
+- Add ST_ClusterWithin function
