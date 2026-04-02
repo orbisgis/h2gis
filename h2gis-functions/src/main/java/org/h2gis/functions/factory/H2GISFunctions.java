@@ -56,6 +56,7 @@ import org.h2gis.functions.spatial.buffer.*;
 import org.h2gis.functions.spatial.clean.ST_MakeValid;
 import org.h2gis.functions.spatial.clusters.ST_ClusterDBScan;
 import org.h2gis.functions.spatial.clusters.ST_ClusterIntersecting;
+import org.h2gis.functions.spatial.clusters.ST_ClusterWithin;
 import org.h2gis.functions.spatial.convert.*;
 import org.h2gis.functions.spatial.coverage.ST_CoverageUnion;
 import org.h2gis.functions.spatial.create.*;
@@ -355,7 +356,8 @@ public class H2GISFunctions {
                 new ST_MaximumInscribedCircleRadius(),
                 new ST_SimplifyPolygonHull(),
                 new ST_ClusterDBScan(),
-                new ST_ClusterIntersecting()
+                new ST_ClusterIntersecting(),
+                new ST_ClusterWithin()
         };
     }
 
