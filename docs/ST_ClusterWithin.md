@@ -10,7 +10,8 @@ ST_ClusterWithin('tableName', 'geomColumn', 'idColumn', DOUBLE distance) RETURN 
 
 ST_ClusterWithin is a spatial clustering function that groups geometries into clusters based on a maximum distance between them. This function is equivalent to ST_ClusterDBSCAN with minPoints = 0, meaning every geometry is considered as a potential cluster center.
 
-
+⚠️ Important Note: This function loads all geometries into memory to compute clusters.
+For large datasets, this may consume significant memory resources.
 
 ## Example
 

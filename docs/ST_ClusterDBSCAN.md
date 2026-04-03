@@ -13,6 +13,9 @@ This function is useful for identifying groups of points that are close to each 
  - eps  = The maximum distance between two points to be considered in the same neighborhood (must be greater than 0)
  - minPoints = The minimum number of points required to form a cluster.
 
+⚠️ Important Note: This function loads all geometries into memory to compute clusters. 
+For large datasets, this may consume significant memory resources. 
+
 ## Example
 
 ```sql
