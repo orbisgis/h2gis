@@ -1,4 +1,4 @@
-Trigonometry
+Clustering
 =================================
 
 The following clustering functions are available:
