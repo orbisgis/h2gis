@@ -129,6 +129,7 @@ Documentation
     projections
     properties
     trigonometry
+    clustering
     
 .. toctree::
     :maxdepth: 1
