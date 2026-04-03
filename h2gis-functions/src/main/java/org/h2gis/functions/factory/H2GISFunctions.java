@@ -475,7 +475,12 @@ public class H2GISFunctions {
         if(function instanceof ScalarFunction) {
             ScalarFunction scalarFunction = (ScalarFunction)function;
             String functionName = scalarFunction.getJavaStaticMethod();
-            if(dropAlias) {
+            if (dropAlias) {
+                // An old version of H2GIS has defined ST_Collect as an aggregate function instead of scalar.
+                // we must drop the aggregate before trying to define the scalar function with the same name
+                if (function instanceof ST_Collect) {
+                    st.execute("DROP AGGREGATE IF EXISTS " + functionAlias);
+                }
                 try {
                     st.execute("DROP ALIAS IF EXISTS " + functionAlias);
                 } catch (SQLException ex) {
