@@ -145,10 +145,12 @@ public class ST_ClustersTest {
     public void st_ClusterTest() throws SQLException {
         st.execute("CALL GEOJSONREAD('/home/ebocher/Autres/data/geoclimate/uhi_lcz/Dijon/osm_47.23165_4.8946776_47.38684_5.170579/building.geojson', 'building', true);");
 
+        st.execute("CREATE SPATIAL INDEX ON building(THE_GEOM)");
+
         st.execute("DROP TABLE IF EXISTS CLUSTERS;" +
                 "CREATE TABLE CLUSTERS AS SELECT * FROM ST_ClusterIntersecting('building', 'the_geom', 'id_build')");
 
-        st.execute("CALL fgbWRITE('/tmp/clusters_building.fgb','CLUSTERS',true)");
+        st.execute("CALL fgbWRITE('/tmp/clusters_building_new.fgb','CLUSTERS',true)");
     }
 
     @Test
