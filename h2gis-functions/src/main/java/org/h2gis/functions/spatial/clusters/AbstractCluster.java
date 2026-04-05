@@ -2,18 +2,18 @@
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
  * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
- *
+ * <p>
  * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
- *
+ * <p>
  * H2GIS is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
  * for more details <http://www.gnu.org/licenses/>.
- *
- *
+ * <p>
+ * <p>
  * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
  * or contact directly: info_at_h2gis.org
  */
@@ -27,7 +27,6 @@ import org.h2gis.utilities.TableUtilities;
 import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.sql.*;
-import java.util.*;
 
 /**
  * Erwan Bocher (CNRS)
@@ -36,7 +35,7 @@ import java.util.*;
 public abstract class AbstractCluster implements SimpleRowSource {
 
     public static final int UNVISITED = -1;
-    public static final int NOISE     = -2;
+    public static final int NOISE = -2;
 
     protected final String idColumn;
     protected final String geomColumn;
@@ -80,8 +79,14 @@ public abstract class AbstractCluster implements SimpleRowSource {
     protected abstract void computeClusters() throws SQLException;
 
     protected void closeStream() {
-        try { if (streamRS != null) streamRS.close(); } catch (SQLException ignored) {}
-        try { if (streamStmt != null) streamStmt.close(); } catch (SQLException ignored) {}
+        try {
+            if (streamRS != null) streamRS.close();
+        } catch (SQLException ignored) {
+        }
+        try {
+            if (streamStmt != null) streamStmt.close();
+        } catch (SQLException ignored) {
+        }
         streamRS = null;
         streamStmt = null;
     }
