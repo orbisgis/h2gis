@@ -97,14 +97,36 @@ public class ClusterWithin extends AbstractCluster {
             parent[i] = i;
         }
 
-        String pairSql =
-                "SELECT a." + idColumn + ", b." + idColumn +
-                        " FROM " + tableLocation + " a, " + tableLocation + " b" +
-                        " WHERE a." + idColumn + " < b." + idColumn +
-                        " AND ST_DWithin(a." + geomColumn + ", b." + geomColumn + ", " + eps + ")";
+        StringBuilder pairSql = new StringBuilder();
+        pairSql.append("SELECT a.")
+                .append(idColumn)
+                .append(", b.")
+                .append(idColumn)
+                .append(" FROM ")
+                .append(tableLocation)
+                .append(" a, ")
+                .append(tableLocation)
+                .append(" b")
+                .append(" WHERE a.")
+                .append(idColumn)
+                .append(" < b.")
+                .append(idColumn)
+                .append(" AND ST_EXPAND(a.")
+                .append(geomColumn)
+                .append(",")
+                .append(eps)
+                .append(") && b.")
+                .append(geomColumn)
+                .append(" AND ST_DWithin(a.")
+                .append(geomColumn)
+                .append(", b.")
+                .append(geomColumn)
+                .append(", ")
+                .append(eps)
+                .append(")");
 
         try (Statement stmt = connection.createStatement();
-             ResultSet res = stmt.executeQuery(pairSql)) {
+             ResultSet res = stmt.executeQuery(pairSql.toString())) {
             while (res.next()) {
                 Integer i = idx.get(res.getObject(1));
                 Integer j = idx.get(res.getObject(2));
