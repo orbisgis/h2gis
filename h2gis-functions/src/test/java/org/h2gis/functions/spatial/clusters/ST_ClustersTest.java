@@ -147,8 +147,10 @@ public class ST_ClustersTest {
 
         st.execute("CREATE SPATIAL INDEX ON building(THE_GEOM)");
 
+        //st.execute("CREATE  INDEX ON building(ID_BUILD)");
+
         st.execute("DROP TABLE IF EXISTS CLUSTERS;" +
-                "CREATE TABLE CLUSTERS AS SELECT * FROM ST_ClusterIntersecting('building', 'the_geom', 'id_build')");
+                "CREATE TABLE CLUSTERS AS SELECT * FROM ST_CLUSTERDBSCAN('building', 'the_geom', 'id_build', 50, 2)");
 
         st.execute("CALL fgbWRITE('/tmp/clusters_building_new.fgb','CLUSTERS',true)");
     }

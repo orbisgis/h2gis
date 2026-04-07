@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.util.*;
 
 /**
+ * @author Erwan Bocher (CNRS)
  * Implements ST_ClusterIntersecting: groups geometries that intersect each other.
  */
 public class ClusterIntersecting extends AbstractCluster {
@@ -92,28 +93,19 @@ public class ClusterIntersecting extends AbstractCluster {
             parent[i] = i;
         }
 
-        StringBuilder pairSql = new StringBuilder();
-        pairSql.append("SELECT a.")
-                .append(idColumn)
-                .append(", b.")
-                .append(idColumn)
-                .append(" FROM ")
-                .append(tableLocation)
-                .append(" a, ")
-                .append(tableLocation)
-                .append(" b")
-                .append(" WHERE a.")
-                .append(idColumn)
-                .append(" < b.")
-                .append(idColumn)
-                .append(" AND ST_Intersects(a.")
-                .append(geomColumn)
-                .append(", b.")
-                .append(geomColumn)
-                .append(")");
+        String pairSql = String.format(
+                "SELECT a.%s, b.%s " +
+                        "FROM %s a, %s b " +
+                        "WHERE a.%s < b.%s " +
+                        "AND ST_Intersects(a.%s, b.%s)",
+                idColumn, idColumn,
+                tableLocation, tableLocation,
+                idColumn, idColumn,
+                geomColumn, geomColumn
+        );
 
         try (Statement stmt = connection.createStatement();
-             ResultSet res = stmt.executeQuery(pairSql.toString())) {
+             ResultSet res = stmt.executeQuery(pairSql)) {
             while (res.next()) {
                 Integer i = idx.get(res.getObject(1));
                 Integer j = idx.get(res.getObject(2));

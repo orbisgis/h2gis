@@ -23,6 +23,7 @@ import java.sql.*;
 import java.util.*;
 
 /**
+ * @author Erwan Bocher (CNRS)
  * Implements the DBSCAN algorithm using Union-Find and SQL spatial queries.
  * Core points are identified via a COUNT + HAVING query with a spatial index
  * pre-filter (ST_EXPAND bbox), then neighbors are unioned.
@@ -102,13 +103,19 @@ public class ClusterDBSCAN extends AbstractCluster {
         }
 
         // Materialise pairs once (CACHED = B-tree on disk, no OOM risk)
-        String createPairsSql =
-                "CREATE CACHED LOCAL TEMPORARY TABLE tmp_pairs AS" +
-                        " SELECT a." + idColumn + " AS id_a, b." + idColumn + " AS id_b" +
-                        " FROM " + tableLocation + " a, " + tableLocation + " b" +
-                        " WHERE a." + idColumn + " < b." + idColumn +
-                        " AND ST_EXPAND(a." + geomColumn + ", " + eps + ") && b." + geomColumn +
-                        " AND ST_DWithin(a." + geomColumn + ", b." + geomColumn + ", " + eps + ")";
+        String createPairsSql = String.format(
+                "CREATE CACHED LOCAL TEMPORARY TABLE tmp_pairs AS " +
+                        "SELECT a.%s AS id_a, b.%s AS id_b " +
+                        "FROM %s a, %s b " +
+                        "WHERE a.%s < b.%s " +
+                        "AND ST_EXPAND(a.%s, %f) && b.%s " +
+                        "AND ST_DWithin(a.%s, b.%s, %f)",
+                idColumn, idColumn,
+                tableLocation, tableLocation,
+                idColumn, idColumn,
+                geomColumn, eps, geomColumn,
+                geomColumn, geomColumn, eps
+        );
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute("DROP TABLE IF EXISTS tmp_pairs");
@@ -116,14 +123,18 @@ public class ClusterDBSCAN extends AbstractCluster {
         }
 
         try {
-            // Identify core points from tmp_pairs (no spatial join)
-            String corePointSql =
-                    "SELECT id, COUNT(*) AS cnt FROM (" +
-                            "  SELECT id_a AS id FROM tmp_pairs" +
-                            "  UNION ALL" +
-                            "  SELECT id_b AS id FROM tmp_pairs" +
-                            ") t GROUP BY id HAVING COUNT(*) >= " + (minPoints - 1);
-
+            // Identify core points from tmp_pairs
+            String corePointSql = String.format(
+                    "SELECT id, COUNT(*) AS cnt " +
+                            "FROM ( " +
+                            "  SELECT id_a AS id FROM tmp_pairs " +
+                            "  UNION ALL " +
+                            "  SELECT id_b AS id FROM tmp_pairs " +
+                            ") t " +
+                            "GROUP BY id " +
+                            "HAVING COUNT(*) >= %d",
+                    minPoints - 1
+            );
             Set<Object> coreIds = new HashSet<>();
             try (Statement stmt = connection.createStatement();
                  ResultSet res = stmt.executeQuery(corePointSql)) {

@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.util.*;
 
 /**
+ * @author Erwan Bocher (CNRS)
  * Implements ST_ClusterWithin: groups geometries within a specified distance.
  */
 public class ClusterWithin extends AbstractCluster {
@@ -96,34 +97,18 @@ public class ClusterWithin extends AbstractCluster {
         for (int i = 0; i < n; i++) {
             parent[i] = i;
         }
-
-        StringBuilder pairSql = new StringBuilder();
-        pairSql.append("SELECT a.")
-                .append(idColumn)
-                .append(", b.")
-                .append(idColumn)
-                .append(" FROM ")
-                .append(tableLocation)
-                .append(" a, ")
-                .append(tableLocation)
-                .append(" b")
-                .append(" WHERE a.")
-                .append(idColumn)
-                .append(" < b.")
-                .append(idColumn)
-                .append(" AND ST_EXPAND(a.")
-                .append(geomColumn)
-                .append(",")
-                .append(eps)
-                .append(") && b.")
-                .append(geomColumn)
-                .append(" AND ST_DWithin(a.")
-                .append(geomColumn)
-                .append(", b.")
-                .append(geomColumn)
-                .append(", ")
-                .append(eps)
-                .append(")");
+        String pairSql = String.format(
+                "SELECT a.%s, b.%s " +
+                        "FROM %s a, %s b " +
+                        "WHERE a.%s < b.%s " +
+                        "AND ST_EXPAND(a.%s, %s) && b.%s " +
+                        "AND ST_DWithin(a.%s, b.%s, %s)",
+                idColumn, idColumn,
+                tableLocation, tableLocation,
+                idColumn, idColumn,
+                geomColumn, eps, geomColumn,
+                geomColumn, geomColumn, eps
+        );
 
         try (Statement stmt = connection.createStatement();
              ResultSet res = stmt.executeQuery(pairSql.toString())) {

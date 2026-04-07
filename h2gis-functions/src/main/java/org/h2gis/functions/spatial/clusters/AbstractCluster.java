@@ -29,7 +29,7 @@ import org.h2gis.utilities.dbtypes.DBUtils;
 import java.sql.*;
 
 /**
- * Erwan Bocher (CNRS)
+ * @author Erwan Bocher (CNRS)
  * Abstract base class for clustering algorithms.
  */
 public abstract class AbstractCluster implements SimpleRowSource {

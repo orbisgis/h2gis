@@ -21,17 +21,17 @@
 package org.h2gis.functions.spatial.clusters;
 
 /**
- * Erwan Bocher (CNRS)
+ * @author Erwan Bocher (CNRS)
  * Utility class for Union-Find operations.
  */
 public final class UnionFind {
 
     private UnionFind() {
-    } // Prevent instantiation
+    }
 
     public static int find(int[] parent, int i) {
         while (parent[i] != i) {
-            parent[i] = parent[parent[i]]; // Path compression
+            parent[i] = parent[parent[i]]; // reduce
             i = parent[i];
         }
         return i;
