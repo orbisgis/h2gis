@@ -140,20 +140,6 @@ public class ST_ClustersTest {
         st.execute("DROP TABLE IF EXISTS sample_points, clusters");
     }
 
-    @Disabled
-    @Test
-    public void st_ClusterTest() throws SQLException {
-        st.execute("CALL GEOJSONREAD('/home/ebocher/Autres/data/geoclimate/uhi_lcz/Dijon/osm_47.23165_4.8946776_47.38684_5.170579/building.geojson', 'building', true);");
-
-        st.execute("CREATE SPATIAL INDEX ON building(THE_GEOM)");
-
-        //st.execute("CREATE  INDEX ON building(ID_BUILD)");
-
-        st.execute("DROP TABLE IF EXISTS CLUSTERS;" +
-                "CREATE TABLE CLUSTERS AS SELECT * FROM ST_CLUSTERDBSCAN('building', 'the_geom', 'id_build', 50, 2)");
-
-        st.execute("CALL fgbWRITE('/tmp/clusters_building_new.fgb','CLUSTERS',true)");
-    }
 
     @Test
     public void st_ClusterWithin1() throws SQLException {
