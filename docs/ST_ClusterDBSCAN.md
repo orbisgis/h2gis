@@ -13,8 +13,8 @@ This function is useful for identifying groups of points that are close to each 
  - eps  = The maximum distance between two points to be considered in the same neighborhood (must be greater than 0)
  - minPoints = The minimum number of points required to form a cluster.
 
-⚠️ Important Note: This function loads all geometries into memory to compute clusters. 
-For large datasets, this may consume significant memory resources. 
+⚠️ Important Note: For large datasets, create a spatial index (e.g., CREATE SPATIAL INDEX idx_name ON table_name (geom)) 
+before running the function. This significantly speeds up the clustering process by reducing the search space for neighboring points.
 
 ## Example
 

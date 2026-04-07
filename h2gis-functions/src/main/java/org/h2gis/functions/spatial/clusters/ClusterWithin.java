@@ -2,79 +2,46 @@
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
  * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
- *
+ * <p>
  * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
- *
+ * <p>
  * H2GIS is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
  * for more details <http://www.gnu.org/licenses/>.
- *
- *
+ * <p>
+ * <p>
  * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
  * or contact directly: info_at_h2gis.org
  */
+
 package org.h2gis.functions.spatial.clusters;
 
-import org.h2.tools.SimpleResultSet;
-import org.h2.tools.SimpleRowSource;
-import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.TableUtilities;
-import org.h2gis.utilities.dbtypes.DBUtils;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.index.strtree.STRtree;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 /**
  * @author Erwan Bocher (CNRS)
- * Implements ST_ClusterWithin behaviour: groups geometries where each geometry
- * is within the specified distance of at least one other geometry in the same cluster.
- * Equivalent to ST_ClusterDBSCAN with minPoints = 1 (no noise, every geometry
- * belongs to a cluster).
+ * Implements ST_ClusterWithin: groups geometries within a specified distance.
  */
-public class ClusterWithin implements SimpleRowSource {
+public class ClusterWithin extends AbstractCluster {
 
-    private static final int UNVISITED  = -1;
-
-    private final String idColumn;
     private final double eps;
+    private Map<Object, int[]> clusterResults;
 
-    public boolean firstRow = true;
-    public String tableName;
-    public String geomColumn;
-    public Connection connection;
-    private final TableLocation tableLocation;
-    private ArrayList<ClusterGeometry> clusterGeometries;
-    private Iterator<ClusterGeometry> clusterIterators;
-
-    /**
-     * Constructs a new ClusterWithin instance.
-     *
-     * @param connection The database connection.
-     * @param tableName  The name of the table containing the geometries.
-     * @param geomColumn The name of the geometry column.
-     * @param idColumn   The name of the ID column.
-     * @param eps        The maximum distance between two geometries to be
-     *                   considered in the same cluster (must be greater than 0).
-     */
     public ClusterWithin(Connection connection, String tableName,
-                         String geomColumn, String idColumn,
-                         double eps) throws SQLException {
+                         String geomColumn, String idColumn, double eps) throws SQLException {
+        super(connection, tableName, geomColumn, idColumn);
         if (eps <= 0) {
             throw new SQLException("eps must be greater than 0");
         }
-        this.tableName     = tableName;
-        this.tableLocation = TableLocation.parse(tableName, DBUtils.getDBType(connection));
-        this.geomColumn    = geomColumn;
-        this.idColumn      = idColumn;
-        this.eps           = eps;
-        this.connection    = connection;
+        this.eps = eps;
     }
 
     @Override
@@ -82,138 +49,98 @@ public class ClusterWithin implements SimpleRowSource {
         if (firstRow) {
             reset();
         }
-        if (clusterIterators.hasNext()) {
-            ClusterGeometry pt = clusterIterators.next();
-            return new Object[]{pt.originalId, pt.geom, pt.label, pt.clusterSize};
+        if (streamRS != null && streamRS.next()) {
+            Object id = streamRS.getObject(1);
+            Object geom = streamRS.getObject(2);
+            int[] info = clusterResults.get(id);
+            Integer clusterId = (info != null) ? info[0] : null;
+            Integer clusterSize = (info != null) ? info[1] : null;
+            return new Object[]{id, geom, clusterId, clusterSize};
         }
+        closeStream();
         return null;
     }
 
     @Override
     public void reset() throws SQLException {
+        closeStream();
         computeClusters();
         firstRow = false;
-        clusterIterators = clusterGeometries.iterator();
+        streamStmt = connection.createStatement();
+        streamRS = streamStmt.executeQuery(
+                "SELECT " + idColumn + ", " + geomColumn + " FROM " + tableLocation);
     }
 
     @Override
-    public void close() {
-    }
+    protected void computeClusters() throws SQLException {
+        List<Object> ids = new ArrayList<>();
+        Map<Object, Integer> idx = new HashMap<>();
 
-    public ResultSet getResultSet() throws SQLException {
-        SimpleResultSet rs = new SimpleResultSet(this);
-        getMetadata(rs);
-        rs.addColumn("CLUSTER_ID",   Types.INTEGER, 10, 0);
-        rs.addColumn("CLUSTER_SIZE", Types.INTEGER, 10, 0);
-        return rs;
-    }
-
-    private void getMetadata(SimpleResultSet rs) throws SQLException {
-        String sql = "SELECT " + idColumn + ", " + geomColumn
-                + " FROM " + tableLocation + " LIMIT 0";
         try (Statement stmt = connection.createStatement();
-             ResultSet res  = stmt.executeQuery(sql)) {
-            TableUtilities.copyFields(rs, res.getMetaData());
-        }
-    }
-
-    private static class ClusterGeometry {
-        final Object   originalId;
-        final Geometry geom;
-        int label       = UNVISITED;
-        int clusterSize = 0;
-
-        ClusterGeometry(Object originalId, Geometry geom) {
-            this.originalId = originalId;
-            this.geom       = geom;
-        }
-
-        public void setClusterSize(int size) {
-            this.clusterSize = size;
-        }
-    }
-
-    /**
-     * Computes clusters using ST_ClusterWithin logic
-     */
-    public void computeClusters() throws SQLException {
-        STRtree tree = new STRtree();
-        clusterGeometries = loadPoints(tree);
-        int nextCluster = 1;
-
-        for (ClusterGeometry pt : clusterGeometries) {
-            if (pt.label != UNVISITED) continue;
-            List<ClusterGeometry> neighbors = regionQuery(tree, pt, eps);
-            pt.label = nextCluster;
-            expandCluster(tree, neighbors, nextCluster, eps);
-            nextCluster++;
-        }
-    }
-
-    private ArrayList<ClusterGeometry> loadPoints(STRtree tree) throws SQLException {
-        ArrayList<ClusterGeometry> list = new ArrayList<>();
-        String sql = "SELECT " + idColumn + ", " + geomColumn
-                + " FROM " + tableLocation;
-        try (Statement stmt = connection.createStatement();
-             ResultSet res  = stmt.executeQuery(sql)) {
+             ResultSet res = stmt.executeQuery(
+                     "SELECT " + idColumn + " FROM " + tableLocation)) {
             while (res.next()) {
-                Object   id   = res.getObject(1);
-                Geometry geom = (Geometry) res.getObject(2);
-                if (geom == null) continue;
-                ClusterGeometry pt = new ClusterGeometry(id, geom);
-                tree.insert(geom.getEnvelopeInternal(), pt);
-                list.add(pt);
+                Object id = res.getObject(1);
+                idx.put(id, ids.size());
+                ids.add(id);
             }
         }
-        return list;
-    }
 
-    @SuppressWarnings("unchecked")
-    private static List<ClusterGeometry> regionQuery(
-            STRtree tree, ClusterGeometry center, double eps) {
-        Envelope searchEnv = new Envelope(center.geom.getEnvelopeInternal());
-        searchEnv.expandBy(eps);
-        List<ClusterGeometry> candidates = tree.query(searchEnv);
-
-        List<ClusterGeometry> result = new ArrayList<>(candidates.size());
-        for (ClusterGeometry candidate : candidates) {
-            if (center.geom.distance(candidate.geom) <= eps) {
-                result.add(candidate);
-            }
+        int n = ids.size();
+        if (n == 0) {
+            clusterResults = Collections.emptyMap();
+            return;
         }
-        return result;
-    }
 
-    /**
-     * Expands the cluster
-     */
-    private static void expandCluster(
-            STRtree tree, List<ClusterGeometry> seeds,
-            int clusterId, double eps) {
+        int[] parent = new int[n];
+        int[] rank = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        String pairSql = String.format(
+                "SELECT a.%s, b.%s " +
+                        "FROM %s a, %s b " +
+                        "WHERE a.%s < b.%s " +
+                        "AND ST_EXPAND(a.%s, %s) && b.%s " +
+                        "AND ST_DWithin(a.%s, b.%s, %s)",
+                idColumn, idColumn,
+                tableLocation, tableLocation,
+                idColumn, idColumn,
+                geomColumn, eps, geomColumn,
+                geomColumn, geomColumn, eps
+        );
 
-        Queue<ClusterGeometry> queue = new LinkedList<>(seeds);
-        Set<ClusterGeometry>   seen  = new HashSet<>(seeds);
-        int size = 0;
-
-        while (!queue.isEmpty()) {
-            ClusterGeometry current = queue.poll();
-            if (current.label != UNVISITED) continue;
-
-            current.label = clusterId;
-            size++;
-
-            for (ClusterGeometry neighbor : regionQuery(tree, current, eps)) {
-                if (neighbor.label == UNVISITED && seen.add(neighbor)) {
-                    queue.add(neighbor);
+        try (Statement stmt = connection.createStatement();
+             ResultSet res = stmt.executeQuery(pairSql.toString())) {
+            while (res.next()) {
+                Integer i = idx.get(res.getObject(1));
+                Integer j = idx.get(res.getObject(2));
+                if (i != null && j != null) {
+                    UnionFind.union(parent, rank, i, j);
                 }
             }
         }
 
-        // Include the seed itself in the size count
-        for (ClusterGeometry pt : seeds) {
-            if (pt.label == clusterId) {
-                pt.setClusterSize(size + 1);
+        Map<Integer, Integer> sizeByRoot = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            sizeByRoot.merge(UnionFind.find(parent, i), 1, Integer::sum);
+        }
+
+        Map<Integer, Integer> labelByRoot = new HashMap<>();
+        int nextLabel = 1;
+        for (int i = 0; i < n; i++) {
+            int root = UnionFind.find(parent, i);
+            if (!labelByRoot.containsKey(root)) {
+                labelByRoot.put(root, nextLabel++);
             }
+        }
+
+        clusterResults = new HashMap<>(n * 2);
+        for (int i = 0; i < n; i++) {
+            int root = UnionFind.find(parent, i);
+            int label = labelByRoot.get(root);
+            int size = sizeByRoot.get(root);
+            clusterResults.put(ids.get(i), new int[]{label, size});
         }
     }
 }

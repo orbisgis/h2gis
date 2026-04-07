@@ -2,18 +2,18 @@
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <a href="http://www.h2database.com">http://www.h2database.com</a>. H2GIS is developed by CNRS
  * <a href="http://www.cnrs.fr/">http://www.cnrs.fr/</a>.
- *
+ * <p>
  * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
- *
+ * <p>
  * H2GIS is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
  * for more details <http://www.gnu.org/licenses/>.
- *
- *
+ * <p>
+ * <p>
  * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
  * or contact directly: info_at_h2gis.org
  */
@@ -33,7 +33,7 @@ import java.sql.SQLException;
  */
 public class ST_ClusterDBScan extends AbstractFunction implements ScalarFunction {
 
-    public ST_ClusterDBScan(){
+    public ST_ClusterDBScan() {
         addProperty(PROP_REMARKS, "A table function that returns a cluster number for each input geometry.\n" +
                 "e.g : ST_ClusterDBSCAN('sample_points', 'the_geom', 'id', 50.0, 2)");
     }
@@ -55,8 +55,8 @@ public class ST_ClusterDBScan extends AbstractFunction implements ScalarFunction
      */
     public static ResultSet execute(Connection connection, String tableName, String geomColumn,
                                     String idColumn, Double eps, Integer minPoints) throws SQLException {
-        ClusterDBSCAN clusterDBSCAN =  new ClusterDBSCAN(connection,  tableName,  geomColumn,
-             idColumn,  eps,  minPoints);
+        ClusterDBSCAN clusterDBSCAN = new ClusterDBSCAN(connection, tableName, geomColumn,
+                idColumn, eps, minPoints);
         return clusterDBSCAN.getResultSet();
     }
 }

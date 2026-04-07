@@ -140,16 +140,6 @@ public class ST_ClustersTest {
         st.execute("DROP TABLE IF EXISTS sample_points, clusters");
     }
 
-    @Disabled
-    @Test
-    public void st_ClusterTest() throws SQLException {
-        st.execute("CALL GEOJSONREAD('/home/ebocher/Autres/data/geoclimate/uhi_lcz/Dijon/osm_47.23165_4.8946776_47.38684_5.170579/building.geojson', 'building', true);");
-
-        st.execute("DROP TABLE IF EXISTS CLUSTERS;" +
-                "CREATE TABLE CLUSTERS AS SELECT * FROM ST_ClusterIntersecting('building', 'the_geom', 'id_build')");
-
-        st.execute("CALL fgbWRITE('/tmp/clusters_building.fgb','CLUSTERS',true)");
-    }
 
     @Test
     public void st_ClusterWithin1() throws SQLException {

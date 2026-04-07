@@ -13,274 +13,189 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
  * for more details <http://www.gnu.org/licenses/>.
  *
- *
  * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
  * or contact directly: info_at_h2gis.org
  */
 
 package org.h2gis.functions.spatial.clusters;
 
-import org.h2.tools.SimpleResultSet;
-import org.h2.tools.SimpleRowSource;
-import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.TableUtilities;
-import org.h2gis.utilities.dbtypes.DBUtils;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.index.strtree.STRtree;
-
 import java.sql.*;
 import java.util.*;
 
 /**
  * @author Erwan Bocher (CNRS)
- * Implements the DBSCAN (Density-Based Spatial Clustering of Applications with Noise) algorithm
- * for spatial clustering. This class allows clustering geometries stored in a database table
- * and returns the cluster ID and size for each geometry.
+ * Implements the DBSCAN algorithm using Union-Find and SQL spatial queries.
+ * Core points are identified via a COUNT + HAVING query with a spatial index
+ * pre-filter (ST_EXPAND bbox), then neighbors are unioned.
+ *
+ * <p>The spatial self-join is computed only once and materialized into a
+ * CACHED LOCAL TEMPORARY table to avoid repeating the
+ * most expensive operation.</p>
  */
-public class ClusterDBSCAN  implements SimpleRowSource {
+public class ClusterDBSCAN extends AbstractCluster {
 
-    private static final int UNVISITED = -1;
-    private static final int NOISE     = -2;
-    private final String idColumn;
     private final double eps;
     private final int minPoints;
-    // If true, table query is closed the read again
-    public boolean firstRow = true;
-    public String tableName;
-    public String geomColumn;
-    public Connection connection;
-    private final TableLocation tableLocation;
-    private ArrayList<ClusterGeometry> clusterGeometries;
-    private Iterator<ClusterGeometry> clusterIterators;
+    private Map<Object, int[]> clusterResults; // id : [clusterId, clusterSize]
 
-    /**
-     * Constructs a new ClusterDBSCAN instance.
-     *
-     * @param connection The database connection.
-     * @param tableName The name of the table containing the geometries.
-     * @param geomColumn The name of the geometry column.
-     * @param idColumn The name of the ID column.
-     * @param eps The maximum distance between two points to be considered in the same neighborhood (must be greater than 0).
-     * @param minPoints The minimum number of points required to form a cluster (must be greater or equal than 1).
-     */
-    public  ClusterDBSCAN(Connection connection, String tableName, String geomColumn,  String  idColumn,
-                          double     eps,
-                          int        minPoints) throws SQLException {
+    public ClusterDBSCAN(Connection connection, String tableName,
+                         String geomColumn, String idColumn,
+                         double eps, int minPoints) throws SQLException {
+        super(connection, tableName, geomColumn, idColumn);
         if (eps <= 0) {
             throw new SQLException("eps must be greater than 0");
         }
         if (minPoints < 1) {
             throw new SQLException("minPoints must be at least 1");
         }
-        this.tableName = tableName;
-        this.tableLocation=TableLocation.parse(tableName, DBUtils.getDBType(connection));
-        this.geomColumn = geomColumn;
-        this.idColumn = idColumn;
-        this.eps=eps;
-        this.minPoints=minPoints;
-        this.connection = connection;
+        this.eps = eps;
+        this.minPoints = minPoints;
     }
 
-    /**
-     * Reads a row from the result set.
-     *
-     * @return An array of objects representing the row data.
-     * @throws SQLException If a database access error occurs.
-     */
     @Override
     public Object[] readRow() throws SQLException {
-        if(firstRow) {
+        if (firstRow) {
             reset();
         }
-        if(clusterIterators.hasNext()) {
-            ClusterGeometry pt = clusterIterators.next();
-            Integer clusterId = (pt.label == NOISE) ? null : pt.label;
-            Integer clusterSize = (pt.label == NOISE) ? null : pt.clusterSize;
-            return new Object[]{pt.originalId, pt.geom, clusterId, clusterSize};
+        if (streamRS != null && streamRS.next()) {
+            Object id = streamRS.getObject(1);
+            Object geom = streamRS.getObject(2);
+            int[] info = clusterResults.get(id);
+            Integer clusterId   = (info != null && info[0] != NOISE) ? info[0] : null;
+            Integer clusterSize = (info != null && info[0] != NOISE) ? info[1] : null;
+            return new Object[]{id, geom, clusterId, clusterSize};
         }
+        closeStream();
         return null;
     }
 
     @Override
     public void reset() throws SQLException {
+        closeStream();
         computeClusters();
         firstRow = false;
-        clusterIterators = clusterGeometries.iterator();
+        streamStmt = connection.createStatement();
+        streamRS = streamStmt.executeQuery(
+                "SELECT " + idColumn + ", " + geomColumn + " FROM " + tableLocation);
     }
 
     @Override
-    public void close() {
-    }
+    protected void computeClusters() throws SQLException {
 
-    /**
-     * Returns the result set containing the clustered geometries.
-     *
-     * @return The result set with the clustered geometries.
-     * @throws SQLException If a database access error occurs.
-     */
-    public ResultSet getResultSet() throws SQLException {
-        SimpleResultSet rs = new SimpleResultSet(this);
-        // Feed with fields
-        getMetadata(rs);
-        rs.addColumn("CLUSTER_ID", Types.INTEGER, 10, 0);
-        rs.addColumn("CLUSTER_SIZE", Types.INTEGER, 10, 0);
-        return rs;
-    }
+        // Load IDs
+        List<Object> ids = new ArrayList<>();
+        Map<Object, Integer> idx = new HashMap<>();
 
-    /**
-     * Retrieves metadata for the result set.
-     *
-     * @param rs The result set to populate with metadata.
-     * @throws SQLException If a database access error occurs.
-     */
-    private void getMetadata(SimpleResultSet rs) throws SQLException {
-        String sql = "SELECT " + idColumn + ", " + geomColumn + " FROM " + tableLocation + " limit 0";
         try (Statement stmt = connection.createStatement();
-             ResultSet res   = stmt.executeQuery(sql)) {
-            // Feed with fields
-            TableUtilities.copyFields(rs, res.getMetaData());
-        }
-    }
-
-
-    /**
-     * Class to manage geometry and identifier
-     */
-    private static class ClusterGeometry {
-        final Object   originalId;
-        final Geometry geom;
-        int   label = UNVISITED;
-        int   clusterSize = 0;
-
-        ClusterGeometry(Object originalId, Geometry geom) {
-            this.originalId = originalId;
-            this.geom       = geom;
-        }
-
-        /**
-         * Cluster size
-         * @param size size of the cluster
-         */
-        public void setClusterSize(int size) {
-            this.clusterSize = size;
-        }
-    }
-
-    /**
-     * Applies the DBSCAN algorithm to compute clusters.
-     *
-     * @throws SQLException If a database access error occurs.
-     */
-    public void computeClusters() throws SQLException {
-        STRtree            tree   = new STRtree();
-        clusterGeometries = loadPoints(tree);
-        int nextCluster = 1;
-        for (ClusterGeometry pt : clusterGeometries) {
-            if (pt.label != UNVISITED) continue;
-            List<ClusterGeometry> neighbors = regionQuery(tree, pt, eps);
-
-            if (neighbors.size() < minPoints) {
-                pt.label = NOISE;
-            } else {
-                pt.label = nextCluster;
-                expandCluster(tree, neighbors, nextCluster, eps, minPoints);
-                nextCluster++;
-            }
-        }
-    }
-
-    /**
-     * Loads the geometries and additional columns from the database.
-     *
-     * @param tree The spatial index tree.
-     * @return The list of ClusterGeometry objects.
-     * @throws SQLException If a database access error occurs.
-     */
-    private  ArrayList<ClusterGeometry> loadPoints(STRtree    tree) throws SQLException {
-        ArrayList<ClusterGeometry> list = new ArrayList<>();
-        String sql = "SELECT " + idColumn + ", " + geomColumn + " FROM " + tableLocation;
-        try (Statement stmt = connection.createStatement();
-             ResultSet res = stmt.executeQuery(sql)) {
+             ResultSet res = stmt.executeQuery(
+                     "SELECT " + idColumn + " FROM " + tableLocation)) {
             while (res.next()) {
-                Object   id   = res.getObject(1);
-                Geometry geom = (Geometry) res.getObject(2);
-                if (geom == null) continue;
-                ClusterGeometry pt = new ClusterGeometry(id, geom);
-                tree.insert(geom.getEnvelopeInternal(), pt);
-                list.add(pt);
+                Object id = res.getObject(1);
+                idx.put(id, ids.size());
+                ids.add(id);
             }
         }
-        return list;
-    }
 
-    /**
-     * Queries the spatial index for geometries within the specified distance.
-     *
-     * @param tree The spatial index tree.
-     * @param center The center geometry.
-     * @param eps The maximum distance.
-     * @return The list of neighboring geometries.
-     */
-    @SuppressWarnings("unchecked")
-    private static List<ClusterGeometry> regionQuery(
-            STRtree      tree,
-            ClusterGeometry center,
-            double       eps) {
-        Envelope searchEnv = new Envelope(center.geom.getEnvelopeInternal());
-        searchEnv.expandBy(eps);
-        List<ClusterGeometry> candidates = tree.query(searchEnv);
-
-        List<ClusterGeometry> result = new ArrayList<>(candidates.size());
-        for (ClusterGeometry candidate : candidates) {
-            if (center.geom.distance(candidate.geom) <= eps) {
-                result.add(candidate);
-            }
+        int n = ids.size();
+        if (n == 0) {
+            clusterResults = Collections.emptyMap();
+            return;
         }
-        return result;
-    }
 
-    /**
-     * Expands the cluster by adding neighboring geometries.
-     *
-     * @param tree The spatial index tree.
-     * @param seeds The seed geometries.
-     * @param clusterId The ID of the cluster.
-     * @param eps The maximum distance.
-     * @param minPoints The minimum number of points required to form a cluster.
-     */
-    private static void expandCluster(
-            STRtree            tree,
-            List<ClusterGeometry> seeds,
-            int                clusterId,
-            double             eps,
-            int                minPoints) {
-        Queue<ClusterGeometry> queue = new LinkedList<>(seeds);
-        int size = 0;
+        // Materialise pairs once (CACHED = B-tree on disk, no OOM risk)
+        String createPairsSql = String.format(
+                "CREATE CACHED LOCAL TEMPORARY TABLE tmp_pairs AS " +
+                        "SELECT a.%s AS id_a, b.%s AS id_b " +
+                        "FROM %s a, %s b " +
+                        "WHERE a.%s < b.%s " +
+                        "AND ST_EXPAND(a.%s, %f) && b.%s " +
+                        "AND ST_DWithin(a.%s, b.%s, %f)",
+                idColumn, idColumn,
+                tableLocation, tableLocation,
+                idColumn, idColumn,
+                geomColumn, eps, geomColumn,
+                geomColumn, geomColumn, eps
+        );
 
-        while (!queue.isEmpty()) {
-            ClusterGeometry current = queue.poll();
-            if (current.label == NOISE) {
-                current.label = clusterId;
-                size++;
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("DROP TABLE IF EXISTS tmp_pairs");
+            stmt.execute(createPairsSql);
+        }
+
+        try {
+            // Identify core points from tmp_pairs
+            String corePointSql = String.format(
+                    "SELECT id, COUNT(*) AS cnt " +
+                            "FROM ( " +
+                            "  SELECT id_a AS id FROM tmp_pairs " +
+                            "  UNION ALL " +
+                            "  SELECT id_b AS id FROM tmp_pairs " +
+                            ") t " +
+                            "GROUP BY id " +
+                            "HAVING COUNT(*) >= %d",
+                    minPoints - 1
+            );
+            Set<Object> coreIds = new HashSet<>();
+            try (Statement stmt = connection.createStatement();
+                 ResultSet res = stmt.executeQuery(corePointSql)) {
+                while (res.next()) {
+                    coreIds.add(res.getObject(1));
+                }
             }
-            if (current.label != UNVISITED) continue;
-            current.label = clusterId;
-            size++;
 
-            List<ClusterGeometry> currentNeighbors = regionQuery(tree, current, eps);
-            if (currentNeighbors.size() >= minPoints) {
-                for (ClusterGeometry neighbor : currentNeighbors) {
-                    if (neighbor.label == UNVISITED || neighbor.label == NOISE) {
-                        queue.add(neighbor);
+            // Union-Find approach
+            int[] parent = new int[n];
+            int[] rank   = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+
+            // Union pairs where at least one endpoint is a core point
+            try (Statement stmt = connection.createStatement();
+                 ResultSet res = stmt.executeQuery("SELECT id_a, id_b FROM tmp_pairs")) {
+                while (res.next()) {
+                    Object idA = res.getObject(1);
+                    Object idB = res.getObject(2);
+                    if (coreIds.contains(idA) || coreIds.contains(idB)) {
+                        Integer i = idx.get(idA);
+                        Integer j = idx.get(idB);
+                        if (i != null && j != null) {
+                            UnionFind.union(parent, rank, i, j);
+                        }
                     }
                 }
             }
-        }
-        // Update cluster size
-        for (ClusterGeometry pt : seeds) {
-            if (pt.label == clusterId) {
-                pt.setClusterSize(size+1);
+
+            // Compute sizes and assign sequential labels
+            Map<Integer, Integer> sizeByRoot  = new HashMap<>();
+            Map<Integer, Integer> labelByRoot = new HashMap<>();
+
+            for (int i = 0; i < n; i++) {
+                sizeByRoot.merge(UnionFind.find(parent, i), 1, Integer::sum);
+            }
+
+            int nextLabel = 1;
+            for (int i = 0; i < n; i++) {
+                int root = UnionFind.find(parent, i);
+                if (!labelByRoot.containsKey(root)) {
+                    labelByRoot.put(root, nextLabel++);
+                }
+            }
+
+            // Build result map
+            clusterResults = new HashMap<>((int) (n / 0.75) + 1);
+            for (int i = 0; i < n; i++) {
+                Object id  = ids.get(i);
+                int root   = UnionFind.find(parent, i);
+                int size   = sizeByRoot.get(root);
+                boolean isNoise = !coreIds.contains(id) && size < minPoints;
+                int label = isNoise ? NOISE : labelByRoot.get(root);
+                clusterResults.put(id, new int[]{label, size});
+            }
+
+        } finally {
+            try (Statement stmt = connection.createStatement()) {
+                stmt.execute("DROP TABLE IF EXISTS tmp_pairs");
             }
         }
     }

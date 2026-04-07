@@ -8,3 +8,4 @@
 - Add ST_ClusterDBScan function
 - Add ST_ClusterIntersecting function
 - Add ST_ClusterWithin function
+- Improve clustering functions to load only ids
