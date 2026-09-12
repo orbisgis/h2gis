@@ -458,6 +458,126 @@ public class CreateFunctionTest {
         st.execute("DROP TABLE grid;");
     }
 
+
+    @Test
+    public void testST_MakeGridFromGeometryWithAngle1() throws Exception {
+        st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1, false, 0.7853981634);");
+        ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
+        rs.next();
+        assertEquals(rs.getInt(1), 9);
+        rs.close();
+        rs = st.executeQuery("select * from gridAngle;");
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON((1.0000000000036087 -0.4142135623730951, 0.5285954792113741 0.0571909584167337, 1.0000000000012028 0.5285954792089682, 1.4714045207934374 0.0571909584191395, 1.0000000000036087 -0.4142135623730951))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.5285954792113741 0.0571909584167337, 0.0571909584191395 0.5285954792065625, 0.5285954792089682 0.9999999999987972, 1.0000000000012028 0.5285954792089682, 0.5285954792113741 0.0571909584167337))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.0571909584191395 0.5285954792065625, -0.4142135623730951 0.9999999999963913, 0.0571909584167336 1.471404520788626, 0.5285954792089682 0.9999999999987972, 0.0571909584191395 0.5285954792065625))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON((1.4714045207934374 0.0571909584191395, 1.0000000000012028 0.5285954792089682, 1.4714045207910318 1.0000000000012028, 1.9428090415832662 0.5285954792113741, 1.4714045207934374 0.0571909584191395))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.0000000000012028 0.5285954792089682, 0.5285954792089682 0.9999999999987972, 0.9999999999987971 1.4714045207910316, 1.4714045207910318 1.0000000000012028, 1.0000000000012028 0.5285954792089682))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.5285954792089682 0.9999999999987972, 0.0571909584167336 1.471404520788626, 0.5285954792065625 1.9428090415808608, 0.9999999999987971 1.4714045207910316, 0.5285954792089682 0.9999999999987972))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.9428090415832662 0.5285954792113741, 1.4714045207910318 1.0000000000012028, 1.9428090415808605 1.4714045207934374, 2.414213562373095 1.0000000000036087, 1.9428090415832662 0.5285954792113741))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON((1.4714045207910318 1.0000000000012028, 0.9999999999987971 1.4714045207910316, 1.471404520788626 1.9428090415832664, 1.9428090415808605 1.4714045207934374, 1.4714045207910318 1.0000000000012028))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON((0.9999999999987971 1.4714045207910316, 0.5285954792065625 1.9428090415808608, 0.9999999999963913 2.414213562373095, 1.471404520788626 1.9428090415832664, 0.9999999999987971 1.4714045207910316))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    @Test
+    public void testST_MakeGridFromGeometryWithAngle2() throws Exception {
+        st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1, false, 1.5708);");
+        ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
+        rs.next();
+        assertEquals(rs.getInt(1), 9);
+        rs.close();
+        rs = st.executeQuery("select * from gridAngle;");
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON((0 0, 0 0.6666666666666666, 0.6666666666666666 0.6666666666666666, 0.6666666666666666 0, 0 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0 0.6666666666666666, 0 1.3333333333333333, 0.6666666666666666 1.3333333333333333, 0.6666666666666666 0.6666666666666666, 0 0.6666666666666666))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0 1.3333333333333333, 0 2, 0.6666666666666666 2, 0.6666666666666666 1.3333333333333333, 0 1.3333333333333333))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.6666666666666666 0, 0.6666666666666666 0.6666666666666666, 1.3333333333333333 0.6666666666666666, 1.3333333333333333 0, 0.6666666666666666 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.6666666666666666 0.6666666666666666, 0.6666666666666666 1.3333333333333333, 1.3333333333333333 1.3333333333333333, 1.3333333333333333 0.6666666666666666, 0.6666666666666666 0.6666666666666666))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.6666666666666666 1.3333333333333333, 0.6666666666666666 2, 1.3333333333333333 2, 1.3333333333333333 1.3333333333333333, 0.6666666666666666 1.3333333333333333))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.3333333333333333 0, 1.3333333333333333 0.6666666666666666, 2 0.6666666666666666, 2 0, 1.3333333333333333 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.3333333333333333 0.6666666666666666, 1.3333333333333333 1.3333333333333333, 2 1.3333333333333333, 2 0.6666666666666666, 1.3333333333333333 0.6666666666666666))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.3333333333333333 1.3333333333333333, 1.3333333333333333 2, 2 2, 2 1.3333333333333333, 1.3333333333333333 1.3333333333333333)))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    @Test
+    public void testST_MakeGridFromGeometryWithAngle3() throws Exception {
+        st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1, false, 3.14159);");
+        ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
+        rs.next();
+        assertEquals(rs.getInt(1), 9);
+        rs.close();
+        rs = st.executeQuery("select * from gridAngle;");
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON((0 0, 0 0.6666666666666666, 0.6666666666666666 0.6666666666666666, 0.6666666666666666 0, 0 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0 0.6666666666666666, 0 1.3333333333333333, 0.6666666666666666 1.3333333333333333, 0.6666666666666666 0.6666666666666666, 0 0.6666666666666666))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0 1.3333333333333333, 0 2, 0.6666666666666666 2, 0.6666666666666666 1.3333333333333333, 0 1.3333333333333333))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.6666666666666666 0, 0.6666666666666666 0.6666666666666666, 1.3333333333333333 0.6666666666666666, 1.3333333333333333 0, 0.6666666666666666 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.6666666666666666 0.6666666666666666, 0.6666666666666666 1.3333333333333333, 1.3333333333333333 1.3333333333333333, 1.3333333333333333 0.6666666666666666, 0.6666666666666666 0.6666666666666666))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.6666666666666666 1.3333333333333333, 0.6666666666666666 2, 1.3333333333333333 2, 1.3333333333333333 1.3333333333333333, 0.6666666666666666 1.3333333333333333))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.3333333333333333 0, 1.3333333333333333 0.6666666666666666, 2 0.6666666666666666, 2 0, 1.3333333333333333 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.3333333333333333 0.6666666666666666, 1.3333333333333333 1.3333333333333333, 2 1.3333333333333333, 2 0.6666666666666666, 1.3333333333333333 0.6666666666666666))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.3333333333333333 1.3333333333333333, 1.3333333333333333 2, 2 2, 2 1.3333333333333333, 1.3333333333333333 1.3333333333333333)))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
+    public void testST_MakeGridFromGeometryWithAngleNegative() throws Exception {
+        st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1, false, -0.7853981634);");
+        ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
+        rs.next();
+        assertEquals(rs.getInt(1), 9);
+        rs.close();
+        rs = st.executeQuery("select * from gridAngle;");
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((-0.4142135623730951 1.0000000000036087, 0.0571909584191395 1.4714045207934374, 0.5285954792089682 1.0000000000012028, 0.0571909584167337 0.5285954792113741, -0.4142135623730951 1.0000000000036087))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.0571909584191395 1.4714045207934374, 0.5285954792113741 1.9428090415832662, 1.0000000000012028 1.4714045207910318, 0.5285954792089682 1.0000000000012028, 0.0571909584191395 1.4714045207934374))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.5285954792113741 1.9428090415832662, 1.0000000000036087 2.414213562373095, 1.4714045207934374 1.9428090415808605, 1.0000000000012028 1.4714045207910318, 0.5285954792113741 1.9428090415832662))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.0571909584167337 0.5285954792113741, 0.5285954792089682 1.0000000000012028, 0.9999999999987972 0.5285954792089682, 0.5285954792065625 0.0571909584191395, 0.0571909584167337 0.5285954792113741))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.5285954792089682 1.0000000000012028, 1.0000000000012028 1.4714045207910318, 1.4714045207910316 0.9999999999987971, 0.9999999999987972 0.5285954792089682, 0.5285954792089682 1.0000000000012028))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.0000000000012028 1.4714045207910318, 1.4714045207934374 1.9428090415808605, 1.9428090415832664 1.471404520788626, 1.4714045207910316 0.9999999999987971, 1.0000000000012028 1.4714045207910318))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.5285954792065625 0.0571909584191395, 0.9999999999987972 0.5285954792089682, 1.471404520788626 0.0571909584167336, 0.9999999999963913 -0.4142135623730951, 0.5285954792065625 0.0571909584191395))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((0.9999999999987972 0.5285954792089682, 1.4714045207910316 0.9999999999987971, 1.9428090415808608 0.5285954792065625, 1.471404520788626 0.0571909584167336, 0.9999999999987972 0.5285954792089682))", rs.getObject(1));
+        rs.next();
+        assertGeometryBarelyEquals("POLYGON ((1.4714045207910316 0.9999999999987971, 1.9428090415832664 1.471404520788626, 2.414213562373095 0.9999999999963913, 1.9428090415808608 0.5285954792065625, 1.4714045207910316 0.9999999999987971))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+    }
+
     @Test
     public void testST_MakeGridFromGeometryLatLon1() throws Exception {
         Envelope env = new Envelope(0.0, 0.008983152841195214, 0.0, 0.008983152841195214);
@@ -696,7 +816,7 @@ public class CreateFunctionTest {
 
     @Test
     public void testST_MakeGridColumnsRows() throws Exception {
-        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 2, false, true);");
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 2, false, true, 0);");
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 4);
@@ -716,7 +836,7 @@ public class CreateFunctionTest {
 
     @Test
     public void testST_MakeGridColumnsRows2() throws Exception {
-        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 2, false, true);");
+        st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 2, false, true, 0);");
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 2);
@@ -734,7 +854,7 @@ public class CreateFunctionTest {
     @Test
     public void testST_MakeGridColumnsRows3() throws Exception {
         st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM " +
-                "st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 1, false, true);");
+                "st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 2, 1, false, true, 0);");
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 2);
