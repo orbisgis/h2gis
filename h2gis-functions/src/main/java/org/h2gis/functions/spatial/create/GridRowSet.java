@@ -61,7 +61,6 @@ public class GridRowSet implements SimpleRowSource {
     private Coordinate pivot;
     private double angle = 0;
     private static AffineTransformation rotateGeom;
-    private boolean angleUpdated = false;
 
     /**
      * The grid will be computed according a table stored in the database
@@ -79,7 +78,6 @@ public class GridRowSet implements SimpleRowSource {
         this.tableName = tableName;
         this.isTable = true;
         this.pivot = new Coordinate();
-        this.angleUpdated = true;
         this.angle = angle%(Math.PI*2);
     }
 
@@ -98,18 +96,8 @@ public class GridRowSet implements SimpleRowSource {
         this.deltaY = deltaY;
         this.srid = geometry.getSRID();
         this.pivot = new Coordinate();
-        this.angleUpdated = true;
         this.angle = angle%(Math.PI*2);
-
-        if(this.angle > 0.0001 || this.angle < -0.0001 ){
-            Envelope envelopeGeom = geometry.getEnvelopeInternal();
-            this.pivot = envelopeGeom.centre();
-            Geometry envelopeRotated = AffineTransformation.rotationInstance(angle, pivot.getX(), pivot.getY()).transform(geometry);
-            Geometry envelopeUnRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(GF.toGeometry(envelopeRotated.getEnvelopeInternal()));
-            this.envelope = envelopeUnRotated.getEnvelopeInternal();
-        }else{
-            this.envelope = geometry.getEnvelopeInternal();
-        }
+        this.envelope = geometry.getEnvelopeInternal();
         this.isTable = false;
     }
 
@@ -133,14 +121,17 @@ public class GridRowSet implements SimpleRowSource {
                 return new Object[]{getCellPoint(), id++, cellI, cellJ + 1};
             }
         }
-        if(this.angleUpdated){
-            rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
-            this.angleUpdated = false;
+        if(this.angle > 0.0001 || this.angle < -0.0001){
+            if(upperCornerOrder){
+                return new Object[]{rotateGeom.transform(getCellPolygonUpper()), id++, cellI, cellJ + 1};
+            }
+            return new Object[]{rotateGeom.transform(getCellPolygon()), id++, cellI, cellJ + 1};
+        } else {
+            if(upperCornerOrder){
+                return new Object[]{getCellPolygonUpper(), id++, cellI, cellJ + 1};
+            }
+            return new Object[]{getCellPolygon(), id++, cellI, cellJ + 1};
         }
-        if(upperCornerOrder){
-            return new Object[]{rotateGeom.transform(getCellPolygonUpper()), id++, cellI, cellJ + 1};
-        }
-        return new Object[]{rotateGeom.transform(getCellPolygon()), id++, cellI, cellJ + 1};
     }
 
     @Override
@@ -167,9 +158,9 @@ public class GridRowSet implements SimpleRowSource {
                     if(this.angle > 0.0001 || this.angle < -0.0001 ){
                         Envelope envelopeGeom = geomExtend.getEnvelopeInternal();
                         pivot = envelopeGeom.centre();
-                        Geometry envelopeRotated = AffineTransformation.rotationInstance(angle, pivot.getX(), pivot.getY()).transform(geomExtend);
-                        Geometry envelopeUnRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(GF.toGeometry(envelopeRotated.getEnvelopeInternal()));
-                        envelope = envelopeUnRotated.getEnvelopeInternal();
+                        rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
+                        Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(GF.toGeometry(envelopeGeom));
+                        this.envelope = envelopeRotated.getEnvelopeInternal();
 
                     }else{
                         envelope = geomExtend.getEnvelopeInternal();
@@ -183,6 +174,12 @@ public class GridRowSet implements SimpleRowSource {
                 throw new SQLException("The input geometry used to compute the grid cannot be null.");
             }
             else {
+                if(this.angle > 0.0001 || this.angle < -0.0001 ){
+                    pivot = envelope.centre();
+                    rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
+                    Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(GF.toGeometry(envelope));
+                    this.envelope = envelopeRotated.getEnvelopeInternal();
+                }
                 initParameters();
             }
         }
