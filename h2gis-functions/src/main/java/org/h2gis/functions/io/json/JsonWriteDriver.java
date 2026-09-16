@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
@@ -275,7 +274,7 @@ public class JsonWriteDriver {
                       Statement st = connection.createStatement()) {
                     JsonFactory jsonFactory = new JsonFactory();
                     JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), jsonEncoding);
-                    ResultSet rs = st.executeQuery(String.format(Locale.ROOT, "select * from %s", outputTable));
+                    ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
                     try {
                         ResultSetMetaData rsmd = rs.getMetaData();
                         int numColumns = rsmd.getColumnCount();

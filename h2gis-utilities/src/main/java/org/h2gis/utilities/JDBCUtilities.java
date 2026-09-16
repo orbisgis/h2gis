@@ -330,7 +330,7 @@ public class JDBCUtilities {
         Statement st = connection.createStatement();
         int rowCount = 0;
         try {
-            ResultSet rs = st.executeQuery(String.format(Locale.ROOT, "select count(*) rowcount from %s", tableName));
+            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", tableName));
             try {
                 if (rs.next()) {
                     rowCount = rs.getInt(1);

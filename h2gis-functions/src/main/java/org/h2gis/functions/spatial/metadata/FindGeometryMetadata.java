@@ -28,7 +28,6 @@ import org.h2gis.utilities.dbtypes.DBUtils;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Locale;
 
 public class FindGeometryMetadata extends DeterministicScalarFunction{
 
@@ -69,7 +68,7 @@ public class FindGeometryMetadata extends DeterministicScalarFunction{
         String[] values = new String[4];
         if(srid==null) {
             try ( ResultSet rs = connection.createStatement()
-                    .executeQuery(String.format(Locale.ROOT, "select ST_SRID(%s) from %s LIMIT 1;",
+                    .executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
                             StringUtils.quoteJavaString(columnName),
                             new TableLocation(catalogName, schemaName, tableName, DBUtils.getDBType(connection))))) {
                 if (rs.next()) {

@@ -124,7 +124,7 @@ public class ClusterDBSCAN extends AbstractCluster {
 
         try {
             // Identify core points from tmp_pairs
-            String corePointSql = String.format(Locale.ROOT,
+            String corePointSql = String.format(
                     "SELECT id, COUNT(*) AS cnt " +
                             "FROM ( " +
                             "  SELECT id_a AS id FROM tmp_pairs " +

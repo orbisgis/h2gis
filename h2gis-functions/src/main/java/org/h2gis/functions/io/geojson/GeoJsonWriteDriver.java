@@ -33,7 +33,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -265,7 +264,7 @@ public class GeoJsonWriteDriver {
                     writeCRS(jsonGenerator, GeometryTableUtilities.getAuthorityAndSRID(connection, parse, geometryTableInfo.first()));
                     jsonGenerator.writeArrayFieldStart("features");
 
-                    ResultSet rs = st.executeQuery(String.format(Locale.ROOT, "select * from %s", tableName));
+                    ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
 
                     try {
                         ResultSetMetaData resultSetMetaData = rs.getMetaData();

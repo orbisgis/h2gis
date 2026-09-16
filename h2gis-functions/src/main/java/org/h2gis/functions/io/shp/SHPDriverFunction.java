@@ -44,7 +44,6 @@ import java.nio.file.Files;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,7 +129,7 @@ public class SHPDriverFunction implements DriverFunction {
             Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableLocation);
             Statement st = connection.createStatement();
             JDBCUtilities.attachCancelResultSet(st, progress);
-            ResultSet rs = st.executeQuery(String.format(Locale.ROOT, "select * from %s", location));
+            ResultSet rs = st.executeQuery(String.format("select * from %s", location));
             String[] files = doExport(connection, spatialFieldNameAndIndex.second(), rs, recordCount, fileName, copyProgress, options);
             copyProgress.endOfProgress();
             return files;
@@ -309,13 +308,13 @@ public class SHPDriverFunction implements DriverFunction {
                     String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
                     srid = PRJUtil.getSRID(shpDriver.prjFile);
                     shpDriver.setSRID(srid);
-                    st.execute(String.format(Locale.ROOT, "CREATE TABLE %s (" + pkColName + " INT PRIMARY KEY , the_geom GEOMETRY(%s, %d) %s)", requestedTable,
+                    st.execute(String.format("CREATE TABLE %s (" + pkColName + " INT PRIMARY KEY , the_geom GEOMETRY(%s, %d) %s)", requestedTable,
                                 getSFSGeometryType(shpHeader), srid, types));
 
                 }
                 try {
                     connection.setAutoCommit(false);
-                    lastSql = String.format(Locale.ROOT, "INSERT INTO %s VALUES (?, %s )", outputTableName,
+                    lastSql = String.format("INSERT INTO %s VALUES (?, %s )", outputTableName,
                             DBFDriverFunction.getQuestionMark(dbfNumFields + 1));
                     final int columnCount = dbfNumFields+1;
                     connection.setAutoCommit(false);

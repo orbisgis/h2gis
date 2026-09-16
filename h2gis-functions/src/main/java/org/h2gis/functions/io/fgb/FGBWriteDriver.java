@@ -54,7 +54,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -180,7 +179,7 @@ public class FGBWriteDriver {
                       Statement st = connection.createStatement()) {
                     Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, parse);
                     String geomCol = geomMetadata.first();
-                    ResultSet rs = st.executeQuery(String.format(Locale.ROOT, "select * from %s", outputTable));
+                    ResultSet rs = st.executeQuery(String.format("select * from %s", outputTable));
                     doExport(progress, rs, geomCol, recordCount, outputStream, fileNameWithoutExt, geomMetadata.second().SRID);
                 }
 

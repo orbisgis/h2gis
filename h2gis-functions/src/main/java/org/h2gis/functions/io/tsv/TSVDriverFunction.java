@@ -30,7 +30,6 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.sql.*;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -249,7 +248,7 @@ public class TSVDriverFunction implements DriverFunction {
         Csv csv = new Csv();
         String csvOptions = "charset=UTF-8 fieldSeparator=\t fieldDelimiter=\t";
         if (encoding != null) {
-            csvOptions = String.format(Locale.ROOT, "charset=%s fieldSeparator=\t fieldDelimiter=\t", encoding);
+            csvOptions = String.format("charset=%s fieldSeparator=\t fieldDelimiter=\t", encoding);
         }
         csv.setOptions(csvOptions);
         csv.write(writer, res);

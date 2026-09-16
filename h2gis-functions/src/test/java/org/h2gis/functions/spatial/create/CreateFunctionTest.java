@@ -34,7 +34,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Locale;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
@@ -465,7 +464,7 @@ public class CreateFunctionTest {
         Envelope outPutEnv = GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), 1000, 1000);
         assertEquals(env, outPutEnv);
         Geometry geom = FACTORY.toGeometry(outPutEnv);
-        st.execute(String.format(Locale.ROOT ,"drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 1000, 1000);", "4326", geom.toString()));
+        st.execute(String.format("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 1000, 1000);", "4326", geom.toString()));
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 1);
@@ -483,7 +482,7 @@ public class CreateFunctionTest {
         Envelope outPutEnv = GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), 100, 100);
         assertEquals(env, outPutEnv);
         Geometry geom = FACTORY.toGeometry(outPutEnv);
-        st.execute(String.format(Locale.ROOT, "drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 1000, 1000);", "4326", geom.toString()));
+        st.execute(String.format("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 1000, 1000);", "4326", geom.toString()));
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 1);
@@ -501,7 +500,7 @@ public class CreateFunctionTest {
         Envelope outPutEnv = GeographyUtilities.createEnvelope(new Coordinate(0.0, 0.0), 1000, 1000);
         assertEquals(env, outPutEnv);
         Geometry geom = FACTORY.toGeometry(outPutEnv);
-        st.execute(String.format(Locale.ROOT, "drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 100, 100);", "4326", geom.toString()));
+        st.execute(String.format("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('srid=%s;%s'::GEOMETRY, 100, 100);", "4326", geom.toString()));
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 100);

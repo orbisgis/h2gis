@@ -27,7 +27,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -524,9 +523,9 @@ public class FGBImportExportTest {
                     "numeric_col NUMERIC(10, 1),  real_col real, float_precision_col float(1), bigint_col bigint, boolean_col BOOLEAN DEFAULT FALSE )");
             stat.execute("insert into TABLE_POINTS values(1, 'POINT (140 260)', 12.10, 156.12345678, 'OrbisGIS', 1, 1,10.5,12.1234, 12.8, 1000000, true)");
             stat.execute("insert into TABLE_POINTS values(2, 'POINT (150 290)', 10.25,  156.12345678, 'NoiseModelling', null, 1,10.5,12.1234, 12.8, null, false)");
-            stat.execute(String.format(Locale.ROOT, "CALL FGBWrite('%s', 'TABLE_POINTS', true);", file));
+            stat.execute(String.format("CALL FGBWrite('%s', 'TABLE_POINTS', true);", file));
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-            stat.execute(String.format(Locale.ROOT, "CALL FGBRead('%s', 'TABLE_POINTS', true);", file));
+            stat.execute(String.format("CALL FGBRead('%s', 'TABLE_POINTS', true);", file));
 
             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINTS");
             assertTrue(rs.next());

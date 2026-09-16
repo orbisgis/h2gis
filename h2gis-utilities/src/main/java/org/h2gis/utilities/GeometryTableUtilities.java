@@ -29,7 +29,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 
 import static org.h2gis.utilities.dbtypes.DBTypes.*;
 import static org.h2gis.utilities.dbtypes.DBUtils.getDBType;
@@ -88,7 +87,7 @@ public class GeometryTableUtilities {
                 }
             }
         }
-        throw new SQLException(String.format(Locale.ROOT, "The table %s does not contain a geometry field", geometryTable));
+        throw new SQLException(String.format("The table %s does not contain a geometry field", geometryTable));
         }
         throw new SQLException("Database not supported");
     }
@@ -1077,7 +1076,7 @@ public class GeometryTableUtilities {
             throws SQLException {
         if (geometryField != null && !geometryField.isEmpty()) {
             PreparedStatement geomStatement = prepareInformationSchemaStatement(connection, catalog, schema, table,
-                    "geometry_columns", String.format(Locale.ROOT, " and F_GEOMETRY_COLUMN ='%s'", geometryField));
+                    "geometry_columns", String.format(" and F_GEOMETRY_COLUMN ='%s'", geometryField));
             return geomStatement.executeQuery();
         }
         throw new SQLException("Unable to get geometry metadata from a null or empty column name");

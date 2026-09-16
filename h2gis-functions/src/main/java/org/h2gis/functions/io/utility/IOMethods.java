@@ -211,7 +211,7 @@ public class IOMethods {
                     }
 
                     try (Statement statement = targetConnection.createStatement()) {
-                        statement.execute(String.format(Locale.ROOT, 
+                        statement.execute(String.format(
                                 "CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s') FETCH_SIZE %s %s",
                                 ouputTableName, driverName, jdbc_url, user, password, sourceTable, fetchSize, autocommit_linkedTable));
                         if (!targetConnection.getAutoCommit()) {
@@ -278,7 +278,7 @@ public class IOMethods {
 
         try {
             try (Statement statement = connection.createStatement()) {
-                statement.execute(String.format(Locale.ROOT, "CALL FILE_TABLE('%s','%s')", filePath, tableName));
+                statement.execute(String.format("CALL FILE_TABLE('%s','%s')", filePath, tableName));
                 if (!connection.getAutoCommit()) {
                     connection.commit();
                 }

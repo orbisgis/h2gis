@@ -30,7 +30,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -121,7 +120,7 @@ public class KMLWriterDriver {
         } else {
                 //Write table
                 Statement st = connection.createStatement() ;
-                ResultSet resultSet = st.executeQuery(String.format(Locale.ROOT, "select * from %s", tableName));
+                ResultSet resultSet = st.executeQuery(String.format("select * from %s", tableName));
                 // Read Geometry Index and type
                 Tuple<String, Integer> spatialFieldName = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
                 this.tableName=tableName;

@@ -19,8 +19,6 @@
  */
 package org.h2gis.utilities;
 
-import java.util.Locale;
-
 /**
  * Basic tuple class
  * @author Erwan Bocher
@@ -48,7 +46,7 @@ public class Tuple<T, U> {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "(%s, %s)", _1, _2);
+        return String.format("(%s, %s)", _1, _2);
     }
 
 }
