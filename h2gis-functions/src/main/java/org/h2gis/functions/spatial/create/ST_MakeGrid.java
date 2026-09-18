@@ -47,8 +47,10 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
         addProperty(PROP_REMARKS, "Calculate a regular grid.\n"
                 + "The first argument is either a geometry or a table.\n"
                 + "The delta X and Y cell grid are expressed in a cartesian plane."
-                + "An optional value set to true indicates that the delta x and delta y defines the number of" +
+                + "An optional value set to true indicatates to start the cell from the upper left corner\n"
+                + "An other optional value set to true indicates that the delta x and delta y defines the number of" +
                 "columns and rows\n"
+                + "An optional double to indicate the rotation of the grid in radian\n"
                 + "Note :The geometry could be expressed using a subquery as\n"
                 + " (SELECT the_geom from myTable)");
     }
