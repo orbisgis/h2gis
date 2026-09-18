@@ -7,13 +7,34 @@ TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
     ST_MakeGrid(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY);
 TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
     ST_MakeGrid(VARCHAR tableName, DOUBLE deltaX, DOUBLE deltaY);
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGrid(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY, DOUBLE angle);
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGrid(VARCHAR tableName, DOUBLE deltaX, DOUBLE deltaY, DOUBLE angle);
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGrid(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY, BOOLEAN upperOrder);
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGrid(VARCHAR tableName, DOUBLE deltaX, DOUBLE deltaY, BOOLEAN upperOrder);
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGrid(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY, BOOLEAN upperOrder, DOUBLE angle);
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGrid(VARCHAR tableName, DOUBLE deltaX, DOUBLE deltaY, BOOLEAN upperOrder, DOUBLE angle);
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGrid(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY, BOOLEAN upperOrder, BOOLEAN isColumnsRowsMeasure, DOUBLE angle);
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]    
+    ST_MakeGrid(VARCHAR tableName, DOUBLE deltaX, DOUBLE deltaY, BOOLEAN upperOrder, BOOLEAN isColumnsRowsMeasure, DOUBLE angle);
+
 ```
 
 ## Description
 
 Calculates a regular grid of `POLYGON`s based on a single Geometry
 `geom` or a table `tableName` of Geometries with `deltaX` and
-`deltaY` as offsets in the Cartesian plane.
+`deltaY` as offsets in the Cartesian plane. 
+There are three optional parameters :
+* `upperOrder` : A boolean, set to true indicates to start the cell from the upper left corner,
+* `isColumnsRowsMeasure` : A boolean, set to true indicates that the delta x and delta y defines the number of columns and rows,
+* `angle` : A double, the angle of grid rotation *(exprimed in radian)*
 
 ## Examples
 
