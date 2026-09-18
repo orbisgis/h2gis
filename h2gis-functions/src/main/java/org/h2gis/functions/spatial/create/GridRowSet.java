@@ -39,6 +39,7 @@ import org.h2gis.utilities.Tuple;
  * be represented as a polygon or its center point.
  *
  * @author Erwan Bocher
+ * @author Nathan Marie (CNRS)
  */
 public class GridRowSet implements SimpleRowSource {
 

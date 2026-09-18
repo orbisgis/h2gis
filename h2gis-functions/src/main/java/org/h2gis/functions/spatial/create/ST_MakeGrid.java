@@ -38,6 +38,7 @@ import java.sql.SQLException;
  * (SELECT the_geom from myTable)
  *
  * @author Erwan Bocher
+ * @author Nathan Marie (CNRS)
  */
 public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
 

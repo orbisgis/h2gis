@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Nicolas Fortin
  * @author Erwan Bocher, CNRS, 2023
+ * @author Nathan Marie (CNRS)
  */
 public class CreateFunctionTest {
     private static Connection connection;
