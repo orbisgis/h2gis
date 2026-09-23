@@ -62,6 +62,7 @@ public class GridRowSet implements SimpleRowSource {
     private Coordinate pivot;
     private double angle = 0;
     private static AffineTransformation rotateGeom;
+    private Geometry geom;
 
     /**
      * The grid will be computed according a table stored in the database
@@ -98,6 +99,7 @@ public class GridRowSet implements SimpleRowSource {
         this.srid = geometry.getSRID();
         this.pivot = new Coordinate();
         this.angle = angle%(Math.PI*2);
+        this.geom = geometry;
         this.envelope = geometry.getEnvelopeInternal();
         this.isTable = false;
     }
@@ -150,7 +152,7 @@ public class GridRowSet implements SimpleRowSource {
             //Find the SRID
             Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
             srid = geomMetadata.second().SRID;
-            try (ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
+            try (ResultSet rs = statement.executeQuery("select ST_GeomFromWKB(" + geomMetadata.first() + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
                 if (geomExtend == null) {
@@ -160,7 +162,7 @@ public class GridRowSet implements SimpleRowSource {
                         Envelope envelopeGeom = geomExtend.getEnvelopeInternal();
                         pivot = envelopeGeom.centre();
                         rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
-                        Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(GF.toGeometry(envelopeGeom));
+                        Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(geomExtend);
                         this.envelope = envelopeRotated.getEnvelopeInternal();
 
                     }else{
@@ -178,7 +180,7 @@ public class GridRowSet implements SimpleRowSource {
                 if(this.angle > 0.0001 || this.angle < -0.0001 ){
                     pivot = envelope.centre();
                     rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
-                    Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(GF.toGeometry(envelope));
+                    Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(geom);
                     this.envelope = envelopeRotated.getEnvelopeInternal();
                 }
                 initParameters();
