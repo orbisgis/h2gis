@@ -24,6 +24,7 @@ import org.h2.tools.SimpleRowSource;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBUtils;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.AffineTransformation;
 
 import java.sql.*;
 import org.cts.util.UTMUtils;
@@ -38,6 +39,7 @@ import org.h2gis.utilities.Tuple;
  * be represented as a polygon or its center point.
  *
  * @author Erwan Bocher
+ * @author Nathan Marie (CNRS)
  */
 public class GridRowSet implements SimpleRowSource {
 
@@ -57,6 +59,10 @@ public class GridRowSet implements SimpleRowSource {
     private int srid;
     private boolean isRowColumnNumber =false;
     private boolean upperCornerOrder=false;
+    private Coordinate pivot;
+    private double angle = 0;
+    private static AffineTransformation rotateGeom;
+    private Geometry geom;
 
     /**
      * The grid will be computed according a table stored in the database
@@ -65,13 +71,16 @@ public class GridRowSet implements SimpleRowSource {
      * @param deltaX x size
      * @param deltaY y size
      * @param tableName table name
+     * @param angle the rotation in radian
      */
-    public GridRowSet(Connection connection, double deltaX, double deltaY, String tableName) {
+    public GridRowSet(Connection connection, double deltaX, double deltaY, String tableName, double angle) {
         this.connection = connection;
         this.deltaX = deltaX;
         this.deltaY = deltaY;
         this.tableName = tableName;
         this.isTable = true;
+        this.pivot = new Coordinate();
+        this.angle = angle%(Math.PI*2);
     }
 
     /**
@@ -81,12 +90,16 @@ public class GridRowSet implements SimpleRowSource {
      * @param deltaX x size
      * @param deltaY y size
      * @param geometry {@link Geometry}
+     * @param angle the rotation in radian
      */
-    public GridRowSet(Connection connection, double deltaX, double deltaY, Geometry geometry) {
+    public GridRowSet(Connection connection, double deltaX, double deltaY, Geometry geometry, double angle) {
         this.connection = connection;
         this.deltaX = deltaX;
         this.deltaY = deltaY;
         this.srid = geometry.getSRID();
+        this.pivot = new Coordinate();
+        this.angle = angle%(Math.PI*2);
+        this.geom = geometry;
         this.envelope = geometry.getEnvelopeInternal();
         this.isTable = false;
     }
@@ -111,10 +124,17 @@ public class GridRowSet implements SimpleRowSource {
                 return new Object[]{getCellPoint(), id++, cellI, cellJ + 1};
             }
         }
-        if(upperCornerOrder){
-            return new Object[]{getCellPolygonUpper(), id++, cellI, cellJ + 1};
+        if(this.angle > 0.0001 || this.angle < -0.0001){
+            if(upperCornerOrder){
+                return new Object[]{rotateGeom.transform(getCellPolygonUpper()), id++, cellI, cellJ + 1};
+            }
+            return new Object[]{rotateGeom.transform(getCellPolygon()), id++, cellI, cellJ + 1};
+        } else {
+            if(upperCornerOrder){
+                return new Object[]{getCellPolygonUpper(), id++, cellI, cellJ + 1};
+            }
+            return new Object[]{getCellPolygon(), id++, cellI, cellJ + 1};
         }
-        return new Object[]{getCellPolygon(), id++, cellI, cellJ + 1};
     }
 
     @Override
@@ -132,13 +152,22 @@ public class GridRowSet implements SimpleRowSource {
             //Find the SRID
             Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
             srid = geomMetadata.second().SRID;
-            try (ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
+            try (ResultSet rs = statement.executeQuery("select ST_GeomFromWKB(" + geomMetadata.first() + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
                 if (geomExtend == null) {
                     throw new SQLException("The envelope cannot be null.");
                 } else {
-                    envelope = geomExtend.getEnvelopeInternal();
+                    if(this.angle > 0.0001 || this.angle < -0.0001 ){
+                        Envelope envelopeGeom = geomExtend.getEnvelopeInternal();
+                        pivot = envelopeGeom.centre();
+                        rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
+                        Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(geomExtend);
+                        this.envelope = envelopeRotated.getEnvelopeInternal();
+
+                    }else{
+                        envelope = geomExtend.getEnvelopeInternal();
+                    }
                     initParameters();
                 }
 
@@ -148,6 +177,12 @@ public class GridRowSet implements SimpleRowSource {
                 throw new SQLException("The input geometry used to compute the grid cannot be null.");
             }
             else {
+                if(this.angle > 0.0001 || this.angle < -0.0001 ){
+                    pivot = envelope.centre();
+                    rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
+                    Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(geom);
+                    this.envelope = envelopeRotated.getEnvelopeInternal();
+                }
                 initParameters();
             }
         }
