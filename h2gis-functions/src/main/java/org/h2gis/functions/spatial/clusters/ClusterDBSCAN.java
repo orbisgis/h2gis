@@ -103,7 +103,7 @@ public class ClusterDBSCAN extends AbstractCluster {
         }
 
         // Materialise pairs once (CACHED = B-tree on disk, no OOM risk)
-        String createPairsSql = String.format(
+        String createPairsSql = String.format(Locale.ROOT,
                 "CREATE CACHED LOCAL TEMPORARY TABLE tmp_pairs AS " +
                         "SELECT a.%s AS id_a, b.%s AS id_b " +
                         "FROM %s a, %s b " +

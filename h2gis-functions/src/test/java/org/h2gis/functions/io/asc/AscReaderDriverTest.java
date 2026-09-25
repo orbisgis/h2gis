@@ -327,7 +327,8 @@ public class AscReaderDriverTest {
         Geometry envGeom = factory.toGeometry(env);
         envGeom.setSRID(3857);
         st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
-        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', '%s'" +
+        st.execute(String.format(
+                "CALL ASCREAD('%s', 'PRECIP30MIN', '%s'" +
                 "::GEOMETRY , 1, TRUE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile(),
                 envGeom.toString()
                 ));
