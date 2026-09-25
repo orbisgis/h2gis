@@ -13,3 +13,4 @@
 - Improve ST_CLIP to process complex polygon
 - Preserve the SRID when a “SELECT ST_GEOMFROMTEXT(''POINT(0 0)'', 4326) As the_geom” query is stored in an FGB table
 - Fix ST_SubDivide with empty geometry, improve performance
+- Fix ST_ClustersTest with String.format 
