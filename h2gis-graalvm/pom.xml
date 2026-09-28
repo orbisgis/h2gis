@@ -102,23 +102,23 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
             <artifactId>nativeimage</artifactId>
-            <version>25.0.1</version>
+            <version>${graalvm-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis</artifactId>
-            <version>2.2.6-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.graalvm.compiler</groupId>
             <artifactId>compiler</artifactId>
-            <version>25.0.1</version>
+            <version>${graalvm-version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -134,7 +134,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.h2gis.graalvm.*</Export-Package>
-                        <Fragment-Host>org.h2</Fragment-Host>
+                        <Fragment-Host>com.h2database</Fragment-Host>
                         <Bundle-Vendor>CNRS</Bundle-Vendor>
                         <Bundle-Category>JDBC</Bundle-Category>
                         <Import-Package>
@@ -163,18 +163,18 @@
                         <!-- Other standard flags for shared libraries -->
                         <buildArg>--shared</buildArg>
                         <buildArg>-H:+AllowFoldMethods</buildArg>
-                        <arg>--enable-url-protocols=http,https,tcp</arg>
+                        <buildArg>--enable-url-protocols=http,https,tcp</buildArg>
                         <!-- Enable runtime reporting for missing elements -->
-                        <arg>--report-unsupported-elements-at-runtime</arg>
+                        <buildArg>--report-unsupported-elements-at-runtime</buildArg>
                         <!-- Initialize certain packages/classes at runtime -->
-                        <arg>--initialize-at-run-time=org.h2,org.h2gis</arg>
-                        <arg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</arg>
-                        <arg>
+                        <buildArg>--initialize-at-run-time=org.h2,org.h2gis</buildArg>
+                        <buildArg>--features=org.h2gis.graalvm.GraalCInterfaceEntryPointFeature</buildArg>
+                        <buildArg>
                             -H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json
-                        </arg>
-                        <arg>
+                        </buildArg>
+                        <buildArg>
                             -H:ReflectionConfigurationResources=META-INF/native-image/reflect-config.json
-                        </arg>
+                        </buildArg>
                     </buildArgs>
                 </configuration>
             </plugin>

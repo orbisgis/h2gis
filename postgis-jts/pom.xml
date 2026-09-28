@@ -51,13 +51,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.graalvm.nativeimage</groupId>
-            <artifactId>svm</artifactId>
-            <version>25.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-
     </dependencies>
 
 
@@ -70,7 +63,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Fragment-Host>org.h2</Fragment-Host>
+                        <Fragment-Host>com.h2database</Fragment-Host>
                         <Import-Package>!org.h2.*,*</Import-Package>
                         <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>

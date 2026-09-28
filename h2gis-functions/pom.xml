@@ -74,12 +74,6 @@
             <groupId>net.sf.geographiclib</groupId>
             <artifactId>GeographicLib-Java</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.graalvm.sdk</groupId>
-            <artifactId>nativeimage</artifactId>
-            <version>25.0.1</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -124,7 +118,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.h2gis.functions.*</Export-Package>
-                        <Fragment-Host>org.h2</Fragment-Host>
+                        <Fragment-Host>com.h2database</Fragment-Host>
                         <Bundle-Vendor>CNRS</Bundle-Vendor>
                         <Bundle-Category>JDBC</Bundle-Category>
                         <Import-Package>

@@ -72,10 +72,10 @@
     <!-- Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven-version>3.5.0</maven-version>
+        <maven-version>3.6.3</maven-version>
         <java-version>11</java-version>
-        <maven.compiler.target>${java-version}</maven.compiler.target>
-        <maven.compiler.source>${java-version}</maven.compiler.source>
+        <!-- Compile against the Java 11 API (replaces source/target) -->
+        <maven.compiler.release>${java-version}</maven.compiler.release>
 
         <!-- Dependencies versions -->
         <commons-compress-version>1.28.0</commons-compress-version>
@@ -95,15 +95,21 @@
         <cts-version>1.7.2</cts-version>
         <geographiclib-version>2.1</geographiclib-version>
         <slf4j-version>2.0.17</slf4j-version>
+        <graalvm-version>25.0.1</graalvm-version>
         <!-- Plugins versions -->
         <exec-maven-version>3.0.0</exec-maven-version>
         <maven-assembly-version>3.6.0</maven-assembly-version>
         <maven-bundle-version>5.1.2</maven-bundle-version>
+        <maven-clean-version>3.4.0</maven-clean-version>
+        <maven-compiler-version>3.16.0</maven-compiler-version>
+        <maven-deploy-version>3.1.2</maven-deploy-version>
         <maven-enforcer-version>3.4.1</maven-enforcer-version>
         <maven-gpg-plugin-version>3.1.0</maven-gpg-plugin-version>
+        <maven-install-version>3.2.0</maven-install-version>
         <maven-jar-version>3.3.0</maven-jar-version>
         <maven-javadoc-version>3.3.1</maven-javadoc-version>
         <maven-release-version>3.0.1</maven-release-version>
+        <maven-resources-version>3.3.1</maven-resources-version>
         <maven-source-version>3.2.1</maven-source-version>
         <maven-surefire-version>3.2.2</maven-surefire-version>
         <version-maven-version>2.16.0</version-maven-version>
@@ -367,6 +373,42 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!-- Default lifecycle plugins: pinned so that jar, pom and bundle modules use the same versions -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven-install-version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven-assembly-version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${exec-maven-version}</version>
+                </plugin>
                 <!-- Sign -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -538,11 +580,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
             </plugin>
 
             <plugin>
