@@ -21,7 +21,9 @@
 package org.h2gis.functions.spatial.create;
 
 import org.h2.value.Value;
+import org.h2.value.ValueBoolean;
 import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNumeric;
 import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
@@ -36,6 +38,7 @@ import java.sql.SQLException;
  * (SELECT the_geom from myTable)
  *
  * @author Erwan Bocher
+ * @author Nathan Marie (CNRS)
  */
 public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
 
@@ -44,8 +47,10 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
         addProperty(PROP_REMARKS, "Calculate a regular grid.\n"
                 + "The first argument is either a geometry or a table.\n"
                 + "The delta X and Y cell grid are expressed in a cartesian plane."
-                + "An optional value set to true indicates that the delta x and delta y defines the number of" +
+                + "An optional value set to true indicates to start the cell from the upper left corner\n"
+                + "An other optional value set to true indicates that the delta x and delta y defines the number of" +
                 "columns and rows\n"
+                + "An optional double to indicates the rotation of the grid in radian\n"
                 + "Note :The geometry could be expressed using a subquery as\n"
                 + " (SELECT the_geom from myTable)");
     }
@@ -65,29 +70,31 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
      * @return a resultset that contains all cells as a set of polygons
      */
     public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY) throws SQLException {
-            return createGrid( connection,  value,  deltaX,  deltaY, false) ;
+            return createGrid( connection,  value,  deltaX,  deltaY, false, 0) ;
         }
-        /**
-         * Create a regular grid using the first input argument to compute the full
-         * extent.
-         *
-         * @param connection database     * @param value could be the name of a table or a geometry.
-         * @param deltaX the X cell size
-         * @param deltaY the Y cell size
-         * @param upperOrder start the cell from the upper left corner
-         * @return a resultset that contains all cells as a set of polygons
-         */
-    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean upperOrder) throws SQLException {
+
+    /**
+     * Create a regular grid using the first input argument to compute the full
+     * extent.
+     *
+     * @param connection database     * @param value could be the name of a table or a geometry.
+     * @param deltaX the X cell size
+     * @param deltaY the Y cell size
+     * @param upperOrder start the cell from the upper left corner
+     * @param angle the rotation in radian
+     * @return a resultset that contains all cells as a set of polygons
+     */
+    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean upperOrder, double angle) throws SQLException {
         if(value == null){
             return null;
         }
         if (value instanceof ValueVarchar) {
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString(), angle);
             gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry(), angle);
             gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
         } else {
@@ -99,26 +106,69 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
      * Create a regular grid using the first input argument to compute the full
      * extent.
      *
+     * @param connection database     * @param value could be the name of a table or a geometry.
+     * @param deltaX the X cell size
+     * @param deltaY the Y cell size
+     * @param valueAngleOrder could be the boolean to indicate the start from the upper left corner or the angle in rotation in radian
+     * @return a resultset that contains all cells as a set of polygons
+     */
+    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, Value valueAngleOrder) throws SQLException {
+        if(value == null){
+            return null;
+        }
+        double angle;
+        boolean upperOrder;
+        if(valueAngleOrder instanceof ValueBoolean){
+            angle = 0;
+            upperOrder = valueAngleOrder.getBoolean();
+        }else if (valueAngleOrder instanceof ValueNumeric){
+            upperOrder = false;
+            angle = valueAngleOrder.getDouble();
+        }else {
+            throw new SQLException("This function supports only angle or a boolean as last argument.");
+        }
+
+        if (value instanceof ValueVarchar) {
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString(), angle);
+            gridRowSet.setUpperOrder(upperOrder);
+            return gridRowSet.getResultSet();
+        } else if (value instanceof ValueGeometry) {
+            ValueGeometry geom = (ValueGeometry) value;
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry(), angle);
+            gridRowSet.setUpperOrder(upperOrder);
+            return gridRowSet.getResultSet();
+        } else {
+            throw new SQLException("This function supports only table name or geometry as first argument.");
+        }
+    }
+
+
+
+    /**
+     * Create a regular grid using the first input argument to compute the full
+     * extent.
+     *
      * @param connection database
      * @param value could be the name of a table or a geometry.
      * @param deltaX the X cell size
      * @param deltaY the Y cell size
      * @param upperOrder start the cell from the upper left corner
      * @param isColumnsRowsMeasure deltaX and deltaY refer to the number of columns and rows
+     * @param angle the rotation in radian
      * @return a resultset that contains all cells as a set of polygons
      */
-    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean upperOrder, boolean isColumnsRowsMeasure) throws SQLException {
+    public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY, boolean upperOrder, boolean isColumnsRowsMeasure, double angle) throws SQLException {
         if(value == null){
             return null;
         }
         if (value instanceof ValueVarchar) {
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString(), angle);
             gridRowSet.setIsRowColumnNumber(isColumnsRowsMeasure);
             gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry(), angle);
             gridRowSet.setIsRowColumnNumber(isColumnsRowsMeasure);
             gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
@@ -126,4 +176,5 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
             throw new SQLException("This function supports only table name or geometry as first argument.");
         }
     }
+
 }

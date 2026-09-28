@@ -63,27 +63,28 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
     public static ResultSet createGridPoints(Connection connection, Value value, double deltaX, double deltaY) throws SQLException {
             return createGridPoints(connection,  value, deltaX, deltaY, false);
     }
-        /**
-         * Create a regular grid of points using the first input value to compute
-         * the full extent.
-         *
-         * @param connection database     * @param value could be the name of a table or a geometry.
-         * @param deltaX the X cell size
-         * @param deltaY the Y cell size
-         * @return a resultset that contains all cells as a set of polygons
-         */
+
+    /**
+     * Create a regular grid of points using the first input value to compute
+     * the full extent.
+     *
+     * @param connection database     * @param value could be the name of a table or a geometry.
+     * @param deltaX the X cell size
+     * @param deltaY the Y cell size
+     * @return a resultset that contains all cells as a set of polygons
+     */
     public static ResultSet createGridPoints(Connection connection, Value value, double deltaX, double deltaY, boolean upperOrder) throws SQLException {
         if(value == null){
             return null;
         }
         if (value instanceof ValueVarchar) {
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString(), 0); //Rajouter angle ? // Ça fonctionne cela ?
             gridRowSet.setCenterCell(true);
             gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry(), 0);
             gridRowSet.setCenterCell(true);
             gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
