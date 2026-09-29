@@ -21,6 +21,7 @@
 package org.h2gis.functions.spatial.others;
 
 import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.api.ScalarFunction;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -29,7 +30,7 @@ import org.locationtech.jts.geom.Geometry;
  * Text representation of the geometry envelope
  * @author E. Bocher, CNRS
  */
-public class ST_EnvelopeAsText extends AbstractFunction implements ScalarFunction {
+public class ST_EnvelopeAsText extends DeterministicScalarFunction {
 
     public ST_EnvelopeAsText() {
         addProperty(PROP_REMARKS, "Return a string representation of the Geometry envelope :\n" +
