@@ -15,3 +15,4 @@
 - Fix ST_SubDivide with empty geometry, improve performance
 - Add a new parameter, angle to ST_MakeGrid function
 - Fix ST_ClustersTest with String.format 
+- Clean up poms

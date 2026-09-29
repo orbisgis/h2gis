@@ -72,49 +72,9 @@
     <!-- Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven-version>3.6.3</maven-version>
         <java-version>11</java-version>
         <!-- Compile against the Java 11 API (replaces source/target) -->
         <maven.compiler.release>${java-version}</maven.compiler.release>
-
-        <!-- Dependencies versions -->
-        <commons-compress-version>1.28.0</commons-compress-version>
-        <commons-io-version>2.21.0</commons-io-version>
-        <h2-version>2.4.240</h2-version>
-        <jackson-core-version>2.21.0</jackson-core-version>
-        <jts-version>1.20.0</jts-version>
-        <junit-version>5.9.2</junit-version>
-        <osgi-compendium-version>5.0.0</osgi-compendium-version>
-        <osgi-core-version>6.0.0</osgi-core-version>
-        <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
-        <postgis-jdbc-version>2025.1.1</postgis-jdbc-version>
-        <flatgeobuf-version>[3.29.0, 4)</flatgeobuf-version>
-        <tinfour-version>[2.1.8, 3)</tinfour-version>
-        <postgresql-version>42.7.9</postgresql-version>
-        <jna-version>0.5.0</jna-version>
-        <cts-version>1.7.2</cts-version>
-        <geographiclib-version>2.1</geographiclib-version>
-        <slf4j-version>2.0.17</slf4j-version>
-        <graalvm-version>25.0.1</graalvm-version>
-        <!-- Plugins versions -->
-        <exec-maven-version>3.0.0</exec-maven-version>
-        <maven-assembly-version>3.6.0</maven-assembly-version>
-        <maven-bundle-version>5.1.2</maven-bundle-version>
-        <maven-clean-version>3.4.0</maven-clean-version>
-        <maven-compiler-version>3.16.0</maven-compiler-version>
-        <maven-deploy-version>3.1.2</maven-deploy-version>
-        <maven-enforcer-version>3.4.1</maven-enforcer-version>
-        <maven-gpg-plugin-version>3.1.0</maven-gpg-plugin-version>
-        <maven-install-version>3.2.0</maven-install-version>
-        <maven-jar-version>3.3.0</maven-jar-version>
-        <maven-javadoc-version>3.3.1</maven-javadoc-version>
-        <maven-release-version>3.0.1</maven-release-version>
-        <maven-resources-version>3.3.1</maven-resources-version>
-        <maven-source-version>3.2.1</maven-source-version>
-        <maven-surefire-version>3.2.2</maven-surefire-version>
-        <version-maven-version>2.16.0</version-maven-version>
-        <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
-
     </properties>
 
     <!-- Dependencies -->
@@ -152,102 +112,102 @@
             <dependency>
                 <groupId>org.wololo</groupId>
                 <artifactId>flatgeobuf</artifactId>
-                <version>${flatgeobuf-version}</version>
+                <version>[3.29.0, 4)</version>
             </dependency>
             <dependency>
                 <groupId>org.tinfour</groupId>
                 <artifactId>TinfourCore</artifactId>
-                <version>${tinfour-version}</version>
+                <version>[2.1.8, 3)</version>
             </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>java-network-analyzer</artifactId>
-                <version>${jna-version}</version>
+                <version>0.5.0</version>
             </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>cts</artifactId>
-                <version>${cts-version}</version>
+                <version>1.7.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>${commons-compress-version}</version>
+                <version>1.28.0</version>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>${h2-version}</version>
+                <version>2.4.240</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>${jackson-core-version}</version>
+                <version>2.21.0</version>
             </dependency>
             <dependency>
                 <groupId>org.locationtech.jts</groupId>
                 <artifactId>jts-core</artifactId>
-                <version>${jts-version}</version>
+                <version>1.20.0</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j-version}</version>
+                <version>2.0.17</version>
             </dependency>
             <dependency>
                 <groupId>net.postgis</groupId>
                 <artifactId>postgis-jdbc</artifactId>
-                <version>${postgis-jdbc-version}</version>
+                <version>2025.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>${postgresql-version}</version>
+                <version>42.7.9</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
-                <version>${osgi-compendium-version}</version>
+                <version>5.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>${osgi-core-version}</version>
+                <version>6.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.enterprise</artifactId>
-                <version>${osgi-enterprise-version}</version>
+                <version>5.0.0</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.geographiclib</groupId>
                 <artifactId>GeographicLib-Java</artifactId>
-                <version>${geographiclib-version}</version>
+                <version>2.1</version>
             </dependency>
 
             <!-- Test dependencies -->
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>${commons-io-version}</version>
+                <version>2.21.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit-version}</version>
+                <version>5.9.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit-version}</version>
+                <version>5.9.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>${slf4j-version}</version>
+                <version>2.0.17</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -266,7 +226,7 @@
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
                             <artifactId>native-maven-plugin</artifactId>
-                            <version>${native.maven.plugin.version}</version>
+                            <version>0.10.6</version>
                             <configuration>
                                 <metadataRepository>
                                     <enabled>true</enabled>
@@ -298,7 +258,7 @@
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
                             <artifactId>native-maven-plugin</artifactId>
-                            <version>${native.maven.plugin.version}</version>
+                            <version>0.10.6</version>
                             <configuration>
                                 <metadataRepository>
                                     <enabled>true</enabled>
@@ -324,7 +284,7 @@
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
                             <artifactId>native-maven-plugin</artifactId>
-                            <version>${native.maven.plugin.version}</version>
+                            <version>0.10.6</version>
                             <configuration>
                                 <metadataRepository>
                                     <enabled>true</enabled>
@@ -354,7 +314,7 @@
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
                             <artifactId>native-maven-plugin</artifactId>
-                            <version>${native.maven.plugin.version}</version>
+                            <version>0.10.6</version>
                             <configuration>
                                 <metadataRepository>
                                     <enabled>true</enabled>
@@ -377,43 +337,43 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>${maven-clean-version}</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven-resources-version}</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-version}</version>
+                    <version>3.16.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>${maven-install-version}</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${maven-deploy-version}</version>
+                    <version>3.1.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>${maven-assembly-version}</version>
+                    <version>3.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>${exec-maven-version}</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <!-- Sign -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>${maven-gpg-plugin-version}</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <gpgArguments>
                             <arg>--pinentry-mode</arg>
@@ -433,7 +393,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-version}</version>
+                    <version>3.2.2</version>
                     <configuration>
                         <useSystemClassLoader>false</useSystemClassLoader>
                         <argLine>${surefireArgLine}</argLine> <!-- This uses the property defined per profile -->
@@ -445,7 +405,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven-jar-version}</version>
+                    <version>3.3.0</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -462,7 +422,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>${maven-bundle-version}</version>
+                    <version>5.1.2</version>
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
@@ -474,7 +434,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>${maven-enforcer-version}</version>
+                    <version>3.4.1</version>
                     <executions>
                         <execution>
                             <id>enforce-versions</id>
@@ -491,7 +451,7 @@
                                         </excludes>
                                     </bannedPlugins>
                                     <requireMavenVersion>
-                                        <version>${maven-version}</version>
+                                        <version>3.6.3</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
                                         <version>${java-version}</version>
@@ -505,7 +465,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>${version-maven-version}</version>
+                    <version>2.16.0</version>
                     <configuration>
                         <rulesUri>
                             https://raw.githubusercontent.com/orbisgis/orbisgis-parents/master/maven-version-rules.xml
@@ -516,7 +476,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-version}</version>
+                    <version>3.3.1</version>
                     <configuration>
                         <doclint>all,-missing</doclint>
                         <quiet>true</quiet>
@@ -534,7 +494,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>${maven-source-version}</version>
+                    <version>3.2.1</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -549,7 +509,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>${maven-release-version}</version>
+                    <version>3.0.1</version>
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <tagNameFormat>v@{project.version}</tagNameFormat>
@@ -559,7 +519,7 @@
                 <plugin>
                     <groupId>org.graalvm.buildtools</groupId>
                     <artifactId>native-maven-plugin</artifactId>
-                    <version>${native.maven.plugin.version}</version>
+                    <version>0.10.6</version>
                     <configuration>
                         <metadataRepository>
                             <enabled>true</enabled>
@@ -619,5 +579,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

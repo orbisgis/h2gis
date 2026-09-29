@@ -107,7 +107,7 @@
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
             <artifactId>nativeimage</artifactId>
-            <version>${graalvm-version}</version>
+            <version>25.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -118,7 +118,7 @@
         <dependency>
             <groupId>org.graalvm.compiler</groupId>
             <artifactId>compiler</artifactId>
-            <version>${graalvm-version}</version>
+            <version>25.0.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -149,7 +149,6 @@
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>${native.maven.plugin.version}</version>
                 <configuration>
                     <metadataRepository>
                         <enabled>true</enabled>
