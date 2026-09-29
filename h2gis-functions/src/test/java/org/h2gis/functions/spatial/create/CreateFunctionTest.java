@@ -558,7 +558,55 @@ public class CreateFunctionTest {
     }
 
     @Test
-    public void testST_MakeGridFromGeometryWithAngleNegative() throws Exception {
+    public void testST_MakeGridFromGeometryWithAngle6() throws Exception {
+        st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1, false, 2*PI());");
+        ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select * from gridAngle order by id;");
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 0, 2 0, 2 1, 1 1, 1 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 1, 1 1, 1 2, 0 2, 0 1))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 1, 2 1, 2 2, 1 2, 1 1))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE gridAngle;");
+    }
+
+    @Test
+    public void testST_MakeGridFromGeometryWithAngleNegative1() throws Exception {
+        st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))'::GEOMETRY, 1, 1, false, -2*PI());");
+        ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
+        rs.next();
+        assertEquals(rs.getInt(1), 1);
+        rs.close();
+        rs = st.executeQuery("select * from gridAngle order by id;");
+        rs.next();
+        assertGeometryEquals("POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE gridAngle;");
+    }
+
+    @Test
+    public void testST_MakeGridFromGeometryWithAngleNegative2() throws Exception {
+        st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))'::GEOMETRY, 2, 2, false, -PI());");
+        ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
+        rs.next();
+        assertEquals(rs.getInt(1), 1);
+        rs.close();
+        rs = st.executeQuery("select * from gridAngle order by id;");
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 1, -0.9999999999999999 0.9999999999999998, -0.9999999999999997 -1.0000000000000004, 1.0000000000000004 -1, 1 1))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE gridAngle;");
+    }
+
+    @Test
+    public void testST_MakeGridFromGeometryWithAngleNegative3() throws Exception {
         st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1, false, -0.7853981634);");
         ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
         rs.next();
@@ -580,6 +628,27 @@ public class CreateFunctionTest {
         rs.close();
         st.execute("DROP TABLE gridAngle;");
     }
+
+    @Test
+    public void testST_MakeGridFromGeometryWithAngleNegative4() throws Exception {
+        st.execute("drop table if exists gridAngle; CREATE TABLE gridAngle AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1, false, -2*PI());");
+        ResultSet rs = st.executeQuery("select count(*) from gridAngle;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select * from gridAngle order by id;");
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 0, 2 0, 2 1, 1 1, 1 0))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON ((0 1, 1 1, 1 2, 0 2, 0 1))", rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 1, 2 1, 2 2, 1 2, 1 1))", rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE gridAngle;");
+    }
+
     @Test
     public void testST_MakeGridFromGeometryLatLon1() throws Exception {
         Envelope env = new Envelope(0.0, 0.008983152841195214, 0.0, 0.008983152841195214);
