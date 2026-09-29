@@ -1018,7 +1018,7 @@ public class CreateFunctionTest {
         assertGeometryEquals("POLYGON ((193 205, 208 220, 230 220, 215 205, 193 205))", rs.getObject(1));
         rs.close();
     }
-    /*
+
     @Test
     public void test_ST_MinimumRectangle1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('MULTIPOINT ((230 220), (193 205))'::GEOMETRY);");
@@ -1048,7 +1048,6 @@ public class CreateFunctionTest {
         rs.close();
     }
 
-*/
     @Test
     public void test_ST_RingBuffer1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('POINT(10 10)'::GEOMETRY, 10, 3);");
