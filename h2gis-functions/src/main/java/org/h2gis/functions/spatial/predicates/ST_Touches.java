@@ -27,7 +27,6 @@ import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 /**
  * Return true if the geometry A touches the geometry B
@@ -35,8 +34,6 @@ import org.locationtech.jts.geom.prep.PreparedGeometry;
  */
 public class ST_Touches extends DeterministicScalarFunction {
 
-
-    private static final PreparedGeometryCache CACHE = new PreparedGeometryCache();
     /**
      * Default constructor
      */
@@ -69,10 +66,6 @@ public class ST_Touches extends DeterministicScalarFunction {
         PreparedGeometryCache.checkSRID(geomA, geomB);
         if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
             return false;
-        }
-        PreparedGeometry prepared = CACHE.get(geomB);
-        if (prepared != null) {
-            return prepared.touches(geomA.getGeometry());
         }
         return geomA.getGeometry().touches(geomB.getGeometry());
     }

@@ -27,15 +27,12 @@ import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 /**
  * Return true if Geometry A crosses Geometry B.
  * @author Nicolas Fortin
  */
 public class ST_Crosses extends DeterministicScalarFunction {
-
-    private static final PreparedGeometryCache CACHE = new PreparedGeometryCache();
 
     /**
      * Default constructor
@@ -69,10 +66,6 @@ public class ST_Crosses extends DeterministicScalarFunction {
         PreparedGeometryCache.checkSRID(geomA, geomB);
         if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
             return false;
-        }
-        PreparedGeometry prepared = CACHE.get(geomB);
-        if (prepared != null) {
-            return prepared.crosses(geomA.getGeometry());
         }
         return geomA.getGeometry().crosses(geomB.getGeometry());
     }
