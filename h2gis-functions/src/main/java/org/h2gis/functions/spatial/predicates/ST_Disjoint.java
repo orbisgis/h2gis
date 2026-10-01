@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.predicates;
 
 import java.sql.SQLException;
 
+import org.h2.util.geometry.GeometryUtils;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
@@ -68,8 +69,8 @@ public class ST_Disjoint extends DeterministicScalarFunction {
             return false;
         }
         PreparedGeometryCache.checkSRID(geomA, geomB);
-        if (!PreparedGeometryCache.envelopeContains(envelopeB, envelopeA)) {
-            return false;
+        if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
+            return true;
         }
         PreparedGeometry prepared = CACHE.get(geomB);
         if (prepared != null) {
