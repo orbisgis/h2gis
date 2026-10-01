@@ -24,6 +24,8 @@ import org.h2.value.ValueGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -42,7 +44,7 @@ import java.util.Arrays;
  *     <li>Few geometries are kept, the least recently used one is replaced. Several calls of the same
  *     predicate in one query (e.g. {@code ST_Intersects(a, zone1) AND ST_Intersects(b, zone2)})
  *     each keep their prepared geometry.</li>
- *     <li>A geometry is recognised by identity of the H2 value, or else by comparing its EWKB bytes,
+ *     <li>A geometry is identified by comparing its EWKB bytes,
  *     which is much faster than building a JTS geometry.</li>
  *     <li>Small geometries are never cached.</li>
  * </ul>
@@ -52,7 +54,7 @@ public final class PreparedGeometryCache {
     /**
      * Geometries whose EWKB is smaller than this size (about 100 points in 2D) are not cached.
      */
-    static final int MIN_BYTES = 1600; //256 for 20 pts;
+    static final int MIN_BYTES = 1600;
 
     /**
      * Number of geometries kept per thread and per predicate.
@@ -60,12 +62,21 @@ public final class PreparedGeometryCache {
     static final int SIZE = 4;
 
     private static final class Feature {
-        ValueGeometry value;
+        // Just to compare the feature
+        WeakReference<ValueGeometry> value;
         byte[] bytes;
-        PreparedGeometry prepared;
+        // SoftReference uses a  garbage collector when memory is needed. This is better
+        SoftReference<PreparedGeometry> prepared;
         long lastUse;
+
+        boolean matches(ValueGeometry v, byte[] b) {
+            return (value != null && value.get() == v) || Arrays.equals(bytes, b);
+        }
     }
 
+    /**
+     * Status of the feature
+     */
     private static final class State {
         final Feature[] entries = new Feature[SIZE];
         long clock;
@@ -79,10 +90,12 @@ public final class PreparedGeometryCache {
 
     private final ThreadLocal<State> state = ThreadLocal.withInitial(State::new);
 
+
+
     /**
-     * Register the geometry used by the predicate.
+     * Register the geometry given to the predicate.
      *
-     * @param value geometry
+     * @param value geometry argument
      * @return the prepared geometry if this geometry was already given to the
      * predicate recently, null otherwise
      */
@@ -95,21 +108,25 @@ public final class PreparedGeometryCache {
         long now = ++s.clock;
         Feature oldest = null;
         for (Feature e : s.entries) {
-            if (e.value == value || Arrays.equals(e.bytes, bytes)) {
-                e.value = value;
-                e.lastUse = now;
-                if (e.prepared == null) {
-                    // Second occurrence: prepare it
-                    e.prepared = PreparedGeometryFactory.prepare(value.getGeometry());
+            if (e.matches(value, bytes)) {
+                if (e.value == null || e.value.get() != value) {
+                    e.value = new WeakReference<>(value);
                 }
-                return e.prepared;
+                e.lastUse = now;
+                PreparedGeometry prepared = e.prepared == null ? null : e.prepared.get();
+                if (prepared == null) {
+                    // Second occurrence, or released by the garbage collector: prepare it
+                    prepared = PreparedGeometryFactory.prepare(value.getGeometry());
+                    e.prepared = new SoftReference<>(prepared);
+                }
+                return prepared;
             }
             if (oldest == null || e.lastUse < oldest.lastUse) {
                 oldest = e;
             }
         }
         // First occurrence: remember it, in place of the least recently used entry
-        oldest.value = value;
+        oldest.value = new WeakReference<>(value);
         oldest.bytes = bytes;
         oldest.prepared = null;
         oldest.lastUse = now;

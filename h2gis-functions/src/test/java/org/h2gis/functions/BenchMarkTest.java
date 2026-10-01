@@ -129,6 +129,7 @@ public class BenchMarkTest {
 
     @AfterAll
     public static void tearDown() throws Exception {
+        //Close it after the test
         connection.close();
     }
 
@@ -159,8 +160,6 @@ public class BenchMarkTest {
                 long[] times = new long[RUNS];
                 String result = "";
                 for (int i = 0; i < WARMUP + RUNS; i++) {
-                    // A different comment on each execution: for an identical query made of
-                    // DETERMINISTIC functions, H2 would return the previous result without computing it.
                     String sql = "/* run " + i + " */ " + query[1];
                     long start = System.nanoTime();
                     result = execute(st, sql);
