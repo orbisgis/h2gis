@@ -21,6 +21,7 @@ package org.h2gis.functions;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -164,6 +165,7 @@ public class BenchMarkTest {
         }
     }
 
+    @Disabled("Benchmark, run manually")
     @Test
     public void measureQueries() throws SQLException {
         System.out.printf("%-40s %10s %12s   %s%n", "Query", "min (ms)", "median (ms)", "result");

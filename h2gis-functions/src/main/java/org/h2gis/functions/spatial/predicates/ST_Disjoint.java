@@ -72,7 +72,12 @@ public class ST_Disjoint extends DeterministicScalarFunction {
         if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
             return true;
         }
-        PreparedGeometry prepared = CACHE.get(geomB);
+        // Disjoint is symmetric. We must use the prepared geometry of A or B
+        PreparedGeometry prepared = CACHE.get(geomA);
+        if (prepared != null) {
+            return prepared.disjoint(geomB.getGeometry());
+        }
+        prepared = CACHE.get(geomB);
         if (prepared != null) {
             return prepared.disjoint(geomA.getGeometry());
         }
