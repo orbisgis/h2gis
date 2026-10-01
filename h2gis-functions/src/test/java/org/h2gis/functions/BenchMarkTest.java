@@ -69,7 +69,11 @@ public class BenchMarkTest {
                     "CREATE SPATIAL INDEX ON CIRCLES_INDEXED(THE_GEOM);",
             "DROP TABLE IF EXISTS ONE_BIG_POLYGON;" +
                     "CREATE TABLE ONE_BIG_POLYGON AS SELECT 1 AS ID, " +
-                    "ST_Densify(ST_Buffer(ST_MakePoint(40, 130), 80, 'quad_segs=64'), 0.1) AS THE_GEOM "
+                    "ST_Densify(ST_Buffer(ST_MakePoint(40, 130), 80, 'quad_segs=64'), 0.1) AS THE_GEOM ",
+            "DROP TABLE IF EXISTS POLYGON_DIFF_SIZES;" +
+                    "CREATE TABLE POLYGON_DIFF_SIZES AS SELECT Q.QS * 4 AS NB_POINTS, " +
+                    "ST_Buffer(ST_MakePoint(40, 130), 10, CONCAT('quad_segs=', Q.QS)) AS THE_GEOM " +
+                    "FROM (VALUES (25), (250), (1250), (2500)) AS Q(QS);"
     };
 
     /**
@@ -112,7 +116,15 @@ public class BenchMarkTest {
                     "SELECT COUNT(*) FROM POLYGON_INDEXED G, POINTS_INDEXED A "
                             + "WHERE A.THE_GEOM && G.THE_GEOM AND ST_Contains(G.THE_GEOM, A.THE_GEOM) "
                             + "AND G.ID IN (SELECT G2.ID FROM POLYGON_INDEXED G2, ONE_BIG_POLYGON P "
-                            + "WHERE G2.THE_GEOM && P.THE_GEOM AND ST_CoveredBy(G2.THE_GEOM, P.THE_GEOM))"}
+                            + "WHERE G2.THE_GEOM && P.THE_GEOM AND ST_CoveredBy(G2.THE_GEOM, P.THE_GEOM))"},
+            {"polygon 100 points contain points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES A, POINTS_INDEXED B "
+                    + "WHERE A.NB_POINTS = 100 AND A.THE_GEOM && B.THE_GEOM AND ST_Contains(A.THE_GEOM, B.THE_GEOM)"},
+            {"polygon 1000 points contain points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES A, POINTS_INDEXED B "
+                    + "WHERE A.NB_POINTS = 1000 AND A.THE_GEOM && B.THE_GEOM AND ST_Contains(A.THE_GEOM, B.THE_GEOM)"},
+            {"polygon 5000 points contain points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES A, POINTS_INDEXED B "
+                    + "WHERE A.NB_POINTS = 5000 AND A.THE_GEOM && B.THE_GEOM AND ST_Contains(A.THE_GEOM, B.THE_GEOM)"},
+            {"polygon 10000 points contain points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES A, POINTS_INDEXED B "
+                    + "WHERE A.NB_POINTS = 10000 AND A.THE_GEOM && B.THE_GEOM AND ST_Contains(A.THE_GEOM, B.THE_GEOM)"},
     };
 
     @BeforeAll

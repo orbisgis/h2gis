@@ -54,7 +54,7 @@ public final class PreparedGeometryCache {
     /**
      * Geometries whose EWKB is smaller than this size (about 100 points in 2D) are not cached.
      */
-    static final int MIN_BYTES = 1600;
+    static final int MIN_BYTES = 128;
 
     /**
      * Number of geometries kept per thread and per predicate.
