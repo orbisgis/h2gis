@@ -34,7 +34,6 @@ import org.locationtech.jts.geom.prep.PreparedGeometry;
  */
 public class ST_Contains extends DeterministicScalarFunction {
 
-
     public ST_Contains() {
         addProperty(PROP_REMARKS, "Return true if Geometry A contains Geometry B");
     }
