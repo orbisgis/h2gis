@@ -152,7 +152,7 @@ public class GridRowSet implements SimpleRowSource {
             //Find the SRID
             Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
             srid = geomMetadata.second().SRID;
-            try (ResultSet rs = statement.executeQuery("select ST_GeomFromWKB(" + geomMetadata.first() + ")  from " + tableName)) {
+            try (ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
                 if (geomExtend == null) {
@@ -170,7 +170,6 @@ public class GridRowSet implements SimpleRowSource {
                     }
                     initParameters();
                 }
-
             }
         } else {
             if (envelope == null || envelope.isNull()) {

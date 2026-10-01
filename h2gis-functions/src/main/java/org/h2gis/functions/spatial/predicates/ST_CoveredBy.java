@@ -21,14 +21,17 @@
 package org.h2gis.functions.spatial.predicates;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Geometry;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 import java.sql.SQLException;
 
 /**
  * ST_CoveredBy returns true if no point in geometry B is outside geometry A.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS
  */
 public class ST_CoveredBy extends DeterministicScalarFunction {
 
@@ -45,27 +48,37 @@ public class ST_CoveredBy extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "execute";
+        return "evaluate";
     }
 
+    private static final PreparedGeometryCache CACHE = new PreparedGeometryCache();
+
     /**
-     * Returns true if this geomA is covered by geomB
-     *
-     * @param geomA Geometry A
-     * @param geomB Geometry B
-     * @return if this geomA is covered by geomB
+     * @param a first geometry
+     * @param b second geometry
+     * @return true if no point in geometry A is outside geometry B
      */
-    public static Boolean execute(Geometry geomA, Geometry geomB) throws SQLException {
-        if(geomA == null||geomB == null){
+    public static Boolean evaluate(Value a, Value b) throws SQLException {
+        if (a == ValueNull.INSTANCE || b == ValueNull.INSTANCE) {
             return null;
         }
-        if(geomA.isEmpty() || geomB.isEmpty()){
+        ValueGeometry geomA = a.convertToGeometry(null);
+        ValueGeometry geomB = b.convertToGeometry(null);
+        double[] envelopeA = geomA.getEnvelopeNoCopy();
+        double[] envelopeB = geomB.getEnvelopeNoCopy();
+        // A null envelope means an empty geometry
+        if (envelopeA == null || envelopeB == null) {
             return false;
         }
-        
-        if(geomA.getSRID()!=geomB.getSRID()){
-            throw new SQLException("Operation on mixed SRID geometries not supported");
+        PreparedGeometryCache.checkSRID(geomA, geomB);
+        if (!PreparedGeometryCache.envelopeContains(envelopeB, envelopeA)) {
+            return false;
         }
-        return geomA.coveredBy(geomB);
+        // A covered by B is B covers A
+        PreparedGeometry prepared = CACHE.get(geomB);
+        if (prepared != null) {
+            return prepared.covers(geomA.getGeometry());
+        }
+        return geomA.getGeometry().coveredBy(geomB.getGeometry());
     }
 }
