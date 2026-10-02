@@ -1,8 +1,8 @@
 package org.h2gis.functions.spatial.operators;
 
+import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2.value.ValueBoolean;
-import org.h2.value.ValueNumeric;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.algorithm.hull.ConcaveHull;
 import org.locationtech.jts.geom.Geometry;
@@ -55,7 +55,7 @@ public class ST_ConcaveHull extends DeterministicScalarFunction {
         ConcaveHull concaveHull = new ConcaveHull(geometry);
         if(param instanceof ValueBoolean){
             concaveHull.setHolesAllowed(param.getBoolean());
-        } else if (param instanceof ValueNumeric) {
+        } else if (DataType.isNumericType(param.getValueType())) {
             concaveHull.setMaximumEdgeLengthRatio(param.getDouble());
         }
         else{

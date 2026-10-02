@@ -141,7 +141,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         else if(value instanceof ValueBoolean){
             return createGraph(connection, tableName, null,0.0, false, value.getBoolean(), null);
         }
-        else if(value instanceof ValueNumeric){
+        else if(DataType.isNumericType(value.getValueType())){
             return createGraph(connection, tableName, null,value.getDouble(), false, false, null);
         }
         throw new SQLException("Unsupported second argument. Possible solutions :" +
@@ -185,7 +185,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             if(thirdValue instanceof ValueBoolean){
                 deleteTables = thirdValue.getBoolean();
             }
-            else if(thirdValue instanceof ValueNumeric){
+            else if(DataType.isNumericType(thirdValue.getValueType())){
                 tolerance = thirdValue.getDouble();
             }
             else if(thirdValue instanceof ValueArray){
@@ -201,7 +201,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             columns = getColumns(((ValueArray) secondValue));
              if(thirdValue instanceof ValueBoolean){
                 deleteTables = thirdValue.getBoolean();
-            }else if(thirdValue instanceof ValueNumeric){
+            }else if(DataType.isNumericType(thirdValue.getValueType())){
                 tolerance = thirdValue.getDouble();
             } else{
                  throw new SQLException("Unsupported signature. Possible arguments are : \"" +
