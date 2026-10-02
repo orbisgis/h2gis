@@ -189,4 +189,17 @@ public class RegressionTest {
         BufferOp bufOp  = new BufferOp(geom, new BufferParameters(2));
         System.out.println(bufOp.getResultGeometry(50));
     }
+
+    @Disabled
+    @Test
+    public void testSQL() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("CREATE TABLE TEST(THE_GEOM GEOMETRY);\n" +
+                "INSERT INTO TEST VALUES ('POLYGON((0 0, 2 0, 2 2, 0 0))');\n" +
+                "CREATE TABLE grid AS SELECT * FROM\n" +
+                "    ST_MakeGrid('POLYGON((0 0, 2 0, 2 2, 0 0))'::geometry, 1,1, radians(45));\n");
+        ResultSet res = stat.executeQuery("select st_accum(the_geom) as the_geom from grid");
+        res.next();
+        TestUtilities.printValues(res);
+    }
 }

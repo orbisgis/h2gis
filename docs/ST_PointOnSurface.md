@@ -3,7 +3,7 @@
 ## Signature
 
 ```sql
-POINT ST_InteriorPoint(GEOMETRY geom);
+POINT ST_PointOnSurface(GEOMETRY geom);
 ```
 
 ## Description

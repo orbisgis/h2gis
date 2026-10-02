@@ -36,6 +36,7 @@ import javax.sql.DataSource;
 import org.h2gis.utilities.JDBCUtilities.TABLE_TYPE;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,6 +47,8 @@ public class JDBCUtilitiesTest {
 
     private static Connection connection;
     private static Statement st;
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
+    private static Connection conPost;
 
     @BeforeAll
     public static void init() throws Exception {
@@ -59,6 +62,18 @@ public class JDBCUtilitiesTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = DriverManager.getConnection(databasePath,
                 "sa", "");
+
+        String url = "jdbc:postgresql://localhost:5432/orbisgis_db";
+        Properties props = new Properties();
+        props.setProperty("user", "orbisgis");
+        props.setProperty("password", "orbisgis");
+        props.setProperty("url", url);
+
+        DataSource ds = dataSourceFactory.createDataSource(props);
+        try {
+            conPost = ds.getConnection();
+        } catch (SQLException ignored) {}
+        System.setProperty("test.postgis", Boolean.toString(conPost!=null));
     }
 
     @BeforeEach
@@ -550,27 +565,22 @@ public class JDBCUtilitiesTest {
     }
 
     @Test
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testSpatialIndexWithPostGIS() throws SQLException {
-        Properties props = new Properties();
-        props.setProperty("user", "orbisgis");
-        props.setProperty("password", "orbisgis");
-        props.setProperty("url", "jdbc:postgresql://localhost:5432/orbisgis_db");
-        DataSource ds = PostGISDBFactory.createDataSource(props);
-        Connection postConn = ds.getConnection();
-        Statement st = postConn.createStatement();
+        Statement st = conPost.createStatement();
         st.execute("DROP TABLE IF EXISTS orbisgis;"+
                 "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));"+
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
                 "(2, 'SRID=4326;POINT(1 1)'::GEOMETRY)");
         TableLocation table = TableLocation.parse("orbisgis", DBTypes.POSTGIS);
-        assertTrue(JDBCUtilities.createSpatialIndex(postConn, table, "the_geom"));
-        assertTrue(JDBCUtilities.isSpatialIndexed(postConn, table, "the_geom"));
-        JDBCUtilities.dropIndex(postConn, table, "the_geom");
-        assertFalse(JDBCUtilities.isSpatialIndexed(postConn, table, "the_geom"));
-        assertTrue(JDBCUtilities.createIndex(postConn, table, "id"));
-        assertTrue(JDBCUtilities.isIndexed(postConn, table, "id"));
-        JDBCUtilities.dropIndex(postConn, table, "id");
-        assertFalse(JDBCUtilities.isIndexed(postConn, table, "id"));
+        assertTrue(JDBCUtilities.createSpatialIndex(conPost, table, "the_geom"));
+        assertTrue(JDBCUtilities.isSpatialIndexed(conPost, table, "the_geom"));
+        JDBCUtilities.dropIndex(conPost, table, "the_geom");
+        assertFalse(JDBCUtilities.isSpatialIndexed(conPost, table, "the_geom"));
+        assertTrue(JDBCUtilities.createIndex(conPost, table, "id"));
+        assertTrue(JDBCUtilities.isIndexed(conPost, table, "id"));
+        JDBCUtilities.dropIndex(conPost, table, "id");
+        assertFalse(JDBCUtilities.isIndexed(conPost, table, "id"));
     }
 
     /**
@@ -579,19 +589,14 @@ public class JDBCUtilitiesTest {
       * @throws SQLException Error
      */
     @Test
+    @DisabledIfSystemProperty(named = "test.postgis", matches = "false")
     public void testDistinctFieldsWithPostGIS() throws SQLException {
-        Properties props = new Properties();
-        props.setProperty("user", "orbisgis");
-        props.setProperty("password", "orbisgis");
-        props.setProperty("url", "jdbc:postgresql://localhost:5432/orbisgis_db");
-        DataSource ds = PostGISDBFactory.createDataSource(props);
-        Connection postConn = ds.getConnection();
-        Statement st = postConn.createStatement();
+        Statement st = conPost.createStatement();
         st.execute("DROP TABLE IF EXISTS TESTVALUES;"+
                 "CREATE TABLE TESTVALUES (id int, avalue VARCHAR);"+
                 "INSERT INTO TESTVALUES VALUES (1, 'ALPHA'), (2, 'BETA'), (3, 'GAMMA');");
         TableLocation table = TableLocation.parse("TESTVALUES", DBTypes.POSTGIS);
-        Set<String> distinctValues = new HashSet<>(JDBCUtilities.getUniqueFieldValues(postConn, table, "avalue"));
+        Set<String> distinctValues = new HashSet<>(JDBCUtilities.getUniqueFieldValues(conPost, table, "avalue"));
         // Expected values
         Set<String> expectedValues = new HashSet<>(Arrays.asList("ALPHA", "BETA", "GAMMA"));
         assertEquals(expectedValues, distinctValues);

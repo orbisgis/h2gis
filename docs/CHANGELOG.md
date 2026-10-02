@@ -18,4 +18,8 @@
 - Speed up spatial predicates with a prepared geometry cache 
 - Clean up poms
 - Fix error with ST_MakeGrid function about https://github.com/orbisgis/h2gis/issues/1492
+- Fix doc for ST_PointOnSurface #1487
+- Fix JDBCUtilitiesTest Failed #1485
+
+
 
