@@ -14,7 +14,6 @@
 
     <!-- Project Information -->
     <properties>
-        <native.maven.plugin.version>0.10.6</native.maven.plugin.version>
         <imageName>h2gis</imageName>
     </properties>
     <name>h2gis-dist</name>

@@ -21,6 +21,7 @@
 package org.h2gis.functions.spatial.crs;
 
 import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.api.ScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -29,7 +30,8 @@ import org.locationtech.jts.geom.Geometry;
  * Return a new geometry with a replaced spatial reference id.
  * @author Nicolas Fortin
  */
-public class ST_SetSRID  extends AbstractFunction implements ScalarFunction {
+public class ST_SetSRID  extends DeterministicScalarFunction {
+
     public ST_SetSRID() {
         addProperty(PROP_REMARKS, "Return a new geometry with a replaced spatial reference id. Warning, use ST_Transform" +
                 " if you want to change the coordinate reference system as this method does not update the coordinates." +
