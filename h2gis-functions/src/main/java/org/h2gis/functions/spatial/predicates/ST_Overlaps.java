@@ -21,8 +21,12 @@
 package org.h2gis.functions.spatial.predicates;
 
 import java.sql.SQLException;
+
+import org.h2.util.geometry.GeometryUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Geometry;
 
 /**
  * Return true if the geometry A overlaps the geometry B
@@ -39,7 +43,7 @@ public class ST_Overlaps extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "isOverlaps";
+        return "evaluate";
     }
 
     /**
@@ -47,16 +51,22 @@ public class ST_Overlaps extends DeterministicScalarFunction {
      * @param b Geometry instance
      * @return true if the geometry A overlaps the geometry B
      */
-    public static Boolean isOverlaps(Geometry a,Geometry b) throws SQLException {
-        if(a==null || b==null) {
+    public static Boolean evaluate(Value a, Value b) throws SQLException {
+        if (a == ValueNull.INSTANCE || b == ValueNull.INSTANCE) {
             return null;
         }
-        if(a.isEmpty() || b.isEmpty()){
+        ValueGeometry geomA = a.convertToGeometry(null);
+        ValueGeometry geomB = b.convertToGeometry(null);
+        double[] envelopeA = geomA.getEnvelopeNoCopy();
+        double[] envelopeB = geomB.getEnvelopeNoCopy();
+        // A null envelope means an empty geometry
+        if (envelopeA == null || envelopeB == null) {
             return false;
         }
-        if(a.getSRID()!=b.getSRID()){
-            throw new SQLException("Operation on mixed SRID geometries not supported");
+        PreparedGeometryCache.checkSRID(geomA, geomB);
+        if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
+            return false;
         }
-        return a.overlaps(b);
+        return geomA.getGeometry().overlaps(geomB.getGeometry());
     }
 }

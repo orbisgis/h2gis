@@ -15,6 +15,7 @@
 - Fix ST_SubDivide with empty geometry, improve performance
 - Add a new parameter, angle to ST_MakeGrid function
 - Fix ST_ClustersTest with String.format 
+- Speed up spatial predicates with a prepared geometry cache 
 - Clean up poms
 - Fix error with ST_MakeGrid function about https://github.com/orbisgis/h2gis/issues/1492
 

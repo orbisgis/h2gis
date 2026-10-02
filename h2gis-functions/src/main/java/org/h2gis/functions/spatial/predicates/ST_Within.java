@@ -22,14 +22,17 @@ package org.h2gis.functions.spatial.predicates;
 
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Geometry;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 /**
  * Return true if the geometry A is within the geometry B
- * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class ST_Within extends DeterministicScalarFunction {
-
+    private static final PreparedGeometryCache CACHE = new PreparedGeometryCache();
     /**
      * Default constructor
      */
@@ -39,24 +42,35 @@ public class ST_Within extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "isWithin";
+        return "evaluate";
     }
 
     /**
-     * @param a {@link Geometry} A
-     * @param b {@link Geometry} B
+     * @param a first geometry
+     * @param b second geometry
      * @return true if the geometry A is within the geometry B
      */
-    public static Boolean isWithin(Geometry a,Geometry b) throws SQLException {
-        if(a==null || b==null) {
+    public static Boolean evaluate(Value a, Value b) throws SQLException {
+        if (a == ValueNull.INSTANCE || b == ValueNull.INSTANCE) {
             return null;
         }
-        if(a.isEmpty() || b.isEmpty()){
+        ValueGeometry geomA = a.convertToGeometry(null);
+        ValueGeometry geomB = b.convertToGeometry(null);
+        double[] envelopeA = geomA.getEnvelopeNoCopy();
+        double[] envelopeB = geomB.getEnvelopeNoCopy();
+        // A null envelope means an empty geometry
+        if (envelopeA == null || envelopeB == null) {
             return false;
         }
-        if(a.getSRID()!=b.getSRID()){
-            throw new SQLException("Operation on mixed SRID geometries not supported");
+        PreparedGeometryCache.checkSRID(geomA, geomB);
+        if (!PreparedGeometryCache.envelopeContains(envelopeB, envelopeA)) {
+            return false;
         }
-        return a.within(b);
+        // A within B is B contains A
+        PreparedGeometry prepared = CACHE.get(geomB);
+        if (prepared != null) {
+            return prepared.contains(geomA.getGeometry());
+        }
+        return geomA.getGeometry().within(geomB.getGeometry());
     }
 }

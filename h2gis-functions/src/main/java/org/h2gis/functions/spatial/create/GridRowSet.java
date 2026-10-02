@@ -170,7 +170,6 @@ public class GridRowSet implements SimpleRowSource {
                     }
                     initParameters();
                 }
-
             }
         } else {
             if (envelope == null || envelope.isNull()) {

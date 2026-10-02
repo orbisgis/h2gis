@@ -22,14 +22,19 @@ package org.h2gis.functions.spatial.predicates;
 
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Geometry;
+import org.h2.util.geometry.GeometryUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 /**
  * Return true if the geometry A intersects the geometry B
- * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class ST_Intersects extends DeterministicScalarFunction {
 
+    private static final PreparedGeometryCache CACHE = new PreparedGeometryCache();
     /**
      * Default constructor
      */
@@ -39,27 +44,42 @@ public class ST_Intersects extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "isIntersects";
+        return "evaluate";
     }
 
     /**
-     * @param surface Surface Geometry.
-     * @param testGeometry Geometry instance
+     * @param a first geometry
+     * @param b second geometry
      * @return true if the geometry A intersects the geometry B
      */
-    public static Boolean isIntersects(Geometry surface,Geometry testGeometry) throws SQLException {
-        if(surface==null) {
+    public static Boolean evaluate(Value a, Value b) throws SQLException {
+        if (a == ValueNull.INSTANCE) {
             return null;
         }
-        if(testGeometry==null) {
+        if (b == ValueNull.INSTANCE) {
             return false;
         }
-        if(surface.isEmpty() || testGeometry.isEmpty()){
+        ValueGeometry geomA = a.convertToGeometry(null);
+        ValueGeometry geomB = b.convertToGeometry(null);
+        double[] envelopeA = geomA.getEnvelopeNoCopy();
+        double[] envelopeB = geomB.getEnvelopeNoCopy();
+        // A null envelope means an empty geometry
+        if (envelopeA == null || envelopeB == null) {
             return false;
         }
-        if(surface.getSRID()!=testGeometry.getSRID()){
-            throw new SQLException("Operation on mixed SRID geometries not supported");
+        PreparedGeometryCache.checkSRID(geomA, geomB);
+        if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
+            return false;
         }
-        return surface.intersects(testGeometry);
+        PreparedGeometry prepared = CACHE.get(geomA);
+        if (prepared != null) {
+            return prepared.intersects(geomB.getGeometry());
+        }
+        prepared = CACHE.get(geomB);
+        if (prepared != null) {
+            return prepared.intersects(geomA.getGeometry());
+        }
+        return geomA.getGeometry().intersects(geomB.getGeometry());
     }
+
 }

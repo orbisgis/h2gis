@@ -22,46 +22,57 @@ package org.h2gis.functions.spatial.predicates;
 
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Geometry;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 /**
  * Return true if Geometry A contains Geometry B.
  *
- * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class ST_Contains extends DeterministicScalarFunction {
 
-    /**
-     * Default constructor
-     */
     public ST_Contains() {
         addProperty(PROP_REMARKS, "Return true if Geometry A contains Geometry B");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "isContains";
+        return "evaluate";
     }
 
+    private static final PreparedGeometryCache CACHE = new PreparedGeometryCache();
+
     /**
-     * @param surface Surface Geometry.
-     * @param testGeometry Geometry instance
-     * @return True only if no points of testGeometry lie outside of surface
+     * @param a first geometry
+     * @param b second geometry
+     * @return true if the geometry A contains the geometry B
      */
-    public static Boolean isContains(Geometry surface,Geometry testGeometry) throws SQLException {
-        if(surface==null) {
+    public static Boolean evaluate(Value a, Value b) throws SQLException {
+        if (a == ValueNull.INSTANCE) {
             return null;
         }
-        if(testGeometry==null) {
+        if (b == ValueNull.INSTANCE) {
             return false;
         }
-        if(surface.isEmpty() || testGeometry.isEmpty()){
+        ValueGeometry geomA = a.convertToGeometry(null);
+        ValueGeometry geomB = b.convertToGeometry(null);
+        double[] envelopeA = geomA.getEnvelopeNoCopy();
+        double[] envelopeB = geomB.getEnvelopeNoCopy();
+        // A null envelope means an empty geometry
+        if (envelopeA == null || envelopeB == null) {
             return false;
         }
-        
-        if(surface.getSRID()!=testGeometry.getSRID()){
-            throw new SQLException("Operation on mixed SRID geometries not supported");
+        PreparedGeometryCache.checkSRID(geomA, geomB);
+        if (!PreparedGeometryCache.envelopeContains(envelopeA, envelopeB)) {
+            return false;
         }
-        return surface.contains(testGeometry);
+        PreparedGeometry prepared = CACHE.get(geomA);
+        if (prepared != null) {
+            return prepared.contains(geomB.getGeometry());
+        }
+        return geomA.getGeometry().contains(geomB.getGeometry());
     }
 }
