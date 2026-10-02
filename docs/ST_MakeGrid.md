@@ -96,6 +96,27 @@ Answer:
 
 ![](./ST_MakeGrid_2.png){align=center}
 
+### Compute a grid with a rotation (angle in radians)
+
+```sql
+CREATE TABLE TEST(THE_GEOM GEOMETRY);
+INSERT INTO TEST VALUES ('POLYGON((0 0, 2 0, 2 2, 0 0))');
+CREATE TABLE grid AS SELECT * FROM
+    ST_MakeGrid('TEST', 1, 1, RADIANS(45));
+SELECT * FROM grid;
+```
+Answer:
+|                                 THE_GEOM                                 |  ID | ID_COL | ID_ROW |
+| ------------------------------------------------------------------------ | --- | ------ | ------ |
+| POLYGON((1 -1, 1.707 -0.293, 1 0.414, 0.293 -0.293, 1 -1))               |   0 |      1 |      1 |
+| POLYGON((1.707 -0.293, 2.414 0.414, 1.707 1.121, 1 0.414, 1.707 -0.293)) |   1 |      2 |      1 |
+| POLYGON((2.414 0.414, 3.121 1.121, 2.414 1.828, 1.707 1.121, 2.414 0.414)) |   2 |      3 |      1 |
+| POLYGON((0.293 -0.293, 1 0.414, 0.293 1.121, -0.414 0.414, 0.293 -0.293)) |   3 |      1 |      2 |
+| POLYGON((1 0.414, 1.707 1.121, 1 1.828, 0.293 1.121, 1 0.414))           |   4 |      2 |      2 |
+| POLYGON((1.707 1.121, 2.414 1.828, 1.707 2.536, 1 1.828, 1.707 1.121))   |   5 |      3 |      2 |
+
+![](./st_makegrid_angle.png){align=center}
+
 ## See also
 
 * [`ST_MakeGridPoints`](../ST_MakeGridPoints)

@@ -20,11 +20,7 @@
 
 package org.h2gis.functions.spatial.create;
 
-import org.h2.value.Value;
-import org.h2.value.ValueBoolean;
-import org.h2.value.ValueGeometry;
-import org.h2.value.ValueNumeric;
-import org.h2.value.ValueVarchar;
+import org.h2.value.*;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 
@@ -121,7 +117,7 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
         if(valueAngleOrder instanceof ValueBoolean){
             angle = 0;
             upperOrder = valueAngleOrder.getBoolean();
-        }else if (valueAngleOrder instanceof ValueNumeric){
+        }else if (DataType.isNumericType(valueAngleOrder.getValueType())){
             upperOrder = false;
             angle = valueAngleOrder.getDouble();
         }else {
