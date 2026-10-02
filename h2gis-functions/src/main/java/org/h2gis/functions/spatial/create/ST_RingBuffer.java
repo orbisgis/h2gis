@@ -21,6 +21,7 @@
 package org.h2gis.functions.spatial.create;
 
 import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.api.ScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -35,7 +36,7 @@ import java.sql.SQLException;
  *
  * @author Erwan Bocher
  */
-public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
+public class ST_RingBuffer extends DeterministicScalarFunction {
    
     public ST_RingBuffer() {
         addProperty(PROP_REMARKS, "Compute a ring buffer around a geometry.\n"

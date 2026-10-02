@@ -26,11 +26,6 @@
         </license>
     </licenses>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
-
     <!-- Dependencies -->
     <dependencies>
         <dependency>
@@ -109,7 +104,6 @@
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
                             <artifactId>native-maven-plugin</artifactId>
-                            <version>${native.maven.plugin.version}</version>
                             <configuration>
                                 <agent>
                                     <enabled>true</enabled>

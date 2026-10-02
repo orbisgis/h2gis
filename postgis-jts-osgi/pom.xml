@@ -25,10 +25,6 @@
         </license>
     </licenses>
 
-    <!-- Properties -->
-    <properties>
-    </properties>
-
     <!-- Build Settings -->
     <dependencies>
         <dependency>
@@ -64,7 +60,7 @@
                         <Bundle-Icon>postgis.png;size=32</Bundle-Icon>
                         <Embed-Dependency>postgresql;postgis-jdbc;postgis-jdbc-jtsparser;scope=compile;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
-                        <_exportcontents>org.postgresql.*;org.postgis.*;org.h2gis.*</_exportcontents>
+                        <_exportcontents>org.postgresql.*;net.postgis.jdbc.*;org.h2gis.*</_exportcontents>
                     </instructions>
                 </configuration>
             </plugin>

@@ -74,6 +74,11 @@
             <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <!-- Build Settings -->
@@ -86,7 +91,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Fragment-Host>org.h2</Fragment-Host>
+                        <Fragment-Host>com.h2database</Fragment-Host>
                         <Import-Package>!org.h2.command.ddl,!org.h2.engine,!org.h2.message,!org.h2.index,!org.h2.table,!org.h2.result,*</Import-Package>
                     </instructions>
                 </configuration>
