@@ -78,7 +78,7 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
             return null;
         }
         if (value instanceof ValueVarchar) {
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString(), 0); //Rajouter angle ? // Ça fonctionne cela ?
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString(), 0);
             gridRowSet.setCenterCell(true);
             gridRowSet.setUpperOrder(upperOrder);
             return gridRowSet.getResultSet();
