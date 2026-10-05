@@ -81,7 +81,7 @@ MULTILINESTRING ((0 2, 0 4), (0 2, 1 3), (0 4, 1 3), (0 4, 2 5), (0 4, 1 7), (1 
 ### 3nd signature, with `refinement` parameters
 ```sql
 SELECT ST_ConstrainedDelaunay('POLYGON ((2 7, 7 7, 7 2, 2 2, 2 7), (3 6, 6 6, 6 3, 3 3, 3 6))'
-			       , 'minPointSpacing = 0.01 minAngle=30 minTriangleArea=10');
+	   , 'minPointSpacing = 0.01 minAngle=30 minTriangleArea=10');
 ```
 
 ![](./ST_ConstraintDelaunay_refined.png){align=center}
