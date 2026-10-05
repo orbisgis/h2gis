@@ -22,12 +22,18 @@ package org.h2gis.functions.spatial.mesh;
 
 
 import org.h2gis.utilities.GeometryMetaData;
+import org.locationtech.jts.algorithm.ConvexHull;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+import org.locationtech.jts.index.strtree.STRtree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tinfour.common.*;
+import org.tinfour.refinement.RuppertRefiner;
 import org.tinfour.standard.IncrementalTin;
 import org.tinfour.utils.TriangleCollector;
 
@@ -37,8 +43,8 @@ import java.util.*;
  * This class is used to collect all data used to compute a mesh based on a
  * Delaunay triangulation
  *
- * @author Erwan Bocher
- * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
+ * @author Nicolas Fortin, Université Gustave Eiffel
  */
 public class DelaunayData {
     private static final Logger LOGGER = LoggerFactory.getLogger(DelaunayData.class);
@@ -70,6 +76,29 @@ public class DelaunayData {
     private List<Triangle> triangles = new ArrayList<Triangle>();
 
     private MODE mode = MODE.DELAUNAY;
+
+    /**
+     * Minimum internal angle (degrees) targeted by the Delaunay refinement.
+     * 0 means that no refinement is applied.
+     */
+    private double minAngle = 0;
+
+    /**
+     * Triangles with an area lower than this value are not refined.
+     * A negative value means that the threshold is computed from the input data.
+     */
+    private double minTriangleArea = MIN_TRIANGLE_AREA;
+
+    /**
+     * Value of minTriangleArea asking for a threshold computed from the input data
+     */
+    public static final double MIN_TRIANGLE_AREA = -1;
+
+    /**
+     * Factor applied to the squared length of the shortest edge of the unrefined triangulation
+     * to compute the default minimum triangle area of the refinement.
+     */
+    static final double MIN_AREA_FACTOR = 0.1;
 
     /**
      * Create a mesh data structure to collect points and edges that will be
@@ -154,6 +183,30 @@ public class DelaunayData {
     }
 
     /**
+     * Enable the Delaunay refinement (Ruppert algorithm) of the triangulation.
+     * Steiner points are inserted until all triangles have an internal angle
+     * greater than or equal to {@code minAngle}. Constraints are preserved:
+     * constrained edges may be split but never removed.
+     * Must be called before {@link #put(Geometry, MODE)}.
+     *
+     * @param minAngle minimum internal angle in degrees, in the range ]0, 60[.
+     *                 Set 0 to disable the refinement.
+     * @param minTriangleArea triangles with an area lower than this value are not refined
+     *                         unit of the coordinates)
+     * @throws IllegalArgumentException if a parameter is outside its valid range
+     */
+    public void setRefinement(double minAngle, double minTriangleArea) {
+        if (!(minAngle == 0 || (minAngle > 0 && minAngle < 60))) {
+            throw new IllegalArgumentException("The minimum angle must be 0 (no refinement) or in the range ]0, 60[ degrees");
+        }
+        if (!Double.isFinite(minTriangleArea) || (minTriangleArea < 0 && minTriangleArea != MIN_TRIANGLE_AREA)) {
+            throw new IllegalArgumentException("The minimum triangle area must be a finite value >= 0");
+        }
+        this.minAngle = minAngle;
+        this.minTriangleArea = minTriangleArea;
+    }
+
+    /**
      * @param epsilon Merge vertices with this distance between
      */
     public void setEpsilon(double epsilon) {
@@ -193,7 +246,14 @@ public class DelaunayData {
     }
 
     private void addLineString(LineString geom, int attribute) {
-        fillVerticesList(attribute, geom.getCoordinates());
+        Coordinate[] coordinates = geom.getCoordinates();
+        if (minAngle > 0 && geom.isClosed() && coordinates.length >= 4 && !Orientation.isCCW(coordinates)) {
+            // A closed line is inserted as a polygon constraint: the refinement needs a CCW ring,
+            // a CW ring being considered as a hole by Tinfour.
+            coordinates = coordinates.clone();
+            CoordinateArrays.reverse(coordinates);
+        }
+        fillVerticesList(attribute, coordinates);
     }
 
     private void addGeometry(Geometry geom, int attribute) {
@@ -239,7 +299,28 @@ public class DelaunayData {
         // Add points
         tin.add(meshPoints, null);
         // Add constraints
-        tin.addConstraints(constraints, false);
+        List<IConstraint> tinConstraints = constraints;
+        PreparedGeometry preparedHullOfPoints = null;
+        if (minAngle > 0) {
+            Geometry hullOfPoints = convexHull(meshPoints);
+            if (hullOfPoints instanceof Polygon) {
+                preparedHullOfPoints = PreparedGeometryFactory.prepare(hullOfPoints);
+                if (mode != MODE.TESSELLATION && !constraints.isEmpty()) {
+                    // Tinfour only refines the triangles located inside a polygon constraint.
+                    PolygonConstraint hull = convexHullConstraint((Polygon) hullOfPoints, meshPoints);
+                    if (hull != null) {
+                        tinConstraints = new ArrayList<>(constraints);
+                        tinConstraints.add(hull);
+                    }
+                }
+            }
+        }
+        tin.addConstraints(tinConstraints, false);
+
+        STRtree originalTriangles = null;
+        if (minAngle > 0 && tin.isBootstrapped()) {
+            originalTriangles = refine(tin);
+        }
 
         simpleTriangles = computeTriangles(tin);
         List<Vertex> verts = tin.getVertices();
@@ -247,7 +328,13 @@ public class DelaunayData {
         Map<Vertex, Integer> vertIndex = new HashMap<>();
         for(Vertex v : verts) {
             vertIndex.put(v, vertices.size());
-            vertices.add(toCoordinate(v, isInput2D));
+            Coordinate coordinate = toCoordinate(v, isInput2D);
+            if (originalTriangles != null && (v.isRefinementProduct() || Double.isNaN(coordinate.z))) {
+                // Steiner point inserted by the refinement (see Rupper). We must recompute the z
+                double z = interpolateZ(originalTriangles, v.getX(), v.getY());
+                coordinate.setZ(Double.isNaN(z) ? 0 : z);
+            }
+            vertices.add(coordinate);
         }
         for(SimpleTriangle t : simpleTriangles) {
             int triangleAttribute = 0;
@@ -256,11 +343,163 @@ public class DelaunayData {
                     triangleAttribute = constraintIndex.get(t.getContainingRegion().getConstraintIndex());
                 }
             }
+            if (minAngle > 0) {
+                // Flat triangle created by the split of a constrained edge due to rounding
+                if (isDegenerate(t)) {
+                    continue;
+                }
+                // Steiner points may be inserted outside of the convexhull of the input points
+                if (preparedHullOfPoints != null && !isInside(preparedHullOfPoints, t)) {
+                    continue;
+                }
+            }
             if(mode != MODE.TESSELLATION || triangleAttribute == 1) {
-                // With tesselation mode, only triangles in the domain of constraints polygons are kept
+                // With tesselation mode, only triangles in the preparedHullOfPoints of constraints polygons are kept
                 triangles.add(new Triangle(vertIndex.get(t.getVertexA()), vertIndex.get(t.getVertexB()),vertIndex.get(t.getVertexC()), triangleAttribute));
             }
         }
+    }
+
+    /**
+     * Check if the triangle is degenerated. Some triangle can have an angle equals to 0°
+     * @param t triangle
+     * @return true if the triangle is flat (its 3 vertices are collinear up to rounding errors)
+     */
+    private static boolean isDegenerate(SimpleTriangle t) {
+        Coordinate a = new Coordinate(t.getVertexA().getX(), t.getVertexA().getY());
+        Coordinate b = new Coordinate(t.getVertexB().getX(), t.getVertexB().getY());
+        Coordinate c = new Coordinate(t.getVertexC().getX(), t.getVertexC().getY());
+        double longestSide = org.locationtech.jts.geom.Triangle.longestSideLength(a, b, c);
+        return org.locationtech.jts.geom.Triangle.area(a, b, c) <= 0.5e-10 * longestSide * longestSide;
+    }
+
+    /**
+     * @param meshPoints vertices of the triangulation
+     * @return the convex hull of the vertices
+     */
+    private static Geometry convexHull(List<Vertex> meshPoints) {
+        Coordinate[] coordinates = new Coordinate[meshPoints.size()];
+        for (int i = 0; i < coordinates.length; i++) {
+            Vertex v = meshPoints.get(i);
+            coordinates[i] = new Coordinate(v.getX(), v.getY());
+        }
+        return new ConvexHull(coordinates, new GeometryFactory()).getConvexHull();
+    }
+
+    /**
+     * @param convexHullPoints prepared convex hull of the input points
+     * @param t triangle
+     * @return true if the centroid of the triangle is inside the domain
+     */
+    private boolean isInside(PreparedGeometry convexHullPoints, SimpleTriangle t) {
+        Vertex a = t.getVertexA(), b = t.getVertexB(), c = t.getVertexC();
+        Coordinate centroid = new Coordinate((a.getX() + b.getX() + c.getX()) / 3,
+                (a.getY() + b.getY() + c.getY()) / 3);
+        return convexHullPoints.covers(convexHullPoints.getGeometry().getFactory().createPoint(centroid));
+    }
+
+    /**
+     * Build a polygon constraint from the convex hull, reusing the existing vertex instances.
+     *
+     * @param hull convex hull of the vertices
+     * @param meshPoints vertices of the triangulation
+     * @return the convex hull constraint or null if it is not valid
+     */
+    private static PolygonConstraint convexHullConstraint(Polygon hull, List<Vertex> meshPoints) {
+        Map<Coordinate, Vertex> vertexByCoordinate = new HashMap<>();
+        for (Vertex v : meshPoints) {
+            vertexByCoordinate.put(new Coordinate(v.getX(), v.getY()), v);
+        }
+        Coordinate[] ring = hull.getExteriorRing().getCoordinates().clone();
+        if (!Orientation.isCCW(ring)) {
+            CoordinateArrays.reverse(ring);
+        }
+        List<Vertex> hullVertices = new ArrayList<>(ring.length - 1);
+        for (int i = 0; i < ring.length - 1; i++) {
+            Vertex v = vertexByCoordinate.get(ring[i]);
+            if (v == null) {
+                return null;
+            }
+            hullVertices.add(v);
+        }
+        PolygonConstraint polygonConstraint = new PolygonConstraint(hullVertices);
+        polygonConstraint.complete();
+        return polygonConstraint.isValid() ? polygonConstraint : null;
+    }
+
+    /**
+     * Apply the Ruppert Delaunay refinement on the triangulation.
+     *
+     * @param tin triangulation to refine in place
+     * @return for 3D inputs, a spatial index of the unrefined triangles
+     * used to compute the Z of the Steiner points, null otherwise
+     */
+    private STRtree refine(IncrementalTin tin) {
+        //Use it to perform triangles search
+        STRtree originalTriangles = null;
+        if (!isInput2D) {
+            originalTriangles = new STRtree();
+            for (SimpleTriangle t : computeTriangles(tin)) {
+                org.locationtech.jts.geom.Triangle tri = new org.locationtech.jts.geom.Triangle(
+                        toCoordinate(t.getVertexA(), false), toCoordinate(t.getVertexB(), false),
+                        toCoordinate(t.getVertexC(), false));
+                Envelope env = new Envelope(tri.p0, tri.p1);
+                env.expandToInclude(tri.p2);
+                originalTriangles.insert(env, tri);
+            }
+            originalTriangles.build();
+        }
+        double areaThreshold = minTriangleArea;
+        if (areaThreshold == MIN_TRIANGLE_AREA) {
+            double shortestEdge = Double.POSITIVE_INFINITY;
+            for (IQuadEdge edge : tin.edges()) {
+                if (edge.getB() != null) {
+                    shortestEdge = Math.min(shortestEdge, edge.getLength());
+                }
+            }
+            areaThreshold = Double.isFinite(shortestEdge) ? MIN_AREA_FACTOR * shortestEdge * shortestEdge : 0;
+        }
+        try {
+            //Here the rupper algorithm to refine the triangulation
+            RuppertRefiner refiner = new RuppertRefiner(tin, minAngle, areaThreshold);
+            if (!refiner.refine()) {
+                LOGGER.warn("The Delaunay refinement stopped before reaching the minimum angle of {} degrees", minAngle);
+            }
+        } catch (RuntimeException ex) {
+            LOGGER.warn("The Delaunay refinement has been stopped: {}", ex.getMessage());
+        }
+        return originalTriangles;
+    }
+
+    /**
+     * Compute the Z value of a location on the plane of the original triangle that contains it.
+     * If no triangle contains the location, the closest triangle is used.
+     *
+     * @param originalTriangles index of the unrefined triangles
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return the interpolated Z, or NaN if no triangle is found
+     */
+    static double interpolateZ(STRtree originalTriangles, double x, double y) {
+        Coordinate p = new Coordinate(x, y);
+        org.locationtech.jts.geom.Triangle closest = null;
+        double closestDistance = Double.POSITIVE_INFINITY;
+        for (Object item : originalTriangles.query(new Envelope(p))) {
+            org.locationtech.jts.geom.Triangle tri = (org.locationtech.jts.geom.Triangle) item;
+            if (tri.area() == 0) {
+                continue;
+            }
+            if (org.locationtech.jts.geom.Triangle.intersects(tri.p0, tri.p1, tri.p2, p)) {
+                return tri.interpolateZ(p);
+            }
+            double distance = Math.min(Distance.pointToSegment(p, tri.p0, tri.p1),
+                    Math.min(Distance.pointToSegment(p, tri.p1, tri.p2), Distance.pointToSegment(p, tri.p2, tri.p0)));
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = tri;
+            }
+        }
+        return closest == null ? Double.NaN : closest.interpolateZ(p);
     }
 
     public MultiPolygon getTrianglesAsMultiPolygon() {

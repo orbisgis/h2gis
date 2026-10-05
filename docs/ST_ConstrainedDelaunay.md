@@ -4,8 +4,9 @@
 
 ```sql
 GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom)
+GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom, 'minPointSpacing=0.01 minAngle=30 minTriangleArea=100')
 GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom, INTEGER flag)
-GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom, INTEGER flag, DOUBLE minDistancePoint)
+GEOMETRY ST_ConstrainedDelaunay(GEOMETRY geom, INTEGER flag, 'minPointSpacing=0.01 minAngle=30 minTriangleArea=100')
 ```
 
 ## Description
@@ -15,7 +16,11 @@ Returns a `MULTIPOLYGON` (or a `MULTILINESTRING`) that represent a Constrained D
 If `flag=0` *(default value)*, the output is a collection of `POLYGON`. 
 If `flag=1`, a `MULTILINESTRING` is returned. 
 
-The last argument can be set to improve the robustness of the triangulation by merging input points that are close together. The default value is 1e-12.
+The last argument can either be the minPointSpacing (double) or a list of blank-separated 
+key=value pairs (string case) e.g. 'minPointSpacing=0.01 minAngle=30 minTriangleArea=100':
+- minPointSpacing: merge distance between provided points, by default 1e-12
+- minAngle: enables the Delaunay refinement (Ruppert algorithm). 
+- minTriangleArea: skinny triangles whose area is lower than this value do not receive new points (unit of the coordinates).
 
 ### Remark
 If the input geometry does not contain any lines or polygons, a [Delaunay triangulation](../ST_Delaunay) will be computed.
@@ -73,6 +78,13 @@ MULTILINESTRING ((0 2, 0 4), (0 2, 1 3), (0 4, 1 3), (0 4, 2 5), (0 4, 1 7), (1 
 
 ![](./ST_ConstraintDelaunay_3.png){align=center}
 
+### 3nd signature, with `refinement` parameters
+```sql
+SELECT ST_ConstrainedDelaunay('POLYGON ((2 7, 7 7, 7 2, 2 2, 2 7), (3 6, 6 6, 6 3, 3 3, 3 6))'
+	   , 'minPointSpacing = 0.01 minAngle=30 minTriangleArea=10');
+```
+
+![](./ST_ConstraintDelaunay_refined.png){align=center}
 
 ## See also
 
