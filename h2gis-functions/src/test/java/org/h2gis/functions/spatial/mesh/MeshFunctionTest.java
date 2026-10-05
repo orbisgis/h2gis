@@ -22,13 +22,14 @@ package org.h2gis.functions.spatial.mesh;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.*;
+import org.locationtech.jts.algorithm.Angle;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -320,11 +321,11 @@ public class MeshFunctionTest {
     }
 
     @Test
-    public void testInvalid2ST_TESSELATE() throws Exception{
-      try (ResultSet rs = st.executeQuery("SELECT ST_TESSELATE('POINT(1 1)') the_geom")) {
-           assertTrue(rs.next());
-           assertGeometryEquals("GEOMETRYCOLLECTION EMPTY", rs.getObject(1));
-      }
+    public void testInvalid2ST_TESSELATE() throws Exception {
+        try (ResultSet rs = st.executeQuery("SELECT ST_TESSELATE('POINT(1 1)') the_geom")) {
+            assertTrue(rs.next());
+            assertGeometryEquals("GEOMETRYCOLLECTION EMPTY", rs.getObject(1));
+        }
     }
 
     @Test
@@ -344,6 +345,7 @@ public class MeshFunctionTest {
                     "  POLYGON ((-10.4 -1.1, -15.8 -1.1, -15.8 4, -10.4 -1.1)))", rs.getObject(1));
         }
     }
+
     @Test
     public void testST_TriangulatePolygon2() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_TriangulatePolygon('POLYGON ((-15.8 4, -10.4 4, -10.4 -1.1, -15.8 -1.1, -15.8 4), \n" +
@@ -359,6 +361,7 @@ public class MeshFunctionTest {
                     "  POLYGON ((-10.4 4, -10.4 -1.1, -11.9 0.4, -10.4 4)))", rs.getObject(1));
         }
     }
+
     @Test
     public void testST_TriangulatePolygon3() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_TriangulatePolygon('MULTIPOLYGON (((-17 3.4, -17 0, -10 0, -10 3.9, -11.49 3.55, -11.6 1.1, -15.4 1, -15.45 3.37, -17 3.4)), \n" +
@@ -373,5 +376,55 @@ public class MeshFunctionTest {
                     "  POLYGON ((-14.3 3.1, -12.75 3.35, -12.68 1.95, -14.3 3.1)), \n" +
                     "  POLYGON ((-12.68 1.95, -14.3 1.9, -14.3 3.1, -12.68 1.95)))", rs.getObject(1));
         }
+    }
+
+    @Test
+    public void test_ST_ConstrainedDelaunayParameters1() throws Exception {
+        String wkt = "'POLYGON ((1.9 8, 2.1 2.2, 7.1 2.2, 4.9 3.5, 7.5 8.1, 3.2 6, 1.9 8))'::GEOMETRY";
+        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(" + wkt + ", 'minPointSpacing = 0.01 minAngle=25 minTriangleArea=0.01'), " +
+                "ST_ConstrainedDelaunay(" + wkt + ", 0, 'MINANGLE=25 minpointspacing=0.01 minTriangleArea=0.01'), " +
+                "ST_ConstrainedDelaunay(" + wkt + ", 1, 'minAngle=25'), " +
+                "ST_ConstrainedDelaunay(" + wkt + ", ''), " +
+                "ST_ConstrainedDelaunay(" + wkt + ")")) {
+            assertTrue(rs.next());
+            Geometry refined = (Geometry) rs.getObject(1);
+            assertTrue(minAngle(refined) >= 25 - 1e-6);
+            assertTrue(refined.equalsExact((Geometry) rs.getObject(2)));
+            assertEquals("MultiLineString", ((Geometry) rs.getObject(3)).getGeometryType());
+            assertTrue(((Geometry) rs.getObject(4)).equalsExact((Geometry) rs.getObject(5)));
+        }
+    }
+
+    @Test
+    public void test_ST_ConstrainedDelaunayParameters2() throws Exception {
+        String wkt = "'POLYGON ((2 7, 7 7, 7 2, 2 2, 2 7), (3 6, 6 6, 6 3, 3 3, 3 6))'::GEOMETRY";
+        try (ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(" + wkt + ", 'minPointSpacing = 0.01 minAngle=30 minTriangleArea=10'), " +
+                "ST_ConstrainedDelaunay(" + wkt + ", 'minAngle=30'), " +
+                "ST_ConstrainedDelaunay(" + wkt + ")")) {
+            assertTrue(rs.next());
+            Geometry refinedFull = (Geometry) rs.getObject(1);
+            assertTrue(minAngle(refinedFull) >= 30 - 1e-6);
+            Geometry refinedAngle = (Geometry) rs.getObject(2);
+            assertTrue(minAngle(refinedAngle) >= 30 - 1e-6);
+            Geometry notRefined = (Geometry) rs.getObject(3);
+            assertFalse(minAngle(notRefined) >= 30 - 1e-6);
+        }
+    }
+
+    /**
+     * Compute the min angle of the triangles
+     *
+     * @param triangles a collection of triangles
+     * @return the smallest internal angle of the triangles, in degrees
+     */
+    private static double minAngle(Geometry triangles) {
+        double min = 180;
+        for (int i = 0; i < triangles.getNumGeometries(); i++) {
+            Coordinate[] c = triangles.getGeometryN(i).getCoordinates();
+            for (int k = 0; k < 3; k++) {
+                min = Math.min(min, Math.toDegrees(Angle.angleBetween(c[(k + 1) % 3], c[k], c[(k + 2) % 3])));
+            }
+        }
+        return min;
     }
 }
