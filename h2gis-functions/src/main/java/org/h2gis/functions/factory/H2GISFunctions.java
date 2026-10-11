@@ -62,10 +62,7 @@ import org.h2gis.functions.spatial.coverage.ST_CoverageUnion;
 import org.h2gis.functions.spatial.create.*;
 import org.h2gis.functions.spatial.crs.*;
 import org.h2gis.functions.spatial.distance.*;
-import org.h2gis.functions.spatial.earth.ST_GeometryShadow;
-import org.h2gis.functions.spatial.earth.ST_Isovist;
-import org.h2gis.functions.spatial.earth.ST_SunPosition;
-import org.h2gis.functions.spatial.earth.ST_Svf;
+import org.h2gis.functions.spatial.earth.*;
 import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.*;
 import org.h2gis.functions.spatial.linear_referencing.ST_LineInterpolatePoint;
@@ -357,7 +354,8 @@ public class H2GISFunctions {
                 new ST_SimplifyPolygonHull(),
                 new ST_ClusterDBScan(),
                 new ST_ClusterIntersecting(),
-                new ST_ClusterWithin()
+                new ST_ClusterWithin(),
+                new ST_Svf2()
         };
     }
 
