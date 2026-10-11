@@ -48,12 +48,6 @@ import java.util.Arrays;
  */
 public class ST_Svf2 extends DeterministicScalarFunction {
 
-    /**
-     * Default length of a ray subdivision (meters). Kept for compatibility: the angular sweep is exact
-     * and does not subdivide the rays anymore.
-     */
-    private static final int RAY_STEP_LENGTH = 10;
-
     public ST_Svf2() {
         addProperty(PROP_REMARKS, "Return the Sky View Factor (SVF) for a given point.\n"
                 + "pt = Point coordinates (x, y, z) - the SVF is calculated from this point\n"
