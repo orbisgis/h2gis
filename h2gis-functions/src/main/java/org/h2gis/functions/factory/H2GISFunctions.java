@@ -355,7 +355,7 @@ public class H2GISFunctions {
                 new ST_ClusterDBScan(),
                 new ST_ClusterIntersecting(),
                 new ST_ClusterWithin(),
-                new ST_Svf2()
+                new ST_Svf()
         };
     }
 

@@ -996,6 +996,25 @@ public class SpatialFunction2Test {
         });
     }
 
+
+    @Test
+    public void test_ST_SVF11() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_svf('SRID=2154;POINTZ(0 0 0)'::GEOMETRY, " +
+                        "ST_FORCE3D(ST_buffer('SRID=2154;POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8, ARRAY[0,10,50, 100]) as result");
+        assertTrue(rs.next());
+        double svfTest = 0.4098;
+        // One SVF per height, in the order of the array
+        Object[] svf = (Object[]) rs.getArray(1).getArray();
+        assertEquals(4, svf.length);
+        // Point at the centre of a 12 m high cylinder of radius 10 m: SVF = 1 - sin²(atan((12 - h) / 10))
+        assertEquals(0.4098, ((Number) svf[0]).doubleValue(), 0.01); // h = 0: tan = 1.2
+        assertEquals(0.9615, ((Number) svf[1]).doubleValue(), 0.01); // h = 10: tan = 0.2
+        assertEquals(1, ((Number) svf[2]).doubleValue(), 1e-12);     // h = 50: above the wall
+        assertEquals(1, ((Number) svf[3]).doubleValue(), 1e-12);     // h = 100: above the wall
+    }
+
     @Test
     public void test_ST_ShortestLine1() throws Exception {
         Statement st = connection.createStatement();

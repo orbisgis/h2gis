@@ -6,7 +6,7 @@
 DOUBLE ST_SVF(GEOMETRY point, GEOMETRY geoms, DOUBLE distance, 
               INTEGER rayCount)
 DOUBLE ST_SVF(GEOMETRY point, GEOMETRY geoms, DOUBLE distance, 
-              INTEGER rayCount, INTEGER stepRayLength)
+              INTEGER rayCount, ARRAY heights)
 ```
 
 ## Description
@@ -17,14 +17,14 @@ Compute the Sky View Factor for a given point based on geometries where:
 * `geoms` : Geometry or set of geometries grouped into a simple or complex geometry, used as sky obstacles *(z coordinates should be given and not NaN)*,
 * `distance` : Only obstacles located within this distance from the `point` are considered in the calculation *(exprimed in meters)*,
 * `rayCount` : Number of ray considered for the calculation *(number of direction of calculation)*,
-* `stepRayLength` : Length of sub ray used to limit the number of geometries when requested. Each ray is subdivided to make the calculation faster. This argument set the length of each subdivision. Default value = 10.
+* `heights` : Array of observer heights relative to the z of the point (0 if the point is 2D).
 
 
 ## Examples
 
 ### Case with one entry point
 
-Creation of the table with one point (here exprimed in Lambert 93, French system - EPSG:2154)
+Creation of the table with one point (here expressed in Lambert 93, French system - EPSG:2154)
 
 ```sql
 DROP TABLE IF EXISTS POINT;
@@ -110,6 +110,36 @@ CREATE TABLE SVF AS SELECT a.THE_GEOM, a.ID,
 
 ![](./ST_SVF_grid.png){align=center}
 
+
+### Case with heights
+
+```sql
+SELECT p.THE_GEOM,
+       ST_SVF(p.THE_GEOM, ST_ACCUM(ST_UPDATEZ(b.the_geom, b.HEIGHT_WALL)), 100, 60, ARRAY[0, 5, 10, 20]) AS SVF
+FROM svf_point p, building b
+WHERE ST_EXPAND(p.THE_GEOM, 100) && b.the_geom AND ST_DWITHIN(b.the_geom, p.THE_GEOM, 100)
+GROUP BY p.THE_GEOM;
+
+-- To save one 3D point per height: z = height, with the SVF at that height.
+-- Note : The VALUES list must contain the same heights, in the same order, as the ARRAY above
+CREATE TABLE svf_3d AS SELECT 
+        ST_SETSRID(ST_MAKEPOINT(ST_X(s.THE_GEOM), ST_Y(s.THE_GEOM), h.HEIGHT), ST_SRID(s.THE_GEOM)) AS THE_GEOM,
+        h.HEIGHT, s.SVF[h.RANK] AS SVF 
+FROM svf s, (VALUES (1, 0.0), (2, 5.0), (3, 10.0), (4, 20.0)) AS h(RANK, HEIGHT);
+
+--Save it
+CALL FGBWRITE('/tmp/svf_3d.fgb', 'svf_3d', true)
+    
+-- Answer: 
+| THE_GEOM | HEIGHT | SVF |
+|---|---|---|
+| POINT (472961.44243117847 5288354.396065518) | 0.0 | 0.6615 |
+| POINT (472961.44243117847 5288354.396065518) | 5.0 | 0.8083 |
+| POINT (472961.44243117847 5288354.396065518) | 10.0 | 0.9522 |
+| POINT (472961.44243117847 5288354.396065518) | 20.0 | 1.0000 |
+```
+![](./svf_3d.png){align=center}
+Data represented with [three.js](https://threejs.org/)
 
 ## See also
 
