@@ -1478,4 +1478,64 @@ public class JDBCUtilities {
         }
         return null;
     }
+
+    /**
+     * Print the result of a query as a markdown table
+     *
+     * @param connection    database connection
+     * @param query         the query to print
+     * @param maxRows       maximum number of rows printed, 0 for no limit
+     * @param maxCellLength maximum number of characters per cell, 0 for no limit
+     */
+    public static void printMarkdown(Connection connection, String query, int maxRows, int maxCellLength) throws SQLException {
+        try (Statement st = connection.createStatement()) {
+            // Read one row more than printed, only to know if the result was truncated
+            if (maxRows > 0) {
+                st.setMaxRows(maxRows + 1);
+            }
+            try (ResultSet rs = st.executeQuery(query)) {
+                ResultSetMetaData md = rs.getMetaData();
+                int n = md.getColumnCount();
+                StringBuilder sb = new StringBuilder("|");
+                for (int i = 1; i <= n; i++) {
+                    sb.append(' ').append(md.getColumnLabel(i)).append(" |");
+                }
+                sb.append("\n|");
+                for (int i = 1; i <= n; i++) {
+                    sb.append("---|");
+                }
+                int rows = 0;
+                boolean truncated = false;
+                while (rs.next()) {
+                    if (maxRows > 0 && rows == maxRows) {
+                        truncated = true;
+                        break;
+                    }
+                    sb.append("\n|");
+                    for (int i = 1; i <= n; i++) {
+                        Object v = rs.getObject(i);
+                        String cell = v == null ? "" : v instanceof Double ? String.format(Locale.ROOT, "%.4f", v) : v.toString();
+                        // Long values (e.g. WKT geometries) are cut
+                        if (maxCellLength > 0 && cell.length() > maxCellLength) {
+                            cell = cell.substring(0, maxCellLength) + "…";
+                        }
+                        // A pipe in a value would break the markdown table
+                        sb.append(' ').append(cell.replace("|", "\\|")).append(" |");
+                    }
+                    rows++;
+                }
+                if (truncated) {
+                    sb.append("\n\n_").append(rows).append(" first rows only_");
+                }
+                System.out.println(sb);
+            }
+        }
+    }
+
+    /**
+     * Print the result of a query as a markdown table, at most 20 rows and 80 characters per cell
+     */
+    public static void printMarkdown(Connection connection, String query) throws SQLException {
+        printMarkdown(connection, query, 20, 80);
+    }
 }
