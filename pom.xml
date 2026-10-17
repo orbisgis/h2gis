@@ -99,7 +99,7 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>sonatype</id>
+            <id>central</id>
             <url>https://repo1.maven.org/maven2</url>
             <releases>
                 <enabled>true</enabled>
@@ -383,7 +383,7 @@
                     <executions>
                         <execution>
                             <id>sign-artifacts</id>
-                            <phase>deploy</phase>
+                            <phase>verify</phase>
                             <goals>
                                 <goal>sign</goal>
                             </goals>
