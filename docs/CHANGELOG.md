@@ -23,6 +23,7 @@
 - Add Delaunay refinement option to ST_ConstrainedDelaunay
 - New SVF algorithm
 - Fix sonatype publishing
+- Fix ST_EXPLODE to support EWKT string 
 
 
 

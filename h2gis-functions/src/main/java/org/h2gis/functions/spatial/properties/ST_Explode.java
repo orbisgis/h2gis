@@ -308,20 +308,17 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
          * @return select + limit query
          */
         private String limitQuery(String selectQuery) {
-            //Remove the parentheses
-            selectQuery =  selectQuery.substring(1, selectQuery.lastIndexOf(")"));
-            int findLIMIT = selectQuery.lastIndexOf("LIMIT ");
-            int comma = selectQuery.lastIndexOf(";");
-            if (findLIMIT == -1) {
-                if (comma == -1) {
-                    selectQuery += " LIMIT 0;";
-                } else {
-                    selectQuery = selectQuery.substring(0, comma) + " LIMIT 0;";
-                }
-            } else {
-                selectQuery = selectQuery.substring(0, findLIMIT) + " LIMIT 0;";
+            String trimmed = selectQuery.trim();
+            if (trimmed.startsWith("(") && trimmed.endsWith(")")) {
+                trimmed = trimmed.substring(1, trimmed.length() - 1).trim();
             }
-            return selectQuery;
+            if (trimmed.endsWith(";")) {
+                trimmed = trimmed.substring(0, trimmed.length() - 1).trim();
+            }
+            StringBuilder sb = new StringBuilder("SELECT * FROM (");
+            sb.append(trimmed)
+                    .append(") AS metadatatable LIMIT 0");
+            return sb.toString();
         }
     }
 }
