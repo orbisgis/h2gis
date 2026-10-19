@@ -22,7 +22,7 @@
 - Fix JDBCUtilitiesTest Failed #1485
 - Add Delaunay refinement option to ST_ConstrainedDelaunay
 - New SVF algorithm
-- Fix sonatype publishing
+- Fix Sonatype publishing
 
 
 
