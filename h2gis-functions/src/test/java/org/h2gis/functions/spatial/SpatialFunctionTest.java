@@ -245,6 +245,15 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_ExplodeEWKTQuery() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT EXPLOD_ID, THE_GEOM \n" +
+                "FROM ST_EXPLODE('(SELECT ''SRID=2154;Point Z (619366.37 6826894.34 4)''::geometry AS the_geom)');");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(1));
+        assertEquals("SRID=2154;POINT Z (619366.37 6826894.34 4)", rs.getString(2));
+    }
+
+    @Test
     public void test_ReservervedKeyWordTable() throws Exception {
         // Test with reserved keyword named table
         st.execute("DROP TABLE IF EXISTS \"NATURAL\"");
