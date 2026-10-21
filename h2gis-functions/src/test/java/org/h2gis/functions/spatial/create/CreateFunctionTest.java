@@ -440,6 +440,17 @@ public class CreateFunctionTest {
     }
 
     @Test
+    public void testST_MakeGridSmallAngle() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Azimuth(ST_PointN(ST_ExteriorRing(THE_GEOM), 1), "
+                + "ST_PointN(ST_ExteriorRing(THE_GEOM), 2)) "
+                + "FROM ST_MakeGrid('POLYGON((0 0, 100000 0, 100000 100000, 0 100000, 0 0))'::GEOMETRY, 10000, 10000, 0.00005) "
+                + "WHERE ID = 0");
+        assertTrue(rs.next());
+        assertEquals(Math.PI / 2 - 0.00005, rs.getDouble(1), 1e-9);
+        rs.close();
+    }
+
+    @Test
     public void testST_MakeGridFromGeometry() throws Exception {
         st.execute("drop table if exists grid; CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1);");
         ResultSet rs = st.executeQuery("select count(*) from grid;");
@@ -793,6 +804,14 @@ public class CreateFunctionTest {
         assertGeometryEquals("POLYGON ((0.9999999999978861 1.82842712474619, 1.7071067811826295 2.5355339059345425, 2.4142135623709815 1.8284271247497987, 1.707106781186238 1.1213203435614467, 0.9999999999978861 1.82842712474619))", rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, gridAngle;");
+    }
+
+    @Test
+    public void testST_MakeGridColumnsRowsTrue() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM ST_MakeGrid('POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))'::GEOMETRY, 4, 3, false, true)");
+        assertTrue(rs.next());
+        assertEquals(12, rs.getInt(1));
+        rs.close();
     }
 
     @Test
@@ -1421,4 +1440,58 @@ public class CreateFunctionTest {
         assertEquals(49.70, rs.getDouble(1), 0.01);
         rs.close();
     }
+
+    /**
+     * Rotated grid of points: each point must be rotated around the center of the input envelope.
+     */
+    @Test
+    public void testST_MakeGridPointsWithAngle() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT THE_GEOM, ID, ID_COL, ID_ROW FROM "
+                + "ST_MakeGridPoints('POLYGON((0 0, 4 0, 4 2, 0 2, 0 0))'::GEOMETRY, 2, 2, PI()/2) ORDER BY ID");
+        assertTrue(rs.next());
+        assertGeometryBarelyEquals("POINT(3 1)", rs.getObject(1), 1e-12);
+        assertEquals(0, rs.getInt(2));
+        assertEquals(1, rs.getInt(3));
+        assertEquals(1, rs.getInt(4));
+        assertTrue(rs.next());
+        assertGeometryBarelyEquals("POINT(1 1)", rs.getObject(1), 1e-12);
+        assertEquals(1, rs.getInt(2));
+        assertEquals(1, rs.getInt(3));
+        assertEquals(2, rs.getInt(4));
+        assertFalse(rs.next());
+        rs.close();
+    }
+
+    /**
+     * Five arguments with a boolean: number of columns and rows, from the upper left corner.
+     */
+    @Test
+    public void testST_MakeGridPointsColumnsRowsUpperOrder() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT THE_GEOM FROM "
+                + "ST_MakeGridPoints('POLYGON((0 0, 4 0, 4 2, 0 2, 0 0))'::GEOMETRY, 2, 2, true, true) ORDER BY ID");
+        String[] expected = {"POINT(1 1.5)", "POINT(3 1.5)", "POINT(1 0.5)", "POINT(3 0.5)"};
+        for (String wkt : expected) {
+            assertTrue(rs.next());
+            assertGeometryEquals(wkt, rs.getObject(1));
+        }
+        assertFalse(rs.next());
+        rs.close();
+    }
+
+    /**
+     * Six arguments: columns and rows, upper order and rotation together.
+     */
+    @Test
+    public void testST_MakeGridPointsAllParameters() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT THE_GEOM FROM "
+                + "ST_MakeGridPoints('POLYGON((0 0, 4 0, 4 2, 0 2, 0 0))'::GEOMETRY, 2, 1, true, true, PI()/2) ORDER BY ID");
+        assertTrue(rs.next());
+        assertGeometryBarelyEquals("POINT(2 0.5)", rs.getObject(1), 1e-12);
+        assertTrue(rs.next());
+        assertGeometryBarelyEquals("POINT(2 1.5)", rs.getObject(1), 1e-12);
+        assertFalse(rs.next());
+        rs.close();
+    }
+
+
 }

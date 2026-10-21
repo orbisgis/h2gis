@@ -38,16 +38,17 @@ import org.h2gis.utilities.Tuple;
  * GridRowSet is used to populate a result set with all grid cells. A cell could
  * be represented as a polygon or its center point.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS
  * @author Nathan Marie (CNRS)
  */
 public class GridRowSet implements SimpleRowSource {
 
     private static final GeometryFactory GF = new GeometryFactory();
-    private static int cellI = 0;
-    private static int cellJ = 0;
+    private int cellI = 0;
+    private int cellJ = 0;
     private int maxI, maxJ;
     private double deltaX, deltaY;
+    private final double inputDeltaX, inputDeltaY;
     private double minX, minY, maxY;
     private int id = 0;
     private final Connection connection;
@@ -61,8 +62,9 @@ public class GridRowSet implements SimpleRowSource {
     private boolean upperCornerOrder=false;
     private Coordinate pivot;
     private double angle = 0;
-    private static AffineTransformation rotateGeom;
+    private AffineTransformation rotateGeom;
     private Geometry geom;
+    private final boolean isRotated;
 
     /**
      * The grid will be computed according a table stored in the database
@@ -75,12 +77,13 @@ public class GridRowSet implements SimpleRowSource {
      */
     public GridRowSet(Connection connection, double deltaX, double deltaY, String tableName, double angle) {
         this.connection = connection;
-        this.deltaX = deltaX;
-        this.deltaY = deltaY;
+        this.inputDeltaX = deltaX;
+        this.inputDeltaY = deltaY;
         this.tableName = tableName;
         this.isTable = true;
         this.pivot = new Coordinate();
-        this.angle = angle%(Math.PI*2);
+        this.angle = angle % (2 * Math.PI);
+        this.isRotated = this.angle != 0.0;
     }
 
     /**
@@ -94,14 +97,15 @@ public class GridRowSet implements SimpleRowSource {
      */
     public GridRowSet(Connection connection, double deltaX, double deltaY, Geometry geometry, double angle) {
         this.connection = connection;
-        this.deltaX = deltaX;
-        this.deltaY = deltaY;
+        this.inputDeltaX = deltaX;
+        this.inputDeltaY = deltaY;
         this.srid = geometry.getSRID();
         this.pivot = new Coordinate();
-        this.angle = angle%(Math.PI*2);
         this.geom = geometry;
         this.envelope = geometry.getEnvelopeInternal();
         this.isTable = false;
+        this.angle = angle % (2 * Math.PI);
+        this.isRotated = this.angle != 0.0;
     }
 
     @Override
@@ -118,23 +122,11 @@ public class GridRowSet implements SimpleRowSource {
             return null;
         }
         if (isCenterCell) {
-            if(upperCornerOrder){
-                return new Object[]{getCellPointUpper(), id++, cellI, cellJ + 1};
-            }else {
-                return new Object[]{getCellPoint(), id++, cellI, cellJ + 1};
-            }
+            Point point = upperCornerOrder ? getCellPointUpper() : getCellPoint();
+            return new Object[]{point, id++, cellI, cellJ + 1};
         }
-        if(this.angle > 0.0001 || this.angle < -0.0001){
-            if(upperCornerOrder){
-                return new Object[]{rotateGeom.transform(getCellPolygonUpper()), id++, cellI, cellJ + 1};
-            }
-            return new Object[]{rotateGeom.transform(getCellPolygon()), id++, cellI, cellJ + 1};
-        } else {
-            if(upperCornerOrder){
-                return new Object[]{getCellPolygonUpper(), id++, cellI, cellJ + 1};
-            }
-            return new Object[]{getCellPolygon(), id++, cellI, cellJ + 1};
-        }
+        Polygon cell = upperCornerOrder ? getCellPolygonUpper() : getCellPolygon();
+        return new Object[]{cell, id++, cellI, cellJ + 1};
     }
 
     @Override
@@ -145,26 +137,26 @@ public class GridRowSet implements SimpleRowSource {
     public void reset() throws SQLException {
         cellI = 0;
         cellJ = 0;
+        id = 0;
         firstRow = false;
         //We compute the extend according the first input value
         if (isTable) {
-            Statement statement = connection.createStatement();
             //Find the SRID
             Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, TableLocation.parse(tableName, DBUtils.getDBType(connection)));
             srid = geomMetadata.second().SRID;
-            try (ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
+            try (Statement statement = connection.createStatement();
+                 ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
                 if (geomExtend == null) {
                     throw new SQLException("The envelope cannot be null.");
                 } else {
-                    if(this.angle > 0.0001 || this.angle < -0.0001 ){
+                    if(isRotated){
                         Envelope envelopeGeom = geomExtend.getEnvelopeInternal();
                         pivot = envelopeGeom.centre();
                         rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
                         Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(geomExtend);
                         this.envelope = envelopeRotated.getEnvelopeInternal();
-
                     }else{
                         envelope = geomExtend.getEnvelopeInternal();
                     }
@@ -176,8 +168,8 @@ public class GridRowSet implements SimpleRowSource {
                 throw new SQLException("The input geometry used to compute the grid cannot be null.");
             }
             else {
-                if(this.angle > 0.0001 || this.angle < -0.0001 ){
-                    pivot = envelope.centre();
+                if(isRotated){
+                    pivot = geom.getEnvelopeInternal().centre();
                     rotateGeom = AffineTransformation.rotationInstance(angle, pivot.getX(),pivot.getY());
                     Geometry envelopeRotated = AffineTransformation.rotationInstance(-angle, pivot.getX(), pivot.getY()).transform(geom);
                     this.envelope = envelopeRotated.getEnvelopeInternal();
@@ -193,21 +185,12 @@ public class GridRowSet implements SimpleRowSource {
      * @return Polygon of the cell
      */
     private Polygon getCellPolygon() {
-        final Coordinate[] summits = new Coordinate[5];
         double x1 = minX + cellI * deltaX;
         double y1 = minY + cellJ * deltaY;
         double x2 = minX + (cellI + 1) * deltaX;
         double y2 = minY + (cellJ + 1) * deltaY;
-        summits[0] = new Coordinate(x1, y1);
-        summits[1] = new Coordinate(x2, y1);
-        summits[2] = new Coordinate(x2, y2);
-        summits[3] = new Coordinate(x1, y2);
-        summits[4] = new Coordinate(x1, y1);
-        final LinearRing g = GF.createLinearRing(summits);
-        final Polygon gg = GF.createPolygon(g, null);
         cellI++;
-        gg.setSRID(srid);
-        return gg;
+        return createCell(x1, y1, x2, y2);
     }
 
     /**
@@ -217,23 +200,13 @@ public class GridRowSet implements SimpleRowSource {
      * @return Polygon of the cell
      */
     private Polygon getCellPolygonUpper() {
-        final Coordinate[] summits = new Coordinate[5];
         double x1 = minX + cellI * deltaX;
         double y1 = maxY - cellJ * deltaY;
         double x2 = minX + (cellI + 1) * deltaX;
         double y2 = maxY - (cellJ + 1) * deltaY;
-        summits[0] = new Coordinate(x1, y1);
-        summits[1] = new Coordinate(x2, y1);
-        summits[2] = new Coordinate(x2, y2);
-        summits[3] = new Coordinate(x1, y2);
-        summits[4] = new Coordinate(x1, y1);
-        final LinearRing g = GF.createLinearRing(summits);
-        final Polygon gg = GF.createPolygon(g, null);
         cellI++;
-        gg.setSRID(srid);
-        return gg;
+        return createCell(x1, y1, x2, y2);
     }
-
 
     /**
      * Compute the point of the cell according the upper corner
@@ -241,14 +214,11 @@ public class GridRowSet implements SimpleRowSource {
      * @return Center point of the cell
      */
     private Point getCellPointUpper() {
-        double x1 = (minX + cellI * deltaX) + (deltaX / 2d);
-        double y1 = (maxY - cellJ * deltaY) - (deltaY / 2d);
+        double x = (minX + cellI * deltaX) + (deltaX / 2d);
+        double y = (maxY - cellJ * deltaY) - (deltaY / 2d);
         cellI++;
-        Point gg = GF.createPoint(new Coordinate(x1, y1));
-        gg.setSRID(srid);
-        return gg;
+        return createPoint(x, y);
     }
-
 
     /**
      * Compute the point of the cell
@@ -256,10 +226,47 @@ public class GridRowSet implements SimpleRowSource {
      * @return Center point of the cell
      */
     private Point getCellPoint() {
-        double x1 = (minX + cellI * deltaX) + (deltaX / 2d);
-        double y1 = (minY + cellJ * deltaY) + (deltaY / 2d);
+        double x = (minX + cellI * deltaX) + (deltaX / 2d);
+        double y = (minY + cellJ * deltaY) + (deltaY / 2d);
         cellI++;
-        Point gg = GF.createPoint(new Coordinate(x1, y1));
+        return createPoint(x, y);
+    }
+
+    /**
+     * Create the polygon of a cell, rotated around the pivot if needed.
+     * The coordinates are rotated before building the polygon to avoid
+     * a copy of the geometry.
+     *
+     * @return Polygon of the cell
+     */
+    private Polygon createCell(double x1, double y1, double x2, double y2) {
+        final Coordinate[] summits = new Coordinate[5];
+        summits[0] = new Coordinate(x1, y1);
+        summits[1] = new Coordinate(x2, y1);
+        summits[2] = new Coordinate(x2, y2);
+        summits[3] = new Coordinate(x1, y2);
+        if (isRotated) {
+            for (int i = 0; i < 4; i++) {
+                rotateGeom.transform(summits[i], summits[i]);
+            }
+        }
+        summits[4] = summits[0].copy();
+        final Polygon gg = GF.createPolygon(GF.createLinearRing(summits), null);
+        gg.setSRID(srid);
+        return gg;
+    }
+
+    /**
+     * Create the center point of a cell, rotated around the pivot if needed.
+     *
+     * @return Center point of the cell
+     */
+    private Point createPoint(double x, double y) {
+        Coordinate coordinate = new Coordinate(x, y);
+        if (isRotated) {
+            rotateGeom.transform(coordinate, coordinate);
+        }
+        Point gg = GF.createPoint(coordinate);
         gg.setSRID(srid);
         return gg;
     }
@@ -267,7 +274,7 @@ public class GridRowSet implements SimpleRowSource {
     /**
      * Return true is cell is represented as point, false as a polygon
      *
-     * @return trie if the grid is computed at center cell
+     * @return true if the grid is computed at center cell
      */
     public boolean isCenterCell() {
         return isCenterCell;
@@ -304,16 +311,15 @@ public class GridRowSet implements SimpleRowSource {
      *
      */
     private void initParameters() throws SQLException {
+        this.deltaX = inputDeltaX;
+        this.deltaY = inputDeltaY;
         this.minX = envelope.getMinX();
         this.minY = envelope.getMinY();
-        this.maxY=envelope.getMaxY();
+        this.maxY = envelope.getMaxY();
         if(isRowColumnNumber()){
             if(deltaX<1 || deltaY<1){
                 throw new SQLException("The number of columns and rows must be greater or equals than 1.");
             }
-            this.minX = envelope.getMinX();
-            this.minY = envelope.getMinY();
-            this.maxY=envelope.getMaxY();
             double dx = envelope.getMaxX()-minX;
             double dy = envelope.getMaxY()-minY;
             this.maxI = (int) deltaX;
@@ -353,10 +359,8 @@ public class GridRowSet implements SimpleRowSource {
                 }
                 double cellWidth = envelope.getWidth();
                 double cellHeight = envelope.getHeight();
-                this.maxI = (int) Math.ceil(cellWidth
-                        / deltaX);
-                this.maxJ = (int) Math.ceil(cellHeight
-                        / deltaY);
+                this.maxI = (int) Math.ceil(cellWidth / deltaX);
+                this.maxJ = (int) Math.ceil(cellHeight / deltaY);
             }
         }
     }

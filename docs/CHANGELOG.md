@@ -24,6 +24,9 @@
 - New SVF algorithm
 - Fix sonatype publishing
 - Fix ST_EXPLODE to support EWKT string 
+- Improve ST_MakeGrid signature
+- Align ST_MakeGridPoints to the same signature than ST_MakeGrid
+
 
 
 
