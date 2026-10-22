@@ -62,7 +62,7 @@ import org.h2gis.functions.spatial.coverage.ST_CoverageUnion;
 import org.h2gis.functions.spatial.create.*;
 import org.h2gis.functions.spatial.crs.*;
 import org.h2gis.functions.spatial.distance.*;
-import org.h2gis.functions.spatial.distance.ST_Distance2;
+import org.h2gis.functions.spatial.properties.ST_Distance2;
 import org.h2gis.functions.spatial.earth.*;
 import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.*;
