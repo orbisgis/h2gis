@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.operation.relateng.RelateNG;
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2.value.Value;
@@ -71,6 +73,6 @@ public class ST_Covers extends DeterministicScalarFunction {
         if (prepared != null) {
             return prepared.covers(geomB.getGeometry());
         }
-        return geomA.getGeometry().covers(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.covers());
     }
 }

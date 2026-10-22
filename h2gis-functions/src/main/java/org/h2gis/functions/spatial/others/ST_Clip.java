@@ -20,17 +20,17 @@
 
 package org.h2gis.functions.spatial.others;
 
+import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.operation.relateng.RelateNG;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.convert.ST_Holes;
 import org.h2gis.functions.spatial.convert.ST_ToMultiLine;
-import org.h2gis.functions.spatial.edit.ST_CollectionExtract;
 import org.h2gis.functions.spatial.topology.ST_Node;
 import org.h2gis.functions.spatial.topology.ST_Polygonize;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
@@ -112,7 +112,7 @@ public class ST_Clip extends DeterministicScalarFunction {
             if (geomForClipReduced.isEmpty()) {
                 throw new SQLException("Only support [Multi]Polygon or [Multi]LineString as input geometry for clipping");
             }
-            if (geomToClip.intersects(geomForClipReduced)) {
+            if (RelateNG.relate(geomToClip, geomForClipReduced, RelatePredicate.intersects())) {
                 GeometryFactory factory = geomToClip.getFactory();
                 Geometry geom = ST_ToMultiLine.execute(factory.createGeometryCollection(new Geometry[]{OverlayNGRobust.overlay(geomToClip,
                         geomForClipReduced, OverlayNG.INTERSECTION),

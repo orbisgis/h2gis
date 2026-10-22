@@ -27,6 +27,8 @@ import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 /**
  * Return true if the geometry A intersects the geometry B
@@ -79,7 +81,7 @@ public class ST_Intersects extends DeterministicScalarFunction {
         if (prepared != null) {
             return prepared.intersects(geomA.getGeometry());
         }
-        return geomA.getGeometry().intersects(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.intersects());
     }
 
 }

@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.operation.relateng.RelateNG;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
@@ -79,6 +81,6 @@ public class ST_CoveredBy extends DeterministicScalarFunction {
         if (prepared != null) {
             return prepared.covers(geomA.getGeometry());
         }
-        return geomA.getGeometry().coveredBy(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.coveredBy());
     }
 }

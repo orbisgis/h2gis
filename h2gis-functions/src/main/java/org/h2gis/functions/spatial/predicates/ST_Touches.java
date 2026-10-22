@@ -27,6 +27,8 @@ import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 /**
  * Return true if the geometry A touches the geometry B
@@ -67,6 +69,6 @@ public class ST_Touches extends DeterministicScalarFunction {
         if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
             return false;
         }
-        return geomA.getGeometry().touches(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.touches());
     }
 }
