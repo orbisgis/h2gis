@@ -91,7 +91,7 @@ public final class DistanceIndexCache {
 
         /**
          * @param other    other geometry, not empty, same SRID
-         * @param distance distance, >= 0
+         * @param distance distance
          * @return true if the indexed geometry is within the distance of the other geometry
          */
         public boolean isWithinDistance(Geometry other, double distance) {
