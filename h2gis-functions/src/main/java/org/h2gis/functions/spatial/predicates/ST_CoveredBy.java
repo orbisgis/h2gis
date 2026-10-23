@@ -26,7 +26,6 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 import java.sql.SQLException;
 

@@ -550,8 +550,6 @@ public class H2GISFunctions {
      * @throws SQLException Throw an exception if the functions are not registered
      */
     private static void registerH2GISFunctions(Connection connection, String packagePrepend) throws SQLException {
-        //Set JTS relate to use the new one
-        System.setProperty("jts.relate", "ng");
         try (Statement st = connection.createStatement()) {
             for (Function function : getBuiltInsFunctions()) {
                 try {
