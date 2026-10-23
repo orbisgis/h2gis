@@ -18,7 +18,7 @@ jobs:
         with:
           java-version: '25'
           distribution: 'mandrel'
-          version: '25.0.3.0-Final'
+          version: 'mandrel-latest'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
 
