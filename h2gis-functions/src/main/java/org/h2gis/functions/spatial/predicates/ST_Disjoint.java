@@ -29,7 +29,6 @@ import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 /**
  * Return true if the two Geometries are disjoint.
@@ -75,13 +74,13 @@ public class ST_Disjoint extends DeterministicScalarFunction {
             return true;
         }
         // Disjoint is symmetric. We must use the prepared geometry of A or B
-        PreparedGeometry prepared = CACHE.get(geomA);
+        PreparedGeometryCache.CachedGeometry prepared = CACHE.get(geomA);
         if (prepared != null) {
-            return prepared.disjoint(geomB.getGeometry());
+            return !prepared.intersects(geomB.getGeometry());
         }
         prepared = CACHE.get(geomB);
         if (prepared != null) {
-            return prepared.disjoint(geomA.getGeometry());
+            return !prepared.intersects(geomA.getGeometry());
         }
         return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.disjoint());
     }

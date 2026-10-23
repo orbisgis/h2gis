@@ -27,7 +27,6 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 /**
  * ST_Covers returns true if no point in geometry B is outside geometry A.
@@ -69,7 +68,7 @@ public class ST_Covers extends DeterministicScalarFunction {
         if (!PreparedGeometryCache.envelopeContains(envelopeA, envelopeB)) {
             return false;
         }
-        PreparedGeometry prepared = CACHE.get(geomA);
+        PreparedGeometryCache.CachedGeometry prepared = CACHE.get(geomA);
         if (prepared != null) {
             return prepared.covers(geomB.getGeometry());
         }

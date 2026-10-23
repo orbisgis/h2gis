@@ -82,7 +82,7 @@ public class BenchMarkTest {
      * They must be repeatable (SELECT): each one is executed WARMUP + RUNS times.
      */
     private static final String[][] QUERIES = {
-            /*{"points intersect polygons", "SELECT COUNT(*) FROM POINTS_INDEXED A, POLYGON_INDEXED B "
+            {"points intersect polygons", "SELECT COUNT(*) FROM POINTS_INDEXED A, POLYGON_INDEXED B "
                      + "WHERE A.THE_GEOM && B.THE_GEOM AND ST_Intersects(A.THE_GEOM, B.THE_GEOM)"},
             {"polygons contain points", "SELECT COUNT(*) FROM POLYGON_INDEXED A, POINTS_INDEXED B "
                     + "WHERE A.THE_GEOM && B.THE_GEOM AND ST_CONTAINS(A.THE_GEOM, B.THE_GEOM)"},
@@ -144,12 +144,12 @@ public class BenchMarkTest {
             {"dwithin polygon 10000 points, no index", "SELECT COUNT(*) FROM POINTS_INDEXED A WHERE ST_DWithin2("
                     + "(SELECT THE_GEOM FROM POLYGON_DIFF_SIZES WHERE NB_POINTS = 10000), A.THE_GEOM, 1)"},
             {"dwithin points / points", "SELECT COUNT(*) FROM POINTS_INDEXED A, POINTS_INDEXED B "
-                    + "WHERE A.THE_GEOM && ST_Expand(B.THE_GEOM, 0.5) AND ST_DWithin2(A.THE_GEOM, B.THE_GEOM, 0.5)"},*/
+                    + "WHERE A.THE_GEOM && ST_Expand(B.THE_GEOM, 0.5) AND ST_DWithin2(A.THE_GEOM, B.THE_GEOM, 0.5)"},
 
-            {"distance polygon 1000 points / all points", "SELECT SUM(ST_Distance(P.THE_GEOM, A.THE_GEOM)) "
+            {"distance polygon 1000 points / all points", "SELECT SUM(ST_Distance2(P.THE_GEOM, A.THE_GEOM)) "
                     + "FROM POLYGON_DIFF_SIZES P, POINTS_INDEXED A WHERE P.NB_POINTS = 1000"},
-            {"distance circles / points", "SELECT SUM(ST_Distance(C.THE_GEOM, A.THE_GEOM)) "
-                    + "FROM CIRCLES_INDEXED C, POINTS_INDEXED A WHERE A.THE_GEOM && ST_Expand(C.THE_GEOM, 2)"},
+            {"distance circles / points", "SELECT SUM(ST_Distance2(C.THE_GEOM, A.THE_GEOM)) "
+                    + "FROM CIRCLES_INDEXED C, POINTS_INDEXED A WHERE A.THE_GEOM && ST_Expand(C.THE_GEOM, 2)"}
     };
 
     @BeforeAll

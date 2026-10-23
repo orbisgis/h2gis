@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.operation.relateng.RelateNG;
 import java.sql.SQLException;
 
 import org.h2.util.geometry.GeometryUtils;
@@ -67,6 +69,6 @@ public class ST_Overlaps extends DeterministicScalarFunction {
         if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
             return false;
         }
-        return geomA.getGeometry().overlaps(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.overlaps());
     }
 }

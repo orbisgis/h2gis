@@ -77,7 +77,7 @@ public class ST_CoveredBy extends DeterministicScalarFunction {
             return false;
         }
         // A covered by B is B covers A
-        PreparedGeometry prepared = CACHE.get(geomB);
+        PreparedGeometryCache.CachedGeometry prepared = CACHE.get(geomB);
         if (prepared != null) {
             return prepared.covers(geomA.getGeometry());
         }

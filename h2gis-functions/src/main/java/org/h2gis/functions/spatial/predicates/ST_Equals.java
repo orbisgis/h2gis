@@ -23,6 +23,8 @@ package org.h2gis.functions.spatial.predicates;
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 /**
  * Return true if Geometry A is equal to Geometry B.
@@ -59,6 +61,6 @@ public class ST_Equals extends DeterministicScalarFunction {
         if(a.getSRID()!=b.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
-        return a.equals(b);
+        return RelateNG.relate(a, b, RelatePredicate.equalsTopo());
     }
 }
