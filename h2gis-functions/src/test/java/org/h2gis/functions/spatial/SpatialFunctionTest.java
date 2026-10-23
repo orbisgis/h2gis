@@ -449,6 +449,20 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_DWithinNull() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_DWithin(NULL, 'POINT(0 0)'::GEOMETRY, 2.0)");
+        assertTrue(rs.next());
+        assertNull(rs.getObject(1));
+    }
+
+    @Test
+    public void test_ST_DistanceNull() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Distance(NULL, 'POINT(0 0)'::GEOMETRY)");
+        assertTrue(rs.next());
+        assertNull(rs.getObject(1));
+    }
+
+    @Test
     public void test_ST_XYZMinMax() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(line GEOMETRY(Linestring Z));"

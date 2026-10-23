@@ -62,7 +62,7 @@ import org.h2gis.functions.spatial.coverage.ST_CoverageUnion;
 import org.h2gis.functions.spatial.create.*;
 import org.h2gis.functions.spatial.crs.*;
 import org.h2gis.functions.spatial.distance.*;
-import org.h2gis.functions.spatial.properties.ST_Distance2;
+import org.h2gis.functions.spatial.properties.ST_Distance;
 import org.h2gis.functions.spatial.earth.*;
 import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.*;
@@ -357,8 +357,8 @@ public class H2GISFunctions {
                 new ST_ClusterIntersecting(),
                 new ST_ClusterWithin(),
                 new ST_Svf(),
-                new ST_DWithin2(),
-                new ST_Distance2()
+                new ST_DWithin(),
+                new ST_Distance()
         };
     }
 
