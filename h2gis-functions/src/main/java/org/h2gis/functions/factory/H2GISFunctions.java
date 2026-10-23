@@ -355,10 +355,7 @@ public class H2GISFunctions {
                 new ST_SimplifyPolygonHull(),
                 new ST_ClusterDBScan(),
                 new ST_ClusterIntersecting(),
-                new ST_ClusterWithin(),
-                new ST_Svf(),
-                new ST_DWithin(),
-                new ST_Distance()
+                new ST_ClusterWithin()
         };
     }
 
