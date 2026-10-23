@@ -29,6 +29,7 @@
 - Add a cache approach to speed up ST_DWithin and ST_Distance
 - Use RelateNG explicitly instead of System.setProperty("jts.relate", "ng")
 - Avoid geometry decoding use ValueGeometry instead to get metadata or envelope
+- Change H2GIS Graalvm module to follow the API C v2
 
 
 
