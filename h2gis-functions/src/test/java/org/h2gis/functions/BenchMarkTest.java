@@ -126,6 +126,30 @@ public class BenchMarkTest {
                     + "WHERE A.NB_POINTS = 5000 AND A.THE_GEOM && B.THE_GEOM AND ST_Contains(A.THE_GEOM, B.THE_GEOM)"},
             {"polygon 10000 points contain points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES A, POINTS_INDEXED B "
                     + "WHERE A.NB_POINTS = 10000 AND A.THE_GEOM && B.THE_GEOM AND ST_Contains(A.THE_GEOM, B.THE_GEOM)"},
+
+            {"dwithin big polygon / points", "SELECT COUNT(*) FROM ONE_BIG_POLYGON P, POINTS_INDEXED A "
+                    + "WHERE A.THE_GEOM && ST_Expand(P.THE_GEOM, 1) AND ST_DWithin(P.THE_GEOM, A.THE_GEOM, 1)"},
+            {"dwithin points / big polygon (revert)", "SELECT COUNT(*) FROM ONE_BIG_POLYGON P, POINTS_INDEXED A "
+                    + "WHERE A.THE_GEOM && ST_Expand(P.THE_GEOM, 1) AND ST_DWithin(A.THE_GEOM, P.THE_GEOM, 1)"},
+            {"dwithin circles / points", "SELECT COUNT(*) FROM CIRCLES_INDEXED C, POINTS_INDEXED A "
+                    + "WHERE A.THE_GEOM && ST_Expand(C.THE_GEOM, 2) AND ST_DWithin(C.THE_GEOM, A.THE_GEOM, 2)"},
+            {"dwithin polygon 100 points / points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES P, POINTS_INDEXED A "
+                    + "WHERE P.NB_POINTS = 100 AND A.THE_GEOM && ST_Expand(P.THE_GEOM, 1) AND ST_DWithin(P.THE_GEOM, A.THE_GEOM, 1)"},
+            {"dwithin polygon 1000 points / points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES P, POINTS_INDEXED A "
+                    + "WHERE P.NB_POINTS = 1000 AND A.THE_GEOM && ST_Expand(P.THE_GEOM, 1) AND ST_DWithin(P.THE_GEOM, A.THE_GEOM, 1)"},
+            {"dwithin polygon 5000 points / points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES P, POINTS_INDEXED A "
+                    + "WHERE P.NB_POINTS = 5000 AND A.THE_GEOM && ST_Expand(P.THE_GEOM, 1) AND ST_DWithin(P.THE_GEOM, A.THE_GEOM, 1)"},
+            {"dwithin polygon 10000 points / points", "SELECT COUNT(*) FROM POLYGON_DIFF_SIZES P, POINTS_INDEXED A "
+                    + "WHERE P.NB_POINTS = 10000 AND A.THE_GEOM && ST_Expand(P.THE_GEOM, 1) AND ST_DWithin(P.THE_GEOM, A.THE_GEOM, 1)"},
+            {"dwithin polygon 10000 points, no index", "SELECT COUNT(*) FROM POINTS_INDEXED A WHERE ST_DWithin("
+                    + "(SELECT THE_GEOM FROM POLYGON_DIFF_SIZES WHERE NB_POINTS = 10000), A.THE_GEOM, 1)"},
+            {"dwithin points / points", "SELECT COUNT(*) FROM POINTS_INDEXED A, POINTS_INDEXED B "
+                    + "WHERE A.THE_GEOM && ST_Expand(B.THE_GEOM, 0.5) AND ST_DWithin(A.THE_GEOM, B.THE_GEOM, 0.5)"},
+
+            {"distance polygon 1000 points / all points", "SELECT SUM(ST_Distance(P.THE_GEOM, A.THE_GEOM)) "
+                    + "FROM POLYGON_DIFF_SIZES P, POINTS_INDEXED A WHERE P.NB_POINTS = 1000"},
+            {"distance circles / points", "SELECT SUM(ST_Distance(C.THE_GEOM, A.THE_GEOM)) "
+                    + "FROM CIRCLES_INDEXED C, POINTS_INDEXED A WHERE A.THE_GEOM && ST_Expand(C.THE_GEOM, 2)"}
     };
 
     @BeforeAll

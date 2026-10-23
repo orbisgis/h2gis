@@ -20,11 +20,12 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.operation.relateng.RelateNG;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 import java.sql.SQLException;
 
@@ -75,10 +76,10 @@ public class ST_CoveredBy extends DeterministicScalarFunction {
             return false;
         }
         // A covered by B is B covers A
-        PreparedGeometry prepared = CACHE.get(geomB);
+        PreparedGeometryCache.CachedGeometry prepared = CACHE.get(geomB);
         if (prepared != null) {
             return prepared.covers(geomA.getGeometry());
         }
-        return geomA.getGeometry().coveredBy(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.coveredBy());
     }
 }

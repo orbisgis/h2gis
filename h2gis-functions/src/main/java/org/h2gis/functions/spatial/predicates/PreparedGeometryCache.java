@@ -21,8 +21,11 @@ package org.h2gis.functions.spatial.predicates;
 
 import org.h2.util.geometry.GeometryUtils;
 import org.h2.value.ValueGeometry;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
@@ -33,9 +36,8 @@ import java.util.Arrays;
  * Class to cache the prepared geometries used by the spatial predicates
  *
  * <p>When the same geometry is given to a predicate on successive calls (a
- * constant argument, or the outer row of a nested loop join), it is prepared
- * with {@link PreparedGeometryFactory} at its second occurrence, and the
- * prepared version is reused for the following calls.</p>
+ * constant argument, or the outer row of a nested loop join), a {@link CachedGeometry}
+ * is created at its second occurrence and reused for the following calls.</p>
  *
  * <ul>
  *     <li>Each predicate owns its cache instance, so that different predicates do not share entries.</li>
@@ -52,7 +54,7 @@ import java.util.Arrays;
 public final class PreparedGeometryCache {
 
     /**
-     * Geometries whose EWKB is smaller than this size (about 100 points in 2D) are not cached.
+     * Geometries whose EWKB is smaller than this size (about 6 or 7 points in 2D) are not cached.
      */
     static final int MIN_BYTES = 128;
 
@@ -61,12 +63,106 @@ public final class PreparedGeometryCache {
      */
     static final int SIZE = 4;
 
+    /**
+     * A geometry prepared for the spatial predicates.
+     *
+     * <p>Two engines are used, each one built only when it is first needed:</p>
+     * <ul>
+     *     <li>the JTS {@link PreparedGeometry}, which is faster, for a polygon, a line or a point.
+     *     It computes by itself {@code intersects}, and {@code contains} / {@code covers} of a
+     *     polygon in most cases;</li>
+     *     <li>a prepared {@link RelateNG} for the other cases. In these cases the JTS prepared
+     *     geometries delegate to the {@link Geometry} predicates, which use the old relate engine.
+     *     This engine can throw a TopologyException, e.g. for a GeometryCollection of
+     *     overlapping polygons.</li>
+     * </ul>
+     *
+     * <p>For {@code contains} / {@code covers} of a line or a polygon by a cached polygon,
+     * JTS 1.20 does not cache the prepared RelateNG structures (fixed in JTS 1.21, #1099), which
+     * makes it about 40 times slower than PreparedPolygon. So PreparedPolygon is used first:
+     * it delegates to the old engine only when the boundaries touch at a vertex, and RelateNG
+     * is used if this throws a TopologyException.
+     * TODO : with JTS 1.21, use RelateNG directly for the lines and polygons.</p>
+     *
+     * <p>An instance is only used by one thread.</p>
+     */
+    public static final class CachedGeometry {
+        private final Geometry geometry;
+        // Polygon, line or point: PreparedGeometryFactory builds a real prepared geometry.
+        // A mixed GeometryCollection gets a BasicPreparedGeometry, which only delegates to Geometry
+        private final boolean jtsPrepared;
+        private final boolean polygonal;
+        private PreparedGeometry prepared;
+        private RelateNG relate;
+
+        CachedGeometry(Geometry geometry) {
+            this.geometry = geometry;
+            this.polygonal = geometry instanceof Polygonal;
+            this.jtsPrepared = polygonal || geometry instanceof Lineal || geometry instanceof Puntal;
+        }
+
+        /**
+         * @param other other geometry, not empty, same SRID
+         * @return true if the cached geometry intersects the other geometry
+         */
+        public boolean intersects(Geometry other) {
+            if (jtsPrepared) {
+                return prepared().intersects(other);
+            }
+            return relate().evaluate(other, RelatePredicate.intersects());
+        }
+
+        /**
+         * @param other other geometry, not empty, same SRID
+         * @return true if the cached geometry contains the other geometry
+         */
+        public boolean contains(Geometry other) {
+            if (polygonal) {
+                try {
+                    return prepared().contains(other);
+                } catch (TopologyException e) {
+                    // The old relate engine failed, RelateNG gives the result
+                }
+            }
+            return relate().evaluate(other, RelatePredicate.contains());
+        }
+
+        /**
+         * @param other other geometry, not empty, same SRID
+         * @return true if the cached geometry covers the other geometry
+         */
+        public boolean covers(Geometry other) {
+            if (polygonal) {
+                try {
+                    return prepared().covers(other);
+                } catch (TopologyException e) {
+                    // The old relate engine failed, RelateNG gives the result
+                }
+            }
+            return relate().evaluate(other, RelatePredicate.covers());
+        }
+
+        private PreparedGeometry prepared() {
+            if (prepared == null) {
+                prepared = PreparedGeometryFactory.prepare(geometry);
+            }
+            return prepared;
+        }
+
+        private RelateNG relate() {
+            if (relate == null) {
+                relate = RelateNG.prepare(geometry);
+            }
+            return relate;
+        }
+    }
+
     private static final class Feature {
         // Just to compare the feature
         WeakReference<ValueGeometry> value;
         byte[] bytes;
         // SoftReference uses a  garbage collector when memory is needed. This is better
-        SoftReference<PreparedGeometry> prepared;
+        SoftReference<CachedGeometry> prepared;
         long lastUse;
 
         boolean matches(ValueGeometry v, byte[] b) {
@@ -96,10 +192,10 @@ public final class PreparedGeometryCache {
      * Register the geometry given to the predicate.
      *
      * @param value geometry argument
-     * @return the prepared geometry if this geometry was already given to the
+     * @return the cached geometry if this geometry was already given to the
      * predicate recently, null otherwise
      */
-    public PreparedGeometry get(ValueGeometry value) {
+    public CachedGeometry get(ValueGeometry value) {
         byte[] bytes = value.getBytesNoCopy();
         if (bytes.length < MIN_BYTES) {
             return null;
@@ -113,10 +209,10 @@ public final class PreparedGeometryCache {
                     e.value = new WeakReference<>(value);
                 }
                 e.lastUse = now;
-                PreparedGeometry prepared = e.prepared == null ? null : e.prepared.get();
+                CachedGeometry prepared = e.prepared == null ? null : e.prepared.get();
                 if (prepared == null) {
                     // Second occurrence, or released by the garbage collector: prepare it
-                    prepared = PreparedGeometryFactory.prepare(value.getGeometry());
+                    prepared = new CachedGeometry(value.getGeometry());
                     e.prepared = new SoftReference<>(prepared);
                 }
                 return prepared;

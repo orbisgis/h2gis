@@ -25,7 +25,8 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 /**
  * Return true if Geometry A contains Geometry B.
@@ -69,10 +70,10 @@ public class ST_Contains extends DeterministicScalarFunction {
         if (!PreparedGeometryCache.envelopeContains(envelopeA, envelopeB)) {
             return false;
         }
-        PreparedGeometry prepared = CACHE.get(geomA);
+        PreparedGeometryCache.CachedGeometry prepared = CACHE.get(geomA);
         if (prepared != null) {
             return prepared.contains(geomB.getGeometry());
         }
-        return geomA.getGeometry().contains(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.contains());
     }
 }

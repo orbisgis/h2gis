@@ -26,6 +26,8 @@ import org.cts.crs.CoordinateReferenceSystem;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.crs.SpatialRefRegistry;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -185,7 +187,7 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
             point = (Point) g1;
             polygon = (Polygon) g2;
         }
-        if (polygon.covers(point)) {
+        if (RelateNG.relate(polygon, point, RelatePredicate.covers())) {
             return 0.0;
         }
 
@@ -208,7 +210,7 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
     private static Double distancePolygonPolygon(Geometry g1, Geometry g2) {
         Double distance = Double.MAX_VALUE;
         Double ringDistance;
-        if (g1.covers(g2) || g2.covers(g1)) {
+        if (RelateNG.relate(g1, g2, RelatePredicate.covers()) || RelateNG.relate(g2, g1, RelatePredicate.covers())) {
             return 0.0;
         }
         for (int i = 0; i < ((Polygon) g1).getExteriorRing().getNumPoints(); i++) {

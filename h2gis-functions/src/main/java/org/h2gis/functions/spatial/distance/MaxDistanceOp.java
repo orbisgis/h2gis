@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.distance;
 
+import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.operation.relateng.RelateNG;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Geometry;
@@ -68,7 +70,7 @@ public class MaxDistanceOp {
         if (geomA.isEmpty() || geomB.isEmpty()) {
             return 0.0;
         }
-        if (geomA.equals(geomB)) {
+        if (RelateNG.relate(geomA, geomB, RelatePredicate.equalsTopo())) {
             sameGeom = true;
         }
         if (maxDistanceFilter == null) {
@@ -90,7 +92,7 @@ public class MaxDistanceOp {
         if (geomA.isEmpty() || geomB.isEmpty()) {
             return null;
         }
-        if (geomA.equals(geomB)) {
+        if (RelateNG.relate(geomA, geomB, RelatePredicate.equalsTopo())) {
             sameGeom = true;           
         }
 

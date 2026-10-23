@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.split;
 
+import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.operation.relateng.RelateNG;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.convert.ST_ToMultiSegments;
 import org.h2gis.functions.spatial.edit.EditUtilities;
@@ -276,7 +278,7 @@ public class ST_Split extends DeterministicScalarFunction {
         if (polygons != null && polygons.size() > 1) {
             List<Polygon> pols = new ArrayList<Polygon>();
             for (Polygon pol : polygons) {
-                if (polygon.contains(pol.getInteriorPoint())) {
+                if (RelateNG.relate(polygon, pol.getInteriorPoint(), RelatePredicate.contains())) {
                     pols.add(pol);
                 }
             }

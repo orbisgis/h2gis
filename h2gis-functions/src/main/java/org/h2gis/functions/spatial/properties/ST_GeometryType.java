@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2.value.Value;
+import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
 import org.locationtech.jts.geom.Geometry;
@@ -48,10 +50,10 @@ public class ST_GeometryType extends DeterministicScalarFunction {
      * @param geometry Geometry instance
      * @return Geometry type for a user-defined type defined in SQL/MM specification. SQL-MM 3: 5.1.4
      */
-    public static String getGeometryType(Geometry geometry) {
-        if(geometry==null) {
+    public static String getGeometryType(Value geometry) {
+        if (geometry == ValueNull.INSTANCE) {
             return null;
         }
-        return GeometryMetaData.getMetaData(geometry).getGeometryType();
+        return GeometryMetaData.getMetaData(geometry.convertToGeometry(null)).getGeometryType();
     }
 }

@@ -25,7 +25,8 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 /**
  * Return true if the geometry A is within the geometry B
@@ -66,11 +67,11 @@ public class ST_Within extends DeterministicScalarFunction {
         if (!PreparedGeometryCache.envelopeContains(envelopeB, envelopeA)) {
             return false;
         }
-        // A within B is B contains A
-        PreparedGeometry prepared = CACHE.get(geomB);
+        // A within B is B contains A (not covers: a point on the boundary of B is not within B)
+        PreparedGeometryCache.CachedGeometry prepared = CACHE.get(geomB);
         if (prepared != null) {
             return prepared.contains(geomA.getGeometry());
         }
-        return geomA.getGeometry().within(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.within());
     }
 }

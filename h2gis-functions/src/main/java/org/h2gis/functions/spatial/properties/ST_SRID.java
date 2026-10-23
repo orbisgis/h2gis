@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2.value.Value;
+import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
 import org.locationtech.jts.geom.Geometry;
@@ -48,10 +50,10 @@ public class ST_SRID extends DeterministicScalarFunction {
      * @param geometry Geometry instance or null
      * @return SRID value or 0 if input geometry does not have one.
      */
-    public static Integer getSRID(Geometry geometry) throws IOException {
-        if(geometry==null) {
+    public static Integer getSRID(Value geometry) {
+        if (geometry == ValueNull.INSTANCE) {
             return 0;
         }
-        return GeometryMetaData.getMetaData(geometry).SRID;
+        return geometry.convertToGeometry(null).getSRID();
     }
 }

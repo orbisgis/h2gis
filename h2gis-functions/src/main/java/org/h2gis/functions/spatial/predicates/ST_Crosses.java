@@ -27,6 +27,8 @@ import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.operation.relateng.RelateNG;
+import org.locationtech.jts.operation.relateng.RelatePredicate;
 
 /**
  * Return true if Geometry A crosses Geometry B.
@@ -67,6 +69,5 @@ public class ST_Crosses extends DeterministicScalarFunction {
         if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
             return false;
         }
-        return geomA.getGeometry().crosses(geomB.getGeometry());
-    }
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.crosses());}
 }

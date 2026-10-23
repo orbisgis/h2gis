@@ -368,6 +368,10 @@ public class GeometryMetaData {
         return new GeometryMetaData(valueGeometry);
     }
 
+    public static GeometryMetaData getMetaData(ValueGeometry valueGeometry) {
+        return new GeometryMetaData(valueGeometry);
+    }
+
     /**
      * Read the metadata from its string representation
      * The following signatures are allowed :

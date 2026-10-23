@@ -62,6 +62,7 @@ import org.h2gis.functions.spatial.coverage.ST_CoverageUnion;
 import org.h2gis.functions.spatial.create.*;
 import org.h2gis.functions.spatial.crs.*;
 import org.h2gis.functions.spatial.distance.*;
+import org.h2gis.functions.spatial.properties.ST_Distance;
 import org.h2gis.functions.spatial.earth.*;
 import org.h2gis.functions.spatial.edit.*;
 import org.h2gis.functions.spatial.generalize.*;
@@ -354,8 +355,7 @@ public class H2GISFunctions {
                 new ST_SimplifyPolygonHull(),
                 new ST_ClusterDBScan(),
                 new ST_ClusterIntersecting(),
-                new ST_ClusterWithin(),
-                new ST_Svf()
+                new ST_ClusterWithin()
         };
     }
 
@@ -547,15 +547,14 @@ public class H2GISFunctions {
      * @throws SQLException Throw an exception if the functions are not registered
      */
     private static void registerH2GISFunctions(Connection connection, String packagePrepend) throws SQLException {
-        Statement st = connection.createStatement();
-        //Set JTS relate to use the new one
-        System.setProperty("jts.relate", "ng");
-        for (Function function : getBuiltInsFunctions()) {
-            try {
-                registerFunction(st, function, packagePrepend);
-            } catch (SQLException ex) {
-                // Catch to register other functions
-                ex.printStackTrace(System.err);
+        try (Statement st = connection.createStatement()) {
+            for (Function function : getBuiltInsFunctions()) {
+                try {
+                    registerFunction(st, function, packagePrepend);
+                } catch (SQLException ex) {
+                    // Catch to register other functions
+                    ex.printStackTrace(System.err);
+                }
             }
         }
     }

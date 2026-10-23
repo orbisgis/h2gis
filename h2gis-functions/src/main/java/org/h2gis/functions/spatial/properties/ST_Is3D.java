@@ -20,6 +20,9 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2.util.geometry.GeometryUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
 import org.locationtech.jts.geom.Geometry;
@@ -50,11 +53,12 @@ public class ST_Is3D extends DeterministicScalarFunction{
      * @param geom {@link Geometry}
      * @return 1 if it's a 3D geom, 0 otherwise
      */
-    public static int is3D(Geometry geom) throws IOException {
-         if (geom == null) {
+    public static int is3D(Value geom) {
+        if (geom == ValueNull.INSTANCE) {
             return 0;
         }
-        return GeometryMetaData.getMetaData(geom).hasZ?1:0;              
+        int dims = geom.convertToGeometry(null).getDimensionSystem();
+        return (dims & GeometryUtils.DIMENSION_SYSTEM_XYZ) != 0 ? 1 : 0;
     }
 
    

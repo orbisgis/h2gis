@@ -20,13 +20,14 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import org.locationtech.jts.operation.relateng.RelatePredicate;
+import org.locationtech.jts.operation.relateng.RelateNG;
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2.util.geometry.GeometryUtils;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueNull;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
 
 /**
  * Return true if the geometry A intersects the geometry B
@@ -35,6 +36,7 @@ import org.locationtech.jts.geom.prep.PreparedGeometry;
 public class ST_Intersects extends DeterministicScalarFunction {
 
     private static final PreparedGeometryCache CACHE = new PreparedGeometryCache();
+
     /**
      * Default constructor
      */
@@ -71,7 +73,7 @@ public class ST_Intersects extends DeterministicScalarFunction {
         if (!GeometryUtils.intersects(envelopeA, envelopeB)) {
             return false;
         }
-        PreparedGeometry prepared = CACHE.get(geomA);
+        PreparedGeometryCache.CachedGeometry prepared = CACHE.get(geomA);
         if (prepared != null) {
             return prepared.intersects(geomB.getGeometry());
         }
@@ -79,7 +81,7 @@ public class ST_Intersects extends DeterministicScalarFunction {
         if (prepared != null) {
             return prepared.intersects(geomA.getGeometry());
         }
-        return geomA.getGeometry().intersects(geomB.getGeometry());
+        return RelateNG.relate(geomA.getGeometry(), geomB.getGeometry(), RelatePredicate.intersects());
     }
 
 }
