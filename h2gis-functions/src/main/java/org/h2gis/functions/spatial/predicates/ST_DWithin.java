@@ -35,7 +35,7 @@ import java.sql.SQLException;
  */
 public class ST_DWithin extends DeterministicScalarFunction {
 
-    private static final DistanceIndexCache CACHE = new DistanceIndexCache();
+    private static final DistanceIndexCache CACHE = DistanceIndexCache.INSTANCE;
 
     public ST_DWithin() {
         addProperty(PROP_REMARKS, "Returns true if the geometries are within " +
