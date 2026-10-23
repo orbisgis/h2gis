@@ -19,221 +19,244 @@
  */
 package org.h2gis.graalvm;
 
+import org.h2.value.ValueGeometry;
+
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.format.DateTimeFormatter;
+import java.util.BitSet;
 
 /**
- * Represents a single column of a JDBC {@link java.sql.ResultSet}, holding the name,
- * SQL type, and all values for that column. Provides serialization into a native-friendly
- * binary format using little-endian encoding, suitable for communication with native code
- * (e.g., via GraalVM).
+ * One column of a serialized result set.
+ * <p>
+ * Values are read with the getter matching the column type and written
+ * directly to the column buffer, so no boxed value is kept in memory.
+ * <p>
+ * Serialized form (little endian):
+ * <pre>
+ * u32 name_length, utf-8 name
+ * u32 type_code                         // TypeCodes, | NULL_MASK_FLAG if the column has NULLs
+ * [u8 null_mask[(row_count + 7) / 8]]   // bit (i % 8) of byte (i / 8) set: row i is NULL
+ * u32 values_length
+ * values:
+ *     INT int32 | LONG int64 | FLOAT float32 | DOUBLE float64 | BOOLEAN uint8
+ *     other types: u32 length + bytes
+ * </pre>
+ * A NULL keeps a placeholder (0, false or an empty value) in the values, so
+ * that fixed size columns stay aligned; only the mask tells it is NULL.
  *
  * @author Maël PHILIPPE, CNRS
  * @author Erwan BOCHER, CNRS
  */
 public class ColumnWrapper {
+
     private final String name;
-    private final int typeCode;
-
+    private final int jdbcType;
     private final String typeName;
-
-    private final List<Object> values;
+    private final int typeCode;
+    private final ByteArrayOutputStream values = new ByteArrayOutputStream();
+    private final ByteBuffer scratch = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+    private final BitSet nulls = new BitSet();
+    private int rowCount = 0;
 
     /**
-     * Constructs a {@code ColumnWrapper} with the given name and SQL type.
-     *
-     * @param name     the name of the column
-     * @param typeCode the SQL type (as defined in {@link java.sql.Types})
-     * @param typeName the name of the SQL type
+     * @param name     column label
+     * @param jdbcType {@link Types} value of the column
+     * @param typeName SQL type name of the column
      */
-    public ColumnWrapper(String name, int typeCode, String typeName) {
+    public ColumnWrapper(String name, int jdbcType, String typeName) {
         this.name = name;
-        this.typeName = typeName.toLowerCase();
-        this.values = new ArrayList<>();
-
-        switch (typeCode) {
-            case Types.INTEGER:
-            case Types.SMALLINT:
-            case Types.TINYINT:
-                this.typeCode = 1; // INT
-                break;
-            case Types.BIGINT:
-                this.typeCode = 2; // LONG
-                break;
-            case Types.FLOAT:
-            case Types.REAL:
-                this.typeCode = 3; // FLOAT (32-bit)
-                break;
-            case Types.DOUBLE:
-            case Types.NUMERIC:
-            case Types.DECIMAL:
-                this.typeCode = 4; // DOUBLE (64-bit)
-                break;
-            case Types.BOOLEAN:
-            case Types.BIT:
-                this.typeCode = 5; // BOOLEAN
-                break;
-            case Types.CHAR:
-            case Types.VARCHAR:
-            case Types.LONGVARCHAR:
-                this.typeCode = 6; // STRING
-                break;
-            case Types.DATE:
-            case Types.TIME:
-            case Types.TIMESTAMP:
-                this.typeCode = 7; // DATE as string
-                break;
-            case Types.OTHER:
-            case Types.STRUCT:
-            default:
-                if (typeName.startsWith("geometry")) {
-                    this.typeCode = 8; // GEOMETRY (WKB)
-                } else {
-                    this.typeCode = 99; // OTHER (as string)
-                }
-                break;
-        }
-
-
+        this.jdbcType = jdbcType;
+        this.typeName = typeName;
+        this.typeCode = TypeCodes.of(jdbcType, typeName);
     }
 
-    /**
-     * Adds a value to the column (typically one row).
-     *
-     * @param value the value to add; may be {@code null}
-     */
-    public void addValue(Object value) {
-        values.add(value);
-    }
-
-    /**
-     * Sets a value at the specified index in the column.
-     * If the index is out of bounds, fills missing values with {@code null}.
-     *
-     * @param index the row index
-     * @param value the value to set
-     */
-    public void setValueAt(int index, Object value) {
-        while (index >= values.size()) values.add(null);
-        values.set(index, value);
-    }
-
-    /**
-     * Returns the column name.
-     *
-     * @return column name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Returns the type of the column.
-     *
-     * @return SQL type
-     */
+    /** @return the buffer type code, without the null mask flag */
     public int getType() {
-        return this.typeCode;
+        return typeCode;
     }
 
-    /**
-     * Returns the SQL type name of the column.
-     *
-     * @return SQL type (see {@link java.sql.Types})
-     */
     public String getTypeName() {
-        return this.typeName;
+        return typeName;
     }
 
+    public int getRowCount() {
+        return rowCount;
+    }
 
-    /**
-     * Returns the list of values contained in this column.
-     *
-     * @return list of values
-     */
-    public List<Object> getValues() {
-        return values;
+    public boolean hasNulls() {
+        return !nulls.isEmpty();
     }
 
     /**
-     * Serializes the column into a binary format with the following layout:
-     * <pre>
-     * [int32 nameLength] [UTF-8 name bytes]
-     * [int32 typeCode]
-     * For each value:
-     *     - INTEGER / SMALLINT / TINYINT → int32
-     *     - BIGINT                       → int64
-     *     - FLOAT / REAL                 → float32
-     *     - DOUBLE / DECIMAL / NUMERIC  → float64
-     *     - BOOLEAN / BIT               → byte (1 if true, 0 if false)
-     *     - Other (VARCHAR, DATE, etc.) → [int32 length][UTF-8 bytes]
-     * </pre>
-     * This format is little-endian and is optimized for native deserialization.
+     * Read the value of this column in the current row of {@code rs}.
      *
-     * @return a byte array representing the serialized column
-     * @throws Exception if serialization fails
+     * @param rs     result set positioned on a row
+     * @param column 1-based index of this column
+     * @throws SQLException if the value can't be read
      */
-    public byte[] serialize() throws Exception {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ByteBuffer bb4 = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer bb8 = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+    public void read(ResultSet rs, int column) throws SQLException {
+        int row = rowCount++;
+        switch (typeCode) {
+            case TypeCodes.INT: {
+                int v = rs.getInt(column);
+                putInt(rs.wasNull() ? markNull(row, 0) : v);
+                break;
+            }
+            case TypeCodes.LONG: {
+                long v = rs.getLong(column);
+                if (rs.wasNull()) {
+                    markNull(row, 0);
+                    v = 0L;
+                }
+                putLong(v);
+                break;
+            }
+            case TypeCodes.FLOAT: {
+                float v = rs.getFloat(column);
+                if (rs.wasNull()) {
+                    markNull(row, 0);
+                    v = 0f;
+                }
+                putInt(Float.floatToRawIntBits(v));
+                break;
+            }
+            case TypeCodes.DOUBLE: {
+                double v = rs.getDouble(column);
+                if (rs.wasNull()) {
+                    markNull(row, 0);
+                    v = 0d;
+                }
+                putLong(Double.doubleToRawLongBits(v));
+                break;
+            }
+            case TypeCodes.BOOLEAN: {
+                boolean v = rs.getBoolean(column);
+                if (rs.wasNull()) {
+                    markNull(row, 0);
+                    v = false;
+                }
+                values.write(v ? 1 : 0);
+                break;
+            }
+            case TypeCodes.GEOMETRY: {
+                Object geometry = rs.getObject(column);
+                putBytes(row, geometry == null ? null : ValueGeometry.getFromGeometry(geometry).getBytes());
+                break;
+            }
+            case TypeCodes.BINARY:
+                putBytes(row, rs.getBytes(column));
+                break;
+            case TypeCodes.TEMPORAL:
+                putString(row, temporal(rs, column));
+                break;
+            case TypeCodes.DECIMAL:
+                putString(row, decimal(rs, column));
+                break;
+            default: // STRING, JSON, UUID, OTHER
+                putString(row, rs.getString(column));
+                break;
+        }
+    }
 
-        byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
-        out.write(bb4.putInt(nameBytes.length).array());
-        bb4.clear();
-        out.write(nameBytes);
-        out.write(bb4.putInt(this.typeCode).array());
-        bb4.clear();
-
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-
-        for (Object val : values) {
-            switch (this.typeCode) {
-                case 1:
-                    data.write(bb4.putInt(val == null ? 0 : ((Number) val).intValue()).array());
-                    bb4.clear();
-                    break;
-                case 2:
-                    data.write(bb8.putLong(val == null ? 0L : ((Number) val).longValue()).array());
-                    bb8.clear();
-                    break;
-                case 3:
-                    data.write(bb4.putFloat(val == null ? 0f : ((Number) val).floatValue()).array());
-                    bb4.clear();
-                    break;
-                case 4:
-                    data.write(bb8.putDouble(val == null ? 0.0 : ((Number) val).doubleValue()).array());
-                    bb8.clear();
-                    break;
-                case 5:
-                    data.write(val != null && ((Boolean) val) ? 1 : 0);
-                    break;
-                case 6:
-                case 7:
-                case 99:
-                    byte[] str = (val == null) ? new byte[0]
-                            : val.toString().getBytes(StandardCharsets.UTF_8);
-                    data.write(bb4.putInt(str.length).array());
-                    bb4.clear();
-                    data.write(str);
-                    break;
-                case 8:
-                    byte[] geom = (val == null) ? new byte[0] : (byte[]) val;
-                    data.write(bb4.putInt(geom.length).array());
-                    bb4.clear();
-                    data.write(geom);
-                    break;
+    private String temporal(ResultSet rs, int column) throws SQLException {
+        switch (jdbcType) {
+            case Types.DATE: {
+                LocalDate v = rs.getObject(column, LocalDate.class);
+                return v == null ? null : DateTimeFormatter.ISO_LOCAL_DATE.format(v);
+            }
+            case Types.TIME: {
+                LocalTime v = rs.getObject(column, LocalTime.class);
+                return v == null ? null : DateTimeFormatter.ISO_LOCAL_TIME.format(v);
+            }
+            case Types.TIME_WITH_TIMEZONE: {
+                OffsetTime v = rs.getObject(column, OffsetTime.class);
+                return v == null ? null : DateTimeFormatter.ISO_OFFSET_TIME.format(v);
+            }
+            case Types.TIMESTAMP_WITH_TIMEZONE: {
+                OffsetDateTime v = rs.getObject(column, OffsetDateTime.class);
+                return v == null ? null : DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(v);
+            }
+            default: {
+                LocalDateTime v = rs.getObject(column, LocalDateTime.class);
+                return v == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(v);
             }
         }
-        byte[] valuesBytes = data.toByteArray();
-        out.write(bb4.putInt(valuesBytes.length).array());
-        bb4.clear();
-        out.write(valuesBytes);
-        return out.toByteArray();
+    }
+
+    private static String decimal(ResultSet rs, int column) throws SQLException {
+        try {
+            BigDecimal v = rs.getBigDecimal(column);
+            return v == null ? null : v.toPlainString();
+        } catch (SQLException e) {
+            // DECFLOAT special values (NaN, Infinity) have no BigDecimal form
+            return rs.getString(column);
+        }
+    }
+
+    private int markNull(int row, int placeholder) {
+        nulls.set(row);
+        return placeholder;
+    }
+
+    private void putInt(int v) {
+        scratch.clear();
+        values.write(scratch.putInt(v).array(), 0, 4);
+    }
+
+    private void putLong(long v) {
+        scratch.clear();
+        values.write(scratch.putLong(v).array(), 0, 8);
+    }
+
+    private void putString(int row, String v) {
+        putBytes(row, v == null ? null : v.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void putBytes(int row, byte[] v) {
+        if (v == null) {
+            nulls.set(row);
+            putInt(0);
+            return;
+        }
+        putInt(v.length);
+        values.write(v, 0, v.length);
+    }
+
+    /**
+     * @return the serialized column, see the class documentation
+     */
+    public byte[] serialize() {
+        byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
+        byte[] mask = null;
+        if (hasNulls()) {
+            mask = new byte[(rowCount + 7) / 8];
+            byte[] bits = nulls.toByteArray(); // same bit order as the buffer format
+            System.arraycopy(bits, 0, mask, 0, Math.min(bits.length, mask.length));
+        }
+        int size = 4 + nameBytes.length + 4 + (mask == null ? 0 : mask.length) + 4 + values.size();
+        ByteBuffer out = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
+        out.putInt(nameBytes.length).put(nameBytes);
+        out.putInt(mask == null ? typeCode : typeCode | TypeCodes.NULL_MASK_FLAG);
+        if (mask != null) {
+            out.put(mask);
+        }
+        out.putInt(values.size()).put(values.toByteArray());
+        return out.array();
     }
 }
