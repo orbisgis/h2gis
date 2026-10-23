@@ -20,6 +20,9 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2.util.geometry.GeometryUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -41,15 +44,17 @@ public class ST_XMax extends DeterministicScalarFunction {
 
     /**
      * Returns the maximal x-value of the given geometry.
-     *
+     * Computed the envelope directly on the EWKB
+     * bytes, without building a JTS geometry.
      * @param geom Geometry
      * @return The maximal x-value of the given geometry, or null if the geometry is null.
      */
-    public static Double getMaxX(Geometry geom) {
-        if (geom != null) {
-            return geom.getEnvelopeInternal().getMaxX();
-        } else {
+    public static Double getMaxX(Value geom) {
+        if (geom == ValueNull.INSTANCE) {
             return null;
         }
+        // A null envelope means an empty geometry
+        double[] envelope = geom.convertToGeometry(null).getEnvelopeNoCopy();
+        return envelope == null ? null : envelope[GeometryUtils.MAX_X];
     }
 }
