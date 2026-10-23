@@ -36,6 +36,7 @@ import org.h2.value.ValueNull;
 public class ST_Intersects extends DeterministicScalarFunction {
 
     private static final PreparedGeometryCache CACHE = new PreparedGeometryCache();
+
     /**
      * Default constructor
      */
