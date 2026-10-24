@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import org.h2.util.geometry.JTSUtils;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
@@ -50,7 +51,7 @@ import java.util.zip.GZIPInputStream;
  * FeatureCollection is parsed. If the GeoJSON format does not contain any
  * properties, a default primary key is added.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS
  * @author Hai Trung Pham
  */
 public class GeoJsonReaderDriver {
@@ -74,6 +75,8 @@ public class GeoJsonReaderDriver {
     private String tableLocation;
     private LinkedHashMap<String, Integer> cachedColumnNames;
     private LinkedHashMap<String, Integer> cachedColumnIndex;
+    /** Property name of the GeoJSON file -> column name, computed once per name */
+    private final Map<String, String> columnNames = new HashMap<>();
     private static final int BATCH_MAX_SIZE = 100;
 
     private Set finalGeometryTypes;
@@ -269,7 +272,7 @@ public class GeoJsonReaderDriver {
                 throw new IOException(ex);
             }
         }
-        // Now we create the table if there is at least one geometry field.          
+        // Now we create the table if there is at least one geometry field.
         if (hasGeometryField) {
             StringBuilder createTable = new StringBuilder();
             createTable.append("CREATE TABLE ");
@@ -415,7 +418,7 @@ public class GeoJsonReaderDriver {
      */
     private void parseParentGeometryMetadata(JsonParser jp) throws IOException, SQLException {
         if (jp.nextToken() != JsonToken.VALUE_NULL) {//START_OBJECT { in case of null geometry
-            jp.nextToken(); // FIELD_NAME type     
+            jp.nextToken(); // FIELD_NAME type
             jp.nextToken(); //VALUE_STRING Point
             String geometryType = jp.getText();
             parseGeometryMetadata(jp, geometryType);
@@ -469,7 +472,7 @@ public class GeoJsonReaderDriver {
      * @param jp
      */
     private void parsePointMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ to parse the coordinate
@@ -489,7 +492,7 @@ public class GeoJsonReaderDriver {
      * @param jp
      */
     private void parseMultiPointMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
@@ -512,12 +515,12 @@ public class GeoJsonReaderDriver {
      * @param jp
      */
     private void parseLinestringMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
             parseCoordinatesMetadata(jp);
-            jp.nextToken();//END_OBJECT } geometry            
+            jp.nextToken();//END_OBJECT } geometry
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
@@ -532,7 +535,7 @@ public class GeoJsonReaderDriver {
      * @param jp
      */
     private void parseMultiLinestringMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken();//START_ARRAY [ coordinates
@@ -541,7 +544,7 @@ public class GeoJsonReaderDriver {
                 parseCoordinatesMetadata(jp);
                 jp.nextToken();
             }
-            jp.nextToken();//END_OBJECT } geometry           
+            jp.nextToken();//END_OBJECT } geometry
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
@@ -571,7 +574,7 @@ public class GeoJsonReaderDriver {
      * @param jp
      */
     private void parsePolygonMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
@@ -587,7 +590,7 @@ public class GeoJsonReaderDriver {
                 linesIndex++;
             }
             if (linesIndex > 1) {
-                jp.nextToken();//END_OBJECT } geometry                
+                jp.nextToken();//END_OBJECT } geometry
             } else {
                 jp.nextToken();//END_OBJECT } geometry
             }
@@ -607,10 +610,10 @@ public class GeoJsonReaderDriver {
      * @param jp {@link JsonParser}
      */
     private void parseMultiPolygonMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
-            jp.nextToken(); // START_ARRAY [ coordinates             
+            jp.nextToken(); // START_ARRAY [ coordinates
             jp.nextToken(); //Start the polygon
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
                 //Parses the polygon
@@ -640,19 +643,19 @@ public class GeoJsonReaderDriver {
      * @return GeometryCollection
      */
     private void parseGeometryCollectionMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME geometries        
+        jp.nextToken(); // FIELD_NAME geometries
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.GEOMETRIES)) {
             jp.nextToken();//START array
             jp.nextToken();//START object
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                jp.nextToken(); // FIELD_NAME type     
+                jp.nextToken(); // FIELD_NAME type
                 jp.nextToken(); //VALUE_STRING Point
                 String geometryType = jp.getText();
                 parseGeometryMetadata(jp, geometryType);
                 jp.nextToken();
             }
-            jp.nextToken();//END_OBJECT } geometry            
+            jp.nextToken();//END_OBJECT } geometry
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'geometries', found '" + coordinatesField + "'");
         }
@@ -699,15 +702,31 @@ public class GeoJsonReaderDriver {
      * @return Coordinate[]
      */
     private void parseCoordinatesMetadata(JsonParser jp) throws IOException {
-        jp.nextToken(); // START_ARRAY [ to parse the each positions        
+        jp.nextToken(); // START_ARRAY [ to parse the each positions
         while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             parseCoordinateMetadata(jp);
         }
     }
 
+    /**
+     * Column name of a GeoJSON property (upper or lower case depending on the
+     * database, quoted if needed). The result is cached: the same properties
+     * are found in every feature.
+     *
+     * @param propertyName name of the property in the GeoJSON file
+     * @return the column name
+     */
+    private String columnName(String propertyName) {
+        String name = columnNames.get(propertyName);
+        if (name == null) {
+            name = TableLocation.quoteIdentifier(TableLocation.capsIdentifier(propertyName, dbType), dbType);
+            columnNames.put(propertyName, name);
+        }
+        return name;
+    }
+
     private void processPropertyMetadata(JsonParser jp) throws IOException {
-        String fieldName = TableLocation.capsIdentifier(jp.getText(), dbType); //FIELD_NAME columnName
-        fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
+        String fieldName = columnName(jp.getText()); //FIELD_NAME columnName
         JsonToken value = jp.nextToken();
         if (null != value) {
             Integer dataType = cachedColumnNames.get(fieldName);
@@ -796,7 +815,10 @@ public class GeoJsonReaderDriver {
                 throw new SQLException("Only UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE encoding is supported");
             }
         }
-        jsFactory = new JsonFactory();
+        jsFactory = JsonFactory.builder()
+                // faster parsing of the coordinates, same results
+                .enable(StreamReadFeature.USE_FAST_DOUBLE_PARSER)
+                .build();
         jsFactory.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         jsFactory.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
         jsFactory.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
@@ -846,7 +868,7 @@ public class GeoJsonReaderDriver {
      */
     private void setGeometry(JsonParser jp, Object[] values) throws IOException, SQLException {
         if (jp.nextToken() != JsonToken.VALUE_NULL) {//START_OBJECT { in case of null geometry
-            jp.nextToken(); // FIELD_NAME type     
+            jp.nextToken(); // FIELD_NAME type
             jp.nextToken(); //VALUE_STRING Point
             String geometryType = jp.getText();
             values[0] = JTSUtils.geometry2ewkb(parseGeometry(jp, geometryType));
@@ -884,8 +906,7 @@ public class GeoJsonReaderDriver {
     }
 
     private void parseProperty(JsonParser jp, Object[] values) throws IOException {
-        String fieldName = TableLocation.capsIdentifier(jp.getText(), dbType); //FIELD_NAME columnName
-        fieldName = TableLocation.quoteIdentifier(fieldName, dbType);
+        String fieldName = columnName(jp.getText()); //FIELD_NAME columnName
         JsonToken value = jp.nextToken();
         if (null == value) {
             //ignore other value
@@ -990,7 +1011,7 @@ public class GeoJsonReaderDriver {
                         preparedStatement.clearBatch();
                         batchSize = 0;
                     }
-                    token = jp.nextToken(); //START_OBJECT new feature                    
+                    token = jp.nextToken(); //START_OBJECT new feature
                     featureCounter++;
                     progress.setStep((featureCounter / nbFeature) * 100);
 
@@ -1023,7 +1044,7 @@ public class GeoJsonReaderDriver {
      * @return Point
      */
     private Point parsePoint(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ to parse the coordinate
@@ -1044,7 +1065,7 @@ public class GeoJsonReaderDriver {
      * @return MultiPoint
      */
     private MultiPoint parseMultiPoint(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
@@ -1067,7 +1088,7 @@ public class GeoJsonReaderDriver {
      * @param jp
      */
     private LineString parseLinestring(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
@@ -1089,7 +1110,7 @@ public class GeoJsonReaderDriver {
      * @return MultiLineString
      */
     private MultiLineString parseMultiLinestring(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             ArrayList<LineString> lineStrings = new ArrayList<LineString>();
@@ -1132,7 +1153,7 @@ public class GeoJsonReaderDriver {
      * @return Polygon
      */
     private Polygon parsePolygon(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
@@ -1173,11 +1194,11 @@ public class GeoJsonReaderDriver {
      * @return MultiPolygon
      */
     private MultiPolygon parseMultiPolygon(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
+        jp.nextToken(); // FIELD_NAME coordinates
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             ArrayList<Polygon> polygons = new ArrayList<Polygon>();
-            jp.nextToken(); // START_ARRAY [ coordinates             
+            jp.nextToken(); // START_ARRAY [ coordinates
             jp.nextToken(); //Start the polygon
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
                 //Parses the polygon
@@ -1223,14 +1244,14 @@ public class GeoJsonReaderDriver {
      * @return GeometryCollection
      */
     private GeometryCollection parseGeometryCollection(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME geometries        
+        jp.nextToken(); // FIELD_NAME geometries
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.GEOMETRIES)) {
             jp.nextToken();//START array
             jp.nextToken();//START object
             ArrayList<Geometry> geometries = new ArrayList<Geometry>();
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                jp.nextToken(); // FIELD_NAME type     
+                jp.nextToken(); // FIELD_NAME type
                 jp.nextToken(); //VALUE_STRING Point
                 String geometryType = jp.getText();
                 geometries.add(parseGeometry(jp, geometryType));
@@ -1268,16 +1289,6 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Fetch number at specified index but return default value if out of bounds
-     * @param coordinates Number array
-     * @param index Index to extract in array
-     * @param defaultValue Value to return if out of bounds
-     */
-    private static double getOrDefault(List<Double> coordinates, int index, double defaultValue) {
-        return index < coordinates.size() ? coordinates.get(index) : defaultValue;
-    }
-
-    /**
      * Parses a GeoJSON coordinate array and returns a JTS coordinate. The first
      * token corresponds to the first X value. The last token correponds to the
      * end of the coordinate array "]".
@@ -1290,28 +1301,27 @@ public class GeoJsonReaderDriver {
      * @return Coordinate
      */
     private Coordinate parseCoordinate(JsonParser jp) throws IOException {
-        List<Double> coordinates = new ArrayList<>();
+        // Ordinates in a primitive array: no boxing, missing ordinates are 0
+        double x = 0, y = 0, z = 0, m = 0;
+        int count = 0;
         jp.nextToken();
         while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-            coordinates.add(jp.getDoubleValue());
+            switch (count++) {
+                case 0: x = jp.getDoubleValue(); break;
+                case 1: y = jp.getDoubleValue(); break;
+                case 2: z = jp.getDoubleValue(); break;
+                case 3: m = jp.getDoubleValue(); break;
+                default: break; // more than 4 ordinates: ignored
+            }
             jp.nextToken();
         }
         Coordinate coord;
         if(coordinateDimension == 4) {
-            coord = new CoordinateXYZM(
-                    getOrDefault(coordinates, 0, 0),
-                    getOrDefault(coordinates, 1, 0),
-                    getOrDefault(coordinates, 2, 0),
-                    getOrDefault(coordinates, 3, 0));
+            coord = new CoordinateXYZM(x, y, z, m);
         } else if(coordinateDimension == 3) {
-            coord = new Coordinate(
-                    getOrDefault(coordinates, 0, 0),
-                    getOrDefault(coordinates, 1, 0),
-                    getOrDefault(coordinates, 2, 0));
+            coord = new Coordinate(x, y, z);
         } else {
-            coord = new Coordinate(
-                    getOrDefault(coordinates, 0, 0),
-                    getOrDefault(coordinates, 1, 0));
+            coord = new Coordinate(x, y);
         }
         jp.nextToken(); // exit end array
         return coord;
@@ -1336,7 +1346,7 @@ public class GeoJsonReaderDriver {
                     }else if(dataType.equalsIgnoreCase(GeoJsonField.FEATURE)){
                         Object[] values = parseFeature(jp);
                         for (int i = 0; i < values.length; i++) {
-                        preparedStatement.setObject(i + 1, values[i]);
+                            preparedStatement.setObject(i + 1, values[i]);
                         }
                         preparedStatement.execute();
                     }
@@ -1515,7 +1525,7 @@ public class GeoJsonReaderDriver {
             }else  if (value == JsonToken.END_OBJECT) {
                 sb.append(jp.currentToken().asCharArray());
             } else if (value == JsonToken.START_ARRAY) {
-                 parseArray(jp, sb);
+                parseArray(jp, sb);
             } else if (value == JsonToken.VALUE_NULL) {
                 sb.append("null");
             } else if (value == JsonToken.FIELD_NAME)  {
@@ -1576,15 +1586,15 @@ public class GeoJsonReaderDriver {
 
 
 
-        /**
-         * Parses Json Object. Since their elements could be anything and H2GIS
-         * doesn't support such complicated structure, this parser will just write
-         * ordinary String object "{}". Syntax: Json Object: "member1": value1,
-         * "member2": value2}
-         *
-         * @param jp the json parser
-         * @return the object but written like a String
-         */
+    /**
+     * Parses Json Object. Since their elements could be anything and H2GIS
+     * doesn't support such complicated structure, this parser will just write
+     * ordinary String object "{}". Syntax: Json Object: "member1": value1,
+     * "member2": value2}
+     *
+     * @param jp the json parser
+     * @return the object but written like a String
+     */
     private String parseObject(JsonParser jp) throws IOException {
         String ret = "{";
         JsonToken value;
