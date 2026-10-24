@@ -31,6 +31,7 @@
 - Avoid geometry decoding use ValueGeometry instead to get metadata or envelope
 - Change H2GIS Graalvm module to follow the API C v2
 - Fix SLF4J provider, use when necessary slf4j-simple
+- Improve GeoJSON read driver
 
 
 
