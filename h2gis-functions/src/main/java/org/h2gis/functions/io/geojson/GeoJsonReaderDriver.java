@@ -51,14 +51,14 @@ import java.util.zip.GZIPInputStream;
  * FeatureCollection is parsed. If the GeoJSON format does not contain any
  * properties, a default primary key is added.
  *
- * @author Erwan Bocher, CNRS
+ * @author Erwan Bocher
  * @author Hai Trung Pham
  */
 public class GeoJsonReaderDriver {
 
     private final File fileName;
     private final Connection connection;
-    private static GeometryFactory GF;
+    private GeometryFactory GF;
     private final String encoding;
     private final boolean deleteTable;
     private PreparedStatement preparedStatement = null;
@@ -75,6 +75,18 @@ public class GeoJsonReaderDriver {
     private String tableLocation;
     private LinkedHashMap<String, Integer> cachedColumnNames;
     private LinkedHashMap<String, Integer> cachedColumnIndex;
+    /**
+     * Columns, coordinate dimension, SRID and geometry found while reading the
+     * features with a {@link FeatureReader}, to check that the file still
+     * matches the columns read before. Null when importing a file.
+     */
+    private LinkedHashMap<String, Integer> checkedColumnNames;
+    private int checkedDimension;
+    private int checkedSRID;
+    private boolean checkedGeometry;
+    /** Columns to read with a FeatureReader, null for all; the others are skipped */
+    private Set<String> selectedColumns;
+    private boolean selectedGeometry = true;
     /** Property name of the GeoJSON file -> column name, computed once per name */
     private final Map<String, String> columnNames = new HashMap<>();
     private static final int BATCH_MAX_SIZE = 100;
@@ -205,6 +217,17 @@ public class GeoJsonReaderDriver {
      *
      */
     private boolean parseMetadata(InputStream is) throws SQLException, IOException {
+        readFileMetadata(is);
+        return createTable();
+    }
+
+    /**
+     * Reads all the features to find the columns, their types, the geometry
+     * types, the coordinate dimension and the SRID. Closes the stream.
+     *
+     * @param is input stream
+     */
+    private void readFileMetadata(InputStream is) throws SQLException, IOException {
         try {
             cachedColumnNames = new LinkedHashMap<>();
             finalGeometryTypes = new HashSet<String>();
@@ -272,6 +295,14 @@ public class GeoJsonReaderDriver {
                 throw new IOException(ex);
             }
         }
+    }
+
+    /**
+     * Creates the table and the insert statement from the metadata.
+     *
+     * @return true
+     */
+    private boolean createTable() throws SQLException {
         // Now we create the table if there is at least one geometry field.
         if (hasGeometryField) {
             StringBuilder createTable = new StringBuilder();
@@ -729,64 +760,74 @@ public class GeoJsonReaderDriver {
         String fieldName = columnName(jp.getText()); //FIELD_NAME columnName
         JsonToken value = jp.nextToken();
         if (null != value) {
-            Integer dataType = cachedColumnNames.get(fieldName);
-            boolean hasField = cachedColumnNames.containsKey(fieldName);
-            switch (value) {
-                case VALUE_STRING:
-                    cachedColumnNames.put(fieldName, Types.VARCHAR);
-                    break;
-                case VALUE_TRUE:
-                case VALUE_FALSE:
-                    if (!hasField || dataType == Types.NULL) {
-                        cachedColumnNames.put(fieldName, Types.BOOLEAN);
-                    } else if (hasField && dataType != Types.BOOLEAN) {
-                        cachedColumnNames.put(fieldName, Types.VARCHAR);
-                    }
-                    break;
-                case VALUE_NUMBER_FLOAT:
-                    if (!hasField || dataType == Types.NULL) {
-                        cachedColumnNames.put(fieldName, Types.DOUBLE);
-                    } else if (hasField) {
-                        if (dataType == Types.BIGINT) {
-                            cachedColumnNames.put(fieldName, Types.DOUBLE);
-                        } else if (dataType != Types.DOUBLE) {
-                            cachedColumnNames.put(fieldName, Types.VARCHAR);
-                        }
-                    }
-                    break;
-                case VALUE_NUMBER_INT:
-                    if (!hasField || dataType == Types.NULL) {
-                        cachedColumnNames.put(fieldName, Types.BIGINT);
-                    } else if (hasField && dataType != Types.BIGINT && dataType != Types.DOUBLE) {
-                        cachedColumnNames.put(fieldName, Types.VARCHAR);
-                    }
-                    break;
-                case START_ARRAY:
-                    if (!hasField || dataType == Types.NULL) {
-                        cachedColumnNames.put(fieldName, Types.ARRAY);
-                    } else if (hasField && dataType != Types.ARRAY) {
-                        cachedColumnNames.put(fieldName, Types.VARCHAR);
-                    }
-                    parseArrayMetadata(jp);
-                    break;
-                case START_OBJECT:
-                    if (!hasField || dataType == Types.NULL) {
-                        cachedColumnNames.put(fieldName, Types.ARRAY);
-                    } else if (hasField && dataType != Types.ARRAY) {
-                        cachedColumnNames.put(fieldName, Types.VARCHAR);
-                    }
-                    parseObjectMetadata(jp);
-                    break;
-                case VALUE_NULL:
-                    if (!hasField) {
-                        cachedColumnNames.put(fieldName, Types.NULL);
-                    }
-                    //ignore other value
-                default:
-                    break;
+            mergeColumnType(cachedColumnNames, fieldName, value);
+            if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
+            } else if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
             }
         }
     }
+
+    /**
+     * Updates the type of a column with a new value: a column with values of
+     * different types becomes a DOUBLE (integers and decimals) or a VARCHAR.
+     *
+     * @param columns column name -> java.sql.Types
+     * @param fieldName column name
+     * @param value token of the value
+     */
+    private static void mergeColumnType(Map<String, Integer> columns, String fieldName, JsonToken value) {
+        Integer dataType = columns.get(fieldName);
+        boolean hasField = columns.containsKey(fieldName);
+        switch (value) {
+            case VALUE_STRING:
+                columns.put(fieldName, Types.VARCHAR);
+                break;
+            case VALUE_TRUE:
+            case VALUE_FALSE:
+                if (!hasField || dataType == Types.NULL) {
+                    columns.put(fieldName, Types.BOOLEAN);
+                } else if (hasField && dataType != Types.BOOLEAN) {
+                    columns.put(fieldName, Types.VARCHAR);
+                }
+                break;
+            case VALUE_NUMBER_FLOAT:
+                if (!hasField || dataType == Types.NULL) {
+                    columns.put(fieldName, Types.DOUBLE);
+                } else if (hasField) {
+                    if (dataType == Types.BIGINT) {
+                        columns.put(fieldName, Types.DOUBLE);
+                    } else if (dataType != Types.DOUBLE) {
+                        columns.put(fieldName, Types.VARCHAR);
+                    }
+                }
+                break;
+            case VALUE_NUMBER_INT:
+                if (!hasField || dataType == Types.NULL) {
+                    columns.put(fieldName, Types.BIGINT);
+                } else if (hasField && dataType != Types.BIGINT && dataType != Types.DOUBLE) {
+                    columns.put(fieldName, Types.VARCHAR);
+                }
+                break;
+            case START_ARRAY:
+            case START_OBJECT:
+                if (!hasField || dataType == Types.NULL) {
+                    columns.put(fieldName, Types.ARRAY);
+                } else if (hasField && dataType != Types.ARRAY) {
+                    columns.put(fieldName, Types.VARCHAR);
+                }
+                break;
+            case VALUE_NULL:
+                if (!hasField) {
+                    columns.put(fieldName, Types.NULL);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     /**
      * Parses the properties of a feature
      *
@@ -850,7 +891,13 @@ public class GeoJsonReaderDriver {
                 continue;
             }
             if (field.equalsIgnoreCase(GeoJsonField.GEOMETRY)) {
-                setGeometry(jp, values);
+                if (selectedGeometry) {
+                    setGeometry(jp, values);
+                } else {
+                    checkedGeometry = true;
+                    jp.nextToken();
+                    jp.skipChildren();
+                }
             } else if (field.equalsIgnoreCase(GeoJsonField.PROPERTIES)) {
                 parseProperties(jp, values);
             } else if (field.equalsIgnoreCase(GeoJsonField.FEATURE_ID)) {
@@ -867,6 +914,7 @@ public class GeoJsonReaderDriver {
      * @param jp {@link JsonParser}
      */
     private void setGeometry(JsonParser jp, Object[] values) throws IOException, SQLException {
+        checkedGeometry = true;
         if (jp.nextToken() != JsonToken.VALUE_NULL) {//START_OBJECT { in case of null geometry
             jp.nextToken(); // FIELD_NAME type
             jp.nextToken(); //VALUE_STRING Point
@@ -908,6 +956,18 @@ public class GeoJsonReaderDriver {
     private void parseProperty(JsonParser jp, Object[] values) throws IOException {
         String fieldName = columnName(jp.getText()); //FIELD_NAME columnName
         JsonToken value = jp.nextToken();
+        if (checkedColumnNames != null && value != null) {
+            if (selectedColumns != null && !selectedColumns.contains(fieldName)) {
+                jp.skipChildren();
+                return;
+            }
+            mergeColumnType(checkedColumnNames, fieldName, value);
+            if (!cachedColumnIndex.containsKey(fieldName)) {
+                // not in the columns read before: the file has changed, see FeatureReader
+                jp.skipChildren();
+                return;
+            }
+        }
         if (null == value) {
             //ignore other value
         } else switch (value) {
@@ -1315,6 +1375,9 @@ public class GeoJsonReaderDriver {
             }
             jp.nextToken();
         }
+        if (count > checkedDimension) {
+            checkedDimension = Math.min(count, 4);
+        }
         Coordinate coord;
         if(coordinateDimension == 4) {
             coord = new CoordinateXYZM(x, y, z, m);
@@ -1631,6 +1694,266 @@ public class GeoJsonReaderDriver {
                 return "JSON";
             default:
                 throw new SQLException("Unkown data type");
+        }
+    }
+    /**
+     * Driver reading a GeoJSON file without importing it, for GeoJsonTable.
+     * Call {@link #readColumns()} first.
+     *
+     * @param fileName input file (.geojson, .json or .gz)
+     * @param encoding file encoding, null for UTF-8
+     */
+    GeoJsonReaderDriver(File fileName, String encoding) {
+        this(null, fileName, encoding, false);
+    }
+
+    /**
+     * New driver sharing the columns already read by another one.
+     *
+     * @param columns driver on which {@link #readColumns()} has been called
+     */
+    GeoJsonReaderDriver(GeoJsonReaderDriver columns) {
+        this(null, columns.fileName, columns.encoding, false);
+        this.jsonEncoding = columns.jsonEncoding;
+        this.jsFactory = columns.jsFactory;
+        this.cachedColumnNames = columns.cachedColumnNames;
+        this.cachedColumnIndex = columns.cachedColumnIndex;
+        this.columnNames.putAll(columns.columnNames);
+        this.finalGeometryTypes = columns.finalGeometryTypes;
+        this.coordinateDimension = columns.coordinateDimension;
+        this.parsedSRID = columns.parsedSRID;
+        this.hasGeometryField = columns.hasGeometryField;
+    }
+
+    private InputStream openFile() throws IOException {
+        InputStream is = new FileInputStream(fileName);
+        if (fileName.getName().toLowerCase().endsWith(".gz")) {
+            try {
+                return new GZIPInputStream(is);
+            } catch (IOException ex) {
+                is.close();
+                throw ex;
+            }
+        }
+        return is;
+    }
+
+    /**
+     * Reads the columns of the file (a first pass over the file), without
+     * creating any table.
+     */
+    void readColumns() throws SQLException, IOException {
+        init();
+        readFileMetadata(openFile());
+        if (!hasGeometryField) {
+            throw new SQLException("The geojson file  does not contain any geometry.");
+        }
+        cachedColumnIndex = new LinkedHashMap<>();
+        int i = 1;
+        for (String columnName : cachedColumnNames.keySet()) {
+            cachedColumnIndex.put(columnName, i++);
+        }
+    }
+
+    /**
+     * @return the column names, without quotes, the geometry column first
+     */
+    List<String> getColumnNames() {
+        List<String> names = new ArrayList<>();
+        names.add("THE_GEOM");
+        for (String columnName : cachedColumnNames.keySet()) {
+            if (columnName.length() > 1 && columnName.startsWith("\"") && columnName.endsWith("\"")) {
+                columnName = columnName.substring(1, columnName.length() - 1).replace("\"\"", "\"");
+            }
+            names.add(columnName);
+        }
+        return names;
+    }
+
+    /**
+     * @return the java.sql.Types of the columns after the geometry: VARCHAR
+     * (also for a column that is always null), BOOLEAN, DOUBLE, BIGINT or
+     * ARRAY for JSON
+     */
+    int[] getColumnTypes() {
+        int[] types = new int[cachedColumnNames.size()];
+        int i = 0;
+        for (Integer type : cachedColumnNames.values()) {
+            types[i++] = type == Types.NULL ? Types.VARCHAR : type;
+        }
+        return types;
+    }
+
+    /**
+     * @return the SRID of the file
+     */
+    int getSRID() {
+        return parsedSRID;
+    }
+
+    /**
+     * Reads only some columns with {@link #openFeatures()}: the geometry and
+     * the properties that are not selected are skipped, their values are null.
+     *
+     * @param columns indexes of the columns in {@link #getColumnNames()}, 0 for the geometry
+     */
+    void selectColumns(int[] columns) {
+        List<String> keys = new ArrayList<>(cachedColumnNames.keySet());
+        selectedColumns = new HashSet<>();
+        selectedGeometry = false;
+        for (int column : columns) {
+            if (column == 0) {
+                selectedGeometry = true;
+            } else {
+                selectedColumns.add(keys.get(column - 1));
+            }
+        }
+    }
+
+    /**
+     * Opens the file to read its features one by one (a second pass).
+     *
+     * @return the reader, to close
+     */
+    FeatureReader openFeatures() throws SQLException, IOException {
+        return new FeatureReader();
+    }
+
+    /**
+     * Reads the features of a file one by one. The values of a feature are
+     * the EWKB of the geometry, then the properties in the column order.
+     */
+    final class FeatureReader implements Closeable {
+        private final JsonParser jp;
+        /** the root object is a Feature or a geometry: one row */
+        private String singleType;
+        private boolean done;
+
+        private FeatureReader() throws SQLException, IOException {
+            InputStream is = openFile();
+            try {
+                jp = jsFactory.createParser(new InputStreamReader(is, jsonEncoding.getJavaName()));
+            } catch (IOException ex) {
+                is.close();
+                throw ex;
+            }
+            checkedColumnNames = new LinkedHashMap<>();
+            checkedDimension = 2;
+            checkedSRID = 0;
+            checkedGeometry = false;
+            try {
+                GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
+                jp.nextToken(); // START_OBJECT
+                jp.nextToken(); // FIELD_NAME
+                String field = jp.getText();
+                if (field.equalsIgnoreCase(GeoJsonField.TYPE)) {
+                    jp.nextToken(); // VALUE_STRING
+                    String type = jp.getText();
+                    if (type.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                        jp.nextToken(); // FIELD_NAME
+                        moveToFeatures();
+                    } else {
+                        singleType = type;
+                        checkedSRID = parsedSRID;
+                    }
+                } else if (field.equalsIgnoreCase(GeoJsonField.FEATURES)) {
+                    moveToFeatures();
+                } else {
+                    throw new SQLException("Malformed GeoJSON file. Found '" + field + "'");
+                }
+            } catch (SQLException | IOException ex) {
+                jp.close();
+                throw ex;
+            }
+        }
+
+        /**
+         * Skips the members of the FeatureCollection until the features array.
+         */
+        private void moveToFeatures() throws IOException, SQLException {
+            while (!jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES)
+                    && !jp.getText().equalsIgnoreCase(GeoJsonField.CRS)) {
+                jp.nextToken();
+                if (jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)) {
+                    jp.skipChildren();
+                }
+                jp.nextToken();
+            }
+            String member = jp.getText();
+            if (member.equalsIgnoreCase(GeoJsonField.CRS)) {
+                checkedSRID = readCRS(jp);
+                member = jp.getText();
+            }
+            if (!member.equalsIgnoreCase(GeoJsonField.FEATURES)) {
+                throw new SQLException("Malformed GeoJSON file. Expected 'features', found '" + member + "'");
+            }
+            jp.nextToken(); // START_ARRAY [
+        }
+
+        /**
+         * @return the values of the next feature, null at the end
+         */
+        Object[] next() throws IOException, SQLException {
+            if (done) {
+                return null;
+            }
+            if (singleType != null) {
+                done = true;
+                Object[] values;
+                if (singleType.equalsIgnoreCase(GeoJsonField.FEATURE)) {
+                    values = parseFeature(jp);
+                } else {
+                    checkedGeometry = true;
+                    values = new Object[cachedColumnIndex.size() + 1];
+                    values[0] = JTSUtils.geometry2ewkb(parseGeometry(jp, singleType));
+                }
+                checkColumns();
+                return values;
+            }
+            JsonToken token = jp.nextToken(); // START_OBJECT of a feature, or END_ARRAY
+            if (token != JsonToken.START_OBJECT) {
+                done = true;
+                checkColumns();
+                return null;
+            }
+            jp.nextToken(); // FIELD_NAME type
+            jp.nextToken(); // VALUE_STRING Feature
+            String type = jp.getText();
+            if (!type.equalsIgnoreCase(GeoJsonField.FEATURE)) {
+                throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + type + "'");
+            }
+            return parseFeature(jp);
+        }
+
+        /**
+         * Checks that the features read match the columns read before (the
+         * same columns, in the same order, with the same types, the same
+         * coordinate dimension and SRID; only the selected columns when some
+         * are selected), so that the rows are the ones a new reading of the
+         * file would give.
+         */
+        private void checkColumns() throws SQLException {
+            boolean same = checkedGeometry == hasGeometryField;
+            if (selectedGeometry) {
+                same &= checkedDimension == coordinateDimension && checkedSRID == parsedSRID;
+            }
+            if (selectedColumns == null) {
+                same &= new ArrayList<>(checkedColumnNames.entrySet()).equals(new ArrayList<>(cachedColumnNames.entrySet()));
+            } else {
+                // only the selected columns are returned: they must have the same type
+                for (String column : selectedColumns) {
+                    same &= checkedColumnNames.containsKey(column)
+                            && checkedColumnNames.get(column).equals(cachedColumnNames.get(column));
+                }
+            }
+            if (!same) {
+                throw new SQLException("The file " + fileName + " has been modified since its columns were read, run the query again");
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            jp.close();
         }
     }
 }

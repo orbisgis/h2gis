@@ -37,10 +37,12 @@ import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.Geometry;
 import org.wololo.flatgeobuf.generated.GeometryType;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
@@ -62,6 +64,15 @@ public class FGBDriver implements FileDriver {
     private FileInputStream fis;
     private FileChannel fileChannel;
     private Value[] currentRow = new Value[0];
+    /** Feature of the current row: its geometry is decoded only when asked for */
+    private Feature currentFeature;
+    private boolean currentGeometryDecoded;
+    /** Position in the file of the feature that follows the current row */
+    private long nextFeaturePosition;
+    /** Part of the file read in memory: one system call for many features */
+    private ByteBuffer window;
+    private long windowStart;
+    private static final int WINDOW_SIZE = 1 << 20;
     private long rowIdPrevious = Long.MIN_VALUE;
 
     private boolean cacheRowAddress = true;
@@ -170,30 +181,95 @@ public class FGBDriver implements FileDriver {
      */
     public static Value[] getFieldsFromFileLocation(FileChannel fileChannel, long featureAddress, long featuresOffset,
                                                     HeaderMeta headerMeta, int geometryFieldIndex) throws IOException {
-        Value[] values = new Value[headerMeta.columns.size()+1];
+        Feature feature = readFeature(fileChannel, featureAddress, featuresOffset);
+        Value[] values = readProperties(feature, headerMeta, geometryFieldIndex);
+        values[geometryFieldIndex] = readGeometry(feature, headerMeta);
+        return values;
+    }
+
+    /**
+     * Reads bytes of the file through a window of {@link #WINDOW_SIZE} bytes, so
+     * that reading the features in order needs few system calls.
+     *
+     * @param position position in the file
+     * @param length number of bytes
+     * @return a little endian buffer with the bytes, valid until the next call
+     */
+    private ByteBuffer read(long position, int length) throws IOException {
+        if (window == null || position < windowStart || position + length > windowStart + window.limit()) {
+            int size = Math.max(WINDOW_SIZE, length);
+            if (window == null || window.capacity() < size) {
+                window = ByteBuffer.allocate(size);
+            }
+            window.clear();
+            long filePosition = position;
+            while (window.hasRemaining()) {
+                int count = fileChannel.read(window, filePosition);
+                if (count < 0) {
+                    break;
+                }
+                filePosition += count;
+            }
+            window.flip();
+            windowStart = position;
+            if (window.limit() < length) {
+                throw new EOFException("Unexpected end of the FlatGeobuf file");
+            }
+        }
+        ByteBuffer bytes = window.duplicate();
+        bytes.position((int) (position - windowStart));
+        bytes.limit(bytes.position() + length);
+        return bytes.slice().order(ByteOrder.LITTLE_ENDIAN);
+    }
+
+    /**
+     * Reads the feature stored at an address of the file.
+     *
+     * @param fileChannel file
+     * @param featureAddress address of the feature, from the first feature
+     * @param featuresOffset address of the first feature
+     * @return the feature
+     */
+    private static Feature readFeature(FileChannel fileChannel, long featureAddress, long featuresOffset) throws IOException {
         fileChannel.position(featuresOffset + featureAddress);
-        // Read the current row from the input stream
         LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
         int featureSize = data.readInt();
         byte[] bytes = new byte[featureSize];
         data.readFully(bytes);
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-        Feature feature = Feature.getRootAsFeature(bb);
+        return Feature.getRootAsFeature(ByteBuffer.wrap(bytes));
+    }
+
+    /**
+     * @param feature a feature
+     * @param headerMeta header of the file
+     * @return the geometry of the feature, ValueNull if it cannot be read, null when the feature has no geometry
+     */
+    private static Value readGeometry(Feature feature, HeaderMeta headerMeta) {
         Geometry geometry = feature.geometry();
-        byte geometryType = headerMeta.geometryType;
-        if (geometry != null) {
-            if (geometryType == GeometryType.Unknown) {
-                geometryType = (byte) geometry.type();
-            }
-            org.locationtech.jts.geom.Geometry jtsGeometry =
-                    GeometryConversions.deserialize(geometry, geometryType);
-            if (jtsGeometry != null) {
-                jtsGeometry.setSRID(headerMeta.srid);
-                values[geometryFieldIndex] = ValueGeometry.getFromGeometry(jtsGeometry);
-            } else {
-                values[geometryFieldIndex] = ValueNull.INSTANCE;
-            }
+        if (geometry == null) {
+            return null;
         }
+        byte geometryType = headerMeta.geometryType;
+        if (geometryType == GeometryType.Unknown) {
+            geometryType = (byte) geometry.type();
+        }
+        org.locationtech.jts.geom.Geometry jtsGeometry =
+                GeometryConversions.deserialize(geometry, geometryType);
+        if (jtsGeometry == null) {
+            return ValueNull.INSTANCE;
+        }
+        jtsGeometry.setSRID(headerMeta.srid);
+        return ValueGeometry.getFromGeometry(jtsGeometry);
+    }
+
+    /**
+     * @param feature a feature
+     * @param headerMeta header of the file
+     * @param geometryFieldIndex index of the geometry column
+     * @return the values of the columns, without the geometry
+     */
+    private static Value[] readProperties(Feature feature, HeaderMeta headerMeta, int geometryFieldIndex) {
+        Value[] values = new Value[headerMeta.columns.size()+1];
         // Read columns
         int propertiesLength = feature.propertiesLength();
         if (propertiesLength > 0) {
@@ -249,32 +325,40 @@ public class FGBDriver implements FileDriver {
                 // We have to seek to the desired location
                 Integer lowerKey = rowIndexToFileLocation.floorKey((int)rowId);
                 if(lowerKey == null) {
-                    fileChannel.position(featuresOffset);
+                    nextFeaturePosition = featuresOffset;
                     rowIdPrevious = -1;
                 } else {
-                    fileChannel.position(rowIndexToFileLocation.get(lowerKey));
+                    nextFeaturePosition = rowIndexToFileLocation.get(lowerKey);
                     rowIdPrevious = lowerKey - 1;
                 }
                 // Make our way until rowId
                 while (rowIdPrevious + 1 < rowId) {
-                    LittleEndianDataInputStream data = new LittleEndianDataInputStream(Channels.newInputStream(fileChannel));
-                    int featureSize = data.readInt();
-                    fileChannel.position(fileChannel.position() + featureSize);
+                    int featureSize = read(nextFeaturePosition, 4).getInt();
+                    nextFeaturePosition += 4 + featureSize;
                     rowIdPrevious++;
                     if(cacheRowAddress) {
-                        rowIndexToFileLocation.put((int) rowIdPrevious + 1, fileChannel.position());
+                        rowIndexToFileLocation.put((int) rowIdPrevious + 1, nextFeaturePosition);
                     }
                 }
             }
             if (rowIdPrevious + 1 == rowId) {
-                // Read the current row from the input stream
+                // Read the current row, the geometry is decoded on demand
                 rowIdPrevious = rowId;
-                currentRow = getFieldsFromFileLocation(fileChannel, fileChannel.position() - featuresOffset,
-                            featuresOffset, headerMeta, geometryFieldIndex);
+                int featureSize = read(nextFeaturePosition, 4).getInt();
+                byte[] bytes = new byte[featureSize];
+                read(nextFeaturePosition + 4, featureSize).get(bytes);
+                nextFeaturePosition += 4 + featureSize;
+                currentFeature = Feature.getRootAsFeature(ByteBuffer.wrap(bytes));
+                currentRow = readProperties(currentFeature, headerMeta, geometryFieldIndex);
+                currentGeometryDecoded = false;
 
                 if(cacheRowAddress) {
-                    rowIndexToFileLocation.put((int) rowId + 1, fileChannel.position());
+                    rowIndexToFileLocation.put((int) rowId + 1, nextFeaturePosition);
                 }
+            }
+            if (columnId == geometryFieldIndex && !currentGeometryDecoded) {
+                currentRow[geometryFieldIndex] = readGeometry(currentFeature, headerMeta);
+                currentGeometryDecoded = true;
             }
             return currentRow[columnId];
         } catch (IOException e) {
@@ -292,10 +376,10 @@ public class FGBDriver implements FileDriver {
     }
 
     private static String readString(ByteBuffer bb) {
-            int length = bb.getInt();
-            byte[] stringBytes = new byte[length];
-            bb.get(stringBytes, 0, length);
-            return  new String(stringBytes, StandardCharsets.UTF_8);
+        int length = bb.getInt();
+        byte[] stringBytes = new byte[length];
+        bb.get(stringBytes, 0, length);
+        return  new String(stringBytes, StandardCharsets.UTF_8);
     }
 
     /**
