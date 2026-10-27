@@ -773,7 +773,7 @@ public class GeoJsonReaderDriver {
      * Updates the type of a column with a new value: a column with values of
      * different types becomes a DOUBLE (integers and decimals) or a VARCHAR.
      *
-     * @param columns column name -> java.sql.Types
+     * @param columns column name to java.sql.Types
      * @param fieldName column name
      * @param value token of the value
      */

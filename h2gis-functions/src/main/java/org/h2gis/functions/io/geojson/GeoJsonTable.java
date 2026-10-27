@@ -48,7 +48,7 @@ import java.util.Map;
  * Reads a GeoJSON file as a table, without importing it, like CSVREAD:
  *
  * <pre>
- * SELECT * FROM GeoJsonTable('/data/building.geojson') WHERE HEIGHT_WALL > 10;
+ * SELECT * FROM GeoJsonTable('/data/building.geojson') WHERE HEIGHT_WALL  &gt; 10;
  * SELECT AVG(HEIGHT_WALL) FROM GeoJsonTable('/data/building.geojson', 'HEIGHT_WALL');
  * </pre>
  *
