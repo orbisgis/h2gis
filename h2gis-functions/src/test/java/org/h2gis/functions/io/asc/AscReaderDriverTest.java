@@ -21,7 +21,9 @@
 package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.EmptyProgressVisitor;
+import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -329,9 +331,9 @@ public class AscReaderDriverTest {
         st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
         st.execute(String.format(
                 "CALL ASCREAD('%s', 'PRECIP30MIN', '%s'" +
-                "::GEOMETRY , 1, TRUE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile(),
+                        "::GEOMETRY , 1, TRUE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile(),
                 envGeom.toString()
-                ));
+        ));
 
         // Check number of extracted cells
         try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
@@ -388,7 +390,7 @@ public class AscReaderDriverTest {
             }
         }
     }
-    
+
     @Test
     public void testASCReadPointsTwoTimes() throws IOException, SQLException {
         Statement st = connection.createStatement();
@@ -432,7 +434,7 @@ public class AscReaderDriverTest {
             GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", (Geometry) rs.getObject("THE_GEOM"));
             assertTrue(rs.getObject("Z") instanceof Double);
         }
-        
+
         st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
         st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
         try(ResultSet rs = st.executeQuery("SELECT the_geom, z  FROM PRECIP30MIN limit 1")) {
@@ -442,7 +444,7 @@ public class AscReaderDriverTest {
         }
 
     }
-    
+
     @Test
     public void testASCReadGZFile() throws IOException, SQLException {
         Statement st = connection.createStatement();
@@ -452,6 +454,48 @@ public class AscReaderDriverTest {
             assertTrue(rs.next());
             GeometryAsserts.assertGeometryEquals("POINT Z (-179.75 -80.25 234)", (Geometry) rs.getObject("THE_GEOM"));
         }
-        st.execute("DROP TABLE PRECIP30MIN_ASC IF EXISTS");        
+        st.execute("DROP TABLE PRECIP30MIN_ASC IF EXISTS");
+    }
+    /**
+     * ASCTable returns the cells ASCRead imports, with the same options
+     */
+    @Test
+    public void testASCTable() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            H2GISFunctions.registerFunction(stat, new ASCTable(), "");
+            String path = StringUtils.quoteStringSQL(AscReaderDriverTest.class.getResource("precip30min.asc").getPath());
+            String gzPath = StringUtils.quoteStringSQL(AscReaderDriverTest.class.getResource("precip30min.asc.gz").getPath());
+            String envelope = "ST_MakeEnvelope(-178, -86, -173, -80)";
+            String[][] cases = {
+                    {"CALL ASCRead(" + path + ", 'ASC_IMPORTED', true)", path},
+                    {"CALL ASCRead(" + path + ", 'ASC_IMPORTED', NULL, 1, false, true, 'UTF-8', 1)", path + ", 1"},
+                    {"CALL ASCRead(" + path + ", 'ASC_IMPORTED', " + envelope + ", 2, true, true)", path + ", " + envelope + ", 2, true"},
+                    {"CALL ASCRead(" + path + ", 'ASC_IMPORTED', NULL, 3, false, true)", path + ", NULL, 3, false"},
+                    {"CALL ASCRead(" + gzPath + ", 'ASC_IMPORTED', true)", gzPath}};
+            long[] expectedRows = {299, 299, 42, 35, 299};
+            for (int i = 0; i < cases.length; i++) {
+                stat.execute(cases[i][0]);
+                String table = "(SELECT * FROM ASCTable(" + cases[i][1] + "))";
+                ResultSet res = stat.executeQuery("SELECT (SELECT COUNT(*) FROM ASC_IMPORTED), (SELECT COUNT(*) FROM " + table + "), "
+                        + "(SELECT COUNT(*) FROM (SELECT PK, THE_GEOM, Z FROM ASC_IMPORTED EXCEPT SELECT * FROM " + table + ")), "
+                        + "(SELECT COUNT(*) FROM (SELECT * FROM " + table + " EXCEPT SELECT PK, THE_GEOM, Z FROM ASC_IMPORTED))");
+                assertTrue(res.next());
+                assertEquals(expectedRows[i], res.getLong(1), cases[i][1]);
+                assertEquals(expectedRows[i], res.getLong(2), cases[i][1]);
+                assertEquals(0, res.getLong(3), cases[i][1]);
+                assertEquals(0, res.getLong(4), cases[i][1]);
+                res.close();
+            }
+            // the SRID of the .prj file, an INTEGER Z
+            ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM), Z FROM ASCTable(" + path + ", 1) LIMIT 1");
+            assertTrue(res.next());
+            assertEquals(3857, res.getInt(1));
+            assertInstanceOf(Integer.class, res.getObject(2));
+            res.close();
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM ASCTable('target/does_not_exist.asc')"));
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM ASCTable(" + path + ", 3)"));
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM ASCTable(" + path + ", NULL, 0, false)"));
+            stat.execute("DROP TABLE ASC_IMPORTED");
+        }
     }
 }

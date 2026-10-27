@@ -25,15 +25,15 @@ import org.h2.tools.RunScript;
 import org.h2gis.api.Function;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.functions.io.DriverManager;
+import org.h2gis.functions.io.asc.ASCTable;
 import org.h2gis.functions.io.asc.AscRead;
 import org.h2gis.functions.io.dbf.DBFRead;
+import org.h2gis.functions.io.dbf.DBFTable;
 import org.h2gis.functions.io.dbf.DBFWrite;
 import org.h2gis.functions.io.fgb.FGBRead;
+import org.h2gis.functions.io.fgb.FGBTable;
 import org.h2gis.functions.io.fgb.FGBWrite;
-import org.h2gis.functions.io.geojson.GeoJsonRead;
-import org.h2gis.functions.io.geojson.GeoJsonWrite;
-import org.h2gis.functions.io.geojson.ST_AsGeoJSON;
-import org.h2gis.functions.io.geojson.ST_GeomFromGeoJSON;
+import org.h2gis.functions.io.geojson.*;
 import org.h2gis.functions.io.gpx.GPXRead;
 import org.h2gis.functions.io.json.JsonWrite;
 import org.h2gis.functions.io.kml.KMLWrite;
@@ -43,6 +43,7 @@ import org.h2gis.functions.io.osm.ST_OSMDownloader;
 import org.h2gis.functions.io.overpass.ST_AsOverpassBbox;
 import org.h2gis.functions.io.overpass.ST_OverpassDownloader;
 import org.h2gis.functions.io.shp.SHPRead;
+import org.h2gis.functions.io.shp.SHPTable;
 import org.h2gis.functions.io.shp.SHPWrite;
 import org.h2gis.functions.io.tsv.TSVRead;
 import org.h2gis.functions.io.tsv.TSVWrite;
@@ -355,7 +356,12 @@ public class H2GISFunctions {
                 new ST_SimplifyPolygonHull(),
                 new ST_ClusterDBScan(),
                 new ST_ClusterIntersecting(),
-                new ST_ClusterWithin()
+                new ST_ClusterWithin(),
+                new GeoJsonTable(),
+                new SHPTable(),
+                new DBFTable(),
+                new FGBTable(),
+                new ASCTable()
         };
     }
 

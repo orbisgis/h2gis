@@ -37,6 +37,7 @@ import org.locationtech.jts.io.WKTReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.*;
 import java.util.Properties;
@@ -71,6 +72,7 @@ public class GeojsonImportExportTest {
         H2GISFunctions.registerFunction(connection.createStatement(), new ST_AsGeoJSON(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new GeoJsonWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new GeoJsonRead(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new GeoJsonTable(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new ST_GeomFromGeoJSON(), "");
 
     }
@@ -1487,6 +1489,170 @@ public class GeojsonImportExportTest {
             assertEquals(250,((Geometry) res.getObject(1)).getCoordinate().getM());
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        }
+    }
+    /**
+     * GeoJsonTable returns the same rows as GeoJsonRead
+     */
+    @Test
+    public void testGeoJsonTableSameAsImport() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            for (String file : new String[]{"data.geojson", "complex.geojson", "feature.geojson", "features.geojson",
+                    "geometry.geojson", "null.geojson", "startNull.geojson", "additionalProps.geojson",
+                    "urn_crs84.geojson", "road_emptylinestring.geojson"}) {
+                String path = StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource(file).getPath());
+                stat.execute("CALL GeoJsonRead(" + path + ", 'GEOJSON_IMPORTED', true)");
+                String table = "(SELECT * FROM GeoJsonTable(" + path + "))";
+                ResultSet res = stat.executeQuery("SELECT (SELECT COUNT(*) FROM GEOJSON_IMPORTED), (SELECT COUNT(*) FROM " + table + "), "
+                        + "(SELECT COUNT(*) FROM (SELECT * FROM GEOJSON_IMPORTED EXCEPT SELECT * FROM " + table + ")), "
+                        + "(SELECT COUNT(*) FROM (SELECT * FROM " + table + " EXCEPT SELECT * FROM GEOJSON_IMPORTED))");
+                assertTrue(res.next());
+                assertEquals(res.getLong(1), res.getLong(2), file);
+                assertEquals(0, res.getLong(3), file);
+                assertEquals(0, res.getLong(4), file);
+                res.close();
+            }
+            stat.execute("DROP TABLE GEOJSON_IMPORTED");
+        }
+    }
+
+    @Test
+    public void testGeoJsonTableQuery() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            String path = StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("complex.geojson").getPath());
+            ResultSet res = stat.executeQuery("SELECT COUNT(*) FROM GeoJsonTable(" + path + ") WHERE NOISE_STATUS = 'bad'");
+            assertTrue(res.next());
+            long bad = res.getLong(1);
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS COMPLEX_BAD");
+            stat.execute("CREATE TABLE COMPLEX_BAD AS SELECT THE_GEOM, LEQ_MEAN FROM GeoJsonTable(" + path + ") WHERE NOISE_STATUS = 'bad'");
+            res = stat.executeQuery("SELECT COUNT(*) FROM COMPLEX_BAD");
+            assertTrue(res.next());
+            assertEquals(bad, res.getLong(1));
+            assertTrue(bad > 0);
+            res.close();
+            stat.execute("DROP TABLE COMPLEX_BAD");
+        }
+    }
+
+    @Test
+    public void testGeoJsonTableGZAndFileChange() throws SQLException, IOException {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("CREATE TABLE TABLE_POINTS(THE_GEOM GEOMETRY(POINT, 4326), ID INT)");
+            stat.execute("INSERT INTO TABLE_POINTS VALUES ('SRID=4326;POINT (1 2)', 1), ('SRID=4326;POINT (10 20)', 2)");
+            stat.execute("CALL GeoJsonWrite('target/geojsontable.geojson.gz', 'TABLE_POINTS', true)");
+            stat.execute("CALL GeoJsonWrite('target/geojsontable.geojson', 'TABLE_POINTS', true)");
+            ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM), ID FROM GeoJsonTable('target/geojsontable.geojson.gz') ORDER BY ID");
+            assertTrue(res.next());
+            assertEquals(4326, res.getInt(1));
+            assertEquals(1, res.getLong(2));
+            assertTrue(res.next());
+            assertEquals(2, res.getLong(2));
+            assertFalse(res.next());
+            res.close();
+            // a new column in the file: the columns kept in cache must not be used
+            res = stat.executeQuery("SELECT COUNT(*) FROM GeoJsonTable('target/geojsontable.geojson')");
+            assertTrue(res.next());
+            assertEquals(2, res.getLong(1));
+            res.close();
+            stat.execute("ALTER TABLE TABLE_POINTS ADD COLUMN NAME VARCHAR");
+            stat.execute("UPDATE TABLE_POINTS SET NAME = 'point ' || ID");
+            stat.execute("CALL GeoJsonWrite('target/geojsontable.geojson', 'TABLE_POINTS', true)");
+            new File("target/geojsontable.geojson").setLastModified(System.currentTimeMillis() + 2000);
+            res = stat.executeQuery("SELECT NAME FROM GeoJsonTable('target/geojsontable.geojson') ORDER BY ID");
+            assertTrue(res.next());
+            assertEquals("point 1", res.getString(1));
+            res.close();
+            stat.execute("DROP TABLE TABLE_POINTS");
+        }
+    }
+
+    @Test
+    public void testGeoJsonTableErrors() {
+        assertThrows(SQLException.class, () -> {
+            try (Statement stat = connection.createStatement()) {
+                stat.executeQuery("SELECT * FROM GeoJsonTable('target/does_not_exist.geojson')");
+            }
+        });
+        assertThrows(SQLException.class, () -> {
+            try (Statement stat = connection.createStatement()) {
+                stat.executeQuery("SELECT * FROM GeoJsonTable('target/file.shp')");
+            }
+        });
+    }
+    /**
+     * A file replaced by another one of the same size and date: the cached
+     * columns must not be used to read it
+     */
+    @Test
+    public void testGeoJsonTableFileReplaced() throws SQLException, IOException {
+        File file = new File("target/geojsontable_replaced.geojson");
+        String header = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\","
+                + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,2]},\"properties\":{\"H\":";
+        Files.write(file.toPath(), (header + "1000}}]}").getBytes(StandardCharsets.UTF_8));
+        long date = file.lastModified();
+        try (Statement stat = connection.createStatement()) {
+            ResultSet res = stat.executeQuery("SELECT H FROM GeoJsonTable('target/geojsontable_replaced.geojson')");
+            assertTrue(res.next());
+            assertEquals(1000L, res.getObject(1));
+            res.close();
+            // same size, same date, a text instead of a number
+            Files.write(file.toPath(), (header + "\"ab\"}}]}").getBytes(StandardCharsets.UTF_8));
+            assertTrue(file.setLastModified(date));
+            SQLException ex = assertThrows(SQLException.class, () -> {
+                stat.executeQuery("SELECT H FROM GeoJsonTable('target/geojsontable_replaced.geojson')");
+            });
+            assertTrue(ex.getMessage().contains("has been modified"));
+            // the columns are read again
+            res = stat.executeQuery("SELECT H FROM GeoJsonTable('target/geojsontable_replaced.geojson')");
+            assertTrue(res.next());
+            assertEquals("ab", res.getObject(1));
+            res.close();
+        }
+    }
+    @Test
+    public void testGeoJsonTableColumns() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            String path = StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("complex.geojson").getPath());
+            stat.execute("CALL GeoJsonRead(" + path + ", 'COMPLEX_IMPORTED', true)");
+            // some columns, in the order of the list, the geometry skipped
+            String table = "(SELECT * FROM GeoJsonTable(" + path + ", 'noise_status, LEQ_MEAN'))";
+            ResultSet res = stat.executeQuery("SELECT * FROM " + table);
+            ResultSetMetaData metaData = res.getMetaData();
+            assertEquals(2, metaData.getColumnCount());
+            assertEquals("NOISE_STATUS", metaData.getColumnName(1));
+            assertEquals("LEQ_MEAN", metaData.getColumnName(2));
+            res.close();
+            res = stat.executeQuery("SELECT (SELECT COUNT(*) FROM (SELECT NOISE_STATUS, LEQ_MEAN FROM COMPLEX_IMPORTED EXCEPT SELECT * FROM " + table + ")), "
+                    + "(SELECT COUNT(*) FROM (SELECT * FROM " + table + " EXCEPT SELECT NOISE_STATUS, LEQ_MEAN FROM COMPLEX_IMPORTED)), "
+                    + "(SELECT COUNT(*) FROM " + table + "), (SELECT COUNT(*) FROM COMPLEX_IMPORTED)");
+            assertTrue(res.next());
+            assertEquals(0, res.getLong(1));
+            assertEquals(0, res.getLong(2));
+            assertEquals(res.getLong(4), res.getLong(3));
+            res.close();
+            // the geometry
+            res = stat.executeQuery("SELECT COUNT(*) FROM (SELECT THE_GEOM, VALID FROM COMPLEX_IMPORTED EXCEPT "
+                    + "SELECT * FROM GeoJsonTable(" + path + ", 'THE_GEOM, VALID'))");
+            assertTrue(res.next());
+            assertEquals(0, res.getLong(1));
+            res.close();
+            // a quoted name is case sensitive
+            res = stat.executeQuery("SELECT * FROM GeoJsonTable(" + path + ", '\"VALID\"')");
+            assertEquals("VALID", res.getMetaData().getColumnName(1));
+            res.close();
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM GeoJsonTable(" + path + ", '\"valid\"')"));
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM GeoJsonTable(" + path + ", 'NOPE')"));
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM GeoJsonTable(" + path + ", 'VALID, valid')"));
+            // null or empty: all the columns
+            res = stat.executeQuery("SELECT * FROM COMPLEX_IMPORTED");
+            int columnCount = res.getMetaData().getColumnCount();
+            res.close();
+            res = stat.executeQuery("SELECT * FROM GeoJsonTable(" + path + ", '')");
+            assertEquals(columnCount, res.getMetaData().getColumnCount());
+            res.close();
+            stat.execute("DROP TABLE COMPLEX_IMPORTED");
         }
     }
 }

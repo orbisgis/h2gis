@@ -2,7 +2,9 @@ package org.h2gis.functions.io.fgb;
 
 import org.h2.index.Cursor;
 import org.h2.value.Value;
+import org.h2.util.StringUtils;
 import org.h2.value.ValueVarchar;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.fgb.fileTable.FGBDriver;
 import org.h2gis.utilities.GeometryTableUtilities;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FGBImportExportTest {
@@ -49,6 +53,7 @@ public class FGBImportExportTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
+        H2GISFunctions.registerFunction(connection.createStatement(), new FGBTable(), "");
     }
 
     @AfterAll
@@ -218,7 +223,7 @@ public class FGBImportExportTest {
     }
 
     private static <R> List<R> idsFromCursor(Cursor cursor, FGBDriver fgbDriver, String columnName,
-                                         Function<? super Value, ? extends R> var1) {
+                                             Function<? super Value, ? extends R> var1) {
         List<Value> values = new ArrayList<>();
         int indexColum = 0;
         for (ColumnMeta column : fgbDriver.getHeader().columns) {
@@ -267,7 +272,7 @@ public class FGBImportExportTest {
         assertEquals(3, fgbDriver.getFieldCount());
         Cursor cursor = fgbDriver.queryIndex(new Envelope(115.95, 125.031, 5.17, 11.88));
         assertIterableEquals(Arrays.asList("IDN", "MYS", "PHL"),
-                 idsFromCursor(cursor, fgbDriver, "ID", Value::getString));
+                idsFromCursor(cursor, fgbDriver, "ID", Value::getString));
 
         // Check random access built from Spatial Index offsets
 
@@ -559,6 +564,103 @@ public class FGBImportExportTest {
             stat.execute("CALL FGBRead('"+file+"', 'TABLE_POINTS', true);");
             assertEquals(1, JDBCUtilities.getRowCount(connection,"TABLE_POINTS"));
             assertEquals(4326, GeometryTableUtilities.getSRID(connection,"TABLE_POINTS"));
+        }
+    }
+    /**
+     * @return the number of rows of the query a that are not in b, and of b not in a
+     */
+    private static long[] except(Statement stat, String a, String b) throws SQLException {
+        ResultSet res = stat.executeQuery("SELECT (SELECT COUNT(*) FROM (" + a + " EXCEPT " + b + ")), "
+                + "(SELECT COUNT(*) FROM (" + b + " EXCEPT " + a + ")), (SELECT COUNT(*) FROM (" + a + ")), (SELECT COUNT(*) FROM (" + b + "))");
+        assertTrue(res.next());
+        long[] counts = {res.getLong(1), res.getLong(2), res.getLong(3), res.getLong(4)};
+        res.close();
+        return counts;
+    }
+
+    @Test
+    public void testFGBTable() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            String path = StringUtils.quoteStringSQL(FGBImportExportTest.class.getResource("countries.fgb").getPath());
+            stat.execute("DROP TABLE IF EXISTS COUNTRIES_LINKED");
+            stat.execute("CALL FILE_TABLE(" + path + ", 'COUNTRIES_LINKED')");
+            long[] counts = except(stat, "SELECT THE_GEOM, ID, NAME FROM COUNTRIES_LINKED", "SELECT * FROM FGBTable(" + path + ")");
+            assertEquals(0, counts[0]);
+            assertEquals(0, counts[1]);
+            assertEquals(179, counts[3]);
+            // some columns, in the order of the list
+            counts = except(stat, "SELECT NAME, ID FROM COUNTRIES_LINKED", "SELECT * FROM FGBTable(" + path + ", 'name, ID')");
+            assertEquals(0, counts[0]);
+            assertEquals(0, counts[1]);
+            ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM FGBTable(" + path + ", 'THE_GEOM') LIMIT 1");
+            assertTrue(res.next());
+            assertEquals(4326, res.getInt(1));
+            res.close();
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM FGBTable(" + path + ", 'NOPE')"));
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM FGBTable('target/does_not_exist.fgb')"));
+            stat.execute("DROP TABLE COUNTRIES_LINKED");
+        }
+    }
+    /**
+     * The rows read by FGBDriver in any order, the attributes alone or with the
+     * geometry, are the ones imported by FGBRead
+     */
+    @Test
+    public void testFGBDriverRandomAccess() throws Exception {
+        File file = new File(FGBImportExportTest.class.getResource("countries.fgb").getFile());
+        // reference: the file imported by FGBRead, in the order of the file
+        List<List<String>> expected = new ArrayList<>();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL FGBRead(" + StringUtils.quoteStringSQL(file.getPath()) + ", 'COUNTRIES_REFERENCE', true)");
+            try (ResultSet res = stat.executeQuery("SELECT THE_GEOM, ID, NAME FROM COUNTRIES_REFERENCE ORDER BY _ROWID_")) {
+                while (res.next()) {
+                    expected.add(Arrays.asList(res.getString(1), res.getString(2), res.getString(3)));
+                }
+            }
+            stat.execute("DROP TABLE COUNTRIES_REFERENCE");
+        }
+        assertEquals(179, expected.size());
+        FGBDriver driver = new FGBDriver();
+        driver.initDriverFromFile(file);
+        try {
+            assertEquals(0, driver.getGeometryFieldIndex());
+            // in order, the attributes before the geometry
+            for (int row = 0; row < expected.size(); row++) {
+                for (int column : new int[]{2, 1, 0}) {
+                    assertEquals(expected.get(row).get(column), driver.getField(row, column).getString(), "row " + row + " column " + column);
+                }
+            }
+            // backward
+            for (int row = expected.size() - 1; row >= 0; row--) {
+                for (int column = 0; column < 3; column++) {
+                    assertEquals(expected.get(row).get(column), driver.getField(row, column).getString(), "row " + row + " column " + column);
+                }
+            }
+            // random order
+            java.util.Random random = new java.util.Random(42);
+            for (int i = 0; i < 1000; i++) {
+                int row = random.nextInt(expected.size());
+                int column = random.nextInt(3);
+                assertEquals(expected.get(row).get(column), driver.getField(row, column).getString(), "row " + row + " column " + column);
+            }
+        } finally {
+            driver.close();
+        }
+        // jumps forward in a file not read yet, with and without the cache of the row addresses
+        for (boolean cache : new boolean[]{true, false}) {
+            FGBDriver jumpDriver = new FGBDriver();
+            jumpDriver.initDriverFromFile(file);
+            jumpDriver.setCacheRowAddress(cache);
+            try {
+                for (int row : new int[]{100, 3, 150, 151, 50, 178, 0, 120}) {
+                    for (int column = 0; column < 3; column++) {
+                        assertEquals(expected.get(row).get(column), jumpDriver.getField(row, column).getString(),
+                                "cache " + cache + " row " + row + " column " + column);
+                    }
+                }
+            } finally {
+                jumpDriver.close();
+            }
         }
     }
 }
