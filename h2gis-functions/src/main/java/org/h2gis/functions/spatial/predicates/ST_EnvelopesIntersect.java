@@ -20,6 +20,11 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import org.h2.util.geometry.GeometryUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
+
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
@@ -41,7 +46,7 @@ public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "intersects";
+        return "envelopesIntersect";
     }
 
     /**
@@ -57,10 +62,34 @@ public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
         if(surface.isEmpty() || testGeometry.isEmpty()){
             return false;
         }
-        
+
         if(surface.getSRID()!=testGeometry.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return !(testGeometry == null || surface == null) && surface.getEnvelopeInternal().intersects(testGeometry.getEnvelopeInternal());
+    }
+
+    /**
+     * @param surface Surface Geometry.
+     * @param testGeometry Geometry instance
+     * @return true if the envelope of Geometry A intersects the envelope of
+     * Geometry B
+     */
+    public static Boolean envelopesIntersect(Value surface, Value testGeometry) throws SQLException {
+        if (surface == ValueNull.INSTANCE || testGeometry == ValueNull.INSTANCE) {
+            return null;
+        }
+        // the envelopes are read from the header of the EWKB, the geometries are not decoded
+        ValueGeometry geomA = surface.convertToGeometry(null);
+        ValueGeometry geomB = testGeometry.convertToGeometry(null);
+        double[] envelopeA = geomA.getEnvelopeNoCopy();
+        double[] envelopeB = geomB.getEnvelopeNoCopy();
+        if (envelopeA == null || envelopeB == null) {
+            return false;
+        }
+        if (geomA.getSRID() != geomB.getSRID()) {
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
+        return GeometryUtils.intersects(envelopeA, envelopeB);
     }
 }

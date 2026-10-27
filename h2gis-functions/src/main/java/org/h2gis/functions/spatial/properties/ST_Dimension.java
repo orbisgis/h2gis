@@ -20,6 +20,11 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2.util.geometry.GeometryUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
+
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -38,7 +43,7 @@ public class ST_Dimension extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "getDimension";
+        return "dimension";
     }
 
     /**
@@ -50,5 +55,30 @@ public class ST_Dimension extends DeterministicScalarFunction {
             return null;
         }
         return geometry.getDimension();
+    }
+
+    /**
+     * @param geometry Geometry instance
+     * @return Geometry dimension
+     */
+    public static Integer dimension(Value geometry) {
+        if (geometry == ValueNull.INSTANCE) {
+            return null;
+        }
+        ValueGeometry value = geometry.convertToGeometry(null);
+        // given by the type, except for a collection that must be decoded
+        switch (value.getGeometryType()) {
+            case GeometryUtils.POINT:
+            case GeometryUtils.MULTI_POINT:
+                return 0;
+            case GeometryUtils.LINE_STRING:
+            case GeometryUtils.MULTI_LINE_STRING:
+                return 1;
+            case GeometryUtils.POLYGON:
+            case GeometryUtils.MULTI_POLYGON:
+                return 2;
+            default:
+                return value.getGeometry().getDimension();
+        }
     }
 }
