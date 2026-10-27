@@ -20,6 +20,9 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2.value.Value;
+import org.h2.value.ValueNull;
+
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -38,7 +41,7 @@ public class ST_IsEmpty extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "isEmpty";
+        return "empty";
     }
 
     /**
@@ -50,5 +53,17 @@ public class ST_IsEmpty extends DeterministicScalarFunction {
             return null;
         }
         return geometry.isEmpty();
+    }
+
+    /**
+     * @param geometry Geometry instance
+     * @return True if the provided geometry is empty
+     */
+    public static Boolean empty(Value geometry) {
+        if (geometry == ValueNull.INSTANCE) {
+            return null;
+        }
+        // An empty geometry has no envelope, the geometry is not decoded
+        return geometry.convertToGeometry(null).getEnvelopeNoCopy() == null;
     }
 }

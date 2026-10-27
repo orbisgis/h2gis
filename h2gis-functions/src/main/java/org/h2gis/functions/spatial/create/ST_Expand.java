@@ -20,6 +20,13 @@
 
 package org.h2gis.functions.spatial.create;
 
+import org.h2.util.geometry.GeometryUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -38,9 +45,9 @@ public class ST_Expand extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "expand";
+        return "expandEnvelope";
     }
-    
+
     /**
      * Expands a geometry's envelope by the given delta X and delta Y. Both
      * positive and negative distances are supported.
@@ -73,9 +80,52 @@ public class ST_Expand extends DeterministicScalarFunction {
         double minY = env.getMinY() - deltaY;
         double maxY = env.getMaxY() + deltaY;
         Envelope expandedEnvelope = new Envelope(minX < maxX ? minX : (env.getMaxX() - env.getMinX()) / 2 + env.getMinX(),
-                                                 minX < maxX ? maxX : (env.getMaxX() - env.getMinX()) / 2 + env.getMinX(),
-                                                 minY < maxY ? minY : (env.getMaxY() - env.getMinY()) / 2 + env.getMinY(),
-                                                 minY < maxY ? maxY : (env.getMaxY() - env.getMinY()) / 2 + env.getMinY());
+                minX < maxX ? maxX : (env.getMaxX() - env.getMinX()) / 2 + env.getMinX(),
+                minY < maxY ? minY : (env.getMaxY() - env.getMinY()) / 2 + env.getMinY(),
+                minY < maxY ? maxY : (env.getMaxY() - env.getMinY()) / 2 + env.getMinY());
         return geometry.getFactory().toGeometry(expandedEnvelope);
+    }
+
+    /**
+     * Expands a geometry's envelope by the given delta X and delta Y. Both
+     * positive and negative distances are supported.
+     *
+     * @param geometry the input geometry
+     * @param delta the distance to expand the envelope along the X and Y axis
+     * @return the expanded geometry
+     */
+    public static Geometry expandEnvelope(Value geometry, double delta) {
+        return expandEnvelope(geometry, delta, delta);
+    }
+
+    /**
+     * Expands a geometry's envelope by the given delta X and delta Y. Both
+     * positive and negative distances are supported.
+     *
+     * @param geometry the input geometry
+     * @param deltaX the distance to expand the envelope along the X axis
+     * @param deltaY the distance to expand the envelope along the Y axis
+     * @return the expanded geometry
+     */
+    public static Geometry expandEnvelope(Value geometry, double deltaX, double deltaY) {
+        if (geometry == ValueNull.INSTANCE) {
+            return null;
+        }
+        ValueGeometry value = geometry.convertToGeometry(null);
+        // the envelope is read from the header of the EWKB, the geometry is not decoded
+        double[] envelope = value.getEnvelopeNoCopy();
+        Envelope env = envelope == null ? new Envelope()
+                : new Envelope(envelope[GeometryUtils.MIN_X], envelope[GeometryUtils.MAX_X],
+                envelope[GeometryUtils.MIN_Y], envelope[GeometryUtils.MAX_Y]);
+        // As the time of writing Envelope.expand is buggy with negative parameters
+        double minX = env.getMinX() - deltaX;
+        double maxX = env.getMaxX() + deltaX;
+        double minY = env.getMinY() - deltaY;
+        double maxY = env.getMaxY() + deltaY;
+        Envelope expandedEnvelope = new Envelope(minX < maxX ? minX : (env.getMaxX() - env.getMinX()) / 2 + env.getMinX(),
+                minX < maxX ? maxX : (env.getMaxX() - env.getMinX()) / 2 + env.getMinX(),
+                minY < maxY ? minY : (env.getMaxY() - env.getMinY()) / 2 + env.getMinY(),
+                minY < maxY ? maxY : (env.getMaxY() - env.getMinY()) / 2 + env.getMinY());
+        return new GeometryFactory(new PrecisionModel(), value.getSRID()).toGeometry(expandedEnvelope);
     }
 }

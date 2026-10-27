@@ -20,6 +20,14 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2.util.geometry.GeometryUtils;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
+import org.h2.value.ValueNull;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -38,7 +46,7 @@ public class ST_Envelope extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "getEnvelope";
+        return "envelope";
     }
 
     /**
@@ -64,5 +72,48 @@ public class ST_Envelope extends DeterministicScalarFunction {
             return null;
         }
         return geometry.getEnvelope();
+    }
+
+    /**
+     * @param geometry Geometry instance
+     * @param srid input SRID
+     * @return Geometry envelope
+     */
+    public static Geometry envelope(Value geometry, int srid) {
+        if (geometry == ValueNull.INSTANCE) {
+            return null;
+        }
+        return toGeometry(geometry.convertToGeometry(null), srid);
+    }
+
+    /**
+     * @param geometry Geometry instance
+     * @return Geometry envelope
+     */
+    public static Geometry envelope(Value geometry) {
+        if (geometry == ValueNull.INSTANCE) {
+            return null;
+        }
+        ValueGeometry value = geometry.convertToGeometry(null);
+        return toGeometry(value, value.getSRID());
+    }
+
+    /**
+     * Envelope of a geometry read from the header of its EWKB, without
+     * decoding it: a point, a line or a polygon as with
+     * {@link Geometry#getEnvelope()}, an empty point for an empty geometry.
+     *
+     * @param geometry geometry
+     * @param srid SRID of the envelope
+     * @return the envelope
+     */
+    static Geometry toGeometry(ValueGeometry geometry, int srid) {
+        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), srid);
+        double[] envelope = geometry.getEnvelopeNoCopy();
+        if (envelope == null) {
+            return factory.toGeometry(new Envelope());
+        }
+        return factory.toGeometry(new Envelope(envelope[GeometryUtils.MIN_X], envelope[GeometryUtils.MAX_X],
+                envelope[GeometryUtils.MIN_Y], envelope[GeometryUtils.MAX_Y]));
     }
 }

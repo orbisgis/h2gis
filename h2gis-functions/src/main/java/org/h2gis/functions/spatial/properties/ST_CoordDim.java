@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2.value.Value;
+import org.h2.value.ValueNull;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryMetaData;
 import org.locationtech.jts.geom.Geometry;
@@ -40,7 +42,7 @@ public class ST_CoordDim extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "getCoordinateDimension";
+        return "coordinateDimension";
     }
 
     /**
@@ -54,5 +56,18 @@ public class ST_CoordDim extends DeterministicScalarFunction {
             return null;
         }
         return GeometryMetaData.getMetaData(geom).dimension;
+    }
+    /**
+     * Returns the dimension of the coordinates of the given geometry.
+     *
+     * @param geom Geometry
+     * @return The dimension of the coordinates of the given geometry
+     */
+    public static Integer coordinateDimension(Value geom) {
+        if (geom == ValueNull.INSTANCE) {
+            return null;
+        }
+        // read from the header of the EWKB, the geometry is not decoded
+        return GeometryMetaData.getMetaData(geom.convertToGeometry(null)).dimension;
     }
 }

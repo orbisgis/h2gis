@@ -34,6 +34,8 @@
 - Speed up GeoJSON read driver
 - Speed up FGB read driver
 - Add new IO functions, GeoJSONTable, SHPTable, FGBTable, DBFTable
+- Update H2 2.5.252
+- Use H2 geometryValue when possible to speed up functions
 
 
 
