@@ -109,14 +109,22 @@ public class AscDriverFunction implements DriverFunction {
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
         ascReaderDriver.setDeleteTable(deleteTables);
         ascReaderDriver.setEncoding(encoding);
-        int srid = 0;
+        return ascReaderDriver.read(connection, fileName, progress, tableReference, getSRID(fileName));
+    }
+
+    /**
+     * @param fileName .asc or .gz file
+     * @return the SRID given by the .prj file next to the file (same name, the
+     * last extension replaced by .prj), 0 if there is none
+     */
+    static int getSRID(File fileName) throws IOException {
         String filePath = fileName.getAbsolutePath();
         final int dotIndex = filePath.lastIndexOf('.');
         final String fileNamePrefix = filePath.substring(0, dotIndex);
         File prjFile = new File(fileNamePrefix + ".prj");
         if (prjFile.exists()) {
-            srid = PRJUtil.getSRID(prjFile);
+            return PRJUtil.getSRID(prjFile);
         }
-        return ascReaderDriver.read(connection, fileName, progress, tableReference, srid);
+        return 0;
     }
 }

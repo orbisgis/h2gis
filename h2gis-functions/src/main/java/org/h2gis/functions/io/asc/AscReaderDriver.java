@@ -211,7 +211,7 @@ public class AscReaderDriver {
      * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public String[] read(Connection connection, File fileName, ProgressVisitor progress, String tableReference,
-            int srid) throws SQLException, IOException {
+                         int srid) throws SQLException, IOException {
         if (fileName != null && fileName.getName().toLowerCase().endsWith(".asc")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
@@ -271,17 +271,12 @@ public class AscReaderDriver {
      */
 
     private String readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, String outputTable,
-            int srid) throws UnsupportedEncodingException, SQLException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream, BUFFER_SIZE), encoding));
-        try {
-            Scanner scanner = new Scanner(reader);
-            // Read HEADER
-            readHeader(scanner);
+                           int srid) throws UnsupportedEncodingException, SQLException {
+        try (CellReader cells = new CellReader(inputStream, srid)) {
             // Read values
             Statement st = connection.createStatement();
             PreparedStatement preparedStatement;
 
-            int index=0;
             if (!JDBCUtilities.tableExists(connection,outputTable)) {
                 if (as3DPoint) {
                     if (zType == 1) {
@@ -300,7 +295,7 @@ public class AscReaderDriver {
                 // restore the incremental index from the existing table
                 try(ResultSet rs = st.executeQuery("SELECT MAX(PK) FROM " +  outputTable)) {
                     if(rs.next()) {
-                        index = rs.getInt(1) + 1;
+                        cells.setFirstIndex(rs.getInt(1) + 1);
                     }
                 }
             }
@@ -308,86 +303,178 @@ public class AscReaderDriver {
                     + "(PK, the_geom, Z) VALUES (?, ?, ?)");
 
             // Read data
-            GeometryFactory factory = new GeometryFactory(new PrecisionModel(),srid);
+            ProgressVisitor cellProgress = new EmptyProgressVisitor();
+            if (progress != null) {
+                cellProgress = progress.subProcess(cells.getLastRow());
+            }
+            int rowsDone = 0;
             int batchSize = 0;
-            int firstRow = 0;
-            int firstCol = 0;
-            int lastRow = nrows;
-            int lastCol = ncols;
+            Object[] cell;
+            while ((cell = cells.next()) != null) {
+                for (; rowsDone < cells.getRowsRead(); rowsDone++) {
+                    cellProgress.endStep();
+                }
+                preparedStatement.setObject(1, cell[0]);
+                preparedStatement.setObject(2, cell[1]);
+                preparedStatement.setObject(3, cell[2]);
+                preparedStatement.addBatch();
+                batchSize++;
+                if (batchSize >= BATCH_MAX_SIZE) {
+                    preparedStatement.executeBatch();
+                    preparedStatement.clearBatch();
+                    batchSize = 0;
+                }
+            }
+            if (batchSize > 0) {
+                preparedStatement.executeBatch();
+            }
+            for (; rowsDone < cells.getRowsRead(); rowsDone++) {
+                cellProgress.endStep();
+            }
+            return outputTable;
+        } catch (NoSuchElementException | NumberFormatException | IOException | SQLException ex) {
+            throw new SQLException("Unexpected word " + lastWord, ex);
+        }
+    }
+
+    /**
+     * Opens a file to read its cells one by one, with the options of this
+     * driver: envelope, downscale, points or polygons, no data values.
+     *
+     * @param inputStream content of the .asc file, closed by the reader
+     * @param srid SRID of the cells
+     * @return the reader, to close
+     */
+    public CellReader openCells(InputStream inputStream, int srid) throws IOException {
+        try {
+            return new CellReader(inputStream, srid);
+        } catch (NoSuchElementException | NumberFormatException ex) {
+            inputStream.close();
+            throw new IOException("Unexpected word " + lastWord, ex);
+        } catch (IOException ex) {
+            inputStream.close();
+            throw ex;
+        }
+    }
+
+    /**
+     * Reads the cells of an Esri ASCII grid one by one. A cell is
+     * {PK (Integer), the point or the polygon of the cell, Z (Double)}.
+     */
+    public final class CellReader implements Closeable {
+        private final Scanner scanner;
+        private final GeometryFactory factory;
+        private final int srid;
+        private final int firstRow;
+        private final int firstCol;
+        private final int lastRow;
+        private final int lastCol;
+        /** next cell to read */
+        private int row = 0;
+        private int col = 0;
+        private int index = 0;
+        private boolean done = false;
+
+        private CellReader(InputStream inputStream, int srid) throws IOException {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream, BUFFER_SIZE), encoding));
+            this.scanner = new Scanner(reader);
+            this.srid = srid;
+            // Read HEADER
+            readHeader(scanner);
+            this.factory = new GeometryFactory(new PrecisionModel(), srid);
             // Compute envelope
             if (extractEnvelope != null) {
                 firstCol = (int) Math.floor((extractEnvelope.getMinX() - xValue) / cellSize);
                 lastCol = (int) Math.ceil((extractEnvelope.getMaxX() - xValue) / cellSize);
                 firstRow = nrows - (int) Math.ceil((extractEnvelope.getMaxY() - (yValue - cellSize * nrows)) / cellSize);
                 lastRow = nrows - (int) Math.ceil((extractEnvelope.getMinY() - (yValue - cellSize * nrows)) / cellSize);
+            } else {
+                firstCol = 0;
+                lastCol = ncols;
+                firstRow = 0;
+                lastRow = nrows;
             }
-            ProgressVisitor cellProgress = new EmptyProgressVisitor();
-            if (progress != null) {
-                cellProgress = progress.subProcess(lastRow);
-            }
-            for (int i = 0; i < nrows; i++) {
-                for (int j = 0; j < ncols; j++) {
+        }
+
+        /**
+         * @param index PK of the first cell
+         */
+        public void setFirstIndex(int index) {
+            this.index = index;
+        }
+
+        /**
+         * @return the last row of the cells to read
+         */
+        public int getLastRow() {
+            return lastRow;
+        }
+
+        /**
+         * @return the number of rows of the grid read so far
+         */
+        public int getRowsRead() {
+            return row;
+        }
+
+        /**
+         * @return the next cell {PK, geometry, Z}, null at the end
+         */
+        public Object[] next() throws IOException {
+            try {
+                while (!done) {
+                    if (row >= nrows) {
+                        done = true;
+                        break;
+                    }
                     if (readFirst) {
                         lastWord = scanner.next();
                     } else {
                         readFirst = true;
                     }
-
+                    int i = row;
+                    int j = col;
+                    col++;
+                    boolean endOfRow = col >= ncols;
+                    if (endOfRow) {
+                        col = 0;
+                        row++;
+                    }
+                    Object[] cell = null;
                     if ((downScale == 1 || (i % downScale == 0 && j % downScale == 0)) && (extractEnvelope == null || (i >= firstRow && i <= lastRow && j >= firstCol && j <= lastCol))) {
                         double z = Double.parseDouble(lastWord);
                         double x = xValue + j * cellSize;
                         double y = yValue - i * cellSize;
+                        Geometry geometry;
                         if (as3DPoint) {
-                            //Set the PK
-                            preparedStatement.setObject(1, index++);
-                            Point cell = factory.createPoint(new Coordinate(x + cellSize / 2, y - cellSize / 2, z));
-                            cell.setSRID(srid);
-                            if (Math.abs(noData - z) != 0) {
-                                preparedStatement.setObject(2, cell);
-                                preparedStatement.setObject(3, z);
-                                preparedStatement.addBatch();
-                                batchSize++;
-                            } else if (importNodata) {
-                                preparedStatement.setObject(2, cell);
-                                preparedStatement.setObject(3, noData);
-                                preparedStatement.addBatch();
-                                batchSize++;
-                            }
+                            geometry = factory.createPoint(new Coordinate(x + cellSize / 2, y - cellSize / 2, z));
                         } else {
-                            //Set the PK
-                            preparedStatement.setObject(1, index++);
-                            Polygon cell = factory.createPolygon(new Coordinate[]{new Coordinate(x, y, z), new Coordinate(x, y - cellSize * downScale, z), new Coordinate(x + cellSize * downScale, y - cellSize * downScale, z), new Coordinate(x + cellSize * downScale, y, z), new Coordinate(x, y, z)});
-                            cell.setSRID(srid);
-                            if (Math.abs(noData - z) != 0) {
-                                preparedStatement.setObject(2, cell);
-                                preparedStatement.setObject(3, z);
-                                preparedStatement.addBatch();
-                                batchSize++;
-                            } else if (importNodata) {
-                                preparedStatement.setObject(2, cell);
-                                preparedStatement.setObject(3, noData);
-                                preparedStatement.addBatch();
-                                batchSize++;
-                            }
+                            geometry = factory.createPolygon(new Coordinate[]{new Coordinate(x, y, z), new Coordinate(x, y - cellSize * downScale, z), new Coordinate(x + cellSize * downScale, y - cellSize * downScale, z), new Coordinate(x + cellSize * downScale, y, z), new Coordinate(x, y, z)});
                         }
-                        if (batchSize >= BATCH_MAX_SIZE) {
-                            preparedStatement.executeBatch();
-                            preparedStatement.clearBatch();
-                            batchSize = 0;
+                        geometry.setSRID(srid);
+                        int pk = index++;
+                        if (Math.abs(noData - z) != 0) {
+                            cell = new Object[]{pk, geometry, z};
+                        } else if (importNodata) {
+                            cell = new Object[]{pk, geometry, noData};
                         }
                     }
+                    if (endOfRow && i > lastRow) {
+                        done = true;
+                    }
+                    if (cell != null) {
+                        return cell;
+                    }
                 }
-                cellProgress.endStep();
-                if (i > lastRow) {
-                    break;
-                }
+                return null;
+            } catch (NoSuchElementException | NumberFormatException ex) {
+                throw new IOException("Unexpected word " + lastWord, ex);
             }
-            if (batchSize > 0) {
-                preparedStatement.executeBatch();
-            }
-            return outputTable;
-        } catch (NoSuchElementException | NumberFormatException | IOException | SQLException ex) {
-            throw new SQLException("Unexpected word " + lastWord, ex);
+        }
+
+        @Override
+        public void close() {
+            scanner.close();
         }
     }
 

@@ -33,6 +33,7 @@
 - Fix SLF4J provider, use when necessary slf4j-simple
 - Speed up GeoJSON read driver
 - Speed up FGB read driver
+- Add new IO functions, GeoJSONTable, SHPTable, FGBTable, DBFTable
 
 
 

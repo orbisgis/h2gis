@@ -78,6 +78,7 @@ public class SHPImportExportTest {
         H2GISFunctions.registerFunction(connection.createStatement(), new SHPWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFRead(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new SHPTable(), "");
     }
 
     @AfterAll
@@ -1004,5 +1005,45 @@ public class SHPImportExportTest {
             stat.execute("CALL SHPWrite('" + outputFilePath + "', 'PUNCTUAL', true)");
         });
         stat.execute("DROP TABLE IF EXISTS PUNCTUAL;");
+    }
+    /**
+     * @return the number of rows of the query a that are not in b, and of b not in a
+     */
+    private static long[] except(Statement stat, String a, String b) throws SQLException {
+        ResultSet res = stat.executeQuery("SELECT (SELECT COUNT(*) FROM (" + a + " EXCEPT " + b + ")), "
+                + "(SELECT COUNT(*) FROM (" + b + " EXCEPT " + a + ")), (SELECT COUNT(*) FROM (" + a + ")), (SELECT COUNT(*) FROM (" + b + "))");
+        assertTrue(res.next());
+        long[] counts = {res.getLong(1), res.getLong(2), res.getLong(3), res.getLong(4)};
+        res.close();
+        return counts;
+    }
+
+    @Test
+    public void testSHPTable() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            String path = StringUtils.quoteStringSQL(SHPImportExportTest.class.getResource("sridtable1.shp").getPath());
+            stat.execute("CALL SHPRead(" + path + ", 'SRIDTABLE_IMPORTED', true)");
+            long[] counts = except(stat, "SELECT THE_GEOM, TYPE_AXE, GID, LENGTH FROM SRIDTABLE_IMPORTED", "SELECT * FROM SHPTable(" + path + ")");
+            assertEquals(0, counts[0]);
+            assertEquals(0, counts[1]);
+            assertEquals(382, counts[3]);
+            // some columns, in the order of the list, the geometry not read
+            counts = except(stat, "SELECT GID, TYPE_AXE FROM SRIDTABLE_IMPORTED", "SELECT * FROM SHPTable(" + path + ", 'gid, TYPE_AXE')");
+            assertEquals(0, counts[0]);
+            assertEquals(0, counts[1]);
+            ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM SHPTable(" + path + ", 'THE_GEOM') LIMIT 1");
+            assertTrue(res.next());
+            assertEquals(3857, res.getInt(1));
+            res.close();
+            // a filter, then a new table
+            stat.execute("DROP TABLE IF EXISTS SRIDTABLE_FILTERED");
+            stat.execute("CREATE TABLE SRIDTABLE_FILTERED AS SELECT * FROM SHPTable(" + path + ", 'THE_GEOM, GID') WHERE GID < 10");
+            res = stat.executeQuery("SELECT COUNT(*) FROM SRIDTABLE_FILTERED");
+            assertTrue(res.next());
+            res.close();
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM SHPTable(" + path + ", 'NOPE')"));
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM SHPTable('target/does_not_exist.shp')"));
+            stat.execute("DROP TABLE SRIDTABLE_IMPORTED, SRIDTABLE_FILTERED");
+        }
     }
 }

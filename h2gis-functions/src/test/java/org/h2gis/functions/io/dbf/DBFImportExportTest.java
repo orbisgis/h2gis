@@ -60,6 +60,7 @@ public class DBFImportExportTest {
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFRead(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new DBFWrite(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new DBFTable(), "");
     }
 
     @AfterAll
@@ -318,5 +319,44 @@ public class DBFImportExportTest {
         assertEquals(v2, rs.getDouble(1), 1e-2);
         assertFalse(rs.next());
         rs.close();
+    }
+    /**
+     * @return the number of rows of the query a that are not in b, and of b not in a
+     */
+    private static long[] except(Statement stat, String a, String b) throws SQLException {
+        ResultSet res = stat.executeQuery("SELECT (SELECT COUNT(*) FROM (" + a + " EXCEPT " + b + ")), "
+                + "(SELECT COUNT(*) FROM (" + b + " EXCEPT " + a + ")), (SELECT COUNT(*) FROM (" + a + ")), (SELECT COUNT(*) FROM (" + b + "))");
+        assertTrue(res.next());
+        long[] counts = {res.getLong(1), res.getLong(2), res.getLong(3), res.getLong(4)};
+        res.close();
+        return counts;
+    }
+
+    @Test
+    public void testDBFTable() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            String path = StringUtils.quoteStringSQL(DBFImportExportTest.class.getResource("null_values.dbf").getPath());
+            stat.execute("CALL DBFRead(" + path + ", 'NULL_VALUES_IMPORTED', true)");
+            long[] counts = except(stat, "SELECT OSM_ID, NAME, REF, TYPE, ONEWAY, BRIDGE, TUNNEL, MAXSPEED FROM NULL_VALUES_IMPORTED",
+                    "SELECT * FROM DBFTable(" + path + ")");
+            assertEquals(0, counts[0]);
+            assertEquals(0, counts[1]);
+            assertEquals(10, counts[3]);
+            counts = except(stat, "SELECT NAME, OSM_ID FROM NULL_VALUES_IMPORTED", "SELECT * FROM DBFTable(" + path + ", 'name, OSM_ID')");
+            assertEquals(0, counts[0]);
+            assertEquals(0, counts[1]);
+            stat.execute("DROP TABLE NULL_VALUES_IMPORTED");
+            // encoding given by the file, or forced
+            String encodingPath = StringUtils.quoteStringSQL(DBFImportExportTest.class.getResource("encoding_test.dbf").getPath());
+            ResultSet res = stat.executeQuery("SELECT RIVERNAME FROM DBFTable(" + encodingPath + ", 'RIVERNAME') WHERE RIVERNAME = '松柏坑溪'");
+            assertTrue(res.next());
+            res.close();
+            res = stat.executeQuery("SELECT COUNT(*) FROM DBFTable(" + encodingPath + ", 'RIVERNAME', 'ISO-8859-1') WHERE RIVERNAME = '松柏坑溪'");
+            assertTrue(res.next());
+            assertEquals(0, res.getLong(1));
+            res.close();
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM DBFTable(" + path + ", 'NOPE')"));
+            assertThrows(SQLException.class, () -> stat.executeQuery("SELECT * FROM DBFTable('target/does_not_exist.dbf')"));
+        }
     }
 }
