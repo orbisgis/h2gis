@@ -59,8 +59,8 @@ public class ST_RemoveHolesByArea extends DeterministicScalarFunction {
     /**
      * Create a new multiPolygon without hole.
      *
-     * @param multiPolygon
-     * @return
+     * @param multiPolygon input geometry
+     * @return a new polygon
      */
     public static MultiPolygon removeHolesMultiPolygon(MultiPolygon multiPolygon, double area) {
         int num = multiPolygon.getNumGeometries();
@@ -74,8 +74,8 @@ public class ST_RemoveHolesByArea extends DeterministicScalarFunction {
     /**
      * Create a new polygon and filter the hole according an area
      *
-     * @param polygon
-     * @return
+     * @param polygon input geometry
+     * @return new polygon
      */
     public static Polygon removeHolesPolygon(Polygon polygon, double area) {
         int numGeometries = polygon.getNumInteriorRing();
