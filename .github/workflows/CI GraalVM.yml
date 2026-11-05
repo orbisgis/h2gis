@@ -30,7 +30,7 @@ jobs:
           native-image --version
           
       - name: H2GIS maven build
-        run: mvn clean package -DskipTests && mvn native:compile -Pnative -pl h2gis-graalvm -DskipTests
+        run: mvn clean install -DskipTests && mvn native:compile -Pnative -pl h2gis-graalvm -DskipTests
       
       - name: Set OS name
         id: os-name
