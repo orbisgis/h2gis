@@ -19,7 +19,6 @@
  */
 package org.h2gis.graalvm;
 
-import org.h2.value.ValueGeometry;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
@@ -154,11 +153,9 @@ public class ColumnWrapper {
                 values.write(v ? 1 : 0);
                 break;
             }
-            case TypeCodes.GEOMETRY: {
-                Object geometry = rs.getObject(column);
-                putBytes(row, geometry == null ? null : ValueGeometry.getFromGeometry(geometry).getBytes());
+            case TypeCodes.GEOMETRY:
+                putBytes(row, rs.getBytes(column));
                 break;
-            }
             case TypeCodes.BINARY:
                 putBytes(row, rs.getBytes(column));
                 break;

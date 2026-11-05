@@ -36,6 +36,7 @@
 - Add new IO functions, GeoJSONTable, SHPTable, FGBTable, DBFTable
 - Update H2 2.5.252
 - Use H2 geometryValue when possible to speed up functions
+- Expose in one pass all metadata for a Table
 
 
 

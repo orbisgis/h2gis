@@ -29,7 +29,12 @@ import org.graalvm.word.WordBase;
 import org.graalvm.word.WordFactory;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableMetaData;
+import org.h2gis.utilities.dbtypes.DBTypes;
+import org.h2gis.utilities.dbtypes.DBUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -40,6 +45,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -74,10 +80,11 @@ public class GraalCInterface {
      * metadata, bind functions returning a status, h2gis_bind_null,
      * h2gis_add_batch / h2gis_execute_batch, spatial functions loaded for
      * in-memory databases.</li>
+     * <li>3: h2gis_get_tables_json, h2gis_find_srid.</li>
      * </ul>
      * (Libraries without {@code h2gis_version} are version 1.)
      */
-    public static final int C_API_VERSION = 2;
+    public static final int C_API_VERSION = 3;
 
     private static final Logger LOGGER = Logger.getLogger(GraalCInterface.class.getName());
 
@@ -758,6 +765,77 @@ public class GraalCInterface {
         } catch (Exception e) {
             setError("Failed to get metadata json", e);
             return toNativeString("[]");
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Database description
+    // ------------------------------------------------------------------
+
+    /**
+     * Describe the tables and their geometry columns with a single query on
+     * the catalog (see {@link GeometryTableUtilities#getTablesMetaData} and
+     * {@link TablesJson} for the format). The data is never read.
+     *
+     * @param thread           the current isolate thread
+     * @param connectionHandle connection handle
+     * @param schemaPattern    SQL LIKE pattern of the schemas, NULL for all
+     * @param tablePattern     SQL LIKE pattern of the tables, NULL for all
+     * @param spatialOnly      non zero to keep only the tables with a geometry column
+     * @return a UTF-8 JSON array to free with h2gis_free_string, or NULL on error
+     */
+    @CEntryPoint(name = "h2gis_get_tables_json")
+    public static CCharPointer h2gisGetTablesJson(IsolateThread thread, long connectionHandle,
+                                                  CCharPointer schemaPattern, CCharPointer tablePattern,
+                                                  int spatialOnly) {
+        Connection conn = connection(connectionHandle);
+        if (conn == null) {
+            return WordFactory.nullPointer();
+        }
+        try {
+            List<TableMetaData> tables = GeometryTableUtilities.getTablesMetaData(conn,
+                    schemaPattern.isNull() ? null : toJavaString(schemaPattern),
+                    tablePattern.isNull() ? null : toJavaString(tablePattern),
+                    spatialOnly != 0);
+            return toNativeString(TablesJson.toJson(tables));
+        } catch (Exception e) {
+            setError("h2gis_get_tables_json failed", e);
+            return WordFactory.nullPointer();
+        }
+    }
+
+    /**
+     * SRID of a geometry column found in its data: the SRID of the first non
+     * null geometry (see {@link GeometryTableUtilities#findSRIDFromData}). To
+     * use for a column whose SRID is not declared ("sridDeclared":false).
+     *
+     * @param thread           the current isolate thread
+     * @param connectionHandle connection handle
+     * @param schemaPointer    schema name as stored in the catalog, NULL for the default schema
+     * @param tablePointer     table name as stored in the catalog
+     * @param columnPointer    geometry column name as stored in the catalog
+     * @return the SRID, 0 if the column has no geometry, -1 on error
+     */
+    @CEntryPoint(name = "h2gis_find_srid")
+    public static int h2gisFindSrid(IsolateThread thread, long connectionHandle, CCharPointer schemaPointer,
+                                    CCharPointer tablePointer, CCharPointer columnPointer) {
+        if (tablePointer.isNull() || columnPointer.isNull()) {
+            setError("Null pointer received for table or column name", null);
+            return -1;
+        }
+        Connection conn = connection(connectionHandle);
+        if (conn == null) {
+            return -1;
+        }
+        try {
+            DBTypes dbType = DBUtils.getDBType(conn);
+            TableLocation location = new TableLocation(null,
+                    schemaPointer.isNull() ? null : toJavaString(schemaPointer),
+                    toJavaString(tablePointer), dbType);
+            return GeometryTableUtilities.findSRIDFromData(conn, location, toJavaString(columnPointer));
+        } catch (Exception e) {
+            setError("h2gis_find_srid failed", e);
+            return -1;
         }
     }
 
