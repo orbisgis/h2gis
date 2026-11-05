@@ -2,7 +2,7 @@
 
 The `h2gis-graalvm` module builds H2GIS as a shared library (`h2gis.so`,
 `h2gis.dll`, `h2gis.dylib`) with GraalVM Native Image Community Edition (Mandrel). This page
-describes the C interface, version **2** (`h2gis_version()`).
+describes the C interface, version **3** (`h2gis_version()`).
 
 The reference client with Python is [h2gis-python](https://github.com/orbisgis/h2gis-python).
 Some examples in C and in Python (ctypes) are in available in [examples](examples/).
@@ -32,7 +32,7 @@ Some examples in C and in Python (ctypes) are in available in [examples](example
 
 | Function | Returns |
 |---|---|
-| `int h2gis_version(thread)` | C API version (2) |
+| `int h2gis_version(thread)` | C API version (3) |
 | `char *h2gis_get_last_error(thread)` | last error of the thread, `""` if none; cleared once read; free it |
 | `void h2gis_free_result_buffer(thread, void *ptr)` | frees a buffer or string returned by the library |
 | `void h2gis_free_string(thread, char *ptr)` | alias of `h2gis_free_result_buffer` |
@@ -68,6 +68,37 @@ Some examples in C and in Python (ctypes) are in available in [examples](example
 | `int h2gis_execute_prepared_update(thread, long long stmt)` | update count |
 | `int h2gis_add_batch(thread, long long stmt)` | status; adds the bound parameters to the batch |
 | `long long h2gis_execute_batch(thread, long long stmt)` | total update count of the batch |
+
+### Database description
+
+| Function | Returns |
+|---|---|
+| `char *h2gis_get_tables_json(thread, long long conn, const char *schema_pattern, const char *table_pattern, int spatial_only)` | JSON array describing the tables (format below), NULL on error; free it. Patterns use the SQL `LIKE` syntax (`%`, `_`, `\` to escape) and are case sensitive; NULL means all. `spatial_only` non zero keeps the tables with a geometry column |
+| `int h2gis_find_srid(thread, long long conn, const char *schema, const char *table, const char *column)` | SRID of the first non null geometry of the column, 0 if there is none, -1 on error. `schema` NULL is the default schema |
+
+`h2gis_get_tables_json` reads the catalog with a single query and never
+reads the data. Names are returned as stored in the catalog, without quotes:
+
+```json
+[{"catalog": "DB", "schema": "PUBLIC", "table": "ROADS", "tableType": "TABLE",
+  "fid": "ID", "fidIndex": 1,
+  "geometryColumns": [{"name": "THE_GEOM", "index": 3,
+    "geometryType": "LINESTRING", "geometryTypeCode": 2, "dimension": 2,
+    "hasZ": false, "hasM": false,
+    "srid": 2154, "sridDeclared": true, "authName": "EPSG", "authSrid": 2154,
+    "spatialIndex": true}]}]
+```
+
+- `tableType`: `TABLE`, `VIEW`, `TEMPORARY`, `TABLE_LINK`, `FOREIGN_TABLE` or `UNKOWN`.
+- `fid`: the single column `INTEGER` or `BIGINT` primary key, `null` if the
+  table has none; `fidIndex` is its 1-based column index (0 if none).
+- `geometryType` / `geometryTypeCode`: `GEOMETRY` / 0 when the column does not
+  declare a type (codes of `org.h2gis.utilities.GeometryTypeCodes`).
+- `sridDeclared`: false for a column without SRID in its type (`GEOMETRY`,
+  `GEOMETRY(POINT)`); `srid` is then 0 and `h2gis_find_srid` gives the SRID
+  from the data.
+- `authName` / `authSrid`: authority of the SRID in `SPATIAL_REF_SYS`, `null` / 0
+  if the SRID is not declared or unknown.
 
 ### Results
 
