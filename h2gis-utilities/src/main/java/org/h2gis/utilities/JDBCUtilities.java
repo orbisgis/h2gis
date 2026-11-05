@@ -1070,8 +1070,11 @@ public class JDBCUtilities {
             ps.setObject(3, TableLocation.capsIdentifier(columnName, dbType));
             ps.setObject(4, schemaName);
             ps.setObject(5, tableName);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            } finally {
+                ps.close();
+            }
         } else if (dbType == POSTGIS || dbType == POSTGRESQL) {
             String query = "SELECT  cls.relname, am.amname "
                     + "FROM  pg_class cls "
@@ -1084,8 +1087,11 @@ public class JDBCUtilities {
             ps.setObject(1, columnName);
             ps.setObject(2, table.getSchema("public"));
             ps.setObject(3, table.getTable());
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            } finally {
+                ps.close();
+            }
         } else {
             throw new SQLException("Database not supported");
         }
