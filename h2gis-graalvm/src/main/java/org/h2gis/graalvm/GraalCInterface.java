@@ -122,7 +122,7 @@ public class GraalCInterface {
         try {
             DriverManager.registerDriver(new org.h2.Driver());
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Failed to register H2G Driver", e);
+            LOGGER.log(Level.SEVERE, "Failed to register H2 Driver", e);
         }
     }
 
