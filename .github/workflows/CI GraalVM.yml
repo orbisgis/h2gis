@@ -4,6 +4,11 @@ on:
     branches: ["master"]
     tags: ["v*.*.*"]
   workflow_dispatch:
+    inputs:
+      publish_snapshot:
+        description: "Publish the libraries in the graalvm-snapshot pre-release"
+        type: boolean
+        default: false
 jobs:
   build:
     name: H2GIS on ${{ matrix.os }}
@@ -94,7 +99,59 @@ jobs:
           name: h2gis-graalvm-all-platforms
           path: h2gis-graalvm-all-platforms.zip
           retention-days: 90
-      
+
+
+  # Publishes the libraries on GitHub, where other projects (the GDAL driver
+  # h2gis-gdal, h2gis-python) download them from a fixed URL:
+  # - a push on master updates the pre-release "graalvm-snapshot", as a manual
+  #   run with publish_snapshot checked, from any branch;
+  # - a tag v*.*.* attaches them to the release of the tag.
+  # Each library is named after its platform (h2gis-linux-x86_64.so...), and
+  # the combined archive keeps the original names.
+  publish:
+    name: Publish the libraries
+    # After the combined archive: the temporary artifacts are deleted here
+    needs: [build, create_combined_archive]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Download the libraries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: libs-*
+          path: libs
+      - name: Name the libraries after their platform
+        run: |
+          mkdir dist
+          cp libs/libs-linux/h2gis.so dist/h2gis-linux-x86_64.so
+          cp libs/libs-windows/h2gis.dll dist/h2gis-windows-x86_64.dll
+          # macos-latest runs on Apple Silicon
+          cp libs/libs-macos/h2gis.dylib dist/h2gis-macos-arm64.dylib
+          (cd libs && zip -j ../dist/h2gis-graalvm-all-platforms.zip libs-*/h2gis.*)
+          (cd dist && sha256sum * > SHA256SUMS && cat SHA256SUMS)
+      - name: Snapshot pre-release (master, or manual run)
+        if: github.ref == 'refs/heads/master' || inputs.publish_snapshot
+        run: |
+          notes="H2GIS native libraries (GraalVM native image), built from ${GITHUB_SHA} (branch ${GITHUB_REF_NAME}) on $(date -u +%Y-%m-%d). Replaced at each push on master."
+          if ! gh release view graalvm-snapshot > /dev/null 2>&1; then
+            gh release create graalvm-snapshot --prerelease --target "${GITHUB_SHA}" \
+              --title "H2GIS native libraries (snapshot)" --notes "$notes"
+          else
+            gh release edit graalvm-snapshot --notes "$notes"
+          fi
+          gh release upload graalvm-snapshot dist/* --clobber
+      - name: Release of the tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          if ! gh release view "$tag" > /dev/null 2>&1; then
+            gh release create "$tag" --verify-tag --title "$tag" --generate-notes
+          fi
+          gh release upload "$tag" dist/* --clobber
       - name: Delete temporary library artifacts
         uses: geekyeggo/delete-artifact@v5
         with:
