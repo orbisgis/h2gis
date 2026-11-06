@@ -11,8 +11,7 @@
  * H2GIS is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
- * <p>
+ * for more details <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
  * <p>
  * For more information, please consult: <a href="http://www.h2gis.org/">http://www.h2gis.org/</a>
  * or contact directly: info_at_h2gis.org
@@ -82,27 +81,36 @@ public class GraalCInterface {
      * in-memory databases.</li>
      * <li>3: h2gis_get_tables_json, h2gis_find_srid.</li>
      * </ul>
-     * (Libraries without {@code h2gis_version} are version 1.)
      */
     public static final int C_API_VERSION = 3;
 
     private static final Logger LOGGER = Logger.getLogger(GraalCInterface.class.getName());
 
-    /** handle -> JDBC connection */
+    /**
+     * Handle of a JDBC connection.
+     */
     private static final Map<Long, Connection> connections = new ConcurrentHashMap<>();
 
-    /** handle -> JDBC statement (plain statements of queries, and prepared statements) */
+    /**
+     * Handle of a JDBC statement (plain statements of queries, and prepared statements).
+     */
     private static final Map<Long, Statement> statements = new ConcurrentHashMap<>();
 
-    /** handle -> JDBC result set */
+    /**
+     * Handle of a JDBC result set.
+     */
     private static final Map<Long, ResultSet> results = new ConcurrentHashMap<>();
 
-    /** result set handle -> handle of the prepared statement that produced it */
+    /**
+     * Handle of a result set, mapped to the handle of the prepared statement that produced it.
+     */
     private static final Map<Long, Long> resultOwners = new ConcurrentHashMap<>();
 
     private static final AtomicLong handleCounter = new AtomicLong(1);
 
-    /** Last error of the current thread, read by h2gis_get_last_error() */
+    /**
+     * Last error of the current thread, read by h2gis_get_last_error().
+     */
     private static final ThreadLocal<String> lastError = new ThreadLocal<>();
 
     private static final Object connectLock = new Object();
@@ -118,11 +126,9 @@ public class GraalCInterface {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Version, errors and memory
-    // ------------------------------------------------------------------
-
     /**
+     * Return the version of this C interface.
+     *
      * @param thread the current isolate thread
      * @return the version of this C interface ({@link #C_API_VERSION})
      */
@@ -215,6 +221,12 @@ public class GraalCInterface {
         }
     }
 
+    /**
+     * Load the H2GIS spatial functions if they are not loaded yet.
+     *
+     * @param connection the connection to load the functions on
+     * @throws SQLException if the catalog cannot be read or the load fails
+     */
     private static void loadSpatialFunctionsIfMissing(Connection connection) throws SQLException {
         try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(SPATIAL_CHECK)) {
             if (rs.next() && rs.getLong(1) > 0) {
@@ -291,10 +303,6 @@ public class GraalCInterface {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Plain statements
-    // ------------------------------------------------------------------
-
     /**
      * Run a query.
      *
@@ -354,10 +362,6 @@ public class GraalCInterface {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Prepared statements
-    // ------------------------------------------------------------------
-
     /**
      * Prepare a statement with JDBC "?" placeholders.
      *
@@ -388,7 +392,15 @@ public class GraalCInterface {
         }
     }
 
-    /** @return 0 on success, -1 on error (bind functions) */
+    /**
+     * Bind a double to a parameter of a prepared statement.
+     *
+     * @param thread     the current isolate thread
+     * @param stmtHandle statement handle
+     * @param index      1-based parameter index
+     * @param value      the value to bind
+     * @return 0 on success, -1 on error
+     */
     @CEntryPoint(name = "h2gis_bind_double")
     public static int h2gisBindDouble(IsolateThread thread, long stmtHandle, int index, double value) {
         PreparedStatement ps = prepared(stmtHandle);
@@ -404,7 +416,15 @@ public class GraalCInterface {
         }
     }
 
-    /** @return 0 on success, -1 on error */
+    /**
+     * Bind an int to a parameter of a prepared statement.
+     *
+     * @param thread     the current isolate thread
+     * @param stmtHandle statement handle
+     * @param index      1-based parameter index
+     * @param value      the value to bind
+     * @return 0 on success, -1 on error
+     */
     @CEntryPoint(name = "h2gis_bind_int")
     public static int h2gisBindInt(IsolateThread thread, long stmtHandle, int index, int value) {
         PreparedStatement ps = prepared(stmtHandle);
@@ -420,7 +440,15 @@ public class GraalCInterface {
         }
     }
 
-    /** @return 0 on success, -1 on error */
+    /**
+     * Bind a long to a parameter of a prepared statement.
+     *
+     * @param thread     the current isolate thread
+     * @param stmtHandle statement handle
+     * @param index      1-based parameter index
+     * @param value      the value to bind
+     * @return 0 on success, -1 on error
+     */
     @CEntryPoint(name = "h2gis_bind_long")
     public static int h2gisBindLong(IsolateThread thread, long stmtHandle, int index, long value) {
         PreparedStatement ps = prepared(stmtHandle);
@@ -439,6 +467,10 @@ public class GraalCInterface {
     /**
      * Bind a string; a NULL pointer binds SQL NULL.
      *
+     * @param thread     the current isolate thread
+     * @param stmtHandle statement handle
+     * @param index      1-based parameter index
+     * @param value      NUL terminated UTF-8 string, NULL to bind SQL NULL
      * @return 0 on success, -1 on error
      */
     @CEntryPoint(name = "h2gis_bind_string")
@@ -459,6 +491,11 @@ public class GraalCInterface {
     /**
      * Bind bytes (EWKB is accepted for GEOMETRY parameters).
      *
+     * @param thread     the current isolate thread
+     * @param stmtHandle statement handle
+     * @param index      1-based parameter index
+     * @param value      pointer to the bytes, NULL to bind SQL NULL
+     * @param len        number of bytes
      * @return 0 on success, -1 on error
      */
     @CEntryPoint(name = "h2gis_bind_blob")
@@ -485,6 +522,9 @@ public class GraalCInterface {
     /**
      * Bind SQL NULL.
      *
+     * @param thread     the current isolate thread
+     * @param stmtHandle statement handle
+     * @param index      1-based parameter index
      * @return 0 on success, -1 on error
      */
     @CEntryPoint(name = "h2gis_bind_null")
@@ -604,10 +644,6 @@ public class GraalCInterface {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Results
-    // ------------------------------------------------------------------
-
     /**
      * Close a result set, a statement or a prepared statement handle. Closing
      * a prepared statement also closes its result sets.
@@ -617,6 +653,16 @@ public class GraalCInterface {
      */
     @CEntryPoint(name = "h2gis_close_query")
     public static void h2gisCloseQuery(IsolateThread thread, long queryHandle) {
+        closeQuery(queryHandle);
+    }
+
+    /**
+     * Remove a handle and close what it designates: the result set, the
+     * result sets of the statement, then the statement.
+     *
+     * @param queryHandle handle of a result set or of a statement
+     */
+    private static void closeQuery(long queryHandle) {
         resultOwners.remove(queryHandle);
         closeQuietly(results.remove(queryHandle));
         forgetResultsOf(queryHandle);
@@ -624,26 +670,23 @@ public class GraalCInterface {
     }
 
     /**
-     * Close a result set but keep its handle (prefer h2gis_close_query).
+     * Close a result set like h2gis_close_query: the handle is dropped and
+     * the result set is closed. Using the handle afterwards gives an
+     * "invalid handle" error. Kept for compatibility, prefer
+     * h2gis_close_query.
      *
      * @param thread      the current isolate thread
      * @param queryHandle result set handle
-     * @return 0 on success, 1 on error
+     * @return 0 on success, 1 if the handle is not an open result set
      */
     @CEntryPoint(name = "h2gis_free_result_set")
     public static long freeResultResultSet(IsolateThread thread, long queryHandle) {
-        ResultSet rs = results.get(queryHandle);
-        if (rs == null) {
-            setError("Invalid result set handle: " + queryHandle, null);
+        if (!results.containsKey(queryHandle)) {
+            setError("Invalid or already closed result set handle: " + queryHandle, null);
             return 1;
         }
-        try {
-            rs.close();
-            return 0;
-        } catch (Exception e) {
-            setError("Failed to close result set", e);
-            return 1;
-        }
+        closeQuery(queryHandle);
+        return 0;
     }
 
     /**
@@ -686,6 +729,15 @@ public class GraalCInterface {
         return fetch(queryHandle, Math.max(0, batchSize), bufferSize, "h2gis_fetch_batch");
     }
 
+    /**
+     * Serialize {@code maxRows} rows of a result set (-1 for all the rows).
+     *
+     * @param queryHandle result set handle
+     * @param maxRows     maximum number of rows to read, negative for all
+     * @param bufferSize  pointer to a 64 bits integer receiving the buffer size
+     * @param what        name of the calling entry point, for the error message
+     * @return the buffer, or 0 on error
+     */
     private static WordBase fetch(long queryHandle, int maxRows, WordBase bufferSize, String what) {
         writeLong(bufferSize, 0L);
         ResultSet rs = results.get(queryHandle);
@@ -707,12 +759,14 @@ public class GraalCInterface {
      *
      * @param thread      the current isolate thread
      * @param queryHandle result set handle
-     * @param colCountOut pointer to a 64 bits integer receiving the column count
-     * @return the array (free with h2gis_free_result_buffer), or 0 on error
+     * @param colCountOut pointer to a 64 bits integer receiving the column
+     *                    count, or -1 on error
+     * @return the array (free with h2gis_free_result_buffer), 0 on error or
+     * when there is no column ({@code *colCountOut} tells them apart)
      */
     @CEntryPoint(name = "h2gis_get_column_types")
     public static WordBase h2gisGetColumnTypes(IsolateThread thread, long queryHandle, WordBase colCountOut) {
-        writeLong(colCountOut, 0L);
+        writeLong(colCountOut, -1L);
         ResultSet rs = results.get(queryHandle);
         if (rs == null) {
             setError("h2gis_get_column_types: invalid result set handle " + queryHandle, null);
@@ -767,10 +821,6 @@ public class GraalCInterface {
             return toNativeString("[]");
         }
     }
-
-    // ------------------------------------------------------------------
-    // Database description
-    // ------------------------------------------------------------------
 
     /**
      * Describe the tables and their geometry columns with a single query on
@@ -839,10 +889,12 @@ public class GraalCInterface {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
-
+    /**
+     * Connection of a handle.
+     *
+     * @param handle connection handle
+     * @return the connection, or null if the handle is invalid (error set)
+     */
     private static Connection connection(long handle) {
         Connection conn = connections.get(handle);
         if (conn == null) {
@@ -851,6 +903,13 @@ public class GraalCInterface {
         return conn;
     }
 
+    /**
+     * Prepared statement of a handle.
+     *
+     * @param handle statement handle
+     * @return the prepared statement, or null if the handle is not a
+     * prepared statement (error set)
+     */
     private static PreparedStatement prepared(long handle) {
         Statement s = statements.get(handle);
         if (s instanceof PreparedStatement) {
@@ -860,6 +919,11 @@ public class GraalCInterface {
         return null;
     }
 
+    /**
+     * Close and remove every result set produced by a statement.
+     *
+     * @param stmtHandle handle of the statement
+     */
     private static void forgetResultsOf(long stmtHandle) {
         resultOwners.entrySet().removeIf(entry -> {
             if (entry.getValue() == stmtHandle) {
@@ -870,7 +934,11 @@ public class GraalCInterface {
         });
     }
 
-    /** Drop the handles of the statements and result sets of a closed connection. */
+    /**
+     * Remove the handles of the statements and result sets of a closed connection.
+     *
+     * @param conn the connection being closed
+     */
     private static void forgetHandlesOf(Connection conn) {
         statements.entrySet().removeIf(entry -> {
             try {
@@ -889,6 +957,11 @@ public class GraalCInterface {
         });
     }
 
+    /**
+     * Close without reporting an error.
+     *
+     * @param closeable the resource to close, null is ignored
+     */
     private static void closeQuietly(AutoCloseable closeable) {
         if (closeable != null) {
             try {
@@ -899,7 +972,9 @@ public class GraalCInterface {
         }
     }
 
-    /** Decode a NUL terminated C string as UTF-8 (whatever the default charset). */
+    /**
+     * Decode a NUL terminated C string as UTF-8 (whatever the default charset).
+     */
     private static String toJavaString(CCharPointer pointer) {
         int length = 0;
         while (pointer.read(length) != 0) {
@@ -908,7 +983,9 @@ public class GraalCInterface {
         return CTypeConversion.toJavaString(pointer, WordFactory.unsigned(length), StandardCharsets.UTF_8);
     }
 
-    /** Copy {@code data} to a new unmanaged buffer and write its size to {@code sizeOut}. */
+    /**
+     * Copy {@code data} to a new unmanaged buffer and write its size to {@code sizeOut}.
+     */
     private static WordBase toNativeBuffer(byte[] data, WordBase sizeOut) {
         CCharPointer addr = UnmanagedMemory.malloc(Math.max(1, data.length));
         CTypeConversion.asByteBuffer(addr, data.length).put(data);
@@ -916,7 +993,9 @@ public class GraalCInterface {
         return addr;
     }
 
-    /** A NUL terminated UTF-8 copy of {@code text} in unmanaged memory. */
+    /**
+     * A NUL terminated UTF-8 copy of {@code text} in unmanaged memory.
+     */
     private static CCharPointer toNativeString(String text) {
         byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         CCharPointer addr = UnmanagedMemory.malloc(bytes.length + 1);
@@ -925,12 +1004,24 @@ public class GraalCInterface {
         return addr;
     }
 
+    /**
+     * Write a 64 bits integer to a pointer, if it is not null.
+     *
+     * @param address pointer to a 64 bits integer
+     * @param value   the value to write
+     */
     private static void writeLong(WordBase address, long value) {
         if (address.rawValue() != 0L) {
             ((CLongPointer) WordFactory.pointer(address.rawValue())).write(value);
         }
     }
 
+    /**
+     * Append a JSON string, or {@code null} when {@code s} is null.
+     *
+     * @param sb the JSON document being built
+     * @param s  the string to append
+     */
     private static void appendJsonString(StringBuilder sb, String s) {
         sb.append('"');
         if (s != null) {
@@ -967,6 +1058,9 @@ public class GraalCInterface {
     /**
      * Keep the error for h2gis_get_last_error. Errors are expected by the
      * callers (they get the message), so they are only logged at FINE level.
+     *
+     * @param message description of the failure
+     * @param e       the cause, null for API misuse errors
      */
     private static void setError(String message, Throwable e) {
         String text = e == null ? message : message + ": " + (e.getMessage() != null ? e.getMessage() : e.toString());

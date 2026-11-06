@@ -20,6 +20,7 @@
 package org.h2gis.graalvm;
 
 import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.JDBCUtilities;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -64,6 +65,16 @@ public class TablesJsonTest {
                     + "]", json);
 
             assertEquals("[]", TablesJson.toJson(GeometryTableUtilities.getTablesMetaData(connection, "NOPE", null, false)));
+        }
+    }
+
+    @Test
+    public void testTableTypeNames() {
+        assertEquals("UNKNOWN", TablesJson.tableType(JDBCUtilities.TABLE_TYPE.UNKOWN));
+        for (JDBCUtilities.TABLE_TYPE type : JDBCUtilities.TABLE_TYPE.values()) {
+            if (type != JDBCUtilities.TABLE_TYPE.UNKOWN) {
+                assertEquals(type.name(), TablesJson.tableType(type));
+            }
         }
     }
 }
