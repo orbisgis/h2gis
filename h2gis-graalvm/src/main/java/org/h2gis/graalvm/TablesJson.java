@@ -20,6 +20,7 @@
 package org.h2gis.graalvm;
 
 import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableMetaData;
 
@@ -68,7 +69,7 @@ public final class TablesJson {
             sb.append(",\"table\":");
             appendString(sb, location.getTable());
             sb.append(",\"tableType\":");
-            appendString(sb, table.getTableType().name());
+            appendString(sb, tableType(table.getTableType()));
             sb.append(",\"fid\":");
             appendString(sb, table.getPrimaryKeyName());
             sb.append(",\"fidIndex\":").append(table.getPrimaryKeyIndex());
@@ -100,6 +101,14 @@ public final class TablesJson {
             sb.append("]}");
         }
         return sb.append(']').toString();
+    }
+
+    /**
+     * Name of a table type. TABLE_TYPE.UNKOWN (a typo kept for the
+     * compatibility of the Java API) is written UNKNOWN.
+     */
+    static String tableType(JDBCUtilities.TABLE_TYPE type) {
+        return type == JDBCUtilities.TABLE_TYPE.UNKOWN ? "UNKNOWN" : type.name();
     }
 
     /**

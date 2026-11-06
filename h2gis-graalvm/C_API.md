@@ -20,6 +20,9 @@ Some examples in C and in Python (ctypes) are in available in [examples](example
 - After an error, `h2gis_get_last_error()` returns the message of the calling
   thread. JDBC errors end with the H2 error code, e.g.
   `Table "NOPE" not found; SQL statement: SELECT * FROM NOPE [42102-240]`.
+  Each thread keeps only its last error, until it is read: a new error
+  replaces the previous one, and a call that succeeds does not clear it. Read
+  it only right after a call that reported a failure by its return value.
 - Buffers and strings returned by the library are allocated with
   `UnmanagedMemory.malloc` and must be released with
   `h2gis_free_result_buffer()` (or `h2gis_free_string()`).
@@ -89,7 +92,7 @@ reads the data. Names are returned as stored in the catalog, without quotes:
     "spatialIndex": true}]}]
 ```
 
-- `tableType`: `TABLE`, `VIEW`, `TEMPORARY`, `TABLE_LINK`, `FOREIGN_TABLE` or `UNKOWN`.
+- `tableType`: `TABLE`, `VIEW`, `TEMPORARY`, `TABLE_LINK`, `FOREIGN_TABLE` or `UNKNOWN`.
 - `fid`: the single column `INTEGER` or `BIGINT` primary key, `null` if the
   table has none; `fidIndex` is its 1-based column index (0 if none).
 - `geometryType` / `geometryTypeCode`: `GEOMETRY` / 0 when the column does not
@@ -108,9 +111,9 @@ reads the data. Names are returned as stored in the catalog, without quotes:
 | `void *h2gis_fetch_batch(thread, long long rs, int n, long long *size_out)` | buffer with up to `n` rows; fewer rows means the end |
 | `void *h2gis_fetch_one(thread, long long rs, long long *size_out)` | buffer with the next row (0 rows at the end) |
 | `char *h2gis_get_metadata_json(thread, long long rs)` | `[{"name":..., "typeName":..., "type":...}]`; free it |
-| `int *h2gis_get_column_types(thread, long long rs, long long *count_out)` | array of type codes; free it |
+| `int *h2gis_get_column_types(thread, long long rs, long long *count_out)` | array of type codes; free it. NULL with `*count_out` = 0 when there is no column, -1 on error |
 | `void h2gis_close_query(thread, long long handle)` | closes a result set or a statement (and the result sets of a prepared statement) |
-| `long long h2gis_free_result_set(thread, long long rs)` | closes a result set but keeps the handle (prefer `h2gis_close_query`) |
+| `long long h2gis_free_result_set(thread, long long rs)` | closes a result set like `h2gis_close_query`: the handle is dropped; 0 on success, 1 if `rs` is not an open result set (prefer `h2gis_close_query`) |
 
 ## Result buffer
 
