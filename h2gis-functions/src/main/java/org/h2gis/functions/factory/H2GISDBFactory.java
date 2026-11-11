@@ -58,18 +58,40 @@ public class H2GISDBFactory {
     }
 
     /**
-     * Open the connection to an existing database
-     * @param dbName Database name
+     * Open the connection to an existing database, never creating one
+     * (IFEXISTS=TRUE): a wrong path gives an error instead of a new empty
+     * database.
+     * @param dbName Database name, relative to target/test-resources (as for
+     *               createSpatialDataBase), an absolute path or a file:// URI;
+     *               the extension .mv.db is optional
      * @return Active connection
-     * @throws SQLException Exception
+     * @throws SQLException Exception, if the database does not exist
      */
     public static Connection openSpatialDataBase(String dbName) throws SQLException {
-        String dbFilePath = getDataBasePath(dbName);       
-        String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
+        String databasePath = "jdbc:h2:" + getExistingDataBasePath(dbName) + H2_PARAMETERS + ";IFEXISTS=TRUE";
         org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
-       return DriverManager.getConnection(databasePath,
+        return DriverManager.getConnection(databasePath,
                 DEFAULT_USER, DEFAULT_PASSWORD);
+    }
+
+    /**
+     * Path of an existing database for the JDBC URL: an absolute path or a
+     * file:// URI is used as is (unlike getDataBasePath, which puts every
+     * name under target/test-resources), and the extension .mv.db is removed,
+     * as H2 adds it.
+     * @param dbName database name, absolute path or file:// URI
+     * @return the path of the database, without extension
+     */
+    private static String getExistingDataBasePath(String dbName) {
+        String path = dbName.endsWith(".mv.db") ? dbName.substring(0, dbName.length() - ".mv.db".length()) : dbName;
+        if (path.startsWith("file://")) {
+            return new File(URI.create(path)).getAbsolutePath();
+        }
+        if (new File(path).isAbsolute()) {
+            return path;
+        }
+        return getDataBasePath(path);
     }
     /**
      * Create a spatial database
@@ -105,7 +127,7 @@ public class H2GISDBFactory {
         return createDataSource(dbName, initSpatial, H2_PARAMETERS);
     }
 
-     /**
+    /**
      * Create a database, init spatial funcyion and return a DataSource
      * @param properties for the opening of the DataBase.
      * @return a DataSource
@@ -135,14 +157,14 @@ public class H2GISDBFactory {
         return dataSource;
     }
 
-        /**
-         * Create a database and return a DataSource
-         * @param dbName Database name
-         * @param initSpatial true to load the spatial functions
-         * @param h2Parameters Additional h2 parameters
-         * @return DataSource instance
-         * @throws SQLException SQL issue
-         */
+    /**
+     * Create a database and return a DataSource
+     * @param dbName Database name
+     * @param initSpatial true to load the spatial functions
+     * @param h2Parameters Additional h2 parameters
+     * @return DataSource instance
+     * @throws SQLException SQL issue
+     */
     public static DataSource createDataSource(String dbName ,boolean initSpatial, String h2Parameters) throws SQLException {
         // Create H2 memory DataSource
         Properties properties = new Properties();
@@ -153,16 +175,16 @@ public class H2GISDBFactory {
         JdbcDataSource dataSource = new JdbcDataSource();
         setupH2DataSource(dataSource, properties);
         // Init spatial ext
-        if(initSpatial) {            
+        if(initSpatial) {
             try (Connection connection = dataSource.getConnection()) {
                 H2GISFunctions.load(connection);
             }
         }
         return dataSource;
     }
-    
+
     /**
-     * 
+     *
      * @param dbName Database name
      * @param h2_PARAMETERS User defined h2 parameters
      * @return The path of the database
@@ -174,7 +196,7 @@ public class H2GISDBFactory {
         if(dbFile.exists()) {
             dbFile.delete();
         }
-        
+
         dbFile = new File(dbFilePath +".mv.db");
         if(dbFile.exists()) {
             dbFile.delete();
@@ -202,7 +224,7 @@ public class H2GISDBFactory {
         }
         return connection;
     }
-    
+
     /**
      * Create a spatial database and register all H2GIS functions
      * @param dbName filename
