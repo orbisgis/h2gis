@@ -80,9 +80,12 @@ public class GraalCInterface {
      * h2gis_add_batch / h2gis_execute_batch, spatial functions loaded for
      * in-memory databases.</li>
      * <li>3: h2gis_get_tables_json, h2gis_find_srid.</li>
+     * <li>4: h2gis_get_versions; the error of a connection to a database
+     * written by another version of H2 says so, with the versions of the
+     * library. Nothing else changes: a client of version 3 works as is.</li>
      * </ul>
      */
-    public static final int C_API_VERSION = 3;
+    public static final int C_API_VERSION = 4;
 
     private static final Logger LOGGER = Logger.getLogger(GraalCInterface.class.getName());
 
@@ -135,6 +138,20 @@ public class GraalCInterface {
     @CEntryPoint(name = "h2gis_version")
     public static int h2gisVersion(IsolateThread thread) {
         return C_API_VERSION;
+    }
+
+    /**
+     * Versions of the components of the library, to know which databases it
+     * can read without opening one: H2 does not read the files of some other
+     * versions.
+     *
+     * @param thread the current isolate thread
+     * @return a UTF-8 JSON object to free with h2gis_free_string:
+     * {"cApi":4,"h2gis":"2.2.6","h2":"2.5.252","jts":"1.20.0"}
+     */
+    @CEntryPoint(name = "h2gis_get_versions")
+    public static CCharPointer h2gisGetVersions(IsolateThread thread) {
+        return toNativeString(NativeInfo.versionsJson(C_API_VERSION));
     }
 
     /**
@@ -217,6 +234,11 @@ public class GraalCInterface {
             return handle;
         } catch (Exception e) {
             setError("Failed to open H2 connection", e);
+            // A database written by another version of H2: say so, with the versions of this library
+            String hint = NativeInfo.connectionHint(e);
+            if (!hint.isEmpty()) {
+                lastError.set(lastError.get() + hint);
+            }
             return 0;
         }
     }

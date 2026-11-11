@@ -35,7 +35,8 @@ Some examples in C and in Python (ctypes) are in available in [examples](example
 
 | Function | Returns |
 |---|---|
-| `int h2gis_version(thread)` | C API version (3) |
+| `int h2gis_version(thread)` | C API version (4) |
+| `char *h2gis_get_versions(thread)` | JSON object of the versions built into the library, without opening a database: `{"cApi":4,"h2gis":"2.2.6","h2":"2.5.252","jts":"1.20.0"}`; free it. Since version 4 |
 | `char *h2gis_get_last_error(thread)` | last error of the thread, `""` if none; cleared once read; free it |
 | `void h2gis_free_result_buffer(thread, void *ptr)` | frees a buffer or string returned by the library |
 | `void h2gis_free_string(thread, char *ptr)` | alias of `h2gis_free_result_buffer` |

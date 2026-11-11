@@ -99,6 +99,9 @@ int main(void) {
         return 1;
     }
     printf("H2GIS C API version %d\n", h2gis_version(thread));
+    char *versions = h2gis_get_versions(thread); /* {"cApi":4,"h2gis":...,"h2":...,"jts":...} */
+    printf("Versions: %s\n", versions);
+    h2gis_free_string(thread, versions);
 
     /* "mem:demo" = in-memory database; a file database is "/path/to/db" */
     long long conn = h2gis_connect(thread, "mem:demo", "sa", "");
