@@ -23,6 +23,7 @@ thread_p = ctypes.c_void_p
 jlong, jint = ctypes.c_int64, ctypes.c_int32   # Java long and int, on every platform
 SIGNATURES = {
     "h2gis_version": ([thread_p], jint),
+    "h2gis_get_versions": ([thread_p], ctypes.c_void_p),       # JSON string to free
     "h2gis_get_last_error": ([thread_p], ctypes.c_void_p),     # string to free
     "h2gis_free_string": ([thread_p, ctypes.c_void_p], None),
     "h2gis_free_result_buffer": ([thread_p, ctypes.c_void_p], None),
@@ -129,11 +130,12 @@ def fetch(rs, batch=None):
 
 # --- a session --------------------------------------------------------------------
 print("H2GIS C API version", lib.h2gis_version(thread))
+print("Versions:", take_string(lib.h2gis_get_versions(thread)))
 conn = lib.h2gis_connect(thread, b"mem:demo", b"sa", b"")   # or b"/path/to/db"
 check(conn, "connect")
 
 check(lib.h2gis_execute(thread, conn, b"CREATE TABLE PLACES(ID INT PRIMARY KEY, NAME VARCHAR, "
-                        b"POP BIGINT, THE_GEOM GEOMETRY(POINT, 4326))") >= 0, "create")
+                                      b"POP BIGINT, THE_GEOM GEOMETRY(POINT, 4326))") >= 0, "create")
 
 # Batch insert with a prepared statement; NULL population and geometry
 stmt = lib.h2gis_prepare(thread, conn, b"INSERT INTO PLACES VALUES (?, ?, ?, ST_GeomFromText(?, 4326))")

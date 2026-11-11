@@ -19,7 +19,8 @@ LD_LIBRARY_PATH=$LIB ./h2gis_example
 ```
 
 ```
-H2GIS C API version 2
+H2GIS C API version 4
+Versions: {"cApi":4,"h2gis":"2.2.6","h2":"2.5.252","jts":"1.20.0"}
 3 rows inserted
 
 ID            NAME          POP           X             THE_GEOM

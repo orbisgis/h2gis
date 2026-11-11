@@ -38,6 +38,7 @@
 - Use H2 geometryValue when possible to speed up functions
 - Expose in one pass all metadata for a Table
 - Free H2 resources with GraalVM module 
+- Add a function to GraalVM module to return the H2, H2GIS and JTS versions
 
 
 
