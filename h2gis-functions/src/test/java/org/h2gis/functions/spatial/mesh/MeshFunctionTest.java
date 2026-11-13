@@ -280,6 +280,19 @@ public class MeshFunctionTest {
     }
 
     @Test
+    public void test_ST_VORONOICocircularSitesClip() throws Exception {
+        String envelope = "'POLYGON ((570570.9147956 5278553.167066844, 570570.9147956 5278588.4268178, 570604.9541034396 5278588.4268178, 570604.9541034396 5278553.167066844, 570570.9147956 5278553.167066844))'::GEOMETRY";
+        try (ResultSet rs = st.executeQuery("SELECT ST_AREA(ST_VORONOI('MULTIPOINT (" +
+                "(570573 5278585.4), (570573 5278585.9), (570572.9 5278586.4), (570573.9 5278586.4), (570574.9 5278586.3), (570575.9 5278586.2), " +
+
+                "(570572.4 5278586.5), (570571.9 5278586.5))'::GEOMETRY, 2, "  +
+                envelope + ")) AS AREA_CELLS, ST_AREA(" + envelope + ") AS AREA_ENVELOPE")) {
+            assertTrue(rs.next());
+            assertEquals(rs.getDouble("AREA_ENVELOPE"), rs.getDouble("AREA_CELLS"), 1e-3);
+        }
+    }
+
+    @Test
     public void testSimpleST_TESSELATE() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_TESSELATE('POLYGON ((-6 -2, -8 2, 0 8, -8 -7, -10 -1, -6 -2))') the_geom")) {
             assertTrue(rs.next());

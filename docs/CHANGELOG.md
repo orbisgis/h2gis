@@ -39,6 +39,7 @@
 - Expose in one pass all metadata for a Table
 - Free H2 resources with GraalVM module 
 - Add a function to GraalVM module to return the H2, H2GIS and JTS versions
+- Use OverlayNG operator in ST_Voronoi instead of the old intersection method 
 
 
 
