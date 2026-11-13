@@ -23,6 +23,9 @@ package org.h2gis.functions.spatial.mesh;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.Voronoi;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.PolygonExtracter;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.triangulate.VoronoiDiagramBuilder;
 import org.locationtech.jts.triangulate.quadedge.QuadEdge;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
@@ -92,10 +95,10 @@ public class ST_Voronoi extends DeterministicScalarFunction {
             }
             if(outputDimension == 2) {
                 // Output directly the polygons
-                return (GeometryCollection) diagramBuilder.getDiagram(geomCollection.getFactory());
+                return clippedDiagram(diagramBuilder, geomCollection, envelope); // MODIFIÉ
             } else if (outputDimension == 1) {
                 // Convert into lineStrings.
-                return mergeTrianglesEdges((GeometryCollection)diagramBuilder.getDiagram(geomCollection.getFactory()));
+                return mergeTrianglesEdges(clippedDiagram(diagramBuilder, geomCollection, envelope)); // MODIFIÉ
             } else {
                 // Extract triangles Circumcenter
                 QuadEdgeSubdivision subdivision = diagramBuilder.getSubdivision();
@@ -176,5 +179,48 @@ public class ST_Voronoi extends DeterministicScalarFunction {
         public void reset() {
             firstPt = null;
         }
+    }
+
+    /**
+     * Compute the Voronoi cells and clip them with the envelope.
+     * VoronoiDiagramBuilder#getDiagram clips the cells with the old Geometry#intersection.
+     * It fails with a "found non-noded intersection" exception when a cell
+     * has almost coincident vertices (e.g. cocircular sites)
+     *
+     * @param diagramBuilder the diagram builder, with its sites
+     * @param sites the input sites
+     * @param envelope the clip envelope, if null the envelope of the sites expanded by its diameter is used
+     *                 (same default as VoronoiDiagramBuilder class)
+     * @return the Voronoi cells
+     */
+    private static GeometryCollection clippedDiagram(VoronoiDiagramBuilder diagramBuilder, Geometry sites,
+                                                        Geometry envelope) {
+        GeometryFactory factory = sites.getFactory();
+        Envelope clipEnv;
+        if (envelope != null) {
+            clipEnv = envelope.getEnvelopeInternal();
+        } else {
+            clipEnv = new Envelope(sites.getEnvelopeInternal());
+            clipEnv.expandBy(clipEnv.getDiameter());
+        }
+        Geometry clipPoly = factory.toGeometry(clipEnv);
+        List<Geometry> cells = diagramBuilder.getSubdivision().getVoronoiCellPolygons(factory);
+        List<Geometry> clipped = new ArrayList<Geometry>(cells.size());
+        for (Geometry cell : cells) {
+            Geometry result = null;
+            Envelope cellEnv = cell.getEnvelopeInternal();
+            // don't clip unless necessary
+            if (clipEnv.contains(cellEnv)) {
+                result = cell;
+            } else if (clipEnv.intersects(cellEnv)) {
+                result = OverlayNGRobust.overlay(clipPoly, cell, OverlayNG.INTERSECTION);
+                // keep the site of the cell
+                result.setUserData(cell.getUserData());
+            }
+            if (result != null && !result.isEmpty()) {
+                clipped.add(result);
+            }
+        }
+        return factory.createGeometryCollection(GeometryFactory.toGeometryArray(clipped));
     }
 }
