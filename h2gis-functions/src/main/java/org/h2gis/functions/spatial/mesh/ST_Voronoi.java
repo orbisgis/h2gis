@@ -189,8 +189,7 @@ public class ST_Voronoi extends DeterministicScalarFunction {
      *
      * @param diagramBuilder the diagram builder, with its sites
      * @param sites the input sites
-     * @param envelope the clip envelope, if null the envelope of the sites expanded by its diameter is used
-     *                 (same default as VoronoiDiagramBuilder class)
+     * @param envelope the clip envelope
      * @return the Voronoi cells
      */
     private static GeometryCollection clippedDiagram(VoronoiDiagramBuilder diagramBuilder, Geometry sites,
@@ -209,12 +208,12 @@ public class ST_Voronoi extends DeterministicScalarFunction {
         for (Geometry cell : cells) {
             Geometry result = null;
             Envelope cellEnv = cell.getEnvelopeInternal();
-            // don't clip unless necessary
+            // not necessary
             if (clipEnv.contains(cellEnv)) {
                 result = cell;
             } else if (clipEnv.intersects(cellEnv)) {
                 result = OverlayNGRobust.overlay(clipPoly, cell, OverlayNG.INTERSECTION);
-                // keep the site of the cell
+                // keep the cell
                 result.setUserData(cell.getUserData());
             }
             if (result != null && !result.isEmpty()) {
