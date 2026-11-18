@@ -361,7 +361,8 @@ public class H2GISFunctions {
                 new SHPTable(),
                 new DBFTable(),
                 new FGBTable(),
-                new ASCTable()
+                new ASCTable(),
+                new ST_GeomFromEWKT()
         };
     }
 

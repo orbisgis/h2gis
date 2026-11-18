@@ -20,8 +20,12 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2.message.DbException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
+
+import java.sql.SQLException;
 
 /**
  * Convert a EWKT representation of a geometry to a geometry object
@@ -39,8 +43,14 @@ public class ST_GeomFromEWKT extends DeterministicScalarFunction {
         return "execute";
     }
 
-    public ValueGeometry execute(String ewkt){
-
-        return ValueGeometry.;
+    public static Geometry execute(String ewkt) throws SQLException {
+        if (ewkt == null) {
+            return null;
+        }
+        try {
+            return ValueGeometry.get(ewkt).getGeometry();
+        } catch (DbException ex) {
+            throw new SQLException("Cannot parse the EWKT format.", ex);
+        }
     }
 }
