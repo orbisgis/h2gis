@@ -72,5 +72,5 @@ SELECT ST_MaximumInscribedCircle('GEOMETRYCOLLECTION(
 
 ## See also
 
-* [`ST_MinimumDiameter`](../ST_MinimumDiameter)
+* [`ST_MaximumInscribedCircleRadius`](../ST_MaximumInscribedCircleRadius), [`ST_MinimumDiameter`](../ST_MinimumDiameter)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_MaximumInscribedCircle.java" target="_blank">Source code</a>
