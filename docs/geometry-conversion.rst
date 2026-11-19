@@ -62,6 +62,8 @@ The following geometry conversion functions are available:
      - Geometry's coordinates → MULTIPOINT
    * - :doc:`ST_ToMultiSegments`
      - GEOMETRY(COLLECTION) → MULTILINESTRING
+   * - :doc:`ST_GeomFromEWKT`
+     - Extended Well Known Text → Geometry
 
 
 .. toctree::
@@ -93,4 +95,5 @@ The following geometry conversion functions are available:
     ST_ToMultiLine
     ST_ToMultiPoint
     ST_ToMultiSegments
+    ST_GeomFromEWKT
 
