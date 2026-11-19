@@ -277,6 +277,9 @@ public class AscReaderDriver {
             Statement st = connection.createStatement();
             PreparedStatement preparedStatement;
 
+            //Check from the header if the nodata cells can be stored before creating the table
+            checkNodataType();
+
             if (!JDBCUtilities.tableExists(connection,outputTable)) {
                 if (as3DPoint) {
                     if (zType == 1) {
@@ -332,8 +335,22 @@ public class AscReaderDriver {
                 cellProgress.endStep();
             }
             return outputTable;
-        } catch (NoSuchElementException | NumberFormatException | IOException | SQLException ex) {
+        } catch (NoSuchElementException | NumberFormatException | IOException ex) {
             throw new SQLException("Unexpected word " + lastWord, ex);
+        }
+    }
+
+    /**
+     * When the nodata cells are imported in an INTEGER Z column, the NODATA_value
+     * of the header must be an integer value.
+     *
+     * @throws SQLException if the NODATA_value cannot be stored as an INTEGER
+     */
+    private void checkNodataType() throws SQLException {
+        if (importNodata && zType == 1
+                && (noData != Math.rint(noData) || noData < Integer.MIN_VALUE || noData > Integer.MAX_VALUE)) {
+            throw new SQLException("The NODATA_value " + noData + " cannot be stored as an INTEGER. "
+                    + "Use the DOUBLE type for Z (type = 2) or do not import the nodata cells.");
         }
     }
 
@@ -372,7 +389,8 @@ public class AscReaderDriver {
         /** next cell to read */
         private int row = 0;
         private int col = 0;
-        private int index = 0;
+        /** PK of the next cell, starts at 1 like the other drivers */
+        private int index = 1;
         private boolean done = false;
 
         private CellReader(InputStream inputStream, int srid) throws IOException {

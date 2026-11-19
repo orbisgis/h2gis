@@ -10,31 +10,36 @@ ASCRead(VARCHAR path, VARCHAR myTable);
 ASCRead(VARCHAR path, VARCHAR myTable, BOOLEAN deleteTable);
 
 ASCRead(VARCHAR path, INTEGER type);
-ASCRead(VARCHAR path, INTEGER type, BOOLEAN deleteTable);
-
 ASCRead(VARCHAR path, VARCHAR myTable, INTEGER type);
-ASCRead(VARCHAR path, VARCHAR myTable, INTEGER type, BOOLEAN deleteTable);
 
 ASCRead(VARCHAR path, VARCHAR myTable, GEOMETRY geomFilter, 
         INTEGER downScaleInt, BOOLEAN asPolygons);
 ASCRead(VARCHAR path, VARCHAR myTable, GEOMETRY geomFilter, 
         INTEGER downScaleInt, BOOLEAN asPolygons, BOOLEAN deleteTable);
+ASCRead(VARCHAR path, VARCHAR myTable, GEOMETRY geomFilter, 
+        INTEGER downScaleInt, BOOLEAN asPolygons, BOOLEAN deleteTable,
+        VARCHAR encoding, INTEGER type);
+ASCRead(VARCHAR path, VARCHAR myTable, GEOMETRY geomFilter, 
+        INTEGER downScaleInt, BOOLEAN asPolygons, BOOLEAN deleteTable,
+        VARCHAR encoding, INTEGER type, BOOLEAN importNodata);
 ```
 
 ## Description
 
 Import Esri ASCII Raster file as `POINT` or `POLYGON` geometries.
 
-Pixels are converted into `PointZ` (or `PolygonZ`) geometry with Z as the pixel value (stored as `DOUBLE`).
+Pixels are converted into `PointZ` (or `PolygonZ`) geometry with Z as the pixel value (stored as `DOUBLE` by default). The cells equal to the `NODATA_value` of the file are not imported, unless `importNodata` is `true`.
 
 Where:
 
-- `path` : adress of the `.asc` file. This file may be zipped in a `.gz` file *(in this case, the `ASCRead` driver will unzip on the fly the `.gz` file)*, 
+- `path` : adress of the `.asc` file. This file may be zipped in a `.gz` file *(in this case, the `ASCRead` driver will unzip on the fly the `.gz` file)*,
 - `myTable` : name of the output table,
 - `type` : indicates whether the `z` data type will be casted to INTEGER (`1`) or left as DOUBLE (`2` - default value),
 - `geomFilter` : extract only pixels that intersects the provided geometry envelope (`null` or empty argument to disable filter),
 - `downScaleInt` : a coefficient used for exporting less cells (`1` all cells, `2` for size / 2, ...),
 - `asPolygons` : if `true`, pixels are converted into polygons (default value = `false` return points),
+- `encoding` : encoding of the `.asc` file (`null` for `UTF-8`, the default value),
+- `importNodata` : if `true`, the cells equal to the `NODATA_value` are imported, with the `NODATA_value` as Z (default value = `false`, these cells are ignored). With `type` = `1`, the `NODATA_value` must be an integer, otherwise an error is thrown before the import,
 - `deleteTable` : if `true` and table `tableName` already exists in the database, then table `tableName` will be removed / replaced by the new one. Else (no `deleteTable` parameter or `deleteTable` equal to `false`), throw an exception if the `tableName` already exist.
 
 ## Examples
@@ -112,7 +117,7 @@ Here we want to convert Z value into INTEGER
 CALL ASCREAD('/home/user/dem.asc', 1);
 ```
 
-Returns the table `myDEMTable`
+Returns the table `dem`
 
 |   PK  | THE_GEOM |  Z  |
 |:-----:|:--------:|:---:|
@@ -167,7 +172,7 @@ Returns the table `myDEMTable`, with the following values:
 
 ### 6. Using `asPolygons`
 
-Here we want to have a resulting `POLYGON` layer. 
+Here we want to have a resulting `POLYGON` layer.
 
 ```sql
 CALL ASCREAD('/home/user/dem.asc', 'myDEMTable', null, 1, true);
@@ -198,8 +203,50 @@ Returns the table `myDEMTable`, with the following values:
 |  16  | POLYGON Z ((25 15 17, 25 10 17, 30 10 17, 30 15 17, 25 15 17)) |  17.0 |
 
 
+### 7. Using `importNodata`
+
+We want to read the following `.asc` file, named `dem_nodata`.
+
+```java
+ncols        2
+nrows        2
+xllcorner    0
+yllcorner    0
+cellsize     1
+NODATA_value -9999
+ 1 2
+ 3 -9999
+```
+
+By default, the nodata cell is not imported:
+
+```sql
+CALL ASCREAD('/home/user/dem_nodata.asc', 'myDEMTable');
+```
+
+| PK   |       THE_GEOM        | Z   |
+|:----:|:---------------------:|:---:|
+| 1    | POINT Z (0.5 1.5 1)   | 1.0 |
+| 2    | POINT Z (1.5 1.5 2)   | 2.0 |
+| 3    | POINT Z (0.5 0.5 3)   | 3.0 |
+
+Here we want to import the nodata cell, with Z as INTEGER:
+
+```sql
+CALL ASCREAD('/home/user/dem_nodata.asc', 'myDEMTable', null, 1, false, true, 'UTF-8', 1, true);
+```
+
+| PK   |        THE_GEOM          | Z     |
+|:----:|:------------------------:|:-----:|
+| 1    | POINT Z (0.5 1.5 1)      | 1     |
+| 2    | POINT Z (1.5 1.5 2)      | 2     |
+| 3    | POINT Z (0.5 0.5 3)      | 3     |
+| 4    | POINT Z (1.5 0.5 -9999)  | -9999 |
+
+**Remark**: If the `NODATA_value` is a decimal value (e.g. `-3.4e38`), use `type` = `2` to import the nodata cells.
+
 ## See also
 
 * [`CSVRead`](../CSVRead)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/io/asc/AscRead.java"
-target="_blank">Source code</a>
+  target="_blank">Source code</a>
