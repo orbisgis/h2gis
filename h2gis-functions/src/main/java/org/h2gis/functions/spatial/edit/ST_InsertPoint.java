@@ -200,7 +200,7 @@ public class ST_InsertPoint extends DeterministicScalarFunction {
         int index = -1;
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
             double distCurr = computeDistance(polygon.getInteriorRingN(i),vertexPoint, tolerance);
-            if (distCurr<tolerance){
+            if (distCurr<=tolerance){
                 index = i;
             }
         }

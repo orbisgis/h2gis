@@ -28,15 +28,17 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS
  */
 public class ST_AddPoint extends DeterministicScalarFunction {
 
     public static final double PRECISION = 10E-6;
 
     public ST_AddPoint() {
-        addProperty(PROP_REMARKS, "Adds a point to a geometry. \n"
-                + "An index to set the position of the point (0-based index).");
+        addProperty(PROP_REMARKS, "Adds a point to a LINESTRING. \n"
+                + "Without index, the point is appended to the LINESTRING.\n"
+                + "With an index (0-based), the point replaces the vertex at this index,"
+                + " an index equal to the number of points appends the point.");
     }
 
     @Override
@@ -71,7 +73,7 @@ public class ST_AddPoint extends DeterministicScalarFunction {
         if (geometry instanceof LineString) {
             return insertVertexInLineString((LineString) geometry, point, position, factory);
         }
-        throw new SQLException("First argument must be a LINESTRING");
+        throw new SQLException("First argument must be a LINESTRING, use ST_InsertPoint for the other geometries");
     }
 
 
@@ -110,7 +112,7 @@ public class ST_AddPoint extends DeterministicScalarFunction {
         if (geometry instanceof LineString) {
             return insertVertexInLineString((LineString) geometry, point, position, factory);
         }
-        throw new SQLException("First argument must be a LINESTRING");
+        throw new SQLException("First argument must be a LINESTRING, use ST_InsertPoint for the other geometries");
     }
 
     /**
@@ -166,44 +168,39 @@ public class ST_AddPoint extends DeterministicScalarFunction {
         return factory.createLineString(addCoordinate(lineString.getCoordinateSequence(), vertexPoint.getCoordinate(),position ));
     }
     /**
-     * Expand the coordinates array and add a coordinate at the given position
+     * Put a coordinate in the coordinates array of a LineString.
+     * If the position is lower than the number of coordinates, the coordinate
+     * at this position is replaced, otherwise the coordinate is appended.
+     * The Z and M values of the new coordinate follow the dimension of the
+     * LineString, 0 when the point has no Z or M value.
      *
      * @param coorseq {@link CoordinateSequence}
-     * @param position vertex position
-     * @param point {@link Point}
+     * @param point the new coordinate
+     * @param position vertex position (0-based)
      * @return Coordinate array
      */
     public static  Coordinate[] addCoordinate(CoordinateSequence coorseq,   Coordinate point, int position) {
-        if(position<=coorseq.size() ){
-            Coordinate coord = new CoordinateXY(point);
-            if(coorseq.hasZ()&& coorseq.hasM()){
-                coord = new CoordinateXYZM(point);
-            }
-            else if(coorseq.hasZ()){
-                coord =new Coordinate(point.getX(), point.getY(), Double.isNaN(point.getZ())?0:point.getZ());
-            }
-            else if(coorseq.hasM()){
-                coord = new CoordinateXYM(point.getX(), point.getY(), Double.isNaN(point.getM())?0:point.getM());
-            }
-            Coordinate[] coordinates =  coorseq.toCoordinateArray();
-            coordinates[position]=coord;
-            return coordinates;
-        }else {
-            Coordinate[] coordinates =  coorseq.toCoordinateArray();
-            Coordinate[] destArray = new Coordinate[coordinates.length + 1];
-            Coordinate coord = new CoordinateXY(point);
-            if(coorseq.hasZ()&& coorseq.hasM()){
-                coord = new CoordinateXYZM(point);
-            }
-            else if(coorseq.hasZ()){
-                coord =new Coordinate(point.getX(), point.getY(), Double.isNaN(point.getZ())?0:point.getZ());
-            }
-            else if(coorseq.hasM()){
-                coord = new CoordinateXYM(point);
-            }
-            CoordinateArrays.copyDeep(coordinates, 0, destArray, 0, coordinates.length);
-            destArray[position-1] = coord;
-            return destArray;
+        Coordinate coord;
+        double z = Double.isNaN(point.getZ()) ? 0 : point.getZ();
+        double m = Double.isNaN(point.getM()) ? 0 : point.getM();
+        if (coorseq.hasZ() && coorseq.hasM()) {
+            coord = new CoordinateXYZM(point.getX(), point.getY(), z, m);
+        } else if (coorseq.hasZ()) {
+            coord = new Coordinate(point.getX(), point.getY(), z);
+        } else if (coorseq.hasM()) {
+            coord = new CoordinateXYM(point.getX(), point.getY(), m);
+        } else {
+            coord = new CoordinateXY(point.getX(), point.getY());
         }
+        // copy the coordinates, the input geometry must not be modified
+        Coordinate[] coordinates = CoordinateArrays.copyDeep(coorseq.toCoordinateArray());
+        if (position < coordinates.length) {
+            coordinates[position] = coord;
+            return coordinates;
+        }
+        Coordinate[] destArray = new Coordinate[coordinates.length + 1];
+        System.arraycopy(coordinates, 0, destArray, 0, coordinates.length);
+        destArray[coordinates.length] = coord;
+        return destArray;
     }
 }

@@ -52,7 +52,10 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
                 + "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POLYGONS);\n"
                 + "GEOM_FILTER - Extract only pixels that intersects the provided geometry envelope, null to disable filter\n"
                 + "DOWNSCALE_INT - Coefficient used for exporting less cells (1 all cells, 2 for size / 2)\n"
-                + "AS_POLYGONS - If true pixels are converted to polygons. (default false return points)\n");
+                + "AS_POLYGONS - If true pixels are converted to polygons. (default false return points)\n"
+                + "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POLYGONS, DELETE_TABLE, ENCODING, TYPE, IMPORT_NODATA);\n"
+                + "ENCODING - File encoding, null for UTF-8\n"
+                + "IMPORT_NODATA - If true cells equal to NODATA_value are imported. (default false)\n");
     }
 
     @Override
@@ -250,10 +253,40 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * 2 for size / 2)
      * @param extractAsPolygons If true pixels are converted to polygon.
      * (default false)
+     * @param deleteTable true to delete the output table if it already exists
+     * @param encoding file encoding, null to use UTF-8
+     * @param zType type of the Z column, 1 for integer, 2 for double
      * @throws IOException Throw exception is the file cannot be accessed
      * @throws SQLException Throw exception is the file name contains unsupported characters
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons, boolean deleteTable, String encoding, int zType) throws IOException, SQLException {
+        readAscii(connection, fileName, tableReference, envelope, downScale, extractAsPolygons, deleteTable, encoding, zType, false);
+    }
+
+    /**
+     * Import a small subset of ASC file.
+     *
+     * @param connection database
+     * @param fileName input file
+     * @param tableReference output table name
+     * @param envelope Extract only pixels that intersects the provided geometry
+     * envelope, null to disable filter
+     * @param downScale Coefficient used for exporting less cells (1 all cells,
+     * 2 for size / 2)
+     * @param extractAsPolygons If true pixels are converted to polygon.
+     * (default false)
+     * @param deleteTable true to delete the output table if it already exists
+     * @param encoding file encoding, null to use UTF-8
+     * @param zType type of the Z column, 1 for integer, 2 for double
+     * @param importNodata true to import the cells equal to the NODATA_value
+     * (default false)
+     * @throws IOException Throw exception is the file cannot be accessed
+     * @throws SQLException Throw exception is the file name contains unsupported characters
+     */
+    public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons, boolean deleteTable, String encoding, int zType, boolean importNodata) throws IOException, SQLException {
+        if (!(zType == 1 || zType == 2)) {
+            throw new SQLException("Please use 1 for integer or 2 for double conversion");
+        }
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
         if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
@@ -262,9 +295,12 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
             ascReaderDriver.setDownScale(downScale);
         }
         ascReaderDriver.setAs3DPoint(!extractAsPolygons);
-        ascReaderDriver.setEncoding(encoding);
+        if (encoding != null) {
+            ascReaderDriver.setEncoding(encoding);
+        }
         ascReaderDriver.setZType(zType);
         ascReaderDriver.setDeleteTable(deleteTable);
+        ascReaderDriver.setImportNodata(importNodata);
         importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
     }
 }

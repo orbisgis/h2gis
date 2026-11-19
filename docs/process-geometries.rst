@@ -35,6 +35,8 @@ The following functions are available to process geometries:
      - Compute a single buffer on one side
    * - :doc:`ST_Simplify`
      - Simplify a Geometry using Douglas-Peuker algorithm 
+   * - :doc:`ST_SimplifyPolygonHull`
+     - Simplify a Polygon with an outer or inner hull, preserving its topology
    * - :doc:`ST_SimplifyPreserveTopology`
      - Simplify a Geometry, preserving its topology
    * - :doc:`ST_SimplifyVW`
@@ -64,6 +66,7 @@ The following functions are available to process geometries:
     ST_RingSideBuffer
     ST_SideBuffer
     ST_Simplify
+    ST_SimplifyPolygonHull
     ST_SimplifyPreserveTopology
     ST_SimplifyVW
     ST_Snap

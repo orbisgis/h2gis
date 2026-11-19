@@ -41,6 +41,9 @@
 - Add a function to GraalVM module to return the H2, H2GIS and JTS versions
 - Use OverlayNG operator in ST_Voronoi instead of the old intersection method 
 - Add ST_GeomFromEWKT function
+- Add the ability to import ‘nodata’ values using the ASC driver
+- Fix ST_AddPoint and ST_InsertPoint documentation 
+- Fix ST_AddPoint with an index equal to the number of points
 
 
 

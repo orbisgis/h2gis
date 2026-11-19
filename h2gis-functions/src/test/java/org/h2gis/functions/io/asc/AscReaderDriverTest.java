@@ -498,4 +498,122 @@ public class AscReaderDriverTest {
             stat.execute("DROP TABLE ASC_IMPORTED");
         }
     }
+
+    @Test
+    public void testASCReadImportNodata() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            String path = StringUtils.quoteStringSQL(AscReaderDriverTest.class.getResource("nodata_int.asc").getPath());
+            // Default: the nodata cells are not imported
+            stat.execute("CALL ASCREAD(" + path + ", 'NODATA_INT', NULL, 1, false, true, 'UTF-8', 1)");
+            try (ResultSet rs = stat.executeQuery("SELECT COUNT(*) FROM NODATA_INT")) {
+                assertTrue(rs.next());
+                assertEquals(3, rs.getInt(1));
+            }
+            stat.execute("CALL ASCREAD(" + path + ", 'NODATA_INT', NULL, 1, false, true, 'UTF-8', 1, false)");
+            try (ResultSet rs = stat.executeQuery("SELECT COUNT(*) FROM NODATA_INT")) {
+                assertTrue(rs.next());
+                assertEquals(3, rs.getInt(1));
+            }
+            // integer Z, nodata imported, as points
+            stat.execute("CALL ASCREAD(" + path + ", 'NODATA_INT', NULL, 1, false, true, 'UTF-8', 1, true)");
+            try (ResultSet rs = stat.executeQuery("SELECT COUNT(*) FROM NODATA_INT")) {
+                assertTrue(rs.next());
+                assertEquals(4, rs.getInt(1));
+            }
+            try (ResultSet rs = stat.executeQuery("SELECT THE_GEOM, Z FROM NODATA_INT WHERE Z = -9999")) {
+                assertTrue(rs.next());
+                assertInstanceOf(Integer.class, rs.getObject("Z"));
+                GeometryAsserts.assertGeometryEquals("POINT Z (1.5 0.5 -9999)", (Geometry) rs.getObject("THE_GEOM"));
+                assertFalse(rs.next());
+            }
+            // double Z, nodata imported, as polygons, null encoding is UTF-8
+            stat.execute("CALL ASCREAD(" + path + ", 'NODATA_INT', NULL, 1, true, true, NULL, 2, true)");
+            try (ResultSet rs = stat.executeQuery("SELECT THE_GEOM, Z FROM NODATA_INT WHERE Z = -9999")) {
+                assertTrue(rs.next());
+                assertInstanceOf(Double.class, rs.getObject("Z"));
+                GeometryAsserts.assertGeometryEquals("POLYGON Z ((1 1 -9999, 1 0 -9999, 2 0 -9999, 2 1 -9999, 1 1 -9999))", (Geometry) rs.getObject("THE_GEOM"));
+                assertFalse(rs.next());
+            }
+            stat.execute("DROP TABLE NODATA_INT");
+            // Only 1 or 2 for the Z type
+            assertThrows(SQLException.class, () -> stat.execute("CALL ASCREAD(" + path + ", 'NODATA_INT', NULL, 1, false, true, 'UTF-8', 3, true)"));
+        }
+    }
+
+    @Test
+    public void testASCReadPK() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            String path = StringUtils.quoteStringSQL(AscReaderDriverTest.class.getResource("nodata_int.asc").getPath());
+            stat.execute("CALL ASCREAD(" + path + ", 'ASC_PK', true)");
+            try (ResultSet rs = stat.executeQuery("SELECT PK FROM ASC_PK ORDER BY PK")) {
+                for (int pk = 1; pk <= 3; pk++) {
+                    assertTrue(rs.next());
+                    assertEquals(pk, rs.getInt(1));
+                }
+                assertFalse(rs.next());
+            }
+            // the nodata cell is the last one
+            stat.execute("CALL ASCREAD(" + path + ", 'ASC_PK', NULL, 1, false, true, 'UTF-8', 2, true)");
+            try (ResultSet rs = stat.executeQuery("SELECT MIN(PK), MAX(PK), (SELECT PK FROM ASC_PK WHERE Z = -9999) FROM ASC_PK")) {
+                assertTrue(rs.next());
+                assertEquals(1, rs.getInt(1));
+                assertEquals(4, rs.getInt(2));
+                assertEquals(4, rs.getInt(3));
+            }
+            // import again in the same table
+            stat.execute("CALL ASCREAD(" + path + ", 'ASC_PK', NULL, 1, false, false, 'UTF-8', 2, true)");
+            try (ResultSet rs = stat.executeQuery("SELECT COUNT(*), MIN(PK), MAX(PK) FROM ASC_PK")) {
+                assertTrue(rs.next());
+                assertEquals(8, rs.getInt(1));
+                assertEquals(1, rs.getInt(2));
+                assertEquals(8, rs.getInt(3));
+            }
+            // ASCTable has the same PK
+            H2GISFunctions.registerFunction(stat, new ASCTable(), "");
+            try (ResultSet rs = stat.executeQuery("SELECT MIN(PK), MAX(PK) FROM ASCTable(" + path + ")")) {
+                assertTrue(rs.next());
+                assertEquals(1, rs.getInt(1));
+                assertEquals(3, rs.getInt(2));
+            }
+            stat.execute("DROP TABLE ASC_PK");
+        }
+    }
+
+
+    @Test
+    public void testASCReadImportNodataDecimal() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            String path = StringUtils.quoteStringSQL(AscReaderDriverTest.class.getResource("nodata_float.asc").getPath());
+            stat.execute("DROP TABLE IF EXISTS NODATA_FLOAT");
+            // double Z: the nodata cell is imported with its value
+            stat.execute("CALL ASCREAD(" + path + ", 'NODATA_FLOAT', NULL, 1, false, true, 'UTF-8', 2, true)");
+            try (ResultSet rs = stat.executeQuery("SELECT COUNT(*), MIN(Z) FROM NODATA_FLOAT")) {
+                assertTrue(rs.next());
+                assertEquals(4, rs.getInt(1));
+                assertEquals(-3.4e38, rs.getDouble(2));
+            }
+            // integer Z without the nodata cells: the NODATA_value is not stored, no error
+            stat.execute("CALL ASCREAD(" + path + ", 'NODATA_FLOAT', NULL, 1, false, true, 'UTF-8', 1, false)");
+            try (ResultSet rs = stat.executeQuery("SELECT COUNT(*) FROM NODATA_FLOAT")) {
+                assertTrue(rs.next());
+                assertEquals(3, rs.getInt(1));
+            }
+            // integer Z with the nodata cells: error, the table is not created
+            stat.execute("DROP TABLE NODATA_FLOAT");
+            SQLException ex = assertThrows(SQLException.class, () -> stat.execute("CALL ASCREAD(" + path + ", 'NODATA_FLOAT', NULL, 1, false, true, 'UTF-8', 1, true)"));
+            assertTrue(ex.getMessage().contains("NODATA_value"), ex.getMessage());
+            assertFalse(JDBCUtilities.tableExists(connection, "NODATA_FLOAT"));
+        }
+    }
+
+    @Test
+    public void testReadImportNodataDecimalDriver() {
+        AscReaderDriver reader = new AscReaderDriver();
+        reader.setDeleteTable(true);
+        reader.setImportNodata(true);
+        reader.setZType(1);
+        assertThrows(SQLException.class, () -> reader.read(connection,
+                new File(AscReaderDriverTest.class.getResource("nodata_float.asc").getPath()),
+                new EmptyProgressVisitor(), "NODATA_FLOAT", 0));
+    }
 }

@@ -1556,6 +1556,66 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_AddPoint11() throws Exception {
+        // An index equal to the number of points appends the point
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(30 8)'::GEOMETRY, 6);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (0 8, 1 8, 3 8, 8 8, 10 8, 20 8, 30 8)", rs.getBytes(1));
+        rs.close();
+        // index 0 replaces the first point
+        rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8)'::GEOMETRY, 'POINT(-1 8)'::GEOMETRY, 0);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (-1 8, 1 8, 3 8)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint12() throws Exception {
+        SQLException ex = assertThrows(SQLException.class, () -> {
+            st.executeQuery("SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))'::GEOMETRY, 'POINT(3 3)'::GEOMETRY, 1);");
+        });
+        assertTrue(ex.getMessage().contains("ST_InsertPoint"), ex.getMessage());
+        assertThrows(SQLException.class, () -> {
+            st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8)'::GEOMETRY, 'POINT(0 8)'::GEOMETRY, -1);");
+        });
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint(NULL, 'POINT(0 8)'::GEOMETRY), ST_AddPoint('LINESTRING(0 8, 1 8)'::GEOMETRY, 'POINT EMPTY'::GEOMETRY)");
+        rs.next();
+        assertNull(rs.getObject(1));
+        assertGeometryEquals("LINESTRING (0 8, 1 8)", rs.getBytes(2));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_InsertPoint11() throws Exception {
+        // A point at the tolerance distance of a hole is inserted in this hole
+        ResultSet rs = st.executeQuery("SELECT ST_InsertPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))'::GEOMETRY, "
+                + "'POINT(3 3)'::GEOMETRY, 1);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))", rs.getBytes(1));
+        rs.close();
+        // The inserted point depends on the order of the coordinates
+        rs = st.executeQuery("SELECT ST_InsertPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 2 4, 4 4, 4 2, 2 2))'::GEOMETRY, "
+                + "'POINT(3 3)'::GEOMETRY, 1);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 2 3, 2 4, 4 4, 4 2, 2 2))", rs.getBytes(1));
+        rs.close();
+        // Farther than the tolerance, the geometry is not modified
+        rs = st.executeQuery("SELECT ST_InsertPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))'::GEOMETRY, "
+                + "'POINT(3 3)'::GEOMETRY, 0.5);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_InsertPoint12() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer(ST_InsertPoint('LINESTRING(1 2, 2 4, 3 4, 4 5, 5 2)'::GEOMETRY, 'POINT(4 3)'::GEOMETRY, 1), 6);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(1 2, 2 4, 3 4, 4 5, 4.6 3.2, 5 2)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
     public void test_ST_RemovePoint1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('POINT(1 1)'::GEOMETRY, ST_Buffer('POINT(1 1)'::GEOMETRY, 10));");
         rs.next();

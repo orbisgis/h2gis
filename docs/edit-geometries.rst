@@ -10,7 +10,7 @@ The following functions are available to edit geometries:
    * - Function
      - Description
    * - :doc:`ST_AddPoint`
-     - Add a point to a Geometry
+     - Add a point to a LineString
    * - :doc:`ST_CollectionExtract`
      - Filter a Geometry with its dimension
    * - :doc:`ST_Densify`
@@ -21,6 +21,8 @@ The following functions are available to edit geometries:
      - Forces (Multi)Polygons to use a clockwise orientation
    * - :doc:`ST_ForcePolygonCCW`
      - Forces (Multi)Polygons to use a counter-clockwise orientation
+   * - :doc:`ST_InsertPoint`
+     - Insert a point in a Geometry by snapping it on the nearest segment
    * - :doc:`ST_Normalize`
      - Return a Geometry with a normal form
    * - :doc:`ST_RemoveDuplicatedCoordinates`
@@ -43,6 +45,7 @@ The following functions are available to edit geometries:
     ST_FlipCoordinates
     ST_ForcePolygonCW
     ST_ForcePolygonCCW
+    ST_InsertPoint
     ST_Normalize
     ST_RemoveDuplicatedCoordinates
     ST_RemoveHoles
