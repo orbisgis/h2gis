@@ -91,5 +91,45 @@ public class GeometryConvertTest {
         rs.next();
         assertEquals("00e0000001000010e63ff0000000000000400000000000000040080000000000004010000000000000",  rs.getString(1));
     }
-    
+
+    @Test
+    public void test_ST_GeomFromEWKT() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_GeomFromEWKT('SRID=4326;POINT(-71.161144 42.25932)');");
+        rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertEquals(4326, geom.getSRID());
+        assertEquals("POINT (-71.161144 42.25932)", geom.toText());
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_GeomFromEWKTNoSRID() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_GeomFromEWKT('LINESTRING(0 0, 1 1)');");
+        rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertEquals(0, geom.getSRID());
+        assertEquals("LINESTRING (0 0, 1 1)", geom.toText());
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_GeomFromEWKTZM() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT CAST(ST_GeomFromEWKT('SRID=2154;POINT ZM(1 2 3 4)') AS VARCHAR);");
+        rs.next();
+        assertEquals("SRID=2154;POINT ZM (1 2 3 4)", rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_GeomFromEWKTNull() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_GeomFromEWKT(null);");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_GeomFromEWKTBad() {
+        assertThrows(SQLException.class, () -> st.executeQuery("SELECT ST_GeomFromEWKT('SRID=4326;POINT(1)');"));
+    }
 }

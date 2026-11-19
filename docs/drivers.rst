@@ -57,6 +57,16 @@ H2GIS provides several drivers for importing from and exporting to various file 
      - TSV → Table
    * - :doc:`TSVWrite`
      - Table → TSV
+   * - :doc:`ASCTable`
+     - ASC → Table
+   * - :doc:`DBFTable`
+     - DBF → Table
+   * - :doc:`FGBTable`
+     - FGB → Table
+   * - :doc:`GeoJSONTable`
+     - GeoJSON → Table
+   * - :doc:`SHPTable`
+     - SHP → Table
 
 .. toctree::
     :maxdepth: 1
@@ -85,3 +95,8 @@ H2GIS provides several drivers for importing from and exporting to various file 
     ST_OverpassDownloader
     TSVRead
     TSVWrite
+    ASCTable
+    DBFTable
+    FGBTable
+    GeoJSONTable
+    SHPTable
