@@ -11,6 +11,8 @@ jobs:
   build:
     name: Release and next iteration
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.export-tag.outputs.tag }}
     services:
       postgres:
         image: postgis/postgis:16-3.4
@@ -83,7 +85,11 @@ jobs:
 
       # Export the last git tag into env.
       - name: Export env values
-        run: echo "GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
+        id: export-tag
+        run: |
+          GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "GIT_TAG=$GIT_TAG" >> $GITHUB_ENV
+          echo "tag=$GIT_TAG" >> $GITHUB_OUTPUT
 
       # Make the Github release from the last created tag. Write in its body the content of the changelog file.
       - name: Make Github release
@@ -122,3 +128,20 @@ jobs:
             git commit -a -m "Set next version."
             git push -u origin "$BRANCH"
           fi
+
+  # The tag is pushed with GITHUB_TOKEN, and GitHub does not start workflows on
+  # events created with this token: "CI GraalVM" never sees the tag push. It is
+  # started here explicitly on the tag (workflow_dispatch is the exception to
+  # that rule), so the native libraries are attached to the release.
+  graalvm:
+    name: Native libraries of the release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Start CI GraalVM on the release tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run "CI GraalVM.yml" --ref "${{ needs.build.outputs.tag }}"
